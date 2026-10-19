@@ -20,6 +20,7 @@ import type { GroupDetail, GroupLine, GroupMember } from '@/domain/groups/group'
 import { CategoryTimeline } from '@/presentation/components/groups/CategoryTimeline';
 import { OdsLinked } from '@/presentation/components/groups/OdsIcons';
 import { ErrorState } from '@/presentation/components/feedback/Feedback';
+import { categoryTone } from '@/presentation/components/groups/category-tone';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { TabBar } from '@/presentation/components/ui/TabBar';
 import { TypologyCard, TYPOLOGY_STYLE } from '@/presentation/components/ui/TypologyCard';
@@ -269,7 +270,9 @@ function GroupProfile({ group }: { group: GroupDetail }) {
                 </InfoColumn>
                 <InfoColumn icon="school" title={t('detail.classification')}>
                   <Field label={t('detail.currentClass')}>
-                    <span className="text-headline-sm font-bold text-primary">
+                    <span
+                      className={`inline-flex min-w-10 justify-center rounded-lg px-2.5 py-0.5 text-headline-sm font-bold ${categoryTone(group.category)}`}
+                    >
                       {group.category ? labels.domain(group.category) : '—'}
                     </span>
                   </Field>

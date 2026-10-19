@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { authorSlug, displayName } from '@/domain/authors/author';
 import type { Group } from '@/domain/groups/group';
+import { categoryTone } from './category-tone';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { useLabels } from '@/presentation/hooks/use-labels';
 
@@ -14,7 +15,9 @@ export function GroupRow({ group }: { group: Group }) {
   const labels = useLabels();
   return (
     <li className="group relative grid grid-cols-[3.25rem_1fr_auto] items-center gap-4 px-4 py-4 transition-colors hover:bg-surface-cream-alt/60 md:grid-cols-[3.25rem_minmax(0,1fr)_14rem_5rem_5rem_9rem_1.5rem] lg:grid-cols-[3.25rem_minmax(0,1fr)_14rem_9.5rem_5rem_5rem_9rem_1.5rem] md:px-5">
-      <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-dark-forest text-label-md font-bold text-secondary-fixed">
+      <span
+        className={`flex h-12 w-12 items-center justify-center rounded-xl text-label-md font-bold ${categoryTone(group.category)}`}
+      >
         {group.category ?? '—'}
       </span>
 

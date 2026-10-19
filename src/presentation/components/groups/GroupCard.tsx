@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { authorSlug, displayName } from '@/domain/authors/author';
 import type { Group } from '@/domain/groups/group';
+import { categoryTone } from './category-tone';
 import { Icon } from '@/presentation/components/ui/Icon';
 
 /** Tarjeta resumida: lo esencial para elegir un grupo; el detalle vive en /grupos/:slug. */
@@ -43,7 +44,9 @@ export function GroupCard({ group }: { group: Group }) {
               <span className="text-label-sm tracking-wider text-primary-fixed-dim uppercase">
                 {t('authors:mincienciasCategory')}
               </span>
-              <span className="mt-1 text-[44px] leading-none font-bold tracking-tight text-secondary-fixed">
+              <span
+                className={`mt-2 self-start rounded-xl px-3 py-1.5 text-[40px] leading-none font-bold tracking-tight ring-1 ring-white/25 ${categoryTone(group.category)}`}
+              >
                 {group.category ?? '—'}
               </span>
             </div>

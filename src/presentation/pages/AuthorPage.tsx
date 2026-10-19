@@ -23,6 +23,7 @@ import {
 } from '@/presentation/components/authors/ProductsTable';
 import { ErrorState } from '@/presentation/components/feedback/Feedback';
 import { OdsIcon } from '@/presentation/components/groups/OdsIcons';
+import { categoryTone } from '@/presentation/components/groups/category-tone';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { TabBar } from '@/presentation/components/ui/TabBar';
 import { TypologyCard } from '@/presentation/components/ui/TypologyCard';
@@ -253,7 +254,9 @@ function Profile({ author }: { author: AuthorProfile }) {
                         <Icon name="science" className="text-[16px] text-secondary" />
                         <span className="font-semibold">{g.name}</span>
                         {g.category ? (
-                          <span className="rounded bg-badge-sage-bg px-1.5 py-0.5 text-label-sm font-semibold text-badge-sage-text">
+                          <span
+                            className={`rounded px-1.5 py-0.5 text-label-sm font-semibold ${categoryTone(g.category)}`}
+                          >
                             {t('profile.groupCategory', { category: g.category })}
                           </span>
                         ) : null}
