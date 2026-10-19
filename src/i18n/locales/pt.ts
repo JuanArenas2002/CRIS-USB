@@ -317,6 +317,7 @@ const pt: typeof es = {
       viewGroup: 'Ver grupo',
       colCategory: 'Cat.',
       colGroup: 'Grupo',
+      colInter: 'Interinstitucional',
       linesCount_one: '{{count}} linha',
       linesCount_other: '{{count}} linhas',
     },

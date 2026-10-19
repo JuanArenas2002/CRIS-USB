@@ -322,6 +322,7 @@ const es = {
       viewGroup: 'Ver grupo',
       colCategory: 'Cat.',
       colGroup: 'Grupo',
+      colInter: 'Interinstitucional',
       linesCount_one: '{{count}} línea',
       linesCount_other: '{{count}} líneas',
     },

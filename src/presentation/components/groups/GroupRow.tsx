@@ -3,12 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { authorSlug, displayName } from '@/domain/authors/author';
 import type { Group } from '@/domain/groups/group';
 import { Icon } from '@/presentation/components/ui/Icon';
+import { useLabels } from '@/presentation/hooks/use-labels';
+
+/** Metri-K: `type` = "Institucional" | "Interinstitucional" (o vacío). */
+const isInter = (g: Group) => /^interinstitucional$/i.test(g.type?.trim() ?? '');
 
 /** Fila de la vista en lista: densa y escaneable; toda la fila enlaza al detalle. */
 export function GroupRow({ group }: { group: Group }) {
   const { t } = useTranslation('groups');
+  const labels = useLabels();
   return (
-    <li className="group relative grid grid-cols-[3.25rem_1fr_auto] items-center gap-4 px-4 py-4 transition-colors hover:bg-surface-cream-alt/60 md:grid-cols-[3.25rem_minmax(0,1fr)_14rem_5rem_5rem_9rem_1.5rem] md:px-5">
+    <li className="group relative grid grid-cols-[3.25rem_1fr_auto] items-center gap-4 px-4 py-4 transition-colors hover:bg-surface-cream-alt/60 md:grid-cols-[3.25rem_minmax(0,1fr)_14rem_5rem_5rem_9rem_1.5rem] lg:grid-cols-[3.25rem_minmax(0,1fr)_14rem_9.5rem_5rem_5rem_9rem_1.5rem] md:px-5">
       <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-dark-forest text-label-md font-bold text-secondary-fixed">
         {group.category ?? '—'}
       </span>
@@ -29,11 +34,28 @@ export function GroupRow({ group }: { group: Group }) {
             {group.leader ? ` · ${displayName(group.leader.name)}` : ''}
             {` · ${t('card.linesCount', { count: group.lines.length })}`}
           </span>
+          {/* Interinstitucional: en móvil y tableta va aquí; en escritorio tiene su columna. */}
+          {isInter(group) ? <span className="lg:hidden">{` · ${labels.domain(group.type!)}`}</span> : null}
         </p>
       </div>
 
       <p className="hidden truncate text-body-sm text-on-surface-variant md:block">
         {group.leader ? displayName(group.leader.name) : '—'}
+      </p>
+      <p className="hidden lg:block">
+        {group.type ? (
+          <span
+            className={`inline-block max-w-full truncate rounded-full px-2.5 py-0.5 text-label-sm font-semibold ${
+              isInter(group)
+                ? 'bg-badge-sage-bg text-badge-sage-text'
+                : 'bg-surface-cream-alt text-on-surface-variant'
+            }`}
+          >
+            {labels.domain(group.type)}
+          </span>
+        ) : (
+          <span className="text-body-sm text-neutral-muted">—</span>
+        )}
       </p>
       <p className="hidden text-body-sm text-on-surface md:block">
         <span className="font-semibold">{group.lines.length}</span>
@@ -53,11 +75,12 @@ export function GroupRowHeader() {
   return (
     <div
       aria-hidden="true"
-      className="hidden grid-cols-[3.25rem_minmax(0,1fr)_14rem_5rem_5rem_9rem_1.5rem] gap-4 border-b border-border-subtle px-5 py-3 text-[10px] font-semibold tracking-wider text-neutral-muted uppercase md:grid"
+      className="hidden grid-cols-[3.25rem_minmax(0,1fr)_14rem_5rem_5rem_9rem_1.5rem] lg:grid-cols-[3.25rem_minmax(0,1fr)_14rem_9.5rem_5rem_5rem_9rem_1.5rem] gap-4 border-b border-border-subtle px-5 py-3 text-[10px] font-semibold tracking-wider text-neutral-muted uppercase md:grid"
     >
       <span>{t('card.colCategory')}</span>
       <span>{t('card.colGroup')}</span>
       <span>{t('card.leader')}</span>
+      <span className="hidden lg:block">{t('card.colInter')}</span>
       <span>{t('card.lines')}</span>
       <span>{t('card.founded')}</span>
       <span>{t('card.city')}</span>
