@@ -168,7 +168,7 @@ test('detalle con grupos proyectados; inexistente o retirado → 404', async () 
     { id: 14, code: 'COL1', name: 'Grupo Uno', category: 'A1', ods: [], type: null },
   ]);
   for (const s of SECRETS) expect(text).not.toContain(s);
-  expect(body.centers).toEqual([{ id: 1, code: 'CI-1', acronym: 'CU', name: 'Centro Uno' }]);
+  expect(body.centers).toEqual([{ id: 1, code: 'CI-1', acronym: 'CU', name: 'Centro Uno', logoUrl: null }]);
   expect((await get('/api/investigators/3')).status).toBe(404);
   expect((await get('/api/investigators/999')).status).toBe(404);
 });

@@ -303,22 +303,25 @@ function Profile({ author }: { author: AuthorProfile }) {
                   </span>
                   <div className="flex flex-wrap gap-2">
                     {centers.map((c) => (
+                      // Solo logo y sigla; el nombre completo va en el tooltip y para lectores de pantalla.
                       <Link
                         key={c.id}
                         to={centerPath(c)}
-                        className="group inline-flex items-center gap-2 rounded-lg border border-border-subtle bg-surface-container-lowest px-3 py-1.5 text-body-sm text-on-surface transition-colors hover:border-primary-container hover:text-primary-container"
+                        title={c.name}
+                        className="group inline-flex items-center gap-2 rounded-lg border border-border-subtle bg-surface-container-lowest px-2.5 py-1.5 text-body-sm text-on-surface transition-colors hover:border-primary-container hover:text-primary-container"
                       >
-                        <Icon name="domain" className="text-[16px] text-secondary" />
-                        <span className="font-semibold">{c.name}</span>
-                        {c.acronym ? (
-                          <span className="rounded bg-badge-sage-bg px-1.5 py-0.5 text-label-sm font-semibold text-badge-sage-text">
-                            {c.acronym}
-                          </span>
-                        ) : null}
-                        <Icon
-                          name="arrow_forward"
-                          className="text-[14px] text-neutral-muted transition-transform group-hover:translate-x-0.5"
-                        />
+                        {c.logoUrl ? (
+                          <img
+                            src={c.logoUrl}
+                            alt=""
+                            loading="lazy"
+                            className="h-7 w-auto max-w-16 object-contain"
+                          />
+                        ) : (
+                          <Icon name="domain" className="text-[18px] text-secondary" />
+                        )}
+                        <span className="font-semibold">{c.acronym ?? c.code}</span>
+                        <span className="sr-only">{c.name}</span>
                       </Link>
                     ))}
                   </div>

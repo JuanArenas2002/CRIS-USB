@@ -32,6 +32,8 @@ const groups = (await fetchPublicGroups(`${metrik}/group`)).map((g) => ({
   ...g,
   ods: odsByGroup[g.id] ?? [],
 }));
+const logoVersions = await stores.logos.versions();
+const logoOf = (id) => (logoVersions.has(id) ? logoUrl(id, logoVersions.get(id)) : null);
 const authors = (await withProfiles(metrik, await fetchInvestigators(metrik))).map((a) => ({
   ...a,
   groups: a.groups.map((g) => ({
@@ -39,6 +41,7 @@ const authors = (await withProfiles(metrik, await fetchInvestigators(metrik))).m
     ods: odsByGroup[g.id] ?? [],
     type: groups.find((x) => x.id === g.id)?.type ?? null,
   })),
+  centers: a.centers.map((c) => ({ ...c, logoUrl: logoOf(c.id) })),
   photoUrl: photoOf(a.id),
 }));
 const authorsQ = ssr.createServerAuthorQueries(authors);
@@ -57,11 +60,10 @@ const members = new Map(
   ]),
 );
 const groupsQ = ssr.createServerGroupQueries(groups, members);
-const logoVersions = await stores.logos.versions();
 const sites = await stores.sites.all();
 const centers = (await fetchPublicCenters(metrik)).map((c) => ({
   ...c,
-  logoUrl: logoVersions.has(c.id) ? logoUrl(c.id, logoVersions.get(c.id)) : null,
+  logoUrl: logoOf(c.id),
   website: sites[c.id] ?? null,
 }));
 const centersQ = ssr.createServerCenterQueries(centers);

@@ -126,6 +126,7 @@ export async function fetchResolutionPdf(
 export async function fetchInvestigatorCenters(base: string, id: number): Promise<CenterRef[]> {
   return project(await getData(`${base}/center/investigator/${id}`), (r) => {
     const c = toPublicCenter(r);
-    return c && c.active ? { id: c.id, code: c.code, acronym: c.acronym, name: c.name } : null;
+    // El logo lo asigna el portal (public-api.ts, prerender).
+    return c && c.active ? { id: c.id, code: c.code, acronym: c.acronym, name: c.name, logoUrl: null } : null;
   });
 }

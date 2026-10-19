@@ -84,7 +84,13 @@ const profileSchema = z.object({
   groups: z.array(groupRef),
   centers: z
     .array(
-      z.object({ id: z.number().int(), code: z.string(), acronym: z.string().nullable(), name: z.string() }),
+      z.object({
+        id: z.number().int(),
+        code: z.string(),
+        acronym: z.string().nullable(),
+        name: z.string(),
+        logoUrl: z.string().nullable().default(null),
+      }),
     )
     .default([]),
   production,

@@ -296,7 +296,13 @@ export function createPublicApi({
                   type: type.get(g.id) ?? null,
                 }));
               })(),
-              centers: await centersOf(a.id),
+              centers: await (async () => {
+                const v = await logos.versions();
+                return (await centersOf(a.id)).map((c) => {
+                  const version = v.get(c.id);
+                  return { ...c, logoUrl: version === undefined ? null : logoUrl(c.id, version) };
+                });
+              })(),
               production: production.get(a.id) ?? null,
             })
           : send(404, { detail: 'No encontrado' });
