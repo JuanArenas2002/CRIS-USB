@@ -34,12 +34,17 @@ const groups = (await fetchPublicGroups(`${metrik}/group`)).map((g) => ({
 }));
 const authors = (await withProfiles(metrik, await fetchInvestigators(metrik))).map((a) => ({
   ...a,
-  groups: a.groups.map((g) => ({ ...g, ods: odsByGroup[g.id] ?? [] })),
+  groups: a.groups.map((g) => ({
+    ...g,
+    ods: odsByGroup[g.id] ?? [],
+    type: groups.find((x) => x.id === g.id)?.type ?? null,
+  })),
   photoUrl: photoOf(a.id),
 }));
 const authorsQ = ssr.createServerAuthorQueries(authors);
 const published = new Map(authors.map((a) => [a.id, a]));
-const activeGroups = groups.filter((g) => g.active);
+// Interinstitucionales: solo en el listado (sin ficha ni integrantes).
+const activeGroups = groups.filter((g) => g.active && ssr.hasPublicDetail(g));
 const members = new Map(
   await mapLimit(activeGroups, 6, async (g) => [
     g.id,
@@ -87,7 +92,7 @@ for (const a of authors) {
 }
 await writePage('/grupos', path.join(dist, 'grupos', 'index.html'), (qc) => qc.fetchQuery(groupsQ.list()));
 const groupPaths = [];
-for (const g of groups.filter((x) => x.active)) {
+for (const g of activeGroups) {
   const url = `/grupos/${ssr.authorSlug(g)}`;
   groupPaths.push(url);
   await writePage(url, path.join(dist, url, 'index.html'), (qc) =>

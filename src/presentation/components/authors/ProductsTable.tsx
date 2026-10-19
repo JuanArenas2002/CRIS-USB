@@ -118,9 +118,10 @@ export function ProductsTable({
       </div>
 
       <div className="overflow-hidden rounded-xl bg-surface-container-lowest shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left text-body-sm">
-            <thead>
+        {/* En móvil cada fila es una tarjeta (sin scroll lateral); desde md, tabla normal. */}
+        <div>
+          <table className="block w-full border-collapse text-left text-body-sm md:table">
+            <thead className="hidden md:table-header-group">
               <tr className="bg-surface-cream-alt text-label-md tracking-wider text-on-surface-variant uppercase">
                 <th scope="col" className="w-20 px-4 py-3 text-center">
                   {t('products.colYear')}
@@ -139,13 +140,16 @@ export function ProductsTable({
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-surface-cream-alt">
+            <tbody className="block divide-y divide-surface-cream-alt md:table-row-group">
               {visible.slice(0, limit).map((p) => (
-                <tr key={p.key} className="transition-colors hover:bg-surface-cream-alt/40">
-                  <td className="px-4 py-3.5 text-center align-top font-bold text-primary-container">
+                <tr
+                  key={p.key}
+                  className="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1.5 px-4 py-3.5 transition-colors hover:bg-surface-cream-alt/40 md:table-row md:p-0"
+                >
+                  <td className="order-1 font-bold text-primary-container md:table-cell md:px-4 md:py-3.5 md:text-center md:align-top">
                     {p.year ?? '—'}
                   </td>
-                  <td className="max-w-xl px-4 py-3.5 align-top">
+                  <td className="order-3 col-span-2 min-w-0 md:table-cell md:max-w-xl md:px-4 md:py-3.5 md:align-top">
                     <p className="leading-snug font-semibold text-primary-container">{p.title}</p>
                     {p.venue || p.doi ? (
                       <p className="mt-1 text-label-sm break-all text-neutral-muted">
@@ -153,20 +157,20 @@ export function ProductsTable({
                       </p>
                     ) : null}
                   </td>
-                  <td className="px-4 py-3.5 align-top">
+                  <td className="order-2 justify-self-end md:table-cell md:px-4 md:py-3.5 md:align-top">
                     <span
                       className={`rounded-full px-2 py-0.5 text-label-sm font-semibold whitespace-nowrap ${TYPOLOGY_STYLE[p.typology].chip}`}
                     >
                       {labels.typologyShort(p.typology)}
                     </span>
                   </td>
-                  <td className="px-4 py-3.5 align-top text-label-md text-on-surface-variant">
+                  <td className="order-4 min-w-0 text-label-md text-on-surface-variant md:table-cell md:px-4 md:py-3.5 md:align-top">
                     {labels.domain(p.type)}
                     {p.index ? (
                       <span className="block text-label-sm text-neutral-muted">{labels.domain(p.index)}</span>
                     ) : null}
                   </td>
-                  <td className="px-4 py-3.5 text-right align-top">
+                  <td className="order-5 justify-self-end md:table-cell md:px-4 md:py-3.5 md:text-right md:align-top">
                     {p.url ? (
                       <a
                         href={p.url}

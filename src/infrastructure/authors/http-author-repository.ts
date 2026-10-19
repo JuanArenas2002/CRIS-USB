@@ -17,6 +17,7 @@ const groupRef = z.object({
   name: z.string(),
   category: z.string().nullable().optional(),
   ods: z.array(z.number().int().min(1).max(17)).optional(),
+  type: z.string().nullable().optional(),
 });
 
 const author = {

@@ -25,6 +25,19 @@ export interface GroupInfo {
   ods: OdsId[];
 }
 
+/** Metri-K: `type` = "Institucional" | "Interinstitucional" (o vacío). */
+export const isInterinstitutional = (g: { type?: string | null }) =>
+  /^interinstitucional$/i.test(g.type?.trim() ?? '');
+
+export type GroupType = 'institucional' | 'interinstitucional';
+export const GROUP_TYPES: readonly GroupType[] = ['institucional', 'interinstitucional'];
+
+/**
+ * Regla de publicación: los grupos interinstitucionales solo aparecen en el catálogo /grupos;
+ * su ficha (detalle e integrantes) no se publica.
+ */
+export const hasPublicDetail = (g: { type?: string | null }) => !isInterinstitutional(g);
+
 /** Línea de investigación de un grupo. Los textos son null cuando Metri-K no los tiene. */
 export interface GroupLine {
   id: number;
@@ -88,18 +101,20 @@ export function sortGroups(groups: Group[]): Group[] {
 export interface GroupFilters {
   search: string;
   category: string | null;
+  type?: GroupType | null;
 }
 
 /**
  * El endpoint de grupos no filtra ni pagina; con ~50 registros se filtra en memoria.
  * ponytail: si el catálogo crece a cientos, mover búsqueda y paginación al backend.
  */
-export function filterGroups(groups: Group[], { search, category }: GroupFilters): Group[] {
+export function filterGroups(groups: Group[], { search, category, type }: GroupFilters): Group[] {
   const norm = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
   const q = norm(search.trim());
   return groups.filter(
     (g) =>
       (!category || g.category === category) &&
+      (!type || (type === 'interinstitucional') === isInterinstitutional(g)) &&
       (!q ||
         [g.name, g.code, g.leader?.name ?? '', g.city ?? '', ...g.lines.map((l) => l.name)].some((f) =>
           norm(f).includes(q),

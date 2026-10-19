@@ -14,6 +14,7 @@ import {
   type TypologyId,
 } from '@/domain/authors/author';
 import { isIndexable } from '@/application/authors/author-queries';
+import { hasPublicDetail } from '@/domain/groups/group';
 import { inheritOds } from '@/domain/ods/ods';
 import { ProductionByYear } from '@/presentation/components/authors/ProductionByYear';
 import {
@@ -131,7 +132,7 @@ function Profile({ author }: { author: AuthorProfile }) {
                 '@type': 'Organization',
                 name: g.name,
                 identifier: g.code,
-                url: absoluteUrl(`/grupos/${authorSlug(g)}`),
+                ...(hasPublicDetail(g) ? { url: absoluteUrl(`/grupos/${authorSlug(g)}`) } : {}),
               })),
             }
           : {}),
@@ -245,27 +246,41 @@ function Profile({ author }: { author: AuthorProfile }) {
                     {t('profile.groups')}
                   </span>
                   <div className="flex flex-wrap gap-2">
-                    {groups.map((g) => (
-                      <Link
-                        key={g.id}
-                        to={`/grupos/${authorSlug(g)}`}
-                        className="group inline-flex items-center gap-2 rounded-lg border border-border-subtle bg-surface-container-lowest px-3 py-1.5 text-body-sm text-on-surface transition-colors hover:border-primary-container hover:text-primary-container"
-                      >
-                        <Icon name="science" className="text-[16px] text-secondary" />
-                        <span className="font-semibold">{g.name}</span>
-                        {g.category ? (
-                          <span
-                            className={`rounded px-1.5 py-0.5 text-label-sm font-semibold ${categoryTone(g.category)}`}
-                          >
-                            {t('profile.groupCategory', { category: g.category })}
-                          </span>
-                        ) : null}
-                        <Icon
-                          name="arrow_forward"
-                          className="text-[14px] text-neutral-muted transition-transform group-hover:translate-x-0.5"
-                        />
-                      </Link>
-                    ))}
+                    {groups.map((g) => {
+                      const chip = (
+                        <>
+                          <Icon name="science" className="text-[16px] text-secondary" />
+                          <span className="font-semibold">{g.name}</span>
+                          {g.category ? (
+                            <span
+                              className={`rounded px-1.5 py-0.5 text-label-sm font-semibold ${categoryTone(g.category)}`}
+                            >
+                              {t('profile.groupCategory', { category: g.category })}
+                            </span>
+                          ) : null}
+                        </>
+                      );
+                      const box =
+                        'inline-flex items-center gap-2 rounded-lg border border-border-subtle bg-surface-container-lowest px-3 py-1.5 text-body-sm text-on-surface';
+                      // Interinstitucionales: sin ficha pública, el grupo se nombra sin enlace.
+                      return hasPublicDetail(g) ? (
+                        <Link
+                          key={g.id}
+                          to={`/grupos/${authorSlug(g)}`}
+                          className={`group ${box} transition-colors hover:border-primary-container hover:text-primary-container`}
+                        >
+                          {chip}
+                          <Icon
+                            name="arrow_forward"
+                            className="text-[14px] text-neutral-muted transition-transform group-hover:translate-x-0.5"
+                          />
+                        </Link>
+                      ) : (
+                        <span key={g.id} className={box}>
+                          {chip}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
               ) : null}

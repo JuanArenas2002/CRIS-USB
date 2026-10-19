@@ -273,6 +273,7 @@ const es = {
       allTypologies: 'Todas las tipologías',
       type: 'Tipo de producto',
       allTypes: 'Todos los tipos',
+      typeLabel: 'Tipo de grupo',
       year: 'Año',
       allYears: 'Todos los años',
       showing_one: 'Mostrando {{shown}} de {{count}} producto registrado',
@@ -305,6 +306,8 @@ const es = {
     search: 'Buscar grupos',
     searchPlaceholder: 'Buscar por nombre, código, líder o sede…',
     allCategories: 'Todas las categorías',
+    allTypes: 'Todos los tipos',
+    typeLabel: 'Tipo de grupo',
     eyebrow: 'Directorio de grupos',
     listTitle: 'Dónde se hace la investigación',
     listLead:

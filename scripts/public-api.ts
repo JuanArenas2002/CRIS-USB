@@ -16,7 +16,7 @@ import { MAX_PHOTO_BYTES, logoUrl, photoUrl } from './photo-store.ts';
 import { normalizeWebsite } from './ods-store.ts';
 import { createStores, storeOptionsFromEnv, type StoreOptions } from './stores.ts';
 import { summarizeCenter, type CenterDetail } from '../src/domain/centers/center.ts';
-import { summarizeGroup, type GroupDetail } from '../src/domain/groups/group.ts';
+import { hasPublicDetail, summarizeGroup, type GroupDetail } from '../src/domain/groups/group.ts';
 import { isOdsId } from '../src/domain/ods/ods.ts';
 import {
   AUTHOR_CATEGORIES,
@@ -280,7 +280,12 @@ export function createPublicApi({
               // Cada grupo lleva sus ODS: el perfil muestra los que el investigador hereda de sus grupos.
               groups: await (async () => {
                 const ods = await odsStore.all();
-                return (await groupsOf(a.id)).map((g) => ({ ...g, ods: ods[g.id] ?? [] }));
+                const type = new Map((await metrikGroups()).map((x) => [x.id, x.type]));
+                return (await groupsOf(a.id)).map((g) => ({
+                  ...g,
+                  ods: ods[g.id] ?? [],
+                  type: type.get(g.id) ?? null,
+                }));
               })(),
               production: production.get(a.id) ?? null,
             })
@@ -291,13 +296,14 @@ export function createPublicApi({
       const members = /^\/api\/groups\/(\d{1,12})\/members$/.exec(p);
       if (members) {
         const id = Number(members[1]);
-        if (!(await groups()).some((g) => g.id === id && g.active))
+        if (!(await groups()).some((g) => g.id === id && g.active && hasPublicDetail(g)))
           return send(404, { detail: 'No encontrado' });
         return send(200, await membersOf(id));
       }
       const grp = /^\/api\/groups\/(\d{1,12})$/.exec(p);
       if (grp) {
-        const g = (await groups()).find((x) => x.id === Number(grp[1]));
+        // Interinstitucionales: solo en el listado, sin ficha.
+        const g = (await groups()).find((x) => x.id === Number(grp[1]) && hasPublicDetail(x));
         return g ? send(200, g) : send(404, { detail: 'No encontrado' });
       }
 

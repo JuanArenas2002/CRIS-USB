@@ -18,7 +18,7 @@ import {
 import { centerQueries, type CenterQueries } from '@/application/centers/center-queries';
 import { groupQueries, type GroupQueries } from '@/application/groups/group-queries';
 import { summarizeCenter, type CenterDetail } from '@/domain/centers/center';
-import { summarizeGroup, type GroupDetail, type GroupMember } from '@/domain/groups/group';
+import { hasPublicDetail, summarizeGroup, type GroupDetail, type GroupMember } from '@/domain/groups/group';
 import { NAV_ITEMS } from '@/shared/navigation';
 import { headTags, titleTag, safeJson, type PageMeta } from '@/shared/seo';
 
@@ -83,4 +83,4 @@ export function render(
   };
 }
 
-export { NAV_ITEMS, authorSlug, createQueryClient, isIndexable, toPublicProfile };
+export { NAV_ITEMS, authorSlug, createQueryClient, hasPublicDetail, isIndexable, toPublicProfile };

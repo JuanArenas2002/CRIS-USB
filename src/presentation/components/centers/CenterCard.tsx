@@ -183,14 +183,14 @@ export function CenterCard({ center: c }: { center: Center }) {
 }
 
 const COLS =
-  'md:grid-cols-[6.5rem_minmax(0,1fr)_13rem_5rem_5rem_8rem_1.5rem] lg:grid-cols-[6.5rem_minmax(0,1fr)_14rem_5rem_5rem_9rem_7rem_1.5rem]';
+  'lg:grid-cols-[6.5rem_minmax(0,1fr)_13rem_5rem_5rem_8rem_1.5rem] xl:grid-cols-[6.5rem_minmax(0,1fr)_14rem_5rem_5rem_9rem_7rem_1.5rem]';
 
 /** Fila de la vista en lista: misma anatomía que GroupRow; toda la fila enlaza a la ficha. */
 export function CenterRow({ center: c }: { center: Center }) {
   const { t } = useTranslation('centers');
   return (
     <li
-      className={`group relative grid grid-cols-[6.5rem_1fr_auto] items-center gap-4 px-4 py-4 transition-colors hover:bg-surface-cream-alt/60 md:px-5 ${COLS}`}
+      className={`group relative grid grid-cols-[6.5rem_1fr_auto] items-center gap-4 px-4 py-4 transition-colors hover:bg-surface-cream-alt/60 lg:px-5 ${COLS}`}
     >
       {c.logoUrl ? (
         <img
@@ -220,25 +220,25 @@ export function CenterRow({ center: c }: { center: Center }) {
         </h3>
         <p className="mt-0.5 text-label-sm text-neutral-muted">
           {c.code}
-          {/* En móvil, los datos de las columnas van en esta línea. */}
-          <span className="md:hidden">
+          {/* En móvil y tableta, los datos de las columnas van en esta línea. */}
+          <span className="lg:hidden">
             {c.director ? ` · ${displayName(c.director.name)}` : ''}
             {` · ${t('card.linesCount', { count: c.linesCount })}`}
           </span>
         </p>
       </div>
 
-      <p className="hidden truncate text-body-sm text-on-surface-variant md:block">
+      <p className="hidden truncate text-body-sm text-on-surface-variant lg:block">
         {c.director ? displayName(c.director.name) : '—'}
       </p>
-      <p className="hidden text-body-sm text-on-surface md:block">
+      <p className="hidden text-body-sm text-on-surface lg:block">
         <span className="font-semibold">{c.linesCount}</span>
       </p>
-      <p className="hidden text-body-sm text-on-surface md:block">{c.foundedYear ?? '—'}</p>
-      <p className="hidden truncate text-body-sm text-on-surface-variant md:block">
+      <p className="hidden text-body-sm text-on-surface lg:block">{c.foundedYear ?? '—'}</p>
+      <p className="hidden truncate text-body-sm text-on-surface-variant lg:block">
         {c.city ? displayName(c.city) : '—'}
       </p>
-      <p className="hidden lg:block">
+      <p className="hidden xl:block">
         <CenterStatus />
       </p>
       <Icon name="chevron_right" className="text-[20px] text-neutral-muted group-hover:text-primary" />
@@ -252,7 +252,7 @@ export function CenterRowHeader() {
   return (
     <div
       aria-hidden="true"
-      className={`hidden grid-cols-[6.5rem_minmax(0,1fr)_13rem_5rem_5rem_8rem_1.5rem] gap-4 border-b border-border-subtle px-5 py-3 text-[10px] font-semibold tracking-wider text-neutral-muted uppercase md:grid ${COLS}`}
+      className={`hidden grid-cols-[6.5rem_minmax(0,1fr)_13rem_5rem_5rem_8rem_1.5rem] gap-4 border-b border-border-subtle px-5 py-3 text-[10px] font-semibold tracking-wider text-neutral-muted uppercase lg:grid ${COLS}`}
     >
       <span>{t('card.colCode')}</span>
       <span>{t('card.colCenter')}</span>
@@ -260,7 +260,7 @@ export function CenterRowHeader() {
       <span>{t('card.lines')}</span>
       <span>{t('card.founded')}</span>
       <span>{t('card.city')}</span>
-      <span className="hidden lg:block">{t('card.colStatus')}</span>
+      <span className="hidden xl:block">{t('card.colStatus')}</span>
       <span />
     </div>
   );

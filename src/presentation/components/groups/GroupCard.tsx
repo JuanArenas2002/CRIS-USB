@@ -1,14 +1,18 @@
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { authorSlug, displayName } from '@/domain/authors/author';
-import type { Group } from '@/domain/groups/group';
+import { hasPublicDetail, type Group } from '@/domain/groups/group';
 import { categoryTone } from './category-tone';
 import { GroupTypeIcon } from './GroupTypeIcon';
 import { Icon } from '@/presentation/components/ui/Icon';
 
-/** Tarjeta resumida: lo esencial para elegir un grupo; el detalle vive en /grupos/:slug. */
+/**
+ * Tarjeta resumida: lo esencial para elegir un grupo; el detalle vive en /grupos/:slug.
+ * Los interinstitucionales no tienen ficha pública: la tarjeta no enlaza.
+ */
 export function GroupCard({ group }: { group: Group }) {
   const { t } = useTranslation(['groups', 'common', 'authors']);
+  const linked = hasPublicDetail(group);
   const metrics = [
     { icon: 'link', label: t('card.lines'), value: group.lines.length || '—' },
     { icon: 'event', label: t('card.founded'), value: group.foundedYear ?? '—' },
@@ -64,12 +68,16 @@ export function GroupCard({ group }: { group: Group }) {
         <div className="pt-4 pb-2">
           <h3 className="text-headline-sm font-bold tracking-tight text-[#0F241A] transition-colors group-hover:text-primary">
             {/* El enlace del título cubre toda la tarjeta. */}
-            <Link
-              to={`/grupos/${authorSlug(group)}`}
-              className="after:absolute after:inset-0 after:rounded-[24px] focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-secondary"
-            >
-              {group.name}
-            </Link>
+            {linked ? (
+              <Link
+                to={`/grupos/${authorSlug(group)}`}
+                className="after:absolute after:inset-0 after:rounded-[24px] focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-secondary"
+              >
+                {group.name}
+              </Link>
+            ) : (
+              group.name
+            )}
           </h3>
           {group.leader ? (
             <p className="mt-2 flex items-center gap-1.5 text-body-sm text-neutral-muted">
@@ -97,12 +105,14 @@ export function GroupCard({ group }: { group: Group }) {
             </div>
           ))}
         </dl>
-        <span
-          aria-hidden="true"
-          className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-primary text-label-md font-semibold text-surface-container-lowest transition-colors group-hover:bg-secondary"
-        >
-          {t('card.viewGroup')} <Icon name="arrow_forward" className="text-[16px]" />
-        </span>
+        {linked ? (
+          <span
+            aria-hidden="true"
+            className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-primary text-label-md font-semibold text-surface-container-lowest transition-colors group-hover:bg-secondary"
+          >
+            {t('card.viewGroup')} <Icon name="arrow_forward" className="text-[16px]" />
+          </span>
+        ) : null}
       </div>
     </article>
   );

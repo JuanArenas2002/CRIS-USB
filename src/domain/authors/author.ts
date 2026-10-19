@@ -17,6 +17,8 @@ export interface GroupRef {
   category?: string | null;
   /** ODS asignados al grupo en el portal (solo en el perfil del investigador). */
   ods?: OdsId[];
+  /** Tipo del grupo (Institucional / Interinstitucional), para saber si tiene ficha pública. */
+  type?: string | null;
 }
 
 /** Investigador tal como lo publica el portal (fuente: Metri-K). Sin datos personales. */

@@ -1,7 +1,7 @@
 import { HeroWaves } from '@/presentation/components/layout/HeroWaves';
 import { useSearchParams } from 'react-router';
 import { Trans, useTranslation } from 'react-i18next';
-import { CATEGORY_ORDER, filterGroups } from '@/domain/groups/group';
+import { CATEGORY_ORDER, GROUP_TYPES, filterGroups, type GroupType } from '@/domain/groups/group';
 import { GroupCard } from '@/presentation/components/groups/GroupCard';
 import { GroupRow, GroupRowHeader } from '@/presentation/components/groups/GroupRow';
 import { ContactCta } from '@/presentation/components/layout/ContactCta';
@@ -18,12 +18,14 @@ const fieldClass =
 export function GroupsPage() {
   const { data, isError, error, refetch } = useGroups();
   const { t } = useTranslation(['groups', 'common', 'authors']);
-  const { number } = useLabels();
+  const { number, domain } = useLabels();
   const [params, setParams] = useSearchParams();
   const search = params.get('q') ?? '';
   const catParam = params.get('cat');
   const view: 'lista' | 'tarjetas' = params.get('vista') === 'tarjetas' ? 'tarjetas' : 'lista';
   const category = (CATEGORY_ORDER as readonly string[]).includes(catParam ?? '') ? catParam : null;
+  const typeParam = params.get('tipo') as GroupType | null;
+  const type = typeParam && GROUP_TYPES.includes(typeParam) ? typeParam : null;
 
   const setParam = (k: string, v: string) =>
     setParams(
@@ -44,7 +46,7 @@ export function GroupsPage() {
   });
 
   const groups = data ?? [];
-  const visible = filterGroups(groups, { search, category });
+  const visible = filterGroups(groups, { search, category, type });
   const byCategory = (c: string) => groups.filter((g) => g.category === c).length;
 
   const jsonLd = data && {
@@ -174,6 +176,25 @@ export function GroupsPage() {
                   {t('statCategory', { category: c })}
                 </option>
               ))}
+            </select>
+            <Icon
+              name="expand_more"
+              className="pointer-events-none absolute top-3 right-2.5 text-[18px] text-on-surface-variant"
+            />
+          </div>
+          <div className="relative w-full lg:w-60">
+            <label htmlFor="group-type" className="sr-only">
+              {t('typeLabel')}
+            </label>
+            <select
+              id="group-type"
+              value={type ?? ''}
+              onChange={(e) => setParam('tipo', e.target.value)}
+              className={`${fieldClass} w-full cursor-pointer appearance-none px-3 pr-8 text-label-md font-semibold`}
+            >
+              <option value="">{t('allTypes')}</option>
+              <option value="institucional">{domain('Institucional')}</option>
+              <option value="interinstitucional">{domain('Interinstitucional')}</option>
             </select>
             <Icon
               name="expand_more"

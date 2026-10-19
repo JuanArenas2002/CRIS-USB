@@ -31,6 +31,15 @@ const groupRaw = {
   lastCategory: 'A1',
   mentor: { user: { username: 'mentor', password: '$2b$10$hash' }, person },
 };
+// Interinstitucional: sale en el listado, pero sin ficha ni integrantes.
+const interRaw = {
+  id: 15,
+  code: 'COL2',
+  name: 'Grupo Inter',
+  state: true,
+  lastCategory: 'B',
+  type: 'Interinstitucional',
+};
 // Centros (forma real de Metri-K): director con datos personales, registro vacío "N/A" y PDF en base64.
 const PDF = Buffer.from('%PDF-1.4 resolución de prueba');
 const centerRaw = {
@@ -98,7 +107,7 @@ const metrik = vi.fn(async (url: string) => {
             ? [groupRaw]
             : []
           : p === '/api/group'
-            ? [groupRaw]
+            ? [groupRaw, interRaw]
             : p.startsWith('/api/lineGroup/') || p.startsWith('/api/group/categories/')
               ? []
               : (centersMock[p] ?? null);
@@ -154,7 +163,9 @@ test('investigadores: solo los seleccionados y activos en GrupLAC, sin datos per
 
 test('detalle con grupos proyectados; inexistente o retirado → 404', async () => {
   const { body, text } = await get('/api/investigators/1');
-  expect(body.groups).toEqual([{ id: 14, code: 'COL1', name: 'Grupo Uno', category: 'A1', ods: [] }]);
+  expect(body.groups).toEqual([
+    { id: 14, code: 'COL1', name: 'Grupo Uno', category: 'A1', ods: [], type: null },
+  ]);
   for (const s of SECRETS) expect(text).not.toContain(s);
   expect((await get('/api/investigators/3')).status).toBe(404);
   expect((await get('/api/investigators/999')).status).toBe(404);
@@ -317,4 +328,11 @@ test('centros: logo (WebP, con token) y página oficial (URL http/s) asignados p
     website: null,
   });
   expect((await get('/api/centers/1')).body).toMatchObject({ logoUrl: null, website: null });
+});
+
+test('grupos interinstitucionales: en el listado, pero sin detalle ni integrantes', async () => {
+  expect((await get('/api/groups')).body.map((g: { id: number }) => g.id)).toContain(15);
+  expect((await get('/api/groups/15')).status).toBe(404);
+  expect((await get('/api/groups/15/members')).status).toBe(404);
+  expect((await get('/api/groups/14')).status).toBe(200);
 });

@@ -1,10 +1,6 @@
-import type { Group } from '@/domain/groups/group';
+import { isInterinstitutional, type Group } from '@/domain/groups/group';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { useLabels } from '@/presentation/hooks/use-labels';
-
-/** Metri-K: `type` = "Institucional" | "Interinstitucional" (o vacío). */
-export const isInterinstitutional = (g: Pick<Group, 'type'>) =>
-  /^interinstitucional$/i.test(g.type?.trim() ?? '');
 
 /**
  * Tipo de grupo como icono: edificio = institucional, apretón de manos = interinstitucional.

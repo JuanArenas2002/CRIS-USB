@@ -1,11 +1,11 @@
 import { queryOptions } from '@tanstack/react-query';
-import { sortGroups, type GroupDetail, type GroupRepository } from '@/domain/groups/group';
+import { hasPublicDetail, sortGroups, type GroupDetail, type GroupRepository } from '@/domain/groups/group';
 
 export type PublicGroupDetail = { kind: 'found'; group: GroupDetail } | { kind: 'not-found' };
 
-/** Regla de publicación: solo grupos activos. */
+/** Regla de publicación: solo grupos activos y con ficha pública (no interinstitucionales). */
 export const toPublicGroupDetail = (g: GroupDetail | null): PublicGroupDetail =>
-  g && g.active ? { kind: 'found', group: g } : { kind: 'not-found' };
+  g && g.active && hasPublicDetail(g) ? { kind: 'found', group: g } : { kind: 'not-found' };
 
 /** Solo grupos activos y ordenados por categoría: es lo que el portal publica. */
 export function groupQueries(repo: GroupRepository) {
