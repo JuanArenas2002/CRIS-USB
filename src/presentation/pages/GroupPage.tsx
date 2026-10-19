@@ -1,6 +1,7 @@
 import { useContext, useMemo, useState, type ReactNode } from 'react';
 import { Link, Navigate, useLocation, useParams, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import {
   AUTHOR_CATEGORIES,
   authorSlug,
@@ -15,7 +16,7 @@ import {
   type Product,
   type TypologyId,
 } from '@/domain/authors/author';
-import type { GroupDetail, GroupMember } from '@/domain/groups/group';
+import type { GroupDetail, GroupLine, GroupMember } from '@/domain/groups/group';
 import { CategoryTimeline } from '@/presentation/components/groups/CategoryTimeline';
 import { OdsLinked } from '@/presentation/components/groups/OdsIcons';
 import { ErrorState } from '@/presentation/components/feedback/Feedback';
@@ -24,6 +25,8 @@ import { TabBar } from '@/presentation/components/ui/TabBar';
 import { TypologyCard, TYPOLOGY_STYLE } from '@/presentation/components/ui/TypologyCard';
 import { useAuthorProfiles } from '@/presentation/hooks/use-authors';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
+import { useLabels } from '@/presentation/hooks/use-labels';
+import { useAutoTranslate, type AutoTranslateStatus } from '@/presentation/hooks/use-auto-translate';
 import { GroupQueriesContext } from '@/presentation/hooks/use-groups';
 import { ORGANIZATION, absoluteUrl, safeJson } from '@/shared/seo';
 import { NotFoundPage } from './NotFoundPage';
@@ -40,6 +43,7 @@ export function GroupPage() {
   const id = parseAuthorId(slug);
   const q = useGroupQueries();
   const { data, isError, error, refetch } = useQuery({ ...q.detail(id ?? 0), enabled: id !== null });
+  const { t } = useTranslation(['groups', 'common', 'authors']);
 
   if (id === null || data?.kind === 'not-found') return <NotFoundPage />;
   if (data?.kind === 'found') {
@@ -50,11 +54,11 @@ export function GroupPage() {
   return (
     <div className="container-page py-16">
       {isError ? (
-        <ErrorState message={error.message} onRetry={() => refetch()} />
+        <ErrorState error={error} onRetry={() => refetch()} />
       ) : (
         <div
           aria-busy="true"
-          aria-label="Cargando grupo"
+          aria-label={t('detail.loading')}
           className="h-64 animate-pulse rounded-3xl bg-surface-container-lowest"
         />
       )}
@@ -67,13 +71,15 @@ const TABS: Tab[] = ['perfil', 'integrantes', 'produccion'];
 const card = 'rounded-xl bg-surface-container-lowest shadow-sm';
 const fold = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();
 const LINE_FIELDS = [
-  { key: 'objective', label: 'Objetivo', icon: 'flag' },
-  { key: 'achievements', label: 'Logros', icon: 'emoji_events' },
-  { key: 'impact', label: 'Impacto', icon: 'bolt' },
+  { key: 'objective', label: 'detail.lineObjective', icon: 'flag' },
+  { key: 'achievements', label: 'detail.lineAchievements', icon: 'emoji_events' },
+  { key: 'impact', label: 'detail.lineImpact', icon: 'bolt' },
 ] as const;
 
 function GroupProfile({ group }: { group: GroupDetail }) {
   const path = `/grupos/${authorSlug(group)}`;
+  const { t } = useTranslation(['groups', 'common', 'authors']);
+  const labels = useLabels();
   const q = useGroupQueries();
   const members = useQuery(q.members(group.id));
   const [params, setParams] = useSearchParams();
@@ -100,8 +106,8 @@ function GroupProfile({ group }: { group: GroupDetail }) {
   };
   const articles = products.filter((p) => p.type === 'Artículo científico').length;
   const productionHint = members.data
-    ? `${published.length} de ${members.data.length} integrantes con perfil publicado`
-    : 'Cargando…';
+    ? t('detail.productionHint', { published: published.length, count: members.data.length })
+    : t('common:loading');
 
   const leader = group.leader;
   const city = group.city ? displayName(group.city) : null;
@@ -113,9 +119,9 @@ function GroupProfile({ group }: { group: GroupDetail }) {
 
   useDocumentMetadata({
     title: group.name,
-    description: `Grupo de investigación ${group.name} (${group.code}) de la Universidad Simón Bolívar${
-      group.category ? `, categoría ${group.category} Minciencias` : ''
-    }${lineNames.length ? `. Líneas: ${lineNames.slice(0, 3).join(', ')}` : ''}.`,
+    description: `${t('detail.metaBase', { name: group.name, code: group.code })}${
+      group.category ? t('detail.metaCategory', { category: group.category }) : ''
+    }${lineNames.length ? t('detail.metaLines', { lines: lineNames.slice(0, 3).join(', ') }) : ''}.`,
     path,
   });
 
@@ -147,11 +153,11 @@ function GroupProfile({ group }: { group: GroupDetail }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJson(jsonLd) }} />
 
       <div className="border-b border-border-subtle bg-surface-container-lowest">
-        <nav aria-label="Ruta de navegación" className="container-page py-3">
+        <nav aria-label={t('common:breadcrumb.label')} className="container-page py-3">
           <ol className="flex flex-wrap items-center gap-1 text-label-md text-neutral-muted">
             <li>
               <Link to="/" className="inline-flex items-center gap-1 hover:text-primary">
-                <Icon name="home" className="text-[16px]" /> Inicio
+                <Icon name="home" className="text-[16px]" /> {t('common:breadcrumb.home')}
               </Link>
             </li>
             <li aria-hidden="true">
@@ -159,7 +165,7 @@ function GroupProfile({ group }: { group: GroupDetail }) {
             </li>
             <li>
               <Link to="/grupos" className="hover:text-primary">
-                Grupos
+                {t('common:nav.items.groups.label')}
               </Link>
             </li>
             <li aria-hidden="true">
@@ -190,7 +196,7 @@ function GroupProfile({ group }: { group: GroupDetail }) {
                 {leader ? (
                   <span className="flex items-center gap-1.5 font-medium text-primary">
                     <Icon name="verified_user" className="text-[16px] text-secondary" />
-                    Líder: {displayName(leader.name)}
+                    {t('detail.leader', { name: displayName(leader.name) })}
                   </span>
                 ) : null}
                 {leader ? <span className="text-neutral-muted">·</span> : null}
@@ -206,8 +212,8 @@ function GroupProfile({ group }: { group: GroupDetail }) {
                 rel="noopener"
                 className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-secondary sm:w-auto"
               >
-                Ver en GrupLAC <Icon name="open_in_new" className="text-[16px]" />
-                <span className="sr-only">(abre en una pestaña nueva)</span>
+                {t('detail.viewGruplac')} <Icon name="open_in_new" className="text-[16px]" />
+                <span className="sr-only">{t('common:newTab')}</span>
               </a>
             ) : null}
             <button
@@ -215,21 +221,21 @@ function GroupProfile({ group }: { group: GroupDetail }) {
               onClick={() => window.print()}
               className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-surface-cream-alt px-4 text-label-md font-semibold text-primary transition-colors hover:bg-badge-sage-bg sm:w-auto"
             >
-              <Icon name="picture_as_pdf" className="text-[18px]" /> Descargar ficha PDF
+              <Icon name="picture_as_pdf" className="text-[18px]" /> {t('detail.downloadPdf')}
             </button>
           </div>
         </section>
 
         <TabBar
-          label="Secciones del grupo de investigación"
+          label={t('detail.tabsLabel')}
           active={tab}
           onSelect={setTab}
           tabs={[
-            { id: 'perfil', label: 'Perfil e indicadores', icon: 'analytics' },
-            { id: 'integrantes', label: 'Integrantes', icon: 'group', badge: members.data?.length },
+            { id: 'perfil', label: t('detail.tabProfile'), icon: 'analytics' },
+            { id: 'integrantes', label: t('detail.tabMembers'), icon: 'group', badge: members.data?.length },
             {
               id: 'produccion',
-              label: 'Producción científica',
+              label: t('detail.tabProduction'),
               icon: 'menu_book',
               badge: productionReady ? products.length : undefined,
             },
@@ -240,37 +246,45 @@ function GroupProfile({ group }: { group: GroupDetail }) {
         <div id="panel-perfil" role="tabpanel" aria-labelledby="tab-perfil" hidden={tab !== 'perfil'}>
           <div className="flex flex-col gap-5">
             <section className={`${card} p-5 md:p-6`}>
-              <SectionHead icon="corporate_fare">Información institucional</SectionHead>
+              <SectionHead icon="corporate_fare">{t('detail.institutional')}</SectionHead>
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-                <InfoColumn icon="badge" title="Identificación">
+                <InfoColumn icon="badge" title={t('detail.identification')}>
                   <div className="grid grid-cols-2 gap-2">
-                    <Field label="Código GrupLAC">
+                    <Field label={t('detail.code')}>
                       <span className="font-mono text-primary">{group.code}</span>
                     </Field>
-                    <Field label="Año de creación">
-                      {group.foundedYear ? `${group.foundedYear}${years ? ` (${years} años)` : ''}` : '—'}
+                    <Field label={t('detail.foundedYear')}>
+                      {group.foundedYear
+                        ? years
+                          ? t('detail.age', { year: group.foundedYear, count: years })
+                          : group.foundedYear
+                        : '—'}
                     </Field>
                   </div>
-                  <Field label="Estado">
+                  <Field label={t('detail.status')}>
                     <span className="inline-flex items-center gap-1.5 text-secondary">
-                      <span className="h-2 w-2 rounded-full bg-secondary" /> Activo
+                      <span className="h-2 w-2 rounded-full bg-secondary" /> {t('detail.active')}
                     </span>
                   </Field>
                 </InfoColumn>
-                <InfoColumn icon="school" title="Clasificación">
-                  <Field label="Clasificación actual">
-                    <span className="text-headline-sm font-bold text-primary">{group.category ?? '—'}</span>
+                <InfoColumn icon="school" title={t('detail.classification')}>
+                  <Field label={t('detail.currentClass')}>
+                    <span className="text-headline-sm font-bold text-primary">
+                      {group.category ? labels.domain(group.category) : '—'}
+                    </span>
                   </Field>
-                  <Field label="Convocatoria oficial">{lastConv?.convocation ?? '—'}</Field>
-                  <Field label="Tipo de grupo">{group.type ?? '—'}</Field>
+                  <Field label={t('detail.convocation')}>
+                    {lastConv ? labels.convocation(lastConv.convocation) : '—'}
+                  </Field>
+                  <Field label={t('detail.type')}>{group.type ? labels.domain(group.type) : '—'}</Field>
                 </InfoColumn>
-                <InfoColumn icon="account_balance" title="Estructura">
-                  <Field label="Institución avaladora principal">Universidad Simón Bolívar</Field>
-                  <Field label="Sede académica">
+                <InfoColumn icon="account_balance" title={t('detail.structure')}>
+                  <Field label={t('detail.endorser')}>Universidad Simón Bolívar</Field>
+                  <Field label={t('detail.campus')}>
                     {[city, group.department && displayName(group.department)].filter(Boolean).join(', ') ||
                       '—'}
                   </Field>
-                  <Field label="Líder del grupo">{leader ? displayName(leader.name) : '—'}</Field>
+                  <Field label={t('detail.groupLeader')}>{leader ? displayName(leader.name) : '—'}</Field>
                 </InfoColumn>
               </div>
             </section>
@@ -278,72 +292,16 @@ function GroupProfile({ group }: { group: GroupDetail }) {
             {/* Líneas de investigación + ODS vinculados (bloque 3 de la plantilla) */}
             <section
               className={`${card} flex flex-col items-stretch gap-6 p-5 md:p-6 lg:flex-row`}
-              aria-label="Líneas de investigación y ODS vinculados"
+              aria-label={t('detail.linesAndOds')}
             >
-              <div className="flex-1 border-border-subtle/60 pb-6 lg:border-r lg:pr-6 lg:pb-0 max-lg:border-b">
-                <h3 className="mb-3.5 flex items-center gap-2 text-headline-sm font-bold tracking-tight text-primary">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-badge-sage-bg text-secondary">
-                    <Icon name="checklist_rtl" className="text-[20px]" />
-                  </span>
-                  Líneas de investigación
-                </h3>
-                {group.lines.length ? (
-                  <div className="grid grid-cols-1 items-start gap-2.5 sm:grid-cols-2">
-                    {group.lines.map((line) => {
-                      const fields = LINE_FIELDS.filter((f) => line[f.key]);
-                      return (
-                        <details
-                          key={line.id}
-                          className="group/line rounded-xl border border-border-subtle/80 bg-canvas-cream transition-colors open:bg-surface-container-lowest hover:bg-surface-cream-alt"
-                        >
-                          <summary
-                            className={`flex list-none items-center gap-2.5 p-3 [&::-webkit-details-marker]:hidden ${
-                              fields.length ? 'cursor-pointer' : 'cursor-default'
-                            }`}
-                            onClick={(e) => {
-                              if (!fields.length) e.preventDefault();
-                            }}
-                          >
-                            <Icon name="check_circle" className="text-[18px] text-secondary" />
-                            <span className="flex-1 text-body-sm leading-tight font-medium text-on-surface">
-                              {line.name}
-                            </span>
-                            {fields.length ? (
-                              <Icon
-                                name="expand_more"
-                                className="text-[18px] text-neutral-muted transition-transform group-open/line:rotate-180"
-                              />
-                            ) : null}
-                          </summary>
-                          {fields.length ? (
-                            <dl className="flex flex-col gap-3 border-t border-surface-cream-alt px-4 pt-3 pb-4">
-                              {fields.map((f) => (
-                                <div key={f.key}>
-                                  <dt className="flex items-center gap-1.5 text-label-md font-semibold text-secondary">
-                                    <Icon name={f.icon} className="text-[16px]" /> {f.label}
-                                  </dt>
-                                  <dd className="mt-1 text-body-sm whitespace-pre-line text-on-surface-variant">
-                                    {line[f.key]}
-                                  </dd>
-                                </div>
-                              ))}
-                            </dl>
-                          ) : null}
-                        </details>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <p className="text-body-sm text-neutral-muted">Sin líneas registradas en Metri-K.</p>
-                )}
-              </div>
+              <ResearchLines lines={group.lines} />
               <div className="flex shrink-0 flex-col lg:w-[22rem] xl:w-[26rem]">
                 <div className="mb-3.5 flex items-center justify-between gap-3">
                   <h3 className="flex items-center gap-2.5 text-headline-sm font-bold tracking-tight text-primary">
-                    <Icon name="public" className="text-[24px] text-secondary" /> ODS vinculados
+                    <Icon name="public" className="text-[24px] text-secondary" /> {t('detail.odsLinked')}
                   </h3>
                   <span className="rounded-full bg-surface-cream-alt px-3 py-1 text-[12px] font-medium text-on-surface-variant">
-                    Agenda 2030
+                    {t('detail.agenda')}
                   </span>
                 </div>
                 <OdsLinked ods={group.ods} />
@@ -352,42 +310,42 @@ function GroupProfile({ group }: { group: GroupDetail }) {
 
             <section
               className="grid grid-cols-2 gap-gutter lg:grid-cols-4"
-              aria-label="Indicadores del grupo"
+              aria-label={t('detail.indicators')}
             >
               <Kpi
-                label="Integrantes"
+                label={t('detail.kpiMembers')}
                 icon="groups"
                 value={members.data?.length ?? '—'}
-                caption="Investigadores activos"
+                caption={t('detail.kpiMembersCaption')}
                 hint={
                   members.data
-                    ? `${members.data.filter((m) => m.category).length} con categoría Minciencias`
-                    : 'Cargando…'
+                    ? t('detail.kpiMembersHint', { count: members.data.filter((m) => m.category).length })
+                    : t('common:loading')
                 }
               />
               <Kpi
-                label="Trayectoria"
+                label={t('detail.kpiTrajectory')}
                 icon="military_tech"
                 value={years ?? '—'}
-                caption="Años de actividad"
+                caption={t('detail.kpiYearsCaption')}
                 hint={
                   group.foundedYear
-                    ? `Fundado en ${group.foundedYear} · ${history.length} convocatorias`
-                    : `${history.length} convocatorias Minciencias`
+                    ? t('detail.kpiFounded', { year: group.foundedYear, count: history.length })
+                    : t('detail.kpiConvocations', { count: history.length })
                 }
               />
               <Kpi
-                label="Publicaciones"
+                label={t('detail.kpiPublications')}
                 icon="article"
                 value={productionReady ? articles : '—'}
-                caption="Artículos científicos"
-                hint="Indexados en Scopus"
+                caption={t('detail.kpiArticlesCaption')}
+                hint={t('detail.kpiScopus')}
               />
               <Kpi
-                label="Producción total"
+                label={t('detail.kpiTotal')}
                 icon="workspace_premium"
                 value={productionReady ? products.length : '—'}
-                caption="Productos registrados"
+                caption={t('detail.kpiTotalCaption')}
                 hint={productionHint}
                 accent
               />
@@ -395,26 +353,16 @@ function GroupProfile({ group }: { group: GroupDetail }) {
 
             <section className={`${card} flex flex-col gap-4 p-5 md:p-6`}>
               <div>
-                <h2 className="text-headline-md font-semibold text-primary">
-                  Histórico de clasificación Minciencias
-                </h2>
-                <p className="text-body-sm text-on-surface-variant">
-                  Evolución ordinal del grupo en las convocatorias oficiales del Sistema Nacional de Ciencia,
-                  Tecnología e Innovación
-                </p>
+                <h2 className="text-headline-md font-semibold text-primary">{t('detail.historyTitle')}</h2>
+                <p className="text-body-sm text-on-surface-variant">{t('detail.historyLead')}</p>
               </div>
               <CategoryTimeline history={history} />
             </section>
 
             <section className={`${card} flex flex-col gap-4 p-5 md:p-6`}>
               <div>
-                <h2 className="text-headline-md font-semibold text-primary">
-                  Producción por tipología Minciencias
-                </h2>
-                <p className="text-body-sm text-on-surface-variant">
-                  Productos de los integrantes con perfil publicado, en las cuatro grandes tipologías del
-                  modelo de medición
-                </p>
+                <h2 className="text-headline-md font-semibold text-primary">{t('detail.typologyTitle')}</h2>
+                <p className="text-body-sm text-on-surface-variant">{t('detail.typologyLead')}</p>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {TYPOLOGIES.map((t) => (
@@ -440,7 +388,7 @@ function GroupProfile({ group }: { group: GroupDetail }) {
           hidden={tab !== 'integrantes'}
         >
           {members.isError ? (
-            <ErrorState message={members.error.message} onRetry={() => members.refetch()} />
+            <ErrorState error={members.error} onRetry={() => members.refetch()} />
           ) : (
             <Members members={members.data} isLeader={isLeader} />
           )}
@@ -454,10 +402,7 @@ function GroupProfile({ group }: { group: GroupDetail }) {
           hidden={tab !== 'produccion'}
         >
           {profiles.isError ? (
-            <ErrorState
-              message="No se pudo cargar la producción de los integrantes."
-              onRetry={profiles.refetch}
-            />
+            <ErrorState message={t('detail.productionError')} onRetry={profiles.refetch} />
           ) : productionReady ? (
             <GroupProduction
               products={products}
@@ -466,7 +411,11 @@ function GroupProfile({ group }: { group: GroupDetail }) {
               note={productionHint}
             />
           ) : (
-            <div aria-busy="true" aria-label="Cargando producción" className={`${card} h-48 animate-pulse`} />
+            <div
+              aria-busy="true"
+              aria-label={t('detail.loadingProduction')}
+              className={`${card} h-48 animate-pulse`}
+            />
           )}
         </div>
 
@@ -474,10 +423,126 @@ function GroupProfile({ group }: { group: GroupDetail }) {
           to="/grupos"
           className="inline-flex items-center gap-1 text-label-md font-semibold text-primary hover:underline"
         >
-          <Icon name="chevron_left" className="text-[18px]" /> Volver a grupos
+          <Icon name="chevron_left" className="text-[18px]" /> {t('detail.back')}
         </Link>
       </div>
     </article>
+  );
+}
+
+/** Metri-K trae algunos nombres en minúscula ("frontera y derechos humanos"). */
+const capitalize = (s: string) => s.charAt(0).toLocaleUpperCase() + s.slice(1);
+
+/** Nombre y textos de cada línea: libres, del backend; se traducen en el navegador (no son nombres propios). */
+function ResearchLines({ lines }: { lines: GroupLine[] }) {
+  const { t } = useTranslation(['groups', 'common']);
+  const stride = 1 + LINE_FIELDS.length;
+  const tr = useAutoTranslate(lines.flatMap((l) => [l.name, ...LINE_FIELDS.map((f) => l[f.key] ?? '')]));
+  const text = (line: number, field: number) => tr.texts[line * stride + field];
+  // Sin traducir en una interfaz en otro idioma, el texto se marca como español (lectores de pantalla).
+  const lang = tr.status === 'original' || tr.status === 'translated' ? undefined : 'es';
+  return (
+    <div className="flex-1 border-border-subtle/60 pb-6 lg:border-r lg:pr-6 lg:pb-0 max-lg:border-b">
+      <h3 className="mb-3.5 flex items-center gap-2 text-headline-sm font-bold tracking-tight text-primary">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-badge-sage-bg text-secondary">
+          <Icon name="checklist_rtl" className="text-[20px]" />
+        </span>
+        {t('detail.lines')}
+      </h3>
+      <AutoTranslateNote status={tr.status} onRetry={tr.retry} />
+      {tr.status === 'pending' && lines.length ? (
+        // Skeleton con la misma forma que las líneas: no se ve el español antes de la traducción.
+        <div
+          aria-busy="true"
+          aria-label={t('common:autoTranslate.pending')}
+          className="grid grid-cols-1 items-start gap-2.5 sm:grid-cols-2"
+        >
+          {lines.map((line, i) => (
+            <div
+              key={line.id}
+              className="flex items-center gap-2.5 rounded-xl border border-border-subtle/80 bg-canvas-cream p-3"
+            >
+              <span className="h-[18px] w-[18px] shrink-0 animate-pulse rounded-full bg-surface-cream-alt motion-reduce:animate-none" />
+              <span
+                className="h-3.5 animate-pulse rounded bg-surface-cream-alt motion-reduce:animate-none"
+                style={{ width: `${55 + ((i * 17) % 35)}%` }}
+              />
+            </div>
+          ))}
+        </div>
+      ) : lines.length ? (
+        <div lang={lang} className="grid grid-cols-1 items-start gap-2.5 sm:grid-cols-2">
+          {lines.map((line, i) => {
+            const fields = LINE_FIELDS.filter((f) => line[f.key]);
+            return (
+              <details
+                key={line.id}
+                className="group/line rounded-xl border border-border-subtle/80 bg-canvas-cream transition-colors open:bg-surface-container-lowest hover:bg-surface-cream-alt"
+              >
+                <summary
+                  className={`flex list-none items-center gap-2.5 p-3 [&::-webkit-details-marker]:hidden ${
+                    fields.length ? 'cursor-pointer' : 'cursor-default'
+                  }`}
+                  onClick={(e) => {
+                    if (!fields.length) e.preventDefault();
+                  }}
+                >
+                  <Icon name="check_circle" className="text-[18px] text-secondary" />
+                  <span className="flex-1 text-body-sm leading-tight font-medium text-on-surface">
+                    {capitalize(text(i, 0)!)}
+                  </span>
+                  {fields.length ? (
+                    <Icon
+                      name="expand_more"
+                      className="text-[18px] text-neutral-muted transition-transform group-open/line:rotate-180"
+                    />
+                  ) : null}
+                </summary>
+                {fields.length ? (
+                  <dl className="flex flex-col gap-3 border-t border-surface-cream-alt px-4 pt-3 pb-4">
+                    {fields.map((f) => (
+                      <div key={f.key}>
+                        <dt className="flex items-center gap-1.5 text-label-md font-semibold text-secondary">
+                          <Icon name={f.icon} className="text-[16px]" /> {t(f.label)}
+                        </dt>
+                        <dd className="mt-1 text-body-sm whitespace-pre-line text-on-surface-variant">
+                          {text(i, 1 + LINE_FIELDS.indexOf(f))}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                ) : null}
+              </details>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="text-body-sm text-neutral-muted">{t('detail.noLines')}</p>
+      )}
+    </div>
+  );
+}
+
+function AutoTranslateNote({ status, onRetry }: { status: AutoTranslateStatus; onRetry: () => void }) {
+  const { t } = useTranslation();
+  if (status === 'original') return null;
+  return (
+    <p
+      aria-live="polite"
+      className="mb-3 flex flex-wrap items-center gap-1.5 text-label-sm text-neutral-muted"
+    >
+      <Icon name="translate" className="text-[16px] text-secondary" />
+      {t(`autoTranslate.${status}`)}
+      {status === 'needs-gesture' ? (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="ml-1 rounded-md bg-badge-sage-bg px-2 py-0.5 font-semibold text-badge-sage-text transition-colors hover:bg-secondary hover:text-on-primary focus-visible:ring-2 focus-visible:ring-secondary focus-visible:outline-none"
+        >
+          {t('autoTranslate.action')}
+        </button>
+      ) : null}
+    </p>
   );
 }
 
@@ -488,10 +553,12 @@ function Members({
   members: GroupMember[] | undefined;
   isLeader: (m: GroupMember) => boolean;
 }) {
+  const { t, i18n } = useTranslation(['groups', 'common', 'authors']);
+  const labels = useLabels();
   const [term, setTerm] = useState('');
   if (!members)
     return (
-      <div aria-busy="true" aria-label="Cargando integrantes" className={`${card} h-48 animate-pulse`} />
+      <div aria-busy="true" aria-label={t('members.loading')} className={`${card} h-48 animate-pulse`} />
     );
 
   const rank = (m: GroupMember) =>
@@ -500,16 +567,18 @@ function Members({
       : AUTHOR_CATEGORIES.findIndex((c) => c.id === m.category) + 1 || AUTHOR_CATEGORIES.length + 1;
   const q = fold(term);
   const visible = [...members]
-    .sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name, 'es'))
-    .filter((m) => !q || fold(m.name).includes(q) || fold(categoryOf(m.category)?.label ?? '').includes(q));
+    .sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name, i18n.resolvedLanguage))
+    .filter(
+      (m) => !q || fold(m.name).includes(q) || (m.category && fold(labels.category(m.category)).includes(q)),
+    );
 
   return (
     <section className={`${card} flex flex-col gap-5 p-5 md:p-6`}>
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
         <div>
-          <h2 className="text-headline-md font-semibold text-primary">Integrantes del grupo</h2>
+          <h2 className="text-headline-md font-semibold text-primary">{t('members.title')}</h2>
           <p className="text-body-sm text-on-surface-variant">
-            {members.length} investigadores activos en GrupLAC vinculados al grupo
+            {t('members.lead', { count: members.length })}
           </p>
         </div>
         <div className="relative w-full sm:w-72">
@@ -518,14 +587,14 @@ function Members({
             className="pointer-events-none absolute top-2.5 left-3 text-[20px] text-on-surface-variant"
           />
           <label htmlFor="member-search" className="sr-only">
-            Buscar integrantes
+            {t('members.search')}
           </label>
           <input
             id="member-search"
             type="search"
             value={term}
             onChange={(e) => setTerm(e.target.value)}
-            placeholder="Buscar por nombre o categoría…"
+            placeholder={t('members.searchPlaceholder')}
             className="h-10 w-full rounded-lg bg-canvas-cream pr-3 pl-10 text-body-sm focus:ring-2 focus:ring-secondary focus:outline-none"
           />
         </div>
@@ -538,9 +607,7 @@ function Members({
           ))}
         </ul>
       ) : (
-        <p className="py-8 text-center text-body-md text-neutral-muted">
-          Ningún integrante coincide con la búsqueda.
-        </p>
+        <p className="py-8 text-center text-body-md text-neutral-muted">{t('members.none')}</p>
       )}
     </section>
   );
@@ -551,6 +618,8 @@ function MemberCard({ member: m, leader }: { member: GroupMember; leader: boolea
   const cat = categoryOf(m.category);
   const profiles = externalProfiles(m);
   const cvlac = profiles.find((p) => p.label === 'CvLAC');
+  const { t } = useTranslation(['groups', 'common', 'authors']);
+  const labels = useLabels();
   return (
     <li className="flex flex-col justify-between rounded-xl bg-canvas-cream p-5 transition-all hover:shadow-md">
       <div>
@@ -571,31 +640,34 @@ function MemberCard({ member: m, leader }: { member: GroupMember; leader: boolea
           </span>
           <div className="min-w-0">
             <span className="rounded-full bg-badge-sage-bg px-2 py-0.5 text-label-sm font-bold text-badge-sage-text">
-              {leader ? 'Líder del grupo' : cat ? `Investigador ${cat.label}` : 'Integrante'}
+              {leader ? t('members.leader') : cat ? labels.researcher(cat.id) : t('members.member')}
             </span>
             <h3 className="mt-1 text-headline-sm leading-snug font-semibold text-primary">{name}</h3>
-            {m.degree ? <p className="text-[12px] text-neutral-muted">{m.degree}</p> : null}
+            {m.degree ? <p className="text-[12px] text-neutral-muted">{labels.domain(m.degree)}</p> : null}
           </div>
         </div>
         <div className="mt-3 flex items-center gap-3 rounded-lg bg-surface-container-lowest p-2 text-[12px]">
           {m.metrics ? (
             <>
               <span>
-                <strong className="font-bold text-primary">{m.metrics.scopusPublications}</strong> pubs
+                <strong className="font-bold text-primary">{m.metrics.scopusPublications}</strong>{' '}
+                {t('members.pubs')}
               </span>
               <span className="text-neutral-muted">|</span>
               <span>
-                Índice h: <strong className="font-bold text-secondary">{m.metrics.hIndex ?? '—'}</strong>
+                {t('members.hIndex')}{' '}
+                <strong className="font-bold text-secondary">{m.metrics.hIndex ?? '—'}</strong>
               </span>
             </>
           ) : (
             <>
               <span>
-                Categoría: <strong className="font-bold text-primary">{cat?.code ?? '—'}</strong>
+                {t('members.category')} <strong className="font-bold text-primary">{cat?.code ?? '—'}</strong>
               </span>
               <span className="text-neutral-muted">|</span>
               <span>
-                Perfiles: <strong className="font-bold text-secondary">{profiles.length}</strong>
+                {t('members.profiles')}{' '}
+                <strong className="font-bold text-secondary">{profiles.length}</strong>
               </span>
             </>
           )}
@@ -608,7 +680,7 @@ function MemberCard({ member: m, leader }: { member: GroupMember; leader: boolea
           to={`/investigadores/${authorSlug(m)}`}
           className="mt-4 inline-flex h-9 w-full items-center justify-center rounded-lg bg-primary text-label-sm font-semibold text-on-primary transition-colors hover:bg-secondary"
         >
-          Ver perfil del investigador →
+          {t('members.viewProfile')}
         </Link>
       ) : cvlac ? (
         <a
@@ -617,8 +689,8 @@ function MemberCard({ member: m, leader }: { member: GroupMember; leader: boolea
           rel="noopener"
           className="mt-4 inline-flex h-9 w-full items-center justify-center gap-1 rounded-lg border border-border-subtle text-label-sm font-semibold text-primary transition-colors hover:bg-surface-container-lowest"
         >
-          Ver CvLAC <Icon name="open_in_new" className="text-[14px]" />
-          <span className="sr-only">(abre en una pestaña nueva)</span>
+          {t('members.viewCvlac')} <Icon name="open_in_new" className="text-[14px]" />
+          <span className="sr-only">{t('common:newTab')}</span>
         </a>
       ) : null}
     </li>
@@ -707,14 +779,16 @@ function GroupProduction({
   onTypology: (t: TypologyId | '') => void;
   note: string;
 }) {
+  const { t } = useTranslation(['groups', 'common', 'authors']);
+  const labels = useLabels();
   const [limit, setLimit] = useState(PRODUCTS_PAGE);
   const visible = products.filter((p) => !typology || p.typology === typology);
   const chips: { id: TypologyId | ''; label: string; n: number }[] = [
-    { id: '', label: 'Todos', n: products.length },
-    ...TYPOLOGIES.map((t) => ({
-      id: t.id,
-      label: t.short,
-      n: products.filter((p) => p.typology === t.id).length,
+    { id: '', label: t('production.all'), n: products.length },
+    ...TYPOLOGIES.map((x) => ({
+      id: x.id,
+      label: labels.typologyShort(x.id),
+      n: products.filter((p) => p.typology === x.id).length,
     })),
   ];
   const select = (t: TypologyId | '') => {
@@ -725,12 +799,16 @@ function GroupProduction({
   return (
     <section className={`${card} flex flex-col gap-5 p-5 md:p-6`}>
       <div>
-        <h2 className="text-headline-md font-semibold text-primary">Producción científica y tecnológica</h2>
+        <h2 className="text-headline-md font-semibold text-primary">{t('production.title')}</h2>
         <p className="text-body-sm text-on-surface-variant">
-          {products.length} productos por tipología Minciencias · {note}
+          {t('production.lead', { count: products.length, note })}
         </p>
       </div>
-      <div role="group" aria-label="Filtrar por tipología" className="flex flex-wrap items-center gap-2">
+      <div
+        role="group"
+        aria-label={t('production.filterLabel')}
+        className="flex flex-wrap items-center gap-2"
+      >
         {chips.map((c) => (
           <button
             key={c.id || 'all'}
@@ -756,9 +834,7 @@ function GroupProduction({
           ))}
         </ul>
       ) : (
-        <p className="py-8 text-center text-body-md text-neutral-muted">
-          No hay productos registrados en Metri-K para los integrantes con perfil publicado.
-        </p>
+        <p className="py-8 text-center text-body-md text-neutral-muted">{t('production.none')}</p>
       )}
       {visible.length > limit ? (
         <button
@@ -766,7 +842,7 @@ function GroupProduction({
           onClick={() => setLimit((l) => l + PRODUCTS_PAGE)}
           className="self-center rounded-lg border border-border-subtle px-5 py-2 text-label-md font-semibold text-primary transition-colors hover:bg-surface-cream-alt"
         >
-          Ver más ({visible.length - limit} restantes)
+          {t('production.more', { count: visible.length - limit })}
         </button>
       ) : null}
     </section>
@@ -774,7 +850,9 @@ function GroupProduction({
 }
 
 function ProductItem({ product: p }: { product: Product }) {
-  const t = TYPOLOGIES.find((x) => x.id === p.typology)!;
+  const { t } = useTranslation(['groups', 'common', 'authors']);
+  const labels = useLabels();
+  const icon = TYPOLOGIES.find((x) => x.id === p.typology)!.icon;
   const style = TYPOLOGY_STYLE[p.typology];
   return (
     <li className="flex flex-col items-start justify-between gap-4 rounded-xl bg-canvas-cream p-4 transition-all hover:bg-surface-cream-alt sm:flex-row">
@@ -782,14 +860,16 @@ function ProductItem({ product: p }: { product: Product }) {
         <span
           className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${style.iconBox}`}
         >
-          <Icon name={t.icon} className="text-[18px]" />
+          <Icon name={icon} className="text-[18px]" />
         </span>
         <div className="flex min-w-0 flex-col gap-1">
           <p className="flex flex-wrap items-center gap-2">
             <span className={`rounded-full px-2 py-0.5 text-label-sm font-bold ${style.chip}`}>
-              {t.label}
+              {labels.typology(p.typology)}
             </span>
-            <span className="font-mono text-[12px] font-semibold text-secondary">{p.type}</span>
+            <span className="font-mono text-[12px] font-semibold text-secondary">
+              {labels.domain(p.type)}
+            </span>
             {p.year ? <span className="text-[12px] text-neutral-muted">{p.year}</span> : null}
           </p>
           <h3 className="text-headline-sm font-semibold text-primary">{p.title}</h3>
@@ -803,7 +883,7 @@ function ProductItem({ product: p }: { product: Product }) {
           {p.doi || p.index ? (
             <p className="mt-0.5 flex flex-wrap items-center gap-x-4 text-[12px] font-medium text-secondary">
               {p.doi ? <span>DOI: {p.doi}</span> : null}
-              {p.index ? <span>{p.index}</span> : null}
+              {p.index ? <span>{labels.domain(p.index)}</span> : null}
             </p>
           ) : null}
         </div>
@@ -815,8 +895,9 @@ function ProductItem({ product: p }: { product: Product }) {
           rel="noopener"
           className="inline-flex shrink-0 items-center gap-1 self-end text-label-sm font-semibold text-primary hover:text-secondary sm:self-center"
         >
-          {p.doi ? 'Ver DOI' : 'Ver producto'} <Icon name="open_in_new" className="text-[16px]" />
-          <span className="sr-only">(abre en una pestaña nueva)</span>
+          {p.doi ? t('production.viewDoi') : t('production.viewProduct')}{' '}
+          <Icon name="open_in_new" className="text-[16px]" />
+          <span className="sr-only">{t('common:newTab')}</span>
         </a>
       ) : null}
     </li>

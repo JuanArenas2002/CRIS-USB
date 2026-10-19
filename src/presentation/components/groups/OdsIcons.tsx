@@ -1,16 +1,19 @@
-import { odsIcon, odsOf, type OdsId } from '@/domain/ods/ods';
+import { useTranslation } from 'react-i18next';
+import { odsIcon, type OdsId } from '@/domain/ods/ods';
 
 /**
  * Icono oficial de un ODS. El icono ya trae número y nombre; el texto alternativo lo repite para
  * lectores de pantalla y el tooltip lo muestra en hover y foco.
  */
 export function OdsIcon({ id, size = 64, note }: { id: OdsId; size?: number; note?: string }) {
-  const o = odsOf(id);
+  const { t } = useTranslation('groups');
+  const name = t(`ods.names.goal${id}.name`);
+  const prefix = t('ods.prefix');
   return (
     <span className="group/ods relative inline-flex shrink-0">
       <img
         src={odsIcon(id)}
-        alt={`ODS ${id}: ${o.name}${note ? ` (${note})` : ''}`}
+        alt={`${prefix} ${id}: ${name}${note ? ` (${note})` : ''}`}
         width={size}
         height={size}
         loading="lazy"
@@ -23,7 +26,7 @@ export function OdsIcon({ id, size = 64, note }: { id: OdsId; size?: number; not
         className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 rounded-md bg-surface-dark-forest px-2.5 py-1.5 text-center text-label-sm font-semibold whitespace-nowrap text-on-primary opacity-0 shadow-md transition-opacity group-focus-within/ods:opacity-100 group-hover/ods:opacity-100"
       >
         <span className="block">
-          ODS {id} · {o.name}
+          {prefix} {id} · {name}
         </span>
         {note ? <span className="block text-[10px] font-normal text-secondary-fixed">{note}</span> : null}
       </span>
@@ -33,19 +36,16 @@ export function OdsIcon({ id, size = 64, note }: { id: OdsId; size?: number; not
 
 /** Bloque "ODS vinculados" de la plantilla de grupo: icono oficial + etiqueta corta. */
 export function OdsLinked({ ods }: { ods: OdsId[] }) {
+  const { t } = useTranslation('groups');
   if (!ods.length)
-    return (
-      <p className="rounded-lg bg-canvas-cream p-4 text-body-sm text-neutral-muted">
-        Este grupo aún no tiene Objetivos de Desarrollo Sostenible asignados.
-      </p>
-    );
+    return <p className="rounded-lg bg-canvas-cream p-4 text-body-sm text-neutral-muted">{t('ods.none')}</p>;
   return (
     <ul className="flex flex-wrap gap-x-4 gap-y-3">
       {ods.map((id) => (
         <li key={id} className="flex w-16 flex-col items-center gap-1.5">
           <OdsIcon id={id} />
           <span aria-hidden="true" className="text-center text-[12px] font-medium text-on-surface-variant">
-            {odsOf(id).short}
+            {t(`ods.names.goal${id}.short`)}
           </span>
         </li>
       ))}

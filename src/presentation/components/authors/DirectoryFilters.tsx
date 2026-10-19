@@ -1,4 +1,6 @@
+import { useTranslation } from 'react-i18next';
 import { AUTHOR_CATEGORIES, type AuthorCategoryId } from '@/domain/authors/author';
+import { useLabels } from '@/presentation/hooks/use-labels';
 import type { Group } from '@/domain/groups/group';
 import { Icon } from '@/presentation/components/ui/Icon';
 
@@ -26,6 +28,8 @@ function SelectChevron() {
 }
 
 export function DirectoryFilters(p: Props) {
+  const { t, i18n } = useTranslation('authors');
+  const labels = useLabels();
   return (
     <div className="relative z-30 container-page -mt-7">
       <form
@@ -39,14 +43,14 @@ export function DirectoryFilters(p: Props) {
             className="pointer-events-none absolute left-3.5 text-[20px] text-on-surface-variant"
           />
           <label htmlFor="author-search" className="sr-only">
-            Buscar investigadores
+            {t('filters.search')}
           </label>
           <input
             id="author-search"
             type="search"
             value={p.term}
             onChange={(e) => p.onTermChange(e.target.value)}
-            placeholder="Buscar por nombre u ORCID…"
+            placeholder={t('filters.searchPlaceholder')}
             autoComplete="off"
             className={`${fieldClass} w-full pr-4 pl-10 text-body-sm`}
           />
@@ -54,7 +58,7 @@ export function DirectoryFilters(p: Props) {
         <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
           <div className="relative w-full sm:w-72">
             <label htmlFor="group-filter" className="sr-only">
-              Grupo de investigación
+              {t('filters.group')}
             </label>
             <select
               id="group-filter"
@@ -62,9 +66,9 @@ export function DirectoryFilters(p: Props) {
               onChange={(e) => p.onGroupChange(Number(e.target.value) || undefined)}
               className={selectClass}
             >
-              <option value="">Todos los grupos</option>
+              <option value="">{t('filters.allGroups')}</option>
               {[...p.groups]
-                .sort((a, b) => a.name.localeCompare(b.name, 'es'))
+                .sort((a, b) => a.name.localeCompare(b.name, i18n.resolvedLanguage))
                 .map((g) => (
                   <option key={g.id} value={g.id}>
                     {g.name}
@@ -75,7 +79,7 @@ export function DirectoryFilters(p: Props) {
           </div>
           <div className="relative w-full sm:w-56">
             <label htmlFor="category-filter" className="sr-only">
-              Categoría Minciencias
+              {t('mincienciasCategory')}
             </label>
             <select
               id="category-filter"
@@ -85,10 +89,10 @@ export function DirectoryFilters(p: Props) {
               }
               className={selectClass}
             >
-              <option value="">Categoría Minciencias</option>
+              <option value="">{t('mincienciasCategory')}</option>
               {AUTHOR_CATEGORIES.map((c) => (
                 <option key={c.id} value={c.id}>
-                  Investigador {c.label} ({c.code})
+                  {t('filters.categoryOption', { category: labels.category(c.id), code: c.code })}
                 </option>
               ))}
             </select>
@@ -96,11 +100,11 @@ export function DirectoryFilters(p: Props) {
           </div>
           {/* Orden fijo del directorio: se informa, no se finge un control. */}
           <p
-            title="Ordenados por categoría Minciencias (mayor primero)"
+            title={t('filters.sortTitle')}
             className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-canvas-cream px-4 text-label-md font-semibold text-on-surface"
           >
             <Icon name="sort" className="text-[18px]" />
-            <span className="sr-only md:not-sr-only">Mayor categoría</span>
+            <span className="sr-only md:not-sr-only">{t('filters.sort')}</span>
           </p>
         </div>
       </form>

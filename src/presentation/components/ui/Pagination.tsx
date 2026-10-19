@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { Icon } from './Icon';
 
 function hrefFor(search: string, page: number) {
@@ -13,21 +14,22 @@ const linkClass =
 
 /** Paginación con enlaces reales (rastreables y abribles en otra pestaña). */
 export function Pagination({ page, pages }: { page: number; pages: number }) {
+  const { t } = useTranslation();
   const { search } = useLocation();
   if (pages <= 1) return null;
   return (
-    <nav aria-label="Paginación" className="mt-10 flex items-center justify-center gap-2">
+    <nav aria-label={t('pagination.label')} className="mt-10 flex items-center justify-center gap-2">
       {page > 1 ? (
         <Link to={hrefFor(search, page - 1)} className={linkClass} rel="prev">
-          <Icon name="chevron_left" className="text-[18px]" /> Anterior
+          <Icon name="chevron_left" className="text-[18px]" /> {t('pagination.prev')}
         </Link>
       ) : null}
       <span className="px-3 text-body-sm text-neutral-muted" aria-current="page">
-        Página {page} de {pages}
+        {t('pagination.status', { page, pages })}
       </span>
       {page < pages ? (
         <Link to={hrefFor(search, page + 1)} className={linkClass} rel="next">
-          Siguiente <Icon name="chevron_right" className="text-[18px]" />
+          {t('pagination.next')} <Icon name="chevron_right" className="text-[18px]" />
         </Link>
       ) : null}
     </nav>

@@ -1,10 +1,12 @@
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { authorSlug, displayName } from '@/domain/authors/author';
 import type { Group } from '@/domain/groups/group';
 import { Icon } from '@/presentation/components/ui/Icon';
 
 /** Fila de la vista en lista: densa y escaneable; toda la fila enlaza al detalle. */
 export function GroupRow({ group }: { group: Group }) {
+  const { t } = useTranslation('groups');
   return (
     <li className="group relative grid grid-cols-[3.25rem_1fr_auto] items-center gap-4 px-4 py-4 transition-colors hover:bg-surface-cream-alt/60 md:grid-cols-[3.25rem_minmax(0,1fr)_14rem_5rem_5rem_9rem_1.5rem] md:px-5">
       <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-dark-forest text-label-md font-bold text-secondary-fixed">
@@ -25,7 +27,7 @@ export function GroupRow({ group }: { group: Group }) {
           {/* En móvil, los datos de las columnas van en esta línea. */}
           <span className="md:hidden">
             {group.leader ? ` · ${displayName(group.leader.name)}` : ''}
-            {` · ${group.lines.length} líneas`}
+            {` · ${t('card.linesCount', { count: group.lines.length })}`}
           </span>
         </p>
       </div>
@@ -47,17 +49,18 @@ export function GroupRow({ group }: { group: Group }) {
 
 /** Encabezado de columnas (solo escritorio), alineado con la grilla de GroupRow. */
 export function GroupRowHeader() {
+  const { t } = useTranslation('groups');
   return (
     <div
       aria-hidden="true"
       className="hidden grid-cols-[3.25rem_minmax(0,1fr)_14rem_5rem_5rem_9rem_1.5rem] gap-4 border-b border-border-subtle px-5 py-3 text-[10px] font-semibold tracking-wider text-neutral-muted uppercase md:grid"
     >
-      <span>Cat.</span>
-      <span>Grupo</span>
-      <span>Líder</span>
-      <span>Líneas</span>
-      <span>Fundado</span>
-      <span>Sede</span>
+      <span>{t('card.colCategory')}</span>
+      <span>{t('card.colGroup')}</span>
+      <span>{t('card.leader')}</span>
+      <span>{t('card.lines')}</span>
+      <span>{t('card.founded')}</span>
+      <span>{t('card.city')}</span>
       <span />
     </div>
   );

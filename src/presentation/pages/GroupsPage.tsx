@@ -1,5 +1,6 @@
 import { HeroWaves } from '@/presentation/components/layout/HeroWaves';
 import { useSearchParams } from 'react-router';
+import { Trans, useTranslation } from 'react-i18next';
 import { CATEGORY_ORDER, filterGroups } from '@/domain/groups/group';
 import { GroupCard } from '@/presentation/components/groups/GroupCard';
 import { GroupRow, GroupRowHeader } from '@/presentation/components/groups/GroupRow';
@@ -8,14 +9,16 @@ import { EmptyState, ErrorState, feedbackButtonClass } from '@/presentation/comp
 import { Icon } from '@/presentation/components/ui/Icon';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
 import { useGroups } from '@/presentation/hooks/use-groups';
+import { useLabels } from '@/presentation/hooks/use-labels';
 import { ORGANIZATION, absoluteUrl, safeJson } from '@/shared/seo';
 
-const fmt = new Intl.NumberFormat('es-CO');
 const fieldClass =
   'h-11 rounded-xl bg-canvas-cream text-on-surface transition-all focus:bg-surface-container-lowest focus:ring-2 focus:ring-secondary focus:outline-none';
 
 export function GroupsPage() {
   const { data, isError, error, refetch } = useGroups();
+  const { t } = useTranslation(['groups', 'common', 'authors']);
+  const { number } = useLabels();
   const [params, setParams] = useSearchParams();
   const search = params.get('q') ?? '';
   const catParam = params.get('cat');
@@ -34,9 +37,8 @@ export function GroupsPage() {
     );
 
   useDocumentMetadata({
-    title: 'Grupos de investigación',
-    description:
-      'Grupos de investigación de la Universidad Simón Bolívar reconocidos por Minciencias: categoría, líder, sede y enlace a GrupLAC.',
+    title: t('metaTitle'),
+    description: t('metaDescription'),
     path: '/grupos',
     noindex: params.size > 0,
   });
@@ -81,45 +83,50 @@ export function GroupsPage() {
         <div className="relative container-page flex flex-col gap-6">
           <div className="flex items-center gap-2">
             <p className="inline-flex items-center gap-1.5 rounded-full bg-primary-container px-3 py-1 text-label-sm tracking-wide text-primary-fixed">
-              <span className="h-2 w-2 rounded-full bg-secondary-fixed" /> Investigación Unisimón
+              <span className="h-2 w-2 rounded-full bg-secondary-fixed" /> {t('common:heroBadge')}
             </p>
-            <span className="text-label-sm text-primary-fixed-dim">/ Grupos</span>
+            <span className="text-label-sm text-primary-fixed-dim">{t('crumb')}</span>
           </div>
           <div className="flex max-w-3xl flex-col gap-2">
             <h1
               id="groups-title"
               className="text-display-hero-mobile font-bold tracking-tight text-surface-container-lowest md:text-display-hero"
             >
-              Grupos de <span className="text-secondary-fixed">investigación</span>
+              <Trans t={t} i18nKey="title" components={{ hl: <span className="text-secondary-fixed" /> }} />
             </h1>
-            <p className="text-body-lg text-primary-fixed-dim">
-              Los equipos reconocidos por Minciencias que articulan la producción científica de la Universidad
-              Simón Bolívar.
-            </p>
+            <p className="text-body-lg text-primary-fixed-dim">{t('lead')}</p>
           </div>
           <dl className="grid grid-cols-2 gap-4 border-t border-primary-container pt-2 sm:grid-cols-4">
             {[
               {
-                label: 'Grupos activos',
+                key: 'active',
+                label: t('statActive'),
                 value: data && groups.length,
                 accent: 'text-surface-container-lowest',
               },
-              { label: 'Categoría A1', value: data && byCategory('A1'), accent: 'text-secondary-fixed' },
               {
-                label: 'Categoría A',
+                key: 'A1',
+                label: t('statCategory', { category: 'A1' }),
+                value: data && byCategory('A1'),
+                accent: 'text-secondary-fixed',
+              },
+              {
+                key: 'A',
+                label: t('statCategory', { category: 'A' }),
                 value: data && byCategory('A'),
                 accent: 'text-surface-container-lowest',
               },
               {
-                label: 'Categorías B y C',
+                key: 'BC',
+                label: t('statBC'),
                 value: data && byCategory('B') + byCategory('C'),
                 accent: 'text-tertiary-fixed',
               },
             ].map((s) => (
-              <div key={s.label} className="flex flex-col-reverse">
+              <div key={s.key} className="flex flex-col-reverse">
                 <dt className="text-label-sm text-primary-fixed-dim">{s.label}</dt>
                 <dd className={`text-stat-metric font-bold ${s.accent}`}>
-                  {s.value === undefined ? '—' : fmt.format(s.value)}
+                  {s.value === undefined ? '—' : number(s.value)}
                 </dd>
               </div>
             ))}
@@ -139,21 +146,21 @@ export function GroupsPage() {
               className="pointer-events-none absolute left-3.5 text-[20px] text-on-surface-variant"
             />
             <label htmlFor="group-search" className="sr-only">
-              Buscar grupos
+              {t('search')}
             </label>
             <input
               id="group-search"
               type="search"
               value={search}
               onChange={(e) => setParam('q', e.target.value)}
-              placeholder="Buscar por nombre, código, líder o sede…"
+              placeholder={t('searchPlaceholder')}
               autoComplete="off"
               className={`${fieldClass} w-full pr-4 pl-10 text-body-sm`}
             />
           </div>
           <div className="relative w-full lg:w-60">
             <label htmlFor="group-category" className="sr-only">
-              Categoría Minciencias
+              {t('authors:mincienciasCategory')}
             </label>
             <select
               id="group-category"
@@ -161,10 +168,10 @@ export function GroupsPage() {
               onChange={(e) => setParam('cat', e.target.value)}
               className={`${fieldClass} w-full cursor-pointer appearance-none px-3 pr-8 text-label-md font-semibold`}
             >
-              <option value="">Todas las categorías</option>
+              <option value="">{t('allCategories')}</option>
               {CATEGORY_ORDER.map((c) => (
                 <option key={c} value={c}>
-                  Categoría {c}
+                  {t('statCategory', { category: c })}
                 </option>
               ))}
             </select>
@@ -181,38 +188,35 @@ export function GroupsPage() {
           <div className="mb-10 flex flex-col justify-between gap-2 md:flex-row md:items-end">
             <div className="flex flex-col">
               <p className="text-label-md font-bold tracking-widest text-secondary uppercase">
-                Directorio de grupos
+                {t('eyebrow')}
               </p>
               <h2
                 id="groups-list-title"
                 className="mt-1 text-headline-lg-mobile font-bold tracking-tight text-primary md:text-headline-lg"
               >
-                Dónde se hace la investigación
+                {t('listTitle')}
               </h2>
-              <p className="mt-1 max-w-2xl text-body-md text-neutral-muted">
-                Ordenados por su última categoría Minciencias. Consulta el detalle oficial de cada grupo en
-                GrupLAC.
-              </p>
+              <p className="mt-1 max-w-2xl text-body-md text-neutral-muted">{t('listLead')}</p>
             </div>
             <p
               aria-live="polite"
               className="inline-flex items-center gap-2 self-start rounded-full bg-badge-sage-bg px-3.5 py-1.5 text-label-md font-semibold text-badge-sage-text md:self-end"
             >
               <Icon name="groups" className="text-[16px]" />
-              {data ? `${visible.length} ${visible.length === 1 ? 'Grupo' : 'Grupos'}` : 'Cargando grupos…'}
+              {data ? t('count', { count: visible.length }) : t('loadingGroups')}
             </p>
           </div>
 
           <div className="mb-4 flex justify-end">
             <div
               role="group"
-              aria-label="Forma de ver los grupos"
+              aria-label={t('viewLabel')}
               className="inline-flex rounded-lg bg-surface-container-lowest p-1 ring-1 ring-border-subtle"
             >
               {(
                 [
-                  { id: 'lista', label: 'Lista', icon: 'view_list' },
-                  { id: 'tarjetas', label: 'Tarjetas', icon: 'grid_view' },
+                  { id: 'lista', label: t('viewList'), icon: 'view_list' },
+                  { id: 'tarjetas', label: t('viewCards'), icon: 'grid_view' },
                 ] as const
               ).map((v) => (
                 <button
@@ -252,26 +256,26 @@ export function GroupsPage() {
               )
             ) : (
               <EmptyState
-                title="No se encontraron grupos"
+                title={t('emptyTitle')}
                 action={
                   <button
                     type="button"
                     onClick={() => setParams({}, { replace: true })}
                     className={feedbackButtonClass}
                   >
-                    Restablecer filtros
+                    {t('common:feedback.resetFilters')}
                   </button>
                 }
               >
-                Prueba con otro término de búsqueda o quita el filtro de categoría.
+                {t('emptyBody')}
               </EmptyState>
             )
           ) : isError ? (
-            <ErrorState message={error.message} onRetry={() => refetch()} />
+            <ErrorState error={error} onRetry={() => refetch()} />
           ) : (
             <div
               aria-busy="true"
-              aria-label="Cargando grupos"
+              aria-label={t('loading')}
               className="grid grid-cols-1 gap-gutter md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-[2200px]:grid-cols-6"
             >
               {Array.from({ length: 6 }, (_, i) => (

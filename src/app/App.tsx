@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import '@/i18n'; // inicializa i18next una sola vez (cliente, prerender y tests)
 import type { AuthorQueries } from '@/application/authors/author-queries';
 import type { GroupQueries } from '@/application/groups/group-queries';
 import { ApiError } from '@/infrastructure/http/api-client';

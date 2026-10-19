@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TYPOLOGIES, type Product, type TypologyId } from '@/domain/authors/author';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { TYPOLOGY_STYLE } from '@/presentation/components/ui/TypologyCard';
+import { useLabels } from '@/presentation/hooks/use-labels';
 
 const PAGE = 25;
 const fold = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
@@ -26,8 +28,12 @@ export function ProductsTable({
   filters: ProductFilters;
   onFiltersChange: (f: ProductFilters) => void;
 }) {
+  const { t, i18n } = useTranslation('authors');
+  const labels = useLabels();
   const [limit, setLimit] = useState(PAGE);
-  const types = useMemo(() => [...new Set(products.map((p) => p.type))].sort(), [products]);
+  const types = [...new Set(products.map((p) => p.type))]
+    .map((v) => [v, labels.domain(v)] as [string, string])
+    .sort((a, b) => a[1].localeCompare(b[1], i18n.resolvedLanguage));
   const years = useMemo(
     () =>
       [...new Set(products.map((p) => p.year).filter((y): y is number => y !== null))].sort((a, b) => b - a),
@@ -57,53 +63,56 @@ export function ProductsTable({
               className="pointer-events-none absolute top-3 left-3 text-[20px] text-on-surface-variant"
             />
             <label htmlFor="product-search" className="sr-only">
-              Buscar productos
+              {t('products.search')}
             </label>
             <input
               id="product-search"
               type="search"
               value={filters.search}
               onChange={(e) => set({ search: e.target.value })}
-              placeholder="Buscar por título, revista o DOI…"
+              placeholder={t('products.searchPlaceholder')}
               className={`${field} pr-3 pl-10`}
             />
           </div>
           <Select
-            label="Tipología"
+            label={t('products.typology')}
             value={filters.typology}
             onChange={(v) => set({ typology: v as TypologyId | '' })}
             options={[
-              ['', 'Todas las tipologías'],
-              ...TYPOLOGIES.map((t) => [t.id, t.label] as [string, string]),
+              ['', t('products.allTypologies')],
+              ...TYPOLOGIES.map((x) => [x.id, labels.typology(x.id)] as [string, string]),
             ]}
           />
           <Select
-            label="Tipo de producto"
+            label={t('products.type')}
             value={filters.type}
             onChange={(v) => set({ type: v })}
-            options={[['', 'Todos los tipos'], ...types.map((t) => [t, t] as [string, string])]}
+            options={[['', t('products.allTypes')], ...types]}
           />
           <Select
-            label="Año"
+            label={t('products.year')}
             value={filters.year}
             onChange={(v) => set({ year: v })}
             options={[
-              ['', 'Todos los años'],
+              ['', t('products.allYears')],
               ...years.map((y) => [String(y), String(y)] as [string, string]),
             ]}
           />
         </div>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p aria-live="polite" className="text-label-md font-semibold text-on-surface-variant">
-            Mostrando {Math.min(limit, visible.length)} de {visible.length}
-            {visible.length !== products.length ? ` (de ${products.length})` : ''} productos registrados
+            {t(visible.length !== products.length ? 'products.showingFiltered' : 'products.showing', {
+              shown: Math.min(limit, visible.length),
+              count: visible.length,
+              total: products.length,
+            })}
           </p>
           <button
             type="button"
             onClick={() => set(EMPTY_FILTERS)}
             className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-label-md font-semibold text-secondary hover:bg-surface-cream-alt"
           >
-            <Icon name="restart_alt" className="text-[18px]" /> Limpiar filtros
+            <Icon name="restart_alt" className="text-[18px]" /> {t('products.clear')}
           </button>
         </div>
       </div>
@@ -114,19 +123,19 @@ export function ProductsTable({
             <thead>
               <tr className="bg-surface-cream-alt text-label-md tracking-wider text-on-surface-variant uppercase">
                 <th scope="col" className="w-20 px-4 py-3 text-center">
-                  Año
+                  {t('products.colYear')}
                 </th>
                 <th scope="col" className="px-4 py-3">
-                  Título
+                  {t('products.colTitle')}
                 </th>
                 <th scope="col" className="px-4 py-3">
-                  Tipo
+                  {t('products.colType')}
                 </th>
                 <th scope="col" className="px-4 py-3">
-                  Subtipo
+                  {t('products.colSubtype')}
                 </th>
                 <th scope="col" className="px-4 py-3 text-right">
-                  Link
+                  {t('products.colLink')}
                 </th>
               </tr>
             </thead>
@@ -148,13 +157,13 @@ export function ProductsTable({
                     <span
                       className={`rounded-full px-2 py-0.5 text-label-sm font-semibold whitespace-nowrap ${TYPOLOGY_STYLE[p.typology].chip}`}
                     >
-                      {TYPOLOGIES.find((t) => t.id === p.typology)!.short}
+                      {labels.typologyShort(p.typology)}
                     </span>
                   </td>
                   <td className="px-4 py-3.5 align-top text-label-md text-on-surface-variant">
-                    {p.type}
+                    {labels.domain(p.type)}
                     {p.index ? (
-                      <span className="block text-label-sm text-neutral-muted">{p.index}</span>
+                      <span className="block text-label-sm text-neutral-muted">{labels.domain(p.index)}</span>
                     ) : null}
                   </td>
                   <td className="px-4 py-3.5 text-right align-top">
@@ -165,9 +174,9 @@ export function ProductsTable({
                         rel="noopener"
                         className="inline-flex items-center gap-1 rounded bg-surface-cream-alt px-2.5 py-1 text-label-sm font-semibold text-primary-container transition-colors hover:bg-primary-container hover:text-on-primary"
                       >
-                        {p.doi ? 'DOI' : 'Ver'}
+                        {p.doi ? 'DOI' : t('products.view')}
                         <Icon name="open_in_new" className="text-[14px]" />
-                        <span className="sr-only">(abre en una pestaña nueva: {p.title})</span>
+                        <span className="sr-only">{t('products.openTitle', { title: p.title })}</span>
                       </a>
                     ) : (
                       <span className="text-label-sm text-neutral-muted">—</span>
@@ -179,9 +188,7 @@ export function ProductsTable({
           </table>
         </div>
         {!visible.length ? (
-          <p className="px-4 py-10 text-center text-body-md text-neutral-muted">
-            Ningún producto coincide con los filtros.
-          </p>
+          <p className="px-4 py-10 text-center text-body-md text-neutral-muted">{t('products.none')}</p>
         ) : null}
         {visible.length > limit ? (
           <div className="border-t border-surface-cream-alt p-3 text-center">
@@ -190,7 +197,7 @@ export function ProductsTable({
               onClick={() => setLimit((l) => l + PAGE)}
               className="inline-flex items-center gap-1 rounded-lg px-4 py-2 text-label-md font-semibold text-secondary hover:bg-surface-cream-alt"
             >
-              Mostrar {Math.min(PAGE, visible.length - limit)} más
+              {t('products.more', { count: Math.min(PAGE, visible.length - limit) })}
               <Icon name="expand_more" className="text-[18px]" />
             </button>
           </div>

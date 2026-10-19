@@ -1,8 +1,10 @@
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { CONTACT_EMAIL } from '@/shared/contact';
 import { NAV_ITEMS } from '@/shared/navigation';
 
 export function SiteFooter() {
+  const { t } = useTranslation();
   return (
     <footer className="w-full bg-surface-dark-forest py-16 text-on-primary">
       <div className="container-page">
@@ -17,29 +19,28 @@ export function SiteFooter() {
               className="h-7 w-auto self-start brightness-0 invert"
             />
             <span className="mt-1 text-headline-sm font-semibold tracking-tight">UNISIMÓN RESEARCH</span>
-            <p className="text-body-sm text-primary-fixed-dim">
-              Portal institucional de divulgación científica y producción académica de la Universidad Simón
-              Bolívar.
-            </p>
+            <p className="text-body-sm text-primary-fixed-dim">{t('footer.tagline')}</p>
           </div>
-          <nav aria-label="Pie de página" className="flex flex-col gap-2">
-            <span className="text-label-md tracking-wider text-tertiary-fixed uppercase">Navegación</span>
+          <nav aria-label={t('footer.nav')} className="flex flex-col gap-2">
+            <span className="text-label-md tracking-wider text-tertiary-fixed uppercase">
+              {t('footer.navTitle')}
+            </span>
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
                 className="text-body-sm text-primary-fixed-dim hover:text-on-primary"
               >
-                {item.label}
+                {t(`nav.items.${item.key}.label`)}
               </Link>
             ))}
           </nav>
           <div className="flex flex-col gap-2 text-body-sm text-primary-fixed-dim">
             <span className="text-label-md tracking-wider text-tertiary-fixed uppercase">
-              Contacto institucional
+              {t('footer.contactTitle')}
             </span>
-            <p>Barranquilla &amp; Cúcuta, Colombia</p>
-            <p>Vicerrectoría de Investigación, Extensión e Innovación</p>
+            <p>{t('footer.location')}</p>
+            <p>{t('footer.office')}</p>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               className="underline-offset-2 hover:text-on-primary hover:underline"
@@ -49,7 +50,7 @@ export function SiteFooter() {
           </div>
         </div>
         <p className="border-t border-primary-container pt-6 text-label-sm text-primary-fixed-dim">
-          © Universidad Simón Bolívar. Todos los derechos reservados.
+          {t('footer.rights')}
         </p>
       </div>
     </footer>

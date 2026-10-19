@@ -1,42 +1,19 @@
+import type es from '@/i18n/locales/es';
+
 export interface NavItem {
-  label: string;
+  /** Clave del texto en `common:nav.items` (etiqueta y descripción traducidas). */
+  key: keyof typeof es.common.nav.items;
   to: string;
   /** false = la sección aún no tiene contenido; se muestra la página "en construcción" (noindex). */
   ready: boolean;
-  description: string;
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  {
-    label: 'Grupos',
-    to: '/grupos',
-    ready: true,
-    description: 'Grupos de investigación de la Universidad Simón Bolívar reconocidos por Minciencias.',
-  },
-  {
-    label: 'Investigadores',
-    to: '/',
-    ready: true,
-    description: 'Directorio de investigadores de la Universidad Simón Bolívar.',
-  },
-  {
-    label: 'Proyectos',
-    to: '/proyectos',
-    ready: false,
-    description: 'Proyectos de investigación de la Universidad Simón Bolívar.',
-  },
-  {
-    label: 'Productos',
-    to: '/productos',
-    ready: false,
-    description: 'Productos de investigación y producción académica de la Universidad Simón Bolívar.',
-  },
-  {
-    label: 'Relacionamiento',
-    to: '/relacionamiento',
-    ready: false,
-    description: 'Colaboración y relacionamiento científico de la Universidad Simón Bolívar.',
-  },
+  { key: 'groups', to: '/grupos', ready: true },
+  { key: 'authors', to: '/', ready: true },
+  { key: 'projects', to: '/proyectos', ready: false },
+  { key: 'products', to: '/productos', ready: false },
+  { key: 'relations', to: '/relacionamiento', ready: false },
 ];
 
 /** "Investigadores" vive en "/" y en los perfiles /investigadores/*. */

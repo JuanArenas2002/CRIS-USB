@@ -1,56 +1,62 @@
+import { Trans, useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { CATEGORY_LEVEL, type CategoryRecord } from '@/domain/groups/group';
 import { TrendChart } from '@/presentation/components/charts/TrendChart';
+import { useLabels } from '@/presentation/hooks/use-labels';
 
 /** Escala oficial de grupos Minciencias, de la más baja a la más alta. */
-const SCALE = [
-  { value: CATEGORY_LEVEL.RECONOCIDO!, label: 'Reconocido' },
-  { value: CATEGORY_LEVEL.D!, label: 'Cat. D' },
-  { value: CATEGORY_LEVEL.C!, label: 'Cat. C' },
-  { value: CATEGORY_LEVEL.B!, label: 'Cat. B' },
-  { value: CATEGORY_LEVEL.A!, label: 'Cat. A' },
-  { value: CATEGORY_LEVEL.A1!, label: 'Cat. A1' },
+const scale = (t: TFunction<'groups'>) => [
+  { value: CATEGORY_LEVEL.RECONOCIDO!, label: t('timeline.recognized') },
+  ...(['D', 'C', 'B', 'A', 'A1'] as const).map((c) => ({
+    value: CATEGORY_LEVEL[c]!,
+    label: t('timeline.cat', { category: c }),
+  })),
 ];
 
 const level = (category: string) => CATEGORY_LEVEL[category.toUpperCase()] ?? CATEGORY_LEVEL.RECONOCIDO!;
-/** "Convocatoria 833 de 2018" → "Conv. 833". */
-const convNumber = (name: string) => {
-  const n = /(\d{3,4})\s+de/.exec(name)?.[1];
-  return n ? `Conv. ${n}` : undefined;
-};
-const pill = (category: string) => (category.toUpperCase() === 'RECONOCIDO' ? 'Recon.' : `Cat. ${category}`);
+/** "Convocatoria 833 de 2018" → "833". */
+const convNumber = (name: string) => /(\d{3,4})\s+de/.exec(name)?.[1];
 
 /** Evolución de la categoría Minciencias del grupo, convocatoria por convocatoria. */
 export function CategoryTimeline({ history }: { history: CategoryRecord[] }) {
-  if (!history.length)
-    return <p className="text-body-sm text-neutral-muted">Sin historial de convocatorias registrado.</p>;
+  const { t } = useTranslation('groups');
+  const labels = useLabels();
+  if (!history.length) return <p className="text-body-sm text-neutral-muted">{t('timeline.empty')}</p>;
+
+  const pill = (category: string) =>
+    category.toUpperCase() === 'RECONOCIDO' ? t('timeline.recognizedShort') : t('timeline.cat', { category });
 
   const first = history[0]!;
   const last = history[history.length - 1]!;
   return (
     <TrendChart
-      ariaLabel={`Categoría Minciencias del grupo: ${first.category} en ${first.year ?? '—'}, ${last.category} en ${last.year ?? '—'}.`}
-      yTicks={SCALE}
+      ariaLabel={t('timeline.aria', {
+        first: labels.domain(first.category),
+        firstYear: first.year ?? '—',
+        last: labels.domain(last.category),
+        lastYear: last.year ?? '—',
+      })}
+      yTicks={scale(t)}
       points={history.map((h, i) => ({
         key: `${h.convocation}-${i}`,
         value: level(h.category),
         xLabel: String(h.year ?? '—'),
-        xSubLabel: convNumber(h.convocation),
+        xSubLabel: convNumber(h.convocation) && t('timeline.conv', { number: convNumber(h.convocation) }),
         pill: pill(h.category),
-        title: `${h.convocation}: categoría ${h.category}`,
+        title: t('timeline.point', {
+          convocation: labels.convocation(h.convocation),
+          category: labels.domain(h.category),
+        }),
       }))}
       caption={
         <>
           <span className="flex items-center gap-2">
             <span className="inline-block h-2.5 w-2.5 rounded-full bg-secondary" />
             <span>
-              Escala oficial: <strong className="text-primary">A1</strong> (máxima) &gt;{' '}
-              <strong className="text-primary">A</strong> &gt; <strong className="text-primary">B</strong>{' '}
-              &gt; <strong className="text-primary">C</strong> &gt;{' '}
-              <strong className="text-primary">D</strong> &gt;{' '}
-              <strong className="text-primary">Reconocido</strong>
+              <Trans t={t} i18nKey="timeline.scale" components={{ b: <strong className="text-primary" /> }} />
             </span>
           </span>
-          <span>Resultados según el modelo de medición de grupos de Minciencias.</span>
+          <span>{t('timeline.source')}</span>
         </>
       }
     />

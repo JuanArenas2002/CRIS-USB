@@ -1,14 +1,16 @@
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { authorSlug, displayName } from '@/domain/authors/author';
 import type { Group } from '@/domain/groups/group';
 import { Icon } from '@/presentation/components/ui/Icon';
 
 /** Tarjeta resumida: lo esencial para elegir un grupo; el detalle vive en /grupos/:slug. */
 export function GroupCard({ group }: { group: Group }) {
+  const { t } = useTranslation(['groups', 'common', 'authors']);
   const metrics = [
-    { icon: 'link', label: 'Líneas', value: group.lines.length || '—' },
-    { icon: 'event', label: 'Fundado', value: group.foundedYear ?? '—' },
-    { icon: 'location_on', label: 'Sede', value: group.city ? displayName(group.city) : '—' },
+    { icon: 'link', label: t('card.lines'), value: group.lines.length || '—' },
+    { icon: 'event', label: t('card.founded'), value: group.foundedYear ?? '—' },
+    { icon: 'location_on', label: t('card.city'), value: group.city ? displayName(group.city) : '—' },
   ];
 
   return (
@@ -39,7 +41,7 @@ export function GroupCard({ group }: { group: Group }) {
           <div className="relative flex items-start justify-between gap-3">
             <div className="flex flex-col">
               <span className="text-label-sm tracking-wider text-primary-fixed-dim uppercase">
-                Categoría Minciencias
+                {t('authors:mincienciasCategory')}
               </span>
               <span className="mt-1 text-[44px] leading-none font-bold tracking-tight text-secondary-fixed">
                 {group.category ?? '—'}
@@ -66,7 +68,8 @@ export function GroupCard({ group }: { group: Group }) {
             <p className="mt-2 flex items-center gap-1.5 text-body-sm text-neutral-muted">
               <Icon name="person" className="text-[18px] text-primary" />
               <span>
-                Líder: <span className="font-semibold text-on-surface">{displayName(group.leader.name)}</span>
+                {t('card.leader')}:{' '}
+                <span className="font-semibold text-on-surface">{displayName(group.leader.name)}</span>
               </span>
             </p>
           ) : null}
@@ -91,7 +94,7 @@ export function GroupCard({ group }: { group: Group }) {
           aria-hidden="true"
           className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-primary text-label-md font-semibold text-surface-container-lowest transition-colors group-hover:bg-secondary"
         >
-          Ver grupo <Icon name="arrow_forward" className="text-[16px]" />
+          {t('card.viewGroup')} <Icon name="arrow_forward" className="text-[16px]" />
         </span>
       </div>
     </article>

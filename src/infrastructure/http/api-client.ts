@@ -1,11 +1,30 @@
 import type { z } from 'zod';
 
+/** Código estable del error: la UI lo traduce (`common:errors.<code>`); `message` queda para logs. */
+export type ApiErrorCode =
+  'network' | 'timeout' | 'auth' | 'not_found' | 'rate_limit' | 'server' | 'contract' | 'unexpected';
+
+const codeFor = (status: number): ApiErrorCode =>
+  status === 0
+    ? 'network'
+    : status === 401 || status === 403
+      ? 'auth'
+      : status === 404
+        ? 'not_found'
+        : status === 429
+          ? 'rate_limit'
+          : status >= 500
+            ? 'server'
+            : 'unexpected';
+
 export class ApiError extends Error {
   readonly status: number;
-  constructor(status: number, message: string) {
+  readonly code: ApiErrorCode;
+  constructor(status: number, message: string, code: ApiErrorCode = codeFor(status)) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
+    this.code = code;
   }
 }
 
@@ -41,18 +60,15 @@ export function createApiClient({
       });
     } catch (err) {
       if (signal?.aborted) throw err; // cancelación del llamador: no es un error de red
-      throw new ApiError(
-        0,
-        timeout.aborted
-          ? 'El servicio de datos tardó demasiado en responder.'
-          : 'No se pudo conectar con el servicio de datos.',
-      );
+      throw timeout.aborted
+        ? new ApiError(0, 'El servicio de datos tardó demasiado en responder.', 'timeout')
+        : new ApiError(0, 'No se pudo conectar con el servicio de datos.', 'network');
     }
     if (!res.ok) throw new ApiError(res.status, messageFor(res.status));
     const parsed = schema.safeParse(await res.json());
     if (!parsed.success) {
       console.error(`Contrato de API roto en ${path}`, parsed.error.issues);
-      throw new ApiError(res.status, 'El servicio de datos respondió con un formato inesperado.');
+      throw new ApiError(res.status, 'El servicio de datos respondió con un formato inesperado.', 'contract');
     }
     return parsed.data;
   };

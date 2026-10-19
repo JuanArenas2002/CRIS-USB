@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import {
   authorSlug,
   categoryOf,
@@ -9,6 +10,7 @@ import {
 } from '@/domain/authors/author';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { IdLogo } from '@/presentation/components/ui/IdLogo';
+import { useLabels } from '@/presentation/hooks/use-labels';
 
 /** "Maestría/Magister" → "Maestría". */
 export const shortDegree = (d: string | null) => (d ? d.split('/')[0]!.trim() : null);
@@ -19,6 +21,8 @@ export function AuthorCard({ author }: { author: Author }) {
   const name = displayName(author.name);
   const ids = externalProfiles(author);
   const cat = categoryOf(author.category);
+  const { t } = useTranslation('authors');
+  const labels = useLabels();
 
   return (
     <article className="group relative flex flex-col justify-between rounded-[24px] bg-surface-container-lowest p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
@@ -59,7 +63,7 @@ export function AuthorCard({ author }: { author: Author }) {
           </h3>
           <p className="mt-1 flex items-center gap-1.5 text-body-sm text-neutral-muted">
             <Icon name="person" className="text-[18px] text-primary" />
-            {cat ? `Investigador ${cat.label}` : 'Investigador'}
+            {labels.researcher(author.category)}
           </p>
         </div>
 
@@ -69,10 +73,10 @@ export function AuthorCard({ author }: { author: Author }) {
             className="pointer-events-none absolute top-1/2 right-0 -translate-y-1/2 text-[64px] text-primary opacity-10"
           />
           <p className="mb-2 inline-flex items-center gap-1 rounded-md bg-badge-sage-bg px-2.5 py-0.5 text-label-sm font-semibold text-badge-sage-text">
-            <Icon name="link" className="text-[15px]" /> Identificadores científicos
+            <Icon name="link" className="text-[15px]" /> {t('card.scientificIds')}
           </p>
           {ids.length ? (
-            <ul className="flex flex-wrap gap-1.5 pr-8" aria-label="Identificadores disponibles">
+            <ul className="flex flex-wrap gap-1.5 pr-8" aria-label={t('card.idsAvailable')}>
               {ids.map((p) => (
                 <li key={p.label}>
                   {/* Por encima del enlace que cubre la tarjeta (z-10): abre el perfil externo, no el del portal. */}
@@ -80,18 +84,18 @@ export function AuthorCard({ author }: { author: Author }) {
                     href={p.url}
                     target="_blank"
                     rel="noopener"
-                    title={`${p.label}: ${p.value}`}
+                    title={`${p.label}: ${labels.domain(p.value)}`}
                     className="relative z-10 inline-flex items-center gap-1.5 rounded-md bg-surface-cream-alt py-0.5 pr-2.5 pl-1 text-[12px] text-on-surface-variant transition-colors hover:bg-badge-sage-bg hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-secondary"
                   >
                     <IdLogo label={p.label} size={16} />
                     {p.label}
-                    <span className="sr-only">{`, perfil de ${name} (abre en una pestaña nueva)`}</span>
+                    <span className="sr-only">{t('card.externalProfile', { name })}</span>
                   </a>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="pr-8 text-[12px] text-neutral-muted">Sin identificadores externos registrados</p>
+            <p className="pr-8 text-[12px] text-neutral-muted">{t('card.noIds')}</p>
           )}
         </div>
       </div>
@@ -101,25 +105,28 @@ export function AuthorCard({ author }: { author: Author }) {
         <MetricBox
           headline={
             author.metrics
-              ? { icon: 'feed', label: 'Publicaciones', value: author.metrics.scopusPublications }
-              : { icon: 'workspace_premium', label: 'Categoría Minciencias', value: cat?.code ?? '—' }
+              ? { icon: 'feed', label: t('card.publications'), value: author.metrics.scopusPublications }
+              : { icon: 'workspace_premium', label: t('mincienciasCategory'), value: cat?.code ?? '—' }
           }
           left={
             author.metrics
-              ? { label: 'Índice H Scopus', value: author.metrics.hIndex ?? '—' }
-              : { label: 'Formación', value: shortDegree(author.degree) ?? '—' }
+              ? { label: t('card.hIndex'), value: author.metrics.hIndex ?? '—' }
+              : {
+                  label: t('card.degree'),
+                  value: shortDegree(author.degree && labels.domain(author.degree)) ?? '—',
+                }
           }
           right={
             author.metrics
-              ? { label: 'Productos', value: author.metrics.products }
-              : { label: 'Identificadores', value: ids.length }
+              ? { label: t('card.products'), value: author.metrics.products }
+              : { label: t('card.ids'), value: ids.length }
           }
         />
         <span
           aria-hidden="true"
           className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-primary text-label-md font-semibold text-surface-container-lowest transition-colors group-hover:bg-secondary"
         >
-          Ver perfil <Icon name="arrow_forward" className="text-[16px]" />
+          {t('card.viewProfile')} <Icon name="arrow_forward" className="text-[16px]" />
         </span>
       </div>
     </article>

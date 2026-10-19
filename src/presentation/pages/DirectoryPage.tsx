@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { AuthorCard, AuthorCardSkeleton } from '@/presentation/components/authors/AuthorCard';
 import { DirectoryFilters } from '@/presentation/components/authors/DirectoryFilters';
 import { DirectoryHero } from '@/presentation/components/authors/DirectoryHero';
@@ -9,6 +10,7 @@ import { useAuthorSearch } from '@/presentation/hooks/use-author-search';
 import { useAuthors, useAuthorStats, useFeaturedAuthors } from '@/presentation/hooks/use-authors';
 import { useGroups } from '@/presentation/hooks/use-groups';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
+import { useLabels } from '@/presentation/hooks/use-labels';
 import { ORGANIZATION, SITE_NAME, SITE_URL, safeJson } from '@/shared/seo';
 import { DIRECTORY_PAGE_SIZE } from '@/application/authors/author-queries';
 
@@ -32,6 +34,8 @@ const websiteJsonLd = [
 ];
 
 export function DirectoryPage() {
+  const { t } = useTranslation(['authors', 'common']);
+  const { number } = useLabels();
   const search = useAuthorSearch();
   const list = useAuthors(search.filters);
   const stats = useAuthorStats();
@@ -39,9 +43,8 @@ export function DirectoryPage() {
   const groups = useGroups();
 
   useDocumentMetadata({
-    title: 'Directorio de investigadores',
-    description:
-      'Directorio de investigadores de la Universidad Simón Bolívar (Barranquilla y Cúcuta): categoría Minciencias, grupo de investigación e identificadores ORCID, Scopus y CvLAC.',
+    title: t('directory.metaTitle'),
+    description: t('directory.metaDescription'),
     path: '/',
     // Búsquedas, filtros y páginas >1 no se indexan: los perfiles se descubren por enlaces y sitemap.
     noindex: search.isFiltered,
@@ -70,17 +73,16 @@ export function DirectoryPage() {
         <section aria-labelledby="featured-title" className="w-full pt-16">
           <div className="container-page">
             <p className="text-label-md font-bold tracking-widest text-secondary uppercase">
-              Investigadores destacados
+              {t('directory.featuredEyebrow')}
             </p>
             <h2
               id="featured-title"
               className="mt-1 text-headline-lg-mobile font-bold tracking-tight text-primary md:text-headline-lg"
             >
-              Trayectorias que marcan la investigación
+              {t('directory.featuredTitle')}
             </h2>
             <p className="mt-1 mb-10 max-w-2xl text-body-md text-neutral-muted">
-              Seleccionados por la Vicerrectoría de Investigación, con su producción científica e índice H en
-              Scopus.
+              {t('directory.featuredLead')}
             </p>
             <div className="grid grid-cols-1 gap-gutter md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {featured.data.map((a) => (
@@ -96,18 +98,15 @@ export function DirectoryPage() {
           <div className="mb-10 flex flex-col justify-between gap-2 md:flex-row md:items-end">
             <div className="flex flex-col">
               <p className="text-label-md font-bold tracking-widest text-secondary uppercase">
-                Directorio de investigadores
+                {t('directory.eyebrow')}
               </p>
               <h2
                 id="directory-title"
                 className="mt-1 text-headline-lg-mobile font-bold tracking-tight text-primary md:text-headline-lg"
               >
-                Quiénes investigan en Unisimón
+                {t('directory.title')}
               </h2>
-              <p className="mt-1 max-w-2xl text-body-md text-neutral-muted">
-                Profesores e investigadores de la Universidad Simón Bolívar, ordenados por su categoría
-                Minciencias y con sus identificadores científicos verificables.
-              </p>
+              <p className="mt-1 max-w-2xl text-body-md text-neutral-muted">{t('directory.lead')}</p>
             </div>
             <p
               aria-live="polite"
@@ -115,8 +114,8 @@ export function DirectoryPage() {
             >
               <Icon name="groups" className="text-[16px]" />
               {data
-                ? `${new Intl.NumberFormat('es-CO').format(data.total)} ${data.total === 1 ? 'Perfil Activo' : 'Perfiles Activos'}`
-                : 'Cargando perfiles…'}
+                ? t('directory.profiles', { count: data.total, value: number(data.total) })
+                : t('directory.loadingProfiles')}
             </p>
           </div>
 
@@ -135,24 +134,22 @@ export function DirectoryPage() {
               </>
             ) : (
               <EmptyState
-                title="No se encontraron investigadores"
+                title={t('directory.emptyTitle')}
                 action={
                   <button type="button" onClick={search.reset} className={feedbackButtonClass}>
-                    Restablecer filtros
+                    {t('common:feedback.resetFilters')}
                   </button>
                 }
               >
-                {search.hasActiveFilters
-                  ? 'Prueba cambiando los filtros o el término de búsqueda para ver más resultados.'
-                  : 'Esta página no tiene resultados.'}
+                {search.hasActiveFilters ? t('directory.emptyFiltered') : t('directory.emptyPage')}
               </EmptyState>
             )
           ) : list.isError ? (
-            <ErrorState message={list.error.message} onRetry={() => list.refetch()} />
+            <ErrorState error={list.error} onRetry={() => list.refetch()} />
           ) : (
             <div
               aria-busy="true"
-              aria-label="Cargando investigadores"
+              aria-label={t('directory.loading')}
               className="grid grid-cols-1 gap-gutter md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-[2200px]:grid-cols-6"
             >
               {Array.from({ length: 6 }, (_, i) => (

@@ -1,4 +1,6 @@
+import { useTranslation } from 'react-i18next';
 import { TYPOLOGIES, type TypologyId } from '@/domain/authors/author';
+import { useLabels } from '@/presentation/hooks/use-labels';
 import { Icon } from './Icon';
 
 /**
@@ -43,8 +45,6 @@ export const TYPOLOGY_STYLE: Record<
   },
 };
 
-const pct = new Intl.NumberFormat('es-CO', { style: 'percent', maximumFractionDigits: 1 });
-
 /** Tarjeta de tipología: barra de color, conteo, participación sobre el total y acceso al listado. */
 export function TypologyCard({
   typology,
@@ -59,7 +59,10 @@ export function TypologyCard({
   loading?: boolean;
   onExplore: () => void;
 }) {
-  const t = TYPOLOGIES.find((x) => x.id === typology)!;
+  const { t } = useTranslation(['authors', 'common']);
+  const labels = useLabels();
+  const icon = TYPOLOGIES.find((x) => x.id === typology)!.icon;
+  const label = labels.typology(typology);
   const s = TYPOLOGY_STYLE[typology];
   return (
     <div
@@ -70,21 +73,23 @@ export function TypologyCard({
         <span
           className={`mb-3 flex h-11 w-11 items-center justify-center rounded-xl transition-transform group-hover:scale-105 ${s.iconBox}`}
         >
-          <Icon name={t.icon} className="text-[24px]" />
+          <Icon name={icon} className="text-[24px]" />
         </span>
-        <h3 className="text-headline-sm leading-tight font-semibold text-primary">{t.label}</h3>
+        <h3 className="text-headline-sm leading-tight font-semibold text-primary">{label}</h3>
       </div>
       <div className="mt-5 rounded-xl border border-border-subtle/50 bg-surface-container-lowest p-3">
         <div className="flex items-baseline justify-between gap-2">
           <p className="flex items-baseline gap-2">
-            <span className={`text-stat-metric font-bold ${s.value}`}>{loading ? '—' : count}</span>
+            <span className={`text-stat-metric font-bold ${s.value}`}>
+              {loading ? '—' : labels.number(count)}
+            </span>
             <span className="text-label-sm font-medium text-neutral-muted">
-              {count === 1 ? 'Producto' : 'Productos'}
+              {t('typologyCard.product', { count })}
             </span>
           </p>
           {!loading && total ? (
             <span className={`rounded px-2 py-0.5 text-[11px] font-bold ${s.chip}`}>
-              {pct.format(count / total)}
+              {labels.percent(count / total)}
             </span>
           ) : null}
         </div>
@@ -92,14 +97,14 @@ export function TypologyCard({
           <button
             type="button"
             onClick={onExplore}
-            aria-label={`Explorar productos de ${t.label} (${count})`}
+            aria-label={t('typologyCard.exploreLabel', { typology: label, count })}
             className={`mt-2.5 inline-flex w-full items-center justify-between border-t border-border-subtle/40 pt-2 text-label-md font-semibold transition-colors hover:text-primary ${s.link}`}
           >
-            Explorar productos <Icon name="arrow_forward" className="text-[16px]" />
+            {t('typologyCard.explore')} <Icon name="arrow_forward" className="text-[16px]" />
           </button>
         ) : (
           <p className="mt-2.5 border-t border-border-subtle/40 pt-2 text-label-md text-neutral-muted">
-            {loading ? 'Cargando…' : 'Sin registros en Metri-K'}
+            {loading ? t('common:loading') : t('typologyCard.empty')}
           </p>
         )}
       </div>

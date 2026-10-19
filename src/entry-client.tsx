@@ -8,6 +8,7 @@ import { groupQueries } from '@/application/groups/group-queries';
 import { httpGroupRepository } from '@/infrastructure/groups/http-group-repository';
 import { httpAuthorRepository } from '@/infrastructure/authors/http-author-repository';
 import { createApiClient } from '@/infrastructure/http/api-client';
+import i18n, { DEFAULT_LANGUAGE } from '@/i18n';
 import './styles/index.css';
 
 declare global {
@@ -43,7 +44,8 @@ const app = (
   </StrictMode>
 );
 
-if (matches) hydrateRoot(root, app);
+// El HTML prerenderizado está en español: con otro idioma se pinta de nuevo (datos ya en caché, sin parpadeo de red).
+if (matches && i18n.resolvedLanguage === DEFAULT_LANGUAGE) hydrateRoot(root, app);
 else {
   root.textContent = '';
   createRoot(root).render(app);

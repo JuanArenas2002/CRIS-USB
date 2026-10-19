@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { Link, Navigate, useParams, useSearchParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import {
   TYPOLOGIES,
   authorSlug,
@@ -28,6 +29,7 @@ import { TypologyCard } from '@/presentation/components/ui/TypologyCard';
 import { IdLogo } from '@/presentation/components/ui/IdLogo';
 import { useAuthor } from '@/presentation/hooks/use-authors';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
+import { useLabels } from '@/presentation/hooks/use-labels';
 import { ORGANIZATION, absoluteUrl, safeJson } from '@/shared/seo';
 import { NotFoundPage } from './NotFoundPage';
 
@@ -35,6 +37,7 @@ export function AuthorPage() {
   const { slug } = useParams();
   const id = parseAuthorId(slug);
   const { data, isError, error, refetch } = useAuthor(id);
+  const { t } = useTranslation(['authors', 'common']);
 
   if (id === null || data?.kind === 'not-found') return <NotFoundPage />;
   if (data?.kind === 'found') {
@@ -45,11 +48,11 @@ export function AuthorPage() {
   return (
     <div className="container-page py-16">
       {isError ? (
-        <ErrorState message={error.message} onRetry={() => refetch()} />
+        <ErrorState error={error} onRetry={() => refetch()} />
       ) : (
         <div
           aria-busy="true"
-          aria-label="Cargando perfil"
+          aria-label={t('profile.loading')}
           className="h-64 animate-pulse rounded-3xl bg-surface-container-lowest"
         />
       )}
@@ -66,7 +69,9 @@ function Profile({ author }: { author: AuthorProfile }) {
   const path = `/investigadores/${authorSlug(author)}`;
   const profiles = externalProfiles(author);
   const cat = categoryOf(author.category);
-  const catLabel = cat ? `Investigador ${cat.label}` : 'Investigador';
+  const { t } = useTranslation(['authors', 'common']);
+  const labels = useLabels();
+  const catLabel = labels.researcher(author.category);
   const products = useMemo(
     () => (author.production ? toProducts(author.production) : []),
     [author.production],
@@ -92,11 +97,14 @@ function Profile({ author }: { author: AuthorProfile }) {
 
   useDocumentMetadata({
     title: name,
-    description: `${name}, ${catLabel.toLowerCase()} (Minciencias) de la Universidad Simón Bolívar${
-      author.mainGroup ? `, grupo ${author.mainGroup.name}` : ''
+    description: `${t('profile.metaBase', { name, category: catLabel.toLowerCase() })}${
+      author.mainGroup ? t('profile.metaGroup', { group: author.mainGroup.name }) : ''
     }${
       author.metrics
-        ? `. ${author.metrics.scopusPublications} publicaciones en Scopus, índice H ${author.metrics.hIndex ?? '—'}`
+        ? t('profile.metaMetrics', {
+            publications: author.metrics.scopusPublications,
+            hIndex: author.metrics.hIndex ?? '—',
+          })
         : ''
     }.`,
     path,
@@ -147,11 +155,11 @@ function Profile({ author }: { author: AuthorProfile }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJson(jsonLd) }} />
 
       <div className="border-b border-border-subtle bg-surface-container-lowest">
-        <nav aria-label="Ruta de navegación" className="container-page py-3">
+        <nav aria-label={t('common:breadcrumb.label')} className="container-page py-3">
           <ol className="flex flex-wrap items-center gap-1 text-label-md text-neutral-muted">
             <li>
               <Link to="/" className="inline-flex items-center gap-1 hover:text-primary">
-                <Icon name="home" className="text-[16px]" /> Inicio
+                <Icon name="home" className="text-[16px]" /> {t('common:breadcrumb.home')}
               </Link>
             </li>
             <li aria-hidden="true">
@@ -159,14 +167,14 @@ function Profile({ author }: { author: AuthorProfile }) {
             </li>
             <li>
               <a href="/#directorio" className="hover:text-primary">
-                Directorio
+                {t('profile.breadcrumbDirectory')}
               </a>
             </li>
             <li aria-hidden="true">
               <Icon name="chevron_right" className="text-[16px]" />
             </li>
             <li aria-current="page" className="font-semibold text-on-surface">
-              Perfil de investigador
+              {t('profile.breadcrumbCurrent')}
             </li>
           </ol>
         </nav>
@@ -198,7 +206,7 @@ function Profile({ author }: { author: AuthorProfile }) {
                   </span>
                 )}
                 <span className="absolute right-2 bottom-2 left-2 truncate rounded bg-primary-container/85 px-2.5 py-1 text-center text-label-sm text-on-primary backdrop-blur-md">
-                  Docente investigador
+                  {t('profile.badge')}
                 </span>
               </div>
             </div>
@@ -211,25 +219,29 @@ function Profile({ author }: { author: AuthorProfile }) {
               </div>
 
               <dl className="grid grid-cols-1 gap-3 rounded-xl bg-surface-cream-alt/60 p-4 sm:grid-cols-2 md:grid-cols-3">
-                <Fact icon="school" label="Formación académica" value={author.degree ?? '—'} />
+                <Fact
+                  icon="school"
+                  label={t('profile.degree')}
+                  value={author.degree ? labels.domain(author.degree) : '—'}
+                />
                 <Fact
                   icon="apartment"
-                  label="Grupo principal"
+                  label={t('profile.mainGroup')}
                   value={author.mainGroup?.name ?? '—'}
                   hint={author.mainGroup?.code}
                 />
                 <Fact
                   icon="workspace_premium"
-                  label="Categoría Minciencias"
-                  value={cat ? `${cat.label} (${cat.code})` : 'Sin categoría'}
+                  label={t('mincienciasCategory')}
+                  value={cat ? `${labels.category(cat.id)} (${cat.code})` : t('profile.noCategory')}
                 />
               </dl>
 
               {groups.length ? (
                 <div className="flex flex-col gap-2">
                   <span className="flex items-center gap-1.5 text-label-md font-semibold text-on-surface-variant">
-                    <Icon name="groups" className="text-[18px] text-primary-container" /> Grupos de
-                    investigación adscritos:
+                    <Icon name="groups" className="text-[18px] text-primary-container" />{' '}
+                    {t('profile.groups')}
                   </span>
                   <div className="flex flex-wrap gap-2">
                     {groups.map((g) => (
@@ -242,7 +254,7 @@ function Profile({ author }: { author: AuthorProfile }) {
                         <span className="font-semibold">{g.name}</span>
                         {g.category ? (
                           <span className="rounded bg-badge-sage-bg px-1.5 py-0.5 text-label-sm font-semibold text-badge-sage-text">
-                            Cat. {g.category} Minciencias
+                            {t('profile.groupCategory', { category: g.category })}
                           </span>
                         ) : null}
                         <Icon
@@ -258,8 +270,8 @@ function Profile({ author }: { author: AuthorProfile }) {
               {profiles.length ? (
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="flex items-center gap-1.5 text-label-md font-semibold text-on-surface-variant">
-                    <Icon name="fingerprint" className="text-[18px] text-primary-container" /> Perfiles
-                    académicos:
+                    <Icon name="fingerprint" className="text-[18px] text-primary-container" />{' '}
+                    {t('profile.academicProfiles')}
                   </span>
                   {/* Solo el logo; el nombre y el identificador van en un tooltip (hover y foco). */}
                   <ul className="flex flex-wrap gap-2">
@@ -273,7 +285,7 @@ function Profile({ author }: { author: AuthorProfile }) {
                         >
                           <IdLogo label={p.label} size={24} />
                           <span className="sr-only">
-                            {p.label}: {p.value} (abre en una pestaña nueva)
+                            {p.label}: {labels.domain(p.value)} {t('common:newTab')}
                           </span>
                         </a>
                         <span
@@ -281,7 +293,9 @@ function Profile({ author }: { author: AuthorProfile }) {
                           className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 rounded-md bg-surface-dark-forest px-2.5 py-1.5 text-center whitespace-nowrap opacity-0 shadow-md transition-opacity peer-hover:opacity-100 peer-focus-visible:opacity-100"
                         >
                           <span className="block text-label-sm font-semibold text-on-primary">{p.label}</span>
-                          <span className="block font-mono text-[10px] text-secondary-fixed">{p.value}</span>
+                          <span className="block font-mono text-[10px] text-secondary-fixed">
+                            {labels.domain(p.value)}
+                          </span>
                         </span>
                       </li>
                     ))}
@@ -292,13 +306,18 @@ function Profile({ author }: { author: AuthorProfile }) {
               {ods.length ? (
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="flex items-center gap-1.5 text-label-md font-semibold text-on-surface-variant">
-                    <Icon name="public" className="text-[18px] text-primary-container" /> ODS vinculados:
+                    <Icon name="public" className="text-[18px] text-primary-container" />{' '}
+                    {t('profile.odsLinked')}
                   </span>
                   {/* Heredados de los grupos del investigador; el tooltip dice de cuál viene cada uno. */}
                   <ul className="flex flex-wrap gap-2">
                     {ods.map((o) => (
                       <li key={o.id}>
-                        <OdsIcon id={o.id} size={40} note={`Vía ${o.groups.join(', ')}`} />
+                        <OdsIcon
+                          id={o.id}
+                          size={40}
+                          note={t('profile.odsVia', { groups: o.groups.join(', ') })}
+                        />
                       </li>
                     ))}
                   </ul>
@@ -310,16 +329,16 @@ function Profile({ author }: { author: AuthorProfile }) {
 
         {/* 2. Pestañas */}
         <TabBar
-          label="Secciones del perfil"
+          label={t('profile.tabsLabel')}
           active={tab}
           onSelect={setTab}
           tabs={[
-            { id: 'perfil', label: 'Perfil e indicadores', icon: 'analytics' },
+            { id: 'perfil', label: t('profile.tabProfile'), icon: 'analytics' },
             {
               id: 'produccion',
-              label: 'Producción científica',
+              label: t('profile.tabProduction'),
               icon: 'menu_book',
-              badge: products.length ? `${products.length} productos` : undefined,
+              badge: products.length ? t('profile.productsBadge', { count: products.length }) : undefined,
             },
           ]}
         />
@@ -331,25 +350,26 @@ function Profile({ author }: { author: AuthorProfile }) {
               <div className="flex flex-col gap-gutter">
                 {author.metrics ? (
                   <>
-                    <SectionTitle icon="insights">Indicadores científicos y bibliométricos</SectionTitle>
+                    <SectionTitle icon="insights">{t('profile.indicatorsTitle')}</SectionTitle>
                     <div className="grid gap-gutter sm:grid-cols-3">
-                      <Kpi label="Índice h — Scopus" value={author.metrics.hIndex ?? '—'} icon="show_chart" />
                       <Kpi
-                        label="Publicaciones indexadas"
+                        label={t('profile.hIndex')}
+                        value={author.metrics.hIndex ?? '—'}
+                        icon="show_chart"
+                      />
+                      <Kpi
+                        label={t('profile.indexed')}
                         value={author.metrics.scopusPublications}
-                        unit="artículos"
+                        unit={t('profile.articles', { count: author.metrics.scopusPublications })}
                         icon="article"
                       />
-                      <Kpi label="Citas en Scopus" value={citations} icon="auto_graph" />
+                      <Kpi label={t('profile.citations')} value={citations} icon="auto_graph" />
                     </div>
                   </>
                 ) : (
                   <div className={`${card} p-6`}>
-                    <SectionTitle icon="insights">Indicadores científicos</SectionTitle>
-                    <p className="mt-2 text-body-md text-neutral-muted">
-                      Los indicadores bibliométricos y la producción detallada se publican para los
-                      investigadores destacados. Consulta la trayectoria completa en sus perfiles académicos.
-                    </p>
+                    <SectionTitle icon="insights">{t('profile.indicatorsShort')}</SectionTitle>
+                    <p className="mt-2 text-body-md text-neutral-muted">{t('profile.indicatorsNone')}</p>
                   </div>
                 )}
               </div>
@@ -359,14 +379,12 @@ function Profile({ author }: { author: AuthorProfile }) {
                 <div className="flex flex-wrap items-end justify-between gap-2 pt-2">
                   <div>
                     <h2 className="text-headline-sm font-semibold text-primary-container">
-                      Producción por tipología Minciencias
+                      {t('profile.byTypologyTitle')}
                     </h2>
-                    <p className="text-body-sm text-neutral-muted">
-                      Clasificación según el modelo de medición de grupos e investigadores
-                    </p>
+                    <p className="text-body-sm text-neutral-muted">{t('profile.byTypologyLead')}</p>
                   </div>
                   <span className="rounded-full bg-primary-container px-3 py-1 text-label-md font-semibold text-on-primary">
-                    Total productos: {products.length}
+                    {t('profile.totalProducts', { count: products.length })}
                   </span>
                 </div>
                 <div className="grid grid-cols-1 gap-gutter sm:grid-cols-2 xl:grid-cols-4">
@@ -397,8 +415,7 @@ function Profile({ author }: { author: AuthorProfile }) {
             <ProductsTable products={products} filters={filters} onFiltersChange={setFilters} />
           ) : (
             <div className={`${card} p-6 text-body-md text-neutral-muted`}>
-              La producción detallada se publica para los investigadores destacados. Consulta la trayectoria
-              completa en {profiles.length ? 'sus perfiles académicos.' : 'su hoja de vida CvLAC.'}
+              {profiles.length ? t('profile.productionNoneProfiles') : t('profile.productionNoneCvlac')}
             </div>
           )}
         </div>
@@ -407,7 +424,7 @@ function Profile({ author }: { author: AuthorProfile }) {
           to="/"
           className="inline-flex items-center gap-1 text-label-md font-semibold text-primary hover:underline"
         >
-          <Icon name="chevron_left" className="text-[18px]" /> Volver al directorio
+          <Icon name="chevron_left" className="text-[18px]" /> {t('profile.back')}
         </Link>
       </div>
     </article>
@@ -439,6 +456,8 @@ function Kpi({
   unit?: string;
   icon: string;
 }) {
+  const { t } = useTranslation(['authors', 'common']);
+  const { number } = useLabels();
   return (
     <div
       className={`${card} relative flex flex-col justify-between overflow-hidden p-4 transition-shadow hover:shadow-md`}
@@ -447,7 +466,7 @@ function Kpi({
         <div>
           <span className={eyebrow}>{label}</span>
           <p className="mt-1 flex items-baseline gap-2 text-display-hero-mobile font-bold text-primary-container md:text-display-hero">
-            {typeof value === 'number' ? new Intl.NumberFormat('es-CO').format(value) : value}
+            {typeof value === 'number' ? number(value) : value}
             {unit ? <span className="text-body-md font-semibold text-neutral-muted">{unit}</span> : null}
           </p>
         </div>
@@ -456,7 +475,7 @@ function Kpi({
         </span>
       </div>
       <p className="mt-2 rounded-lg bg-surface-cream-alt/60 p-2.5 text-label-sm font-medium text-on-surface-variant">
-        Fuente: Scopus (Elsevier) vía Metri-K
+        {t('profile.source')}
       </p>
     </div>
   );

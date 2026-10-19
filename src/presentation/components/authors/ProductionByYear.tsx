@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TYPOLOGIES, type Product, type TypologyId } from '@/domain/authors/author';
 import { TrendChart } from '@/presentation/components/charts/TrendChart';
+import { useLabels } from '@/presentation/hooks/use-labels';
 
 interface YearRow {
   year: number;
@@ -45,6 +47,8 @@ export function yTicks(max: number): number[] {
  * del portal (TrendChart). Tooltip por punto con el desglose por tipología y vista en tabla.
  */
 export function ProductionByYear({ products }: { products: Product[] }) {
+  const { t } = useTranslation('authors');
+  const labels = useLabels();
   const rows = useMemo(() => productionByYear(products), [products]);
   if (!rows.length) return null;
 
@@ -52,16 +56,20 @@ export function ProductionByYear({ products }: { products: Product[] }) {
   const peak = rows.reduce((a, b) => (b.total > a.total ? b : a));
   const last = rows[rows.length - 1]!;
   const undated = products.filter((p) => p.year === null).length;
-  const summary = `Producción por año de ${rows[0]!.year} a ${last.year}: máximo de ${peak.total} productos en ${peak.year}.`;
+  const summary = t('byYear.summary', {
+    from: rows[0]!.year,
+    to: last.year,
+    peak: peak.total,
+    peakYear: peak.year,
+  });
 
   return (
     <section aria-labelledby="by-year-title" className="rounded-xl bg-surface-container-lowest p-6 shadow-sm">
       <h2 id="by-year-title" className="text-headline-sm font-semibold text-primary-container">
-        Producción por año
+        {t('byYear.title')}
       </h2>
       <p className="text-body-sm text-neutral-muted">
-        Productos registrados por año de publicación o de grado
-        {undated ? ` (${undated} sin año no se grafican)` : ''}.
+        {undated ? t('byYear.subtitleUndated', { count: undated }) : t('byYear.subtitle')}
       </p>
 
       <div className="mt-4">
@@ -74,31 +82,31 @@ export function ProductionByYear({ products }: { products: Product[] }) {
             value: r.total,
             xLabel: rows.length > 12 ? `'${String(r.year).slice(2)}` : String(r.year),
             pill: String(r.total),
-            title: `${r.year}: ${r.total} ${r.total === 1 ? 'producto' : 'productos'}${TYPOLOGIES.filter(
-              (t) => r.by[t.id],
-            )
-              .map((t) => ` · ${t.short} ${r.by[t.id]}`)
-              .join('')}`,
+            title:
+              t('byYear.point', { year: r.year, count: r.total }) +
+              TYPOLOGIES.filter((x) => r.by[x.id])
+                .map((x) => ` · ${labels.typologyShort(x.id)} ${r.by[x.id]}`)
+                .join(''),
           }))}
         />
       </div>
 
       <details className="mt-4">
         <summary className="cursor-pointer text-label-md font-semibold text-secondary">
-          Ver como tabla
+          {t('byYear.viewTable')}
         </summary>
         <table className="mt-2 w-full text-left text-body-sm">
           <thead>
             <tr className="text-label-sm tracking-wider text-neutral-muted uppercase">
               <th scope="col" className="py-1.5">
-                Año
+                {t('byYear.year')}
               </th>
               <th scope="col" className="py-1.5 text-right">
-                Total
+                {t('byYear.total')}
               </th>
-              {TYPOLOGIES.map((t) => (
-                <th key={t.id} scope="col" className="hidden py-1.5 text-right sm:table-cell">
-                  {t.short}
+              {TYPOLOGIES.map((x) => (
+                <th key={x.id} scope="col" className="hidden py-1.5 text-right sm:table-cell">
+                  {labels.typologyShort(x.id)}
                 </th>
               ))}
             </tr>
