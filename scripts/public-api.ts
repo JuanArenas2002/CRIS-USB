@@ -67,7 +67,7 @@ export function createPublicApi({
   metrikUrl = DEFAULT_METRIK_URL,
   adminToken,
   ...storage
-}: { metrikUrl?: string; adminToken?: string } & StoreOptions = {}) {
+}: { metrikUrl?: string; adminToken?: string; onVercel?: boolean } & StoreOptions = {}) {
   const base = metrikUrl.replace(/\/+$/, '');
   const { photos, ods: odsStore } = createStores(storage);
   const metrikGroups = cached<GroupDetail[]>(() => fetchPublicGroups(`${base}/group`));

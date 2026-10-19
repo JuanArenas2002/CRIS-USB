@@ -28,9 +28,23 @@ vi.mock('@vercel/blob', () => ({
 const WEBP = Buffer.concat([Buffer.from('RIFF'), Buffer.alloc(4), Buffer.from('WEBPVP8 '), Buffer.alloc(8)]);
 beforeEach(() => blobs.clear());
 
-test('con BLOB_READ_WRITE_TOKEN usa Vercel Blob (privado por defecto); sin token, disco', () => {
+test('Blob con token o con store por OIDC; sin Blob: disco en local, error claro en Vercel', async () => {
   expect(createStores({ blobToken: 't' }).kind).toBe('blob');
+  expect(createStores({ blobStoreId: 'store_abc' }).kind).toBe('blob');
   expect(createStores({ photosDir: 'data/photos', odsFile: 'data/ods.json' }).kind).toBe('disk');
+  const none = createStores({ onVercel: true });
+  expect(none.kind).toBe('none');
+  expect(await none.ods.all()).toEqual({});
+  await expect(none.photos.save(1, WEBP)).rejects.toThrow('Falta conectar Vercel Blob');
+});
+
+test('Blob por OIDC: cada llamada lleva el store y el token que Vercel manda en la petición', async () => {
+  const { put } = await import('@vercel/blob');
+  const { setOidcToken } = await import('./blob-store');
+  setOidcToken('oidc-123');
+  await createStores({ blobStoreId: 'store_abc' }).ods.set(3, [1]);
+  expect(vi.mocked(put).mock.lastCall?.[2]).toMatchObject({ storeId: 'store_abc', oidcToken: 'oidc-123' });
+  expect(vi.mocked(put).mock.lastCall?.[2]).not.toHaveProperty('token');
 });
 
 test('Blob: fotos se guardan, se versionan, se leen y se quitan', async () => {

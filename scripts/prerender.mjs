@@ -20,7 +20,10 @@ const template = await fs.readFile(path.join(dist, 'index.html'), 'utf8');
 
 // 1. Datos (si Metri-K falla, el build falla: no se publica un sitio vacío).
 // Fotos y ODS del mismo almacenamiento que el BFF (disco en local, Vercel Blob en Vercel).
-const stores = createStores(storeOptionsFromEnv(env));
+const stores = createStores({
+  ...storeOptionsFromEnv({ ...env, ...process.env }),
+  onVercel: !!process.env.VERCEL,
+});
 const odsByGroup = await stores.ods.all();
 const photoVersions = await stores.photos.versions();
 const photoOf = (id) => (photoVersions.has(id) ? photoUrl(id, photoVersions.get(id)) : null);
