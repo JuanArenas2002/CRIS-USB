@@ -1,0 +1,1961 @@
+<!doctype html>
+<html class="h-full" lang="es" style="">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="web_standard" name="shell-type" />
+    <title>Portal de Investigadores - Universidad Simón Bolívar</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @layer base {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          overscroll-behavior: none;
+        }
+        main > :first-child {
+          margin-top: 0 !important;
+        }
+        main > :last-child {
+          margin-bottom: 0 !important;
+        }
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'primary-fixed': '#baeed3',
+              'tertiary-fixed': '#c1f279',
+              'surface-bright': '#f8f9ff',
+              'surface-container-highest': '#d9e3f6',
+              'secondary-fixed': '#8cfaa1',
+              'neutral-muted': '#6B7280',
+              'on-surface-variant': '#414944',
+              'on-primary-fixed': '#002115',
+              'on-secondary-fixed-variant': '#005323',
+              'on-tertiary-container': '#8bb847',
+              'secondary-fixed-dim': '#6fdd87',
+              'primary-container': '#154734',
+              'on-error': '#ffffff',
+              'badge-sage-bg': '#E3EDE2',
+              error: '#ba1a1a',
+              'on-background': '#121c2a',
+              'primary-fixed-dim': '#9fd2b8',
+              tertiary: '#1c2e00',
+              secondary: '#006d30',
+              'surface-container': '#e6eeff',
+              'on-tertiary-fixed-variant': '#324f00',
+              'error-container': '#ffdad6',
+              'secondary-container': '#8cfaa1',
+              'surface-container-low': '#eff4ff',
+              outline: '#717973',
+              'on-secondary': '#ffffff',
+              'outline-variant': '#c0c9c2',
+              'tertiary-container': '#2c4600',
+              'surface-dark-forest': '#0E382B',
+              'on-surface': '#121c2a',
+              'on-secondary-fixed': '#00210a',
+              'surface-variant': '#d9e3f6',
+              'canvas-cream': '#FBF9F4',
+              'surface-dim': '#d0dbed',
+              'surface-container-lowest': '#ffffff',
+              'on-error-container': '#93000a',
+              'badge-sage-text': '#1E4B27',
+              'surface-cream-alt': '#F5F2EB',
+              'on-tertiary': '#ffffff',
+              'border-subtle': '#E7E2D6',
+              surface: '#f8f9ff',
+              'surface-container-high': '#dee9fc',
+              'on-primary-container': '#83b59c',
+              'on-primary-fixed-variant': '#1f4f3c',
+              'on-tertiary-fixed': '#111f00',
+              'tertiary-fixed-dim': '#a6d560',
+              'surface-tint': '#386853',
+              'inverse-on-surface': '#eaf1ff',
+              'on-primary': '#ffffff',
+              'on-secondary-container': '#007434',
+              primary: '#003020',
+              'inverse-surface': '#27313f',
+              'inverse-primary': '#9fd2b8',
+              background: '#f8f9ff',
+            },
+            borderRadius: { DEFAULT: '0.25rem', lg: '0.5rem', xl: '0.75rem', full: '9999px' },
+            spacing: {
+              'space-xl': '2.5rem',
+              'space-md': '1rem',
+              'gutter-mobile': '1rem',
+              'space-xs': '0.25rem',
+              'margin-mobile': '1.25rem',
+              'space-2xl': '4rem',
+              gutter: '1.5rem',
+              'space-lg': '1.5rem',
+              'space-sm': '0.5rem',
+              margin: '3rem',
+            },
+            fontFamily: {
+              'headline-md': ['Inter'],
+              'body-lg': ['Inter'],
+              'headline-lg-mobile': ['Inter'],
+              'label-sm': ['Inter'],
+              'display-hero': ['Inter'],
+              'body-sm': ['Inter'],
+              'label-md': ['Inter'],
+              'headline-lg': ['Inter'],
+              'display-hero-mobile': ['Inter'],
+              'body-md': ['Inter'],
+              'headline-sm': ['Inter'],
+              'stat-metric': ['Inter'],
+            },
+            fontSize: {
+              'headline-md': ['24px', { lineHeight: '32px', letterSpacing: '-0.015em', fontWeight: '600' }],
+              'body-lg': ['17px', { lineHeight: '28px', fontWeight: '400' }],
+              'headline-lg-mobile': [
+                '26px',
+                { lineHeight: '34px', letterSpacing: '-0.01em', fontWeight: '700' },
+              ],
+              'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.02em', fontWeight: '500' }],
+              'display-hero': ['52px', { lineHeight: '60px', letterSpacing: '-0.03em', fontWeight: '700' }],
+              'body-sm': ['13px', { lineHeight: '20px', fontWeight: '400' }],
+              'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.04em', fontWeight: '600' }],
+              'headline-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.02em', fontWeight: '700' }],
+              'display-hero-mobile': [
+                '34px',
+                { lineHeight: '42px', letterSpacing: '-0.02em', fontWeight: '700' },
+              ],
+              'body-md': ['15px', { lineHeight: '24px', fontWeight: '400' }],
+              'headline-sm': ['18px', { lineHeight: '26px', fontWeight: '600' }],
+              'stat-metric': ['30px', { lineHeight: '36px', fontWeight: '700' }],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="min-h-full bg-canvas-cream font-body-md text-on-surface antialiased flex flex-col">
+    <header
+      class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-md shadow-[0_1px_8px_rgba(21,71,52,0.06)]"
+    >
+      <div
+        class="h-20 w-full max-w-[1240px] mx-auto px-gutter flex items-center justify-between gap-space-md"
+      >
+        <div class="flex items-center gap-space-md">
+          <a class="flex items-center gap-space-sm" href="#"
+            ><img
+              alt="Logo Universidad Simón Bolívar 50 años"
+              class="h-8 w-auto object-contain"
+              src="https://lh3.googleusercontent.com/aida/AEtjO1V5LVKDcMY3NT4UC2oqRPg-pUMjSEXgrafixrXmVCj61_-UzHZpaSOS2h6F6cm3qSAK4okqaUQdybTuJxS6NKq5tNJ0xbhHfz9gf8eO37EboCfb0apihVwEFvD6iJweJ6p961DJeVimimSdYS2DmGybV-MFss3CYYsCXdMZWRxDEyYqP1Cyd2dMnUYRrRIpR4gOlt9VHyKe13JEiQYc1zWz3kCosI_Ro9ip6DAnvFouU3KFAEopT5zX93pw"
+            />
+            <div class="flex flex-col">
+              <span class="font-label-sm text-label-sm text-neutral-muted uppercase tracking-wider"
+                >Universidad Simón Bolívar</span
+              ><span
+                class="font-headline-sm text-headline-sm text-primary-container leading-tight hidden sm:inline"
+                >Portal de Investigadores e Indicadores Científicos</span
+              ><span class="font-headline-sm text-headline-sm text-primary-container leading-tight sm:hidden"
+                >UNISIMÓN Research</span
+              >
+            </div></a
+          >
+        </div>
+        <nav
+          class="hidden xl:flex items-center gap-space-sm"
+          data-active-classes="bg-primary-container text-on-primary font-semibold rounded-lg"
+        >
+          <a
+            class="px-space-sm py-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-body-sm text-body-sm rounded-lg transition-colors"
+            data-path="inicio"
+            href="#"
+            >Inicio</a
+          ><a
+            class="px-space-sm py-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-body-sm text-body-sm rounded-lg transition-colors"
+            data-path="directorio-de-investigadores"
+            href="#"
+            >Directorio</a
+          ><a
+            class="px-space-sm py-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-body-sm text-body-sm rounded-lg transition-colors"
+            data-path="grupos-de-investigacion"
+            href="#"
+            >Grupos y Líneas</a
+          ><a
+            class="px-space-sm py-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-body-sm text-body-sm rounded-lg transition-colors"
+            data-path="produccion-cientifica"
+            href="#"
+            >Producción Científica</a
+          ><a
+            class="px-space-sm py-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-body-sm text-body-sm rounded-lg transition-colors"
+            data-path="indicadores-institucionales"
+            href="#"
+            >Indicadores</a
+          ><a
+            class="px-space-sm py-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-body-sm text-body-sm rounded-lg transition-colors flex items-center gap-1"
+            href="https://www.unisimon.edu.co/investigacion"
+            rel="noopener noreferrer"
+            target="_blank"
+            >Vicerrectoría</a
+          >
+        </nav>
+        <div class="flex items-center gap-space-sm">
+          <div class="relative hidden md:block w-48 lg:w-64">
+            <input
+              class="w-full h-9 pl-8 pr-3 bg-surface-cream-alt text-on-surface font-body-sm text-body-sm rounded-lg placeholder-neutral-muted focus:outline-none focus:bg-surface-container-lowest focus:ring-1 focus:ring-secondary"
+              placeholder="Buscar investigador, tema..."
+              type="search"
+            /><span
+              class="material-symbols-outlined text-neutral-muted text-[18px] absolute left-2 top-2.5 pointer-events-none"
+              >search</span
+            >
+          </div>
+          <div
+            class="flex items-center bg-surface-cream-alt rounded-lg px-2 py-1 gap-1 text-on-surface-variant font-label-md text-label-md"
+          >
+            <span class="material-symbols-outlined text-[16px]">language</span
+            ><select
+              aria-label="Selector de Idioma"
+              class="bg-transparent text-on-surface-variant font-label-md text-label-md focus:outline-none cursor-pointer"
+            >
+              <option value="es">ES</option>
+              <option value="en">EN</option>
+            </select>
+          </div>
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="w-full pt-20 flex-1">
+      <div class="w-full bg-surface-cream-alt/70">
+        <div
+          class="w-full max-w-[1240px] mx-auto px-gutter py-space-sm flex items-center justify-between text-neutral-muted font-body-sm text-body-sm"
+        >
+          <nav aria-label="Breadcrumb" class="flex items-center gap-space-xs">
+            <a class="hover:text-primary transition-colors flex items-center gap-1" href="#"
+              ><span class="material-symbols-outlined text-[16px]">home</span><span class="">Inicio</span></a
+            ><span class="material-symbols-outlined text-[14px] text-neutral-muted">chevron_right</span
+            ><a class="hover:text-primary transition-colors" href="#">Directorio</a
+            ><span class="material-symbols-outlined text-[14px] text-neutral-muted">chevron_right</span
+            ><span class="font-label-md text-primary-container font-semibold">Perfil de Investigador</span>
+          </nav>
+          <div
+            class="hidden md:flex items-center gap-space-sm font-label-sm text-label-sm text-neutral-muted"
+          >
+            <span class="flex items-center gap-1"
+              ><span class="material-symbols-outlined text-[14px] text-secondary">verified</span> Minciencias
+              SC/PR</span
+            ><span class="text-border-subtle">•</span><span class="">Actualización Scopus: Mensual</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col w-full">
+        <!-- Subtle System Banner -->
+        <div class="w-full bg-surface-container-high/60 backdrop-blur-sm">
+          <div
+            class="max-w-[1240px] mx-auto px-gutter py-2 flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm"
+          >
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-secondary"></span>
+              <span class="font-semibold text-primary-container">SIGI-UNISIMÓN:</span>
+              <span class=""
+                >Sistema Integrado de Gestión de la Investigación y Analítica Científica Institucional</span
+              >
+            </div>
+            <div class="hidden sm:flex items-center gap-3 text-neutral-muted">
+              <span class="">Convocatoria Minciencias 894/2021</span>
+              <span class="">•</span>
+              <span class="flex items-center gap-1"
+                ><span class="material-symbols-outlined text-[15px] text-secondary">database</span>
+                Sincronizado Scopus API</span
+              >
+            </div>
+          </div>
+        </div>
+        <div class="max-w-[1240px] w-full mx-auto px-gutter py-space-lg space-y-space-lg">
+          <!-- 1. ENCABEZADO SUPERIOR DEL PERFIL (Card Principal) -->
+          <section
+            class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md md:p-space-lg relative overflow-hidden"
+          >
+            <!-- Ambient light effect in background -->
+            <div
+              class="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-secondary-fixed/30 blur-3xl pointer-events-none"
+            ></div>
+            <div
+              class="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-primary-fixed/20 blur-3xl pointer-events-none"
+            ></div>
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+              <!-- Photo column -->
+              <div class="lg:col-span-3 flex flex-col items-center sm:items-start">
+                <div
+                  class="relative w-44 h-52 sm:w-52 sm:h-64 rounded-xl overflow-hidden shadow-md bg-surface-cream-alt flex-shrink-0"
+                >
+                  <img
+                    alt="Dra. María Fernanda Torres Gómez"
+                    class="w-full h-full object-cover object-top rounded-xl"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9Ug2uESZUkwx1ngA-UtT9baXCxSMzdq8LQwJICECZOjJQkHZkK4zTwKVh3hk5BSTN1gzzhRO1Pgh7Gc5KJDVTgUxUtGtMhZBi029b22P8OTDHD65jrGGB_bh0reUupPdIZC3mSEYAiIKJbyneT8ugoq0OS3F27_sOGsHjIBGxLiTzHc2kcArhLoukykD6q2_pnXFdlJ34kbafGKge1q_1MOWSdzY6tkfETp8mXuw9Q0cbH6mk3329pQ"
+                  />
+                  <div
+                    class="absolute bottom-2 left-2 right-2 bg-primary-container/85 backdrop-blur-md px-2.5 py-1 rounded text-center text-on-primary font-label-sm text-label-sm truncate"
+                  >
+                    Docente Investigadora
+                  </div>
+                </div>
+                <!-- Acciones de cabecera -->
+                <div class="w-full sm:w-52 mt-space-md flex flex-col gap-2"></div>
+              </div>
+              <!-- Meta info column -->
+              <div class="lg:col-span-9 flex flex-col justify-between h-full space-y-space-md">
+                <div class="space-y-space-xs">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span
+                      class="px-2.5 py-0.5 rounded-full bg-badge-sage-bg text-badge-sage-text font-label-md text-label-md tracking-wider uppercase"
+                    >
+                      Investigadora
+                    </span>
+                    <span
+                      class="px-2.5 py-0.5 rounded-full bg-primary-container text-secondary-fixed font-label-md text-label-md flex items-center gap-1"
+                    >
+                      <span class="material-symbols-outlined text-[14px]">workspace_premium</span>
+                      Investigadora Asociada (Minciencias)
+                    </span>
+                    <span
+                      class="px-2 py-0.5 rounded-full bg-surface-cream-alt text-neutral-muted font-label-sm text-label-sm hidden sm:inline-flex items-center gap-1"
+                    >
+                      <span class="material-symbols-outlined text-[13px]">verified</span> Convocatoria 894 de
+                      2021
+                    </span>
+                  </div>
+                  <div class="pt-1">
+                    <h1 class="font-headline-lg text-headline-lg text-primary-container tracking-tight">
+                      Dra. María Fernanda Torres Gómez
+                    </h1>
+                    <p
+                      class="font-body-md text-body-md text-neutral-muted flex flex-wrap items-center gap-x-2 pt-0.5"
+                    >
+                      <span class="font-semibold text-on-surface">Firma en citaciones científicas:</span>
+                      <span
+                        class="bg-surface-cream-alt px-2 py-0.5 rounded font-label-sm text-on-surface-variant font-mono"
+                        >Torres-Gómez, M. F.</span
+                      >
+                      <span class="text-neutral-muted">•</span>
+                      <span
+                        class="bg-surface-cream-alt px-2 py-0.5 rounded font-label-sm text-on-surface-variant font-mono"
+                        >Torres, Maria F.</span
+                      >
+                    </p>
+                  </div>
+                </div>
+                <!-- Academic and Faculty details grid -->
+                <div
+                  class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 bg-surface-cream-alt/60 p-space-md rounded-xl"
+                >
+                  <div class="space-y-1">
+                    <div
+                      class="flex items-center gap-1.5 text-neutral-muted font-label-sm text-label-sm uppercase tracking-wide"
+                    >
+                      <span class="material-symbols-outlined text-[16px] text-primary-container">school</span>
+                      <span class="">Formación Académica</span>
+                    </div>
+                    <p class="font-body-sm text-body-sm font-semibold text-on-surface">
+                      Doctorado en Salud Pública (Ph.D.)
+                    </p>
+                  </div>
+                  <div class="space-y-1">
+                    <div
+                      class="flex items-center gap-1.5 text-neutral-muted font-label-sm text-label-sm uppercase tracking-wide"
+                    >
+                      <span class="material-symbols-outlined text-[16px] text-primary-container"
+                        >apartment</span
+                      >
+                      <span class="">Unidad Académica</span>
+                    </div>
+                    <p class="font-body-sm text-body-sm font-semibold text-on-surface">
+                      Facultad de Ciencias de la Salud
+                    </p>
+
+                    <div
+                      class="flex items-center gap-1 pt-0.5 text-neutral-muted font-label-sm text-label-sm"
+                    >
+                      <span class="material-symbols-outlined text-[14px] text-secondary">location_on</span>
+                      <span class="">Sede Barranquilla (Principal)</span>
+                    </div>
+                  </div>
+                  <div class="space-y-1">
+                    <div
+                      class="flex items-center gap-1.5 text-neutral-muted font-label-sm text-label-sm uppercase tracking-wide"
+                    >
+                      <span class="material-symbols-outlined text-[16px] text-primary-container"
+                        >contact_mail</span
+                      >
+                      <span class="">Contacto Institucional</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                      <a
+                        class="font-body-sm text-body-sm font-semibold text-secondary hover:underline truncate"
+                        href="mailto:mtorres12@unisimon.edu.co"
+                      >
+                        mtorres12@unisimon.edu.co
+                      </a>
+                      <button
+                        class="p-1 hover:bg-surface-container rounded transition-colors text-neutral-muted hover:text-primary-container"
+                        onclick="
+                          navigator.clipboard.writeText('mtorres12@unisimon.edu.co');
+                          alert('Correo institucional copiado');
+                        "
+                        title="Copiar correo"
+                      >
+                        <span class="material-symbols-outlined text-[15px]">content_copy</span>
+                      </button>
+                    </div>
+                    <div class="flex items-center gap-2 pt-1 font-label-sm text-label-sm text-neutral-muted">
+                      <span class="">Sexo: <strong>Femenino</strong></span>
+                      <span class="">•</span>
+                      <span class="text-secondary font-medium">Docente Investigadora</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Grupos de investigación asociados -->
+                <div class="space-y-2">
+                  <span
+                    class="font-label-sm text-label-sm uppercase tracking-wider text-neutral-muted flex items-center gap-1.5"
+                  >
+                    <span class="material-symbols-outlined text-[16px] text-secondary">groups</span>
+                    Grupos de investigación adscritos:
+                  </span>
+                  <div class="flex flex-wrap gap-2">
+                    <a
+                      class="inline-flex items-center gap-2 bg-surface-cream-alt hover:bg-surface-container-high px-3 py-1.5 rounded-lg text-primary-container transition-colors group"
+                      href="#"
+                    >
+                      <span class="material-symbols-outlined text-[18px] text-secondary">science</span>
+                      <span class="font-body-sm text-body-sm font-semibold">Salud y Bienestar Humano</span>
+                      <span
+                        class="bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm px-2 py-0.5 rounded-full font-bold"
+                        >Cat. A1 Minciencias</span
+                      >
+                      <span
+                        class="material-symbols-outlined text-[14px] text-neutral-muted group-hover:translate-x-0.5 transition-transform"
+                        >arrow_forward</span
+                      >
+                    </a>
+                    <a
+                      class="inline-flex items-center gap-2 bg-surface-cream-alt hover:bg-surface-container-high px-3 py-1.5 rounded-lg text-primary-container transition-colors group"
+                      href="#"
+                    >
+                      <span class="material-symbols-outlined text-[18px] text-secondary">monitoring</span>
+                      <span class="font-body-sm text-body-sm font-semibold"
+                        >Epidemiología del Caribe y Determinantes Sociales</span
+                      >
+                      <span
+                        class="bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm px-2 py-0.5 rounded-full font-bold"
+                        >Cat. A Minciencias</span
+                      >
+                      <span
+                        class="material-symbols-outlined text-[14px] text-neutral-muted group-hover:translate-x-0.5 transition-transform"
+                        >arrow_forward</span
+                      >
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!-- 2. SISTEMA DE NAVEGACIÓN EN DOS PESTAÑAS (Tabs) -->
+          <nav
+            class="w-full bg-surface-container-lowest rounded-xl shadow-sm p-1.5 flex items-center justify-start gap-2 overflow-x-auto"
+          >
+            <button
+              class="flex items-center gap-2.5 px-space-lg py-2.5 rounded-lg font-headline-sm text-headline-sm text-on-primary bg-primary-container transition-all cursor-pointer shadow-sm"
+              id="tab-btn-perfil"
+              onclick="switchTab('perfil')"
+            >
+              <span class="material-symbols-outlined text-[20px]">analytics</span>
+              <span class="">Perfil e Indicadores</span>
+            </button>
+            <button
+              class="flex items-center gap-2.5 px-space-lg py-2.5 rounded-lg font-headline-sm text-headline-sm text-neutral-muted hover:text-on-surface hover:bg-surface-cream-alt transition-all cursor-pointer"
+              id="tab-btn-produccion"
+              onclick="switchTab('produccion')"
+            >
+              <span class="material-symbols-outlined text-[20px]">menu_book</span>
+              <span class="">Producción Científica</span>
+              <span
+                class="bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm px-2.5 py-0.5 rounded-full font-bold ml-1"
+              >
+                67 productos
+              </span>
+            </button>
+          </nav>
+          <!-- 3. CONTENIDO DE LA PESTAÑA 1: PERFIL E INDICADORES -->
+          <div class="space-y-space-lg block" id="tab-perfil">
+            <!-- 1. Perfil Científico y Enfoque Investigativo + Perfiles Académicos externos -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+              <!-- Resumen del Perfil Científico y Líneas -->
+              <div
+                class="lg:col-span-8 bg-surface-container-lowest rounded-xl p-space-lg shadow-sm space-y-space-md h-full flex flex-col justify-between"
+              >
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-secondary text-[24px]">medical_services</span>
+                  <h3 class="font-headline-md text-headline-md text-primary-container">
+                    Perfil Científico y Enfoque Investigativo
+                  </h3>
+                </div>
+                <p class="font-body-lg text-body-lg text-on-surface leading-relaxed">
+                  Médica y doctora en Salud Pública, con amplia experiencia en investigación epidemiológica y
+                  diseño de intervenciones comunitarias. Su trabajo se enfoca en el análisis multidimensional
+                  de los determinantes sociales de la salud y en la estructuración de estrategias preventivas
+                  para el control de enfermedades crónicas no transmisibles, con especial énfasis en
+                  poblaciones vulnerables y comunidades del Caribe colombiano.
+                </p>
+                <p class="font-body-md text-body-md text-neutral-muted leading-relaxed">
+                  Ha coordinado estudios de campo multidisciplinarios y proyectos financiados por el Sistema
+                  General de Regalías (SGR) y Minciencias, integrando biomarcadores clínicos con analítica
+                  espacial de riesgo cardiovascular, salud materno-infantil y resiliencia sanitaria en el
+                  territorio costero.
+                </p>
+                <div class="pt-space-sm space-y-space-sm">
+                  <h4
+                    class="font-headline-sm text-headline-sm text-primary-container flex items-center gap-2"
+                  >
+                    <span class="material-symbols-outlined text-secondary text-[18px]">checklist</span>
+                    Líneas de Investigación Priorizadas
+                  </h4>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div class="flex items-start gap-2 bg-surface-cream-alt p-3 rounded-lg">
+                      <span class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5"
+                        >check_circle</span
+                      >
+                      <span class="font-body-sm text-body-sm text-on-surface"
+                        >Determinantes sociales de la salud y desigualdades territoriales</span
+                      >
+                    </div>
+                    <div class="flex items-start gap-2 bg-surface-cream-alt p-3 rounded-lg">
+                      <span class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5"
+                        >check_circle</span
+                      >
+                      <span class="font-body-sm text-body-sm text-on-surface"
+                        >Prevención, tamizaje y control de enfermedades crónicas</span
+                      >
+                    </div>
+                    <div class="flex items-start gap-2 bg-surface-cream-alt p-3 rounded-lg">
+                      <span class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5"
+                        >check_circle</span
+                      >
+                      <span class="font-body-sm text-body-sm text-on-surface"
+                        >Salud materno-infantil y nutrición en primera infancia</span
+                      >
+                    </div>
+                    <div class="flex items-start gap-2 bg-surface-cream-alt p-3 rounded-lg">
+                      <span class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5"
+                        >check_circle</span
+                      >
+                      <span class="font-body-sm text-body-sm text-on-surface"
+                        >Evaluación de políticas y modelos de intervención en salud pública</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Accesos a Perfiles Académicos Externos -->
+              <div class="lg:col-span-4 flex flex-col gap-space-lg">
+                <div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm space-y-space-md">
+                  <div>
+                    <h3 class="font-headline-sm text-headline-sm text-primary-container">
+                      Perfiles Académicos
+                    </h3>
+                    <p class="font-body-sm text-body-sm text-neutral-muted">
+                      Identificadores científicos homologados
+                    </p>
+                  </div>
+                  <div class="space-y-3">
+                    <a
+                      class="flex items-center justify-between p-3 rounded-lg bg-surface-cream-alt hover:bg-surface-container-high transition-colors group"
+                      href="https://scienti.minciencias.gov.co/cvlac"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      ><div class="flex items-center gap-3 min-w-0">
+                        <div
+                          class="w-8 h-8 rounded bg-primary-container text-secondary-fixed flex items-center justify-center font-bold text-label-sm"
+                        >
+                          Cv
+                        </div>
+                        <div class="min-w-0">
+                          <div
+                            class="font-label-md text-label-md font-semibold text-on-surface group-hover:text-primary-container truncate"
+                          >
+                            CvLAC Minciencias
+                          </div>
+                          <div class="font-label-sm text-label-sm text-neutral-muted truncate font-mono">
+                            ID: 0001482910
+                          </div>
+                        </div>
+                      </div>
+                      <span
+                        class="material-symbols-outlined text-[18px] text-neutral-muted group-hover:text-secondary group-hover:translate-x-0.5 transition-transform"
+                        >open_in_new</span
+                      ></a
+                    ><a
+                      class="flex items-center justify-between p-3 rounded-lg bg-surface-cream-alt hover:bg-surface-container-high transition-colors group"
+                      href="https://orcid.org/0000-0002-8391-7402"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      ><div class="flex items-center gap-3 min-w-0">
+                        <div
+                          class="w-8 h-8 rounded bg-[#a6ce39] text-[#2F5210] flex items-center justify-center font-bold text-label-sm"
+                        >
+                          iD
+                        </div>
+                        <div class="min-w-0">
+                          <div
+                            class="flex items-center gap-1 font-label-md text-label-md font-semibold text-on-surface group-hover:text-primary-container"
+                          >
+                            <span class="">ORCID</span
+                            ><span class="material-symbols-outlined text-[14px] text-secondary"
+                              >verified</span
+                            >
+                          </div>
+                          <div class="font-label-sm text-label-sm text-neutral-muted truncate font-mono">
+                            0000-0002-8391-7402
+                          </div>
+                        </div>
+                      </div>
+                      <span
+                        class="material-symbols-outlined text-[18px] text-neutral-muted group-hover:text-secondary group-hover:translate-x-0.5 transition-transform"
+                        >open_in_new</span
+                      ></a
+                    ><a
+                      class="flex items-center justify-between p-3 rounded-lg bg-surface-cream-alt hover:bg-surface-container-high transition-colors group"
+                      href="https://www.scopus.com"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      ><div class="flex items-center gap-3 min-w-0">
+                        <div
+                          class="w-8 h-8 rounded bg-[#ff7300] text-on-primary flex items-center justify-center font-bold text-label-sm"
+                        >
+                          Sc
+                        </div>
+                        <div class="min-w-0">
+                          <div
+                            class="font-label-md text-label-md font-semibold text-on-surface group-hover:text-primary-container truncate"
+                          >
+                            Scopus Author ID
+                          </div>
+                          <div class="font-label-sm text-label-sm text-neutral-muted truncate font-mono">
+                            57201948200
+                          </div>
+                        </div>
+                      </div>
+                      <span
+                        class="material-symbols-outlined text-[18px] text-neutral-muted group-hover:text-secondary group-hover:translate-x-0.5 transition-transform"
+                        >open_in_new</span
+                      ></a
+                    ><a
+                      class="flex items-center justify-between p-3 rounded-lg bg-surface-cream-alt hover:bg-surface-container-high transition-colors group"
+                      href="https://scholar.google.com"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      ><div class="flex items-center gap-3 min-w-0">
+                        <div
+                          class="w-8 h-8 rounded bg-primary-container text-on-primary flex items-center justify-center"
+                        >
+                          <span class="material-symbols-outlined text-[16px]">school</span>
+                        </div>
+                        <div class="min-w-0">
+                          <div
+                            class="font-label-md text-label-md font-semibold text-on-surface group-hover:text-primary-container truncate"
+                          >
+                            Google Scholar
+                          </div>
+                          <div class="font-label-sm text-label-sm text-neutral-muted truncate">
+                            480+ citas registradas
+                          </div>
+                        </div>
+                      </div>
+                      <span
+                        class="material-symbols-outlined text-[18px] text-neutral-muted group-hover:text-secondary group-hover:translate-x-0.5 transition-transform"
+                        >open_in_new</span
+                      ></a
+                    >
+                    <div
+                      class="flex items-center justify-between p-3 rounded-lg bg-surface-cream-alt/50 opacity-75"
+                    >
+                      <div class="flex items-center gap-3 min-w-0">
+                        <div
+                          class="w-8 h-8 rounded bg-neutral-muted/20 text-neutral-muted flex items-center justify-center font-bold text-label-sm"
+                        >
+                          WoS
+                        </div>
+                        <div class="min-w-0">
+                          <div class="font-label-md text-label-md font-semibold text-neutral-muted truncate">
+                            ResearcherID (Web of Science)
+                          </div>
+                          <div class="font-label-sm text-label-sm text-neutral-muted truncate">
+                            No disponible / No vinculado
+                          </div>
+                        </div>
+                      </div>
+                      <span
+                        class="material-symbols-outlined text-[16px] text-neutral-muted"
+                        title="Identificador no proporcionado por el investigador"
+                        >help_outline</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm space-y-3">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-1.5">
+                      <span class="material-symbols-outlined text-secondary text-[18px]">public</span>
+                      <h3 class="font-headline-sm text-[16px] text-primary-container font-semibold">
+                        ODS Vinculados
+                      </h3>
+                    </div>
+                    <span
+                      class="bg-surface-cream-alt text-neutral-muted font-label-sm text-[11px] px-2 py-0.5 rounded-full font-medium shrink-0"
+                      >Agenda 2030</span
+                    >
+                  </div>
+                  <div class="flex items-center justify-between gap-1.5 pt-1">
+                    <div
+                      class="group relative flex flex-col items-center cursor-pointer"
+                      title="ODS 3: Salud y Bienestar"
+                    >
+                      <div
+                        class="w-9 h-9 rounded-full flex flex-col items-center justify-center font-bold text-on-primary shadow-sm transition-transform group-hover:scale-105 shrink-0"
+                        style="background-color: #4c9f38"
+                      >
+                        <span class="text-[8px] leading-none uppercase font-label-sm tracking-tighter"
+                          >ODS</span
+                        ><span class="text-[13px] leading-none font-extrabold">3</span>
+                      </div>
+                      <span
+                        class="font-label-sm text-[10px] text-neutral-muted group-hover:text-primary-container mt-1 font-medium truncate max-w-[50px] text-center"
+                        >Salud</span
+                      >
+                    </div>
+                    <div
+                      class="group relative flex flex-col items-center cursor-pointer"
+                      title="ODS 5: Igualdad de Género"
+                    >
+                      <div
+                        class="w-9 h-9 rounded-full flex flex-col items-center justify-center font-bold text-on-primary shadow-sm transition-transform group-hover:scale-105 shrink-0"
+                        style="background-color: #ff3a21"
+                      >
+                        <span class="text-[8px] leading-none uppercase font-label-sm tracking-tighter"
+                          >ODS</span
+                        ><span class="text-[13px] leading-none font-extrabold">5</span>
+                      </div>
+                      <span
+                        class="font-label-sm text-[10px] text-neutral-muted group-hover:text-primary-container mt-1 font-medium truncate max-w-[50px] text-center"
+                        >Género</span
+                      >
+                    </div>
+                    <div
+                      class="group relative flex flex-col items-center cursor-pointer"
+                      title="ODS 6: Agua Limpia y Saneamiento"
+                    >
+                      <div
+                        class="w-9 h-9 rounded-full flex flex-col items-center justify-center font-bold text-on-primary shadow-sm transition-transform group-hover:scale-105 shrink-0"
+                        style="background-color: #26bde2"
+                      >
+                        <span class="text-[8px] leading-none uppercase font-label-sm tracking-tighter"
+                          >ODS</span
+                        ><span class="text-[13px] leading-none font-extrabold">6</span>
+                      </div>
+                      <span
+                        class="font-label-sm text-[10px] text-neutral-muted group-hover:text-primary-container mt-1 font-medium truncate max-w-[50px] text-center"
+                        >Agua</span
+                      >
+                    </div>
+                    <div
+                      class="group relative flex flex-col items-center cursor-pointer"
+                      title="ODS 10: Reducción de las Desigualdades"
+                    >
+                      <div
+                        class="w-9 h-9 rounded-full flex flex-col items-center justify-center font-bold text-on-primary shadow-sm transition-transform group-hover:scale-105 shrink-0"
+                        style="background-color: #dd1367"
+                      >
+                        <span class="text-[8px] leading-none uppercase font-label-sm tracking-tighter"
+                          >ODS</span
+                        ><span class="text-[13px] leading-none font-extrabold">10</span>
+                      </div>
+                      <span
+                        class="font-label-sm text-[10px] text-neutral-muted group-hover:text-primary-container mt-1 font-medium truncate max-w-[50px] text-center"
+                        >Equidad</span
+                      >
+                    </div>
+                    <div
+                      class="group relative flex flex-col items-center cursor-pointer"
+                      title="ODS 17: Alianzas para lograr los Objetivos"
+                    >
+                      <div
+                        class="w-9 h-9 rounded-full flex flex-col items-center justify-center font-bold text-on-primary shadow-sm transition-transform group-hover:scale-105 shrink-0"
+                        style="background-color: #19486a"
+                      >
+                        <span class="text-[8px] leading-none uppercase font-label-sm tracking-tighter"
+                          >ODS</span
+                        ><span class="text-[13px] leading-none font-extrabold">17</span>
+                      </div>
+                      <span
+                        class="font-label-sm text-[10px] text-neutral-muted group-hover:text-primary-container mt-1 font-medium truncate max-w-[50px] text-center"
+                        >Alianzas</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Producción por Tipología Minciencias con MÁXIMO PROTAGONISMO A LOS NÚMEROS (KPI Hero Cards) -->
+            <div>
+              <div class="flex items-center justify-between mb-space-sm">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-secondary text-[22px]">insights</span>
+                  <h2 class="font-headline-md text-headline-md text-primary-container">
+                    Indicadores Científicos y Bibliométricos
+                  </h2>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+                <!-- Card 1: Scopus H-index -->
+                <div
+                  class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden"
+                >
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <span class="font-label-sm text-label-sm uppercase tracking-wider text-neutral-muted"
+                        >Índice h — Scopus</span
+                      >
+                      <div class="font-display-hero text-display-hero text-primary-container mt-1">9</div>
+                    </div>
+                    <div
+                      class="w-12 h-12 rounded-xl bg-badge-sage-bg flex items-center justify-center text-primary-container"
+                    >
+                      <span class="material-symbols-outlined text-[26px]">show_chart</span>
+                    </div>
+                  </div>
+                  <div
+                    class="pt-space-sm mt-space-sm bg-surface-cream-alt/60 p-2.5 rounded-lg text-neutral-muted font-label-sm text-label-sm flex flex-col gap-0.5"
+                  >
+                    <span class="text-on-surface-variant font-medium">Fuente: Scopus (Elsevier)</span>
+                    <span class="">Actualización: 15 de octubre de 2026</span>
+                  </div>
+                </div>
+                <!-- Card 2: Google Scholar H-index -->
+                <div
+                  class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden"
+                >
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <span class="font-label-sm text-label-sm uppercase tracking-wider text-neutral-muted"
+                        >Índice h — Google Scholar</span
+                      >
+                      <div class="font-display-hero text-display-hero text-secondary mt-1">14</div>
+                    </div>
+                    <div
+                      class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-secondary"
+                    >
+                      <span class="material-symbols-outlined text-[26px]">auto_graph</span>
+                    </div>
+                  </div>
+                  <div
+                    class="pt-space-sm mt-space-sm bg-surface-cream-alt/60 p-2.5 rounded-lg text-neutral-muted font-label-sm text-label-sm flex flex-col gap-0.5"
+                  >
+                    <span class="text-on-surface-variant font-medium">Fuente: Google Scholar Citations</span>
+                    <span class="">Actualización: 12 de octubre de 2026</span>
+                  </div>
+                </div>
+                <!-- Card 3: Publicaciones científicas -->
+                <div
+                  class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden"
+                >
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <span class="font-label-sm text-label-sm uppercase tracking-wider text-neutral-muted"
+                        >Publicaciones Indexadas</span
+                      >
+                      <div class="flex items-baseline gap-2 mt-1">
+                        <span class="font-display-hero text-display-hero text-primary-container">28</span>
+                        <span class="font-body-sm text-body-sm text-neutral-muted">artículos</span>
+                      </div>
+                    </div>
+                    <div
+                      class="w-12 h-12 rounded-xl bg-badge-sage-bg flex items-center justify-center text-primary-container"
+                    >
+                      <span class="material-symbols-outlined text-[26px]">article</span>
+                    </div>
+                  </div>
+                  <div
+                    class="pt-space-sm mt-space-sm bg-surface-cream-alt/60 p-2.5 rounded-lg text-neutral-muted font-label-sm text-label-sm flex flex-col gap-0.5"
+                  >
+                    <span class="text-on-surface-variant font-medium"
+                      >Fuente: Scopus &amp; Minciencias (2018 - 2026)</span
+                    >
+                    <span class="">Actualización: 15 de octubre de 2026</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-space-sm">
+                <div>
+                  <h2 class="font-headline-md text-headline-md text-primary-container">
+                    Producción por Tipología Minciencias
+                  </h2>
+                  <p class="font-body-sm text-body-sm text-neutral-muted">
+                    Clasificación oficial según el modelo de medición de grupos e investigadores
+                  </p>
+                </div>
+                <span
+                  class="bg-surface-cream-alt text-on-surface-variant px-3 py-1 rounded-full font-label-md text-label-md font-semibold"
+                  >Total Productos: 67</span
+                >
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
+                <!-- Tipología 1 -->
+                <div
+                  class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col justify-between hover:shadow-md transition-all group border-t border-primary-container"
+                >
+                  <div class="space-y-space-sm">
+                    <div class="flex items-center justify-between">
+                      <div
+                        class="w-10 h-10 rounded-lg bg-primary-container text-on-primary flex items-center justify-center"
+                      >
+                        <span class="material-symbols-outlined text-[20px]">psychology</span>
+                      </div>
+                      <span
+                        class="bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-bold px-2 py-0.5 rounded-full uppercase tracking-wider"
+                      >
+                        Minciencias
+                      </span>
+                    </div>
+                    <div class="pt-1">
+                      <div class="flex items-baseline gap-2">
+                        <span
+                          class="font-display-hero text-display-hero text-primary-container font-bold leading-none"
+                          >32</span
+                        >
+                        <span
+                          class="font-label-md text-label-md uppercase tracking-wide text-neutral-muted font-semibold"
+                          >productos</span
+                        >
+                      </div>
+                      <h3 class="font-headline-sm text-headline-sm text-primary-container leading-snug mt-2">
+                        Generación de nuevo conocimiento
+                      </h3>
+                    </div>
+                  </div>
+                  <div class="pt-space-md mt-space-sm border-t border-surface-container-high">
+                    <button
+                      class="w-full text-left font-label-md text-label-md text-secondary hover:text-primary-container font-semibold flex items-center justify-between group-hover:translate-x-1 transition-transform"
+                      onclick="filterAndShowTab('Generación de nuevo conocimiento')"
+                    >
+                      <span class="">Ver 32 productos</span>
+                      <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Tipología 2 -->
+                <div
+                  class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col justify-between hover:shadow-md transition-all group border-t border-secondary"
+                >
+                  <div class="space-y-space-sm">
+                    <div class="flex items-center justify-between">
+                      <div
+                        class="w-10 h-10 rounded-lg bg-secondary text-on-primary flex items-center justify-center"
+                      >
+                        <span class="material-symbols-outlined text-[20px]">lightbulb</span>
+                      </div>
+                      <span
+                        class="bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold px-2 py-0.5 rounded-full uppercase tracking-wider"
+                      >
+                        Minciencias
+                      </span>
+                    </div>
+                    <div class="pt-1">
+                      <div class="flex items-baseline gap-2">
+                        <span
+                          class="font-display-hero text-display-hero text-secondary font-bold leading-none"
+                          >8</span
+                        >
+                        <span
+                          class="font-label-md text-label-md uppercase tracking-wide text-neutral-muted font-semibold"
+                          >productos</span
+                        >
+                      </div>
+                      <h3 class="font-headline-sm text-headline-sm text-primary-container leading-snug mt-2">
+                        Desarrollo tecnológico e innovación
+                      </h3>
+                    </div>
+                  </div>
+                  <div class="pt-space-md mt-space-sm border-t border-surface-container-high">
+                    <button
+                      class="w-full text-left font-label-md text-label-md text-secondary hover:text-primary-container font-semibold flex items-center justify-between group-hover:translate-x-1 transition-transform"
+                      onclick="filterAndShowTab('Desarrollo tecnológico e innovación')"
+                    >
+                      <span class="">Ver 8 productos</span>
+                      <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Tipología 3 -->
+                <div
+                  class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col justify-between hover:shadow-md transition-all group border-t border-primary-container"
+                >
+                  <div class="space-y-space-sm">
+                    <div class="flex items-center justify-between">
+                      <div
+                        class="w-10 h-10 rounded-lg bg-primary-container text-on-primary flex items-center justify-center"
+                      >
+                        <span class="material-symbols-outlined text-[20px]">public</span>
+                      </div>
+                      <span
+                        class="bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-bold px-2 py-0.5 rounded-full uppercase tracking-wider"
+                      >
+                        Minciencias
+                      </span>
+                    </div>
+                    <div class="pt-1">
+                      <div class="flex items-baseline gap-2">
+                        <span
+                          class="font-display-hero text-display-hero text-primary-container font-bold leading-none"
+                          >12</span
+                        >
+                        <span
+                          class="font-label-md text-label-md uppercase tracking-wide text-neutral-muted font-semibold"
+                          >productos</span
+                        >
+                      </div>
+                      <h3 class="font-headline-sm text-headline-sm text-primary-container leading-snug mt-2">
+                        Apropiación social del conocimiento
+                      </h3>
+                    </div>
+                  </div>
+                  <div class="pt-space-md mt-space-sm border-t border-surface-container-high">
+                    <button
+                      class="w-full text-left font-label-md text-label-md text-secondary hover:text-primary-container font-semibold flex items-center justify-between group-hover:translate-x-1 transition-transform"
+                      onclick="filterAndShowTab('Apropiación social del conocimiento')"
+                    >
+                      <span class="">Ver 12 productos</span>
+                      <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Tipología 4 -->
+                <div
+                  class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col justify-between hover:shadow-md transition-all group border-t border-secondary"
+                >
+                  <div class="space-y-space-sm">
+                    <div class="flex items-center justify-between">
+                      <div
+                        class="w-10 h-10 rounded-lg bg-secondary text-on-primary flex items-center justify-center"
+                      >
+                        <span class="material-symbols-outlined text-[20px]">school</span>
+                      </div>
+                      <span
+                        class="bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold px-2 py-0.5 rounded-full uppercase tracking-wider"
+                      >
+                        Minciencias
+                      </span>
+                    </div>
+                    <div class="pt-1">
+                      <div class="flex items-baseline gap-2">
+                        <span
+                          class="font-display-hero text-display-hero text-secondary font-bold leading-none"
+                          >15</span
+                        >
+                        <span
+                          class="font-label-md text-label-md uppercase tracking-wide text-neutral-muted font-semibold"
+                          >productos</span
+                        >
+                      </div>
+                      <h3 class="font-headline-sm text-headline-sm text-primary-container leading-snug mt-2">
+                        Formación de recurso humano
+                      </h3>
+                    </div>
+                  </div>
+                  <div class="pt-space-md mt-space-sm border-t border-surface-container-high">
+                    <button
+                      class="w-full text-left font-label-md text-label-md text-secondary hover:text-primary-container font-semibold flex items-center justify-between group-hover:translate-x-1 transition-transform"
+                      onclick="filterAndShowTab('Formación de recurso humano')"
+                    >
+                      <span class="">Ver 15 productos</span>
+                      <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. Indicadores científicos y bibliométricos (3 tarjetas) -->
+          </div>
+          <!-- 4. CONTENIDO DE LA PESTAÑA 2: PRODUCCIÓN CIENTÍFICA -->
+          <div class="space-y-space-md hidden" id="tab-produccion">
+            <!-- A. Barra de herramientas, búsqueda y filtros combinables -->
+            <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm space-y-space-sm">
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                <!-- Búsqueda libre -->
+                <div class="md:col-span-4 relative">
+                  <span
+                    class="material-symbols-outlined absolute left-3 top-2.5 text-neutral-muted text-[20px] pointer-events-none"
+                    >search</span
+                  >
+                  <input
+                    class="w-full h-11 pl-10 pr-3 bg-surface-cream-alt rounded-lg font-body-sm text-body-sm text-on-surface placeholder-neutral-muted focus:outline-none focus:ring-2 focus:ring-secondary"
+                    id="filter-search"
+                    oninput="applyFilters()"
+                    placeholder="Buscar por título, palabra clave o DOI..."
+                    type="text"
+                  />
+                </div>
+                <!-- Filtro Tipología -->
+                <div class="md:col-span-3">
+                  <select
+                    class="w-full h-11 px-3 bg-surface-cream-alt rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary cursor-pointer"
+                    id="filter-tipologia"
+                    onchange="applyFilters()"
+                  >
+                    <option value="">Todas las tipologías</option>
+                    <option value="Generación de nuevo conocimiento">Generación de nuevo conocimiento</option>
+                    <option value="Desarrollo tecnológico e innovación">
+                      Desarrollo tecnológico e innovación
+                    </option>
+                    <option value="Apropiación social del conocimiento">
+                      Apropiación social del conocimiento
+                    </option>
+                    <option value="Formación de recurso humano">Formación de recurso humano</option>
+                  </select>
+                </div>
+                <!-- Filtro Tipo de producto (14 categorías solicitadas) -->
+                <div class="md:col-span-3">
+                  <select
+                    class="w-full h-11 px-3 bg-surface-cream-alt rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary cursor-pointer"
+                    id="filter-tipo"
+                    onchange="applyFilters()"
+                  >
+                    <option value="">Todos los tipos (14 categorías)</option>
+                    <option value="Artículo científico">1. Artículo científico</option>
+                    <option value="Libro resultado de investigación">
+                      2. Libro resultado de investigación
+                    </option>
+                    <option value="Capítulo de libro resultado de investigación">3. Capítulo de libro</option>
+                    <option value="Patente">4. Patente</option>
+                    <option value="Software">5. Software</option>
+                    <option value="Protocolo">6. Protocolo</option>
+                    <option value="Producto tecnológico">7. Producto tecnológico</option>
+                    <option value="Diseño industrial">8. Diseño industrial</option>
+                    <option value="Ponencia">9. Ponencia</option>
+                    <option value="Memoria de evento">10. Memoria de evento</option>
+                    <option value="Boletín divulgativo">11. Boletín divulgativo</option>
+                    <option value="Trabajo de grado pregrado">12. Trabajo de grado pregrado</option>
+                    <option value="Tesis de maestría">13. Tesis de maestría</option>
+                    <option value="Tesis doctoral">14. Tesis doctoral</option>
+                  </select>
+                </div>
+                <!-- Filtro Año -->
+                <div class="md:col-span-2">
+                  <select
+                    class="w-full h-11 px-3 bg-surface-cream-alt rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary cursor-pointer"
+                    id="filter-year"
+                    onchange="applyFilters()"
+                  >
+                    <option value="">Todos los años</option>
+                    <option value="2026">2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                    <option value="2020">2020</option>
+                  </select>
+                </div>
+              </div>
+              <div class="flex flex-wrap items-center justify-between gap-2 pt-2">
+                <div class="flex items-center gap-2">
+                  <span
+                    class="font-label-md text-label-md font-semibold text-primary-container bg-badge-sage-bg px-2.5 py-1 rounded"
+                    id="filtered-count"
+                  >
+                    Mostrando 9 de 67 productos registrados
+                  </span>
+                  <span class="font-body-sm text-body-sm text-neutral-muted hidden sm:inline"
+                    >Auditoría institucional SIGI</span
+                  >
+                </div>
+                <button
+                  class="font-label-md text-label-md text-secondary hover:text-primary-container flex items-center gap-1"
+                  onclick="resetFilters()"
+                >
+                  <span class="material-symbols-outlined text-[16px]">restart_alt</span>
+                  <span class="">Limpiar filtros</span>
+                </button>
+              </div>
+            </div>
+            <!-- B. Tabla / Listado detallado de productos científicos de alta densidad -->
+            <div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr
+                      class="bg-surface-cream-alt text-on-surface-variant font-label-md text-label-md uppercase tracking-wider"
+                    >
+                      <th class="py-3 px-4">Tipología y Tipo</th>
+                      <th class="py-3 px-4">Título del Producto y Detalles</th>
+                      <th class="py-3 px-4">Autores</th>
+                      <th class="py-3 px-4 text-center">Año</th>
+                      <th class="py-3 px-4">Indexación / Entidad</th>
+                      <th class="py-3 px-4 text-right">Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody
+                    class="divide-y divide-surface-container-high font-body-sm text-body-sm"
+                    id="products-table-body"
+                  >
+                    <!-- Item 1: Artículo Q1 -->
+                    <tr
+                      class="product-row hover:bg-surface-cream-alt/40 transition-colors"
+                      data-tipo="Artículo científico"
+                      data-tipologia="Generación de nuevo conocimiento"
+                      data-year="2025"
+                    >
+                      <td class="py-3.5 px-4 align-top">
+                        <div class="flex flex-col gap-1 items-start">
+                          <span
+                            class="px-2 py-0.5 rounded-full font-label-sm text-label-sm font-semibold bg-badge-sage-bg text-badge-sage-text"
+                          >
+                            Nuevo Conocimiento
+                          </span>
+                          <span class="font-label-sm text-label-sm text-neutral-muted font-medium"
+                            >Artículo científico</span
+                          >
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top max-w-md">
+                        <div
+                          class="font-semibold text-primary-container hover:text-secondary cursor-pointer leading-snug"
+                        >
+                          Social determinants of cardiovascular health in vulnerable coastal communities of
+                          the Colombian Caribbean: A multilevel cohort study
+                        </div>
+                        <div
+                          class="font-mono text-neutral-muted font-label-sm text-label-sm mt-1 flex items-center gap-1"
+                        >
+                          <span class="">DOI: 10.1016/j.socscimed.2025.116542</span>
+                          <button
+                            class="text-neutral-muted hover:text-secondary"
+                            onclick="navigator.clipboard.writeText('10.1016/j.socscimed.2025.116542')"
+                          >
+                            <span class="material-symbols-outlined text-[13px]">content_copy</span>
+                          </button>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-neutral-muted">
+                        <span class="font-semibold text-on-surface">Torres-Gómez, M. F.</span>, Mendoza, R.
+                        J., Fontalvo, L., Romero-Ortiz, C.
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-center font-bold text-primary-container">2025</td>
+                      <td class="py-3.5 px-4 align-top">
+                        <span
+                          class="inline-flex items-center gap-1 font-label-sm text-label-sm font-semibold text-primary-container bg-surface-cream-alt px-2 py-0.5 rounded"
+                        >
+                          <span class="material-symbols-outlined text-[14px] text-secondary">star</span>
+                          Scimago Q1 / Scopus
+                        </span>
+                        <div class="text-neutral-muted font-label-sm text-label-sm mt-0.5">
+                          Social Science &amp; Medicine
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-right">
+                        <a
+                          class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-cream-alt hover:bg-primary-container hover:text-on-primary transition-colors text-primary-container font-label-sm text-label-sm font-semibold"
+                          href="https://doi.org"
+                          target="_blank"
+                        >
+                          <span class="">DOI</span>
+                          <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                        </a>
+                      </td>
+                    </tr>
+                    <!-- Item 2: Libro resultado de investigación -->
+                    <tr
+                      class="product-row hover:bg-surface-cream-alt/40 transition-colors"
+                      data-tipo="Libro resultado de investigación"
+                      data-tipologia="Generación de nuevo conocimiento"
+                      data-year="2024"
+                    >
+                      <td class="py-3.5 px-4 align-top">
+                        <div class="flex flex-col gap-1 items-start">
+                          <span
+                            class="px-2 py-0.5 rounded-full font-label-sm text-label-sm font-semibold bg-badge-sage-bg text-badge-sage-text"
+                          >
+                            Nuevo Conocimiento
+                          </span>
+                          <span class="font-label-sm text-label-sm text-neutral-muted font-medium"
+                            >Libro de investigación</span
+                          >
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top max-w-md">
+                        <div
+                          class="font-semibold text-primary-container hover:text-secondary cursor-pointer leading-snug"
+                        >
+                          Epidemiología Comunitaria y Equidad en Salud: Lecciones del Caribe Colombiano
+                        </div>
+                        <div class="font-mono text-neutral-muted font-label-sm text-label-sm mt-1">
+                          ISBN: 978-958-5430-88-2 • Editorial Universidad Simón Bolívar
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-neutral-muted">
+                        <span class="font-semibold text-on-surface">Torres-Gómez, M. F.</span> (Ed.
+                        Principal), Polo-Vergara, S.
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-center font-bold text-primary-container">2024</td>
+                      <td class="py-3.5 px-4 align-top">
+                        <span
+                          class="inline-flex items-center gap-1 font-label-sm text-label-sm font-semibold text-on-surface-variant bg-surface-cream-alt px-2 py-0.5 rounded"
+                        >
+                          Minciencias Tipo A (Pares ciegos)
+                        </span>
+                        <div class="text-neutral-muted font-label-sm text-label-sm mt-0.5">
+                          Sello Ediciones Unisimón
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-right">
+                        <button
+                          class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-cream-alt hover:bg-primary-container hover:text-on-primary transition-colors text-primary-container font-label-sm text-label-sm font-semibold"
+                        >
+                          <span class="">Ficha</span>
+                          <span class="material-symbols-outlined text-[14px]">menu_book</span>
+                        </button>
+                      </td>
+                    </tr>
+                    <!-- Item 3: Capítulo de libro -->
+                    <tr
+                      class="product-row hover:bg-surface-cream-alt/40 transition-colors"
+                      data-tipo="Capítulo de libro resultado de investigación"
+                      data-tipologia="Generación de nuevo conocimiento"
+                      data-year="2024"
+                    >
+                      <td class="py-3.5 px-4 align-top">
+                        <div class="flex flex-col gap-1 items-start">
+                          <span
+                            class="px-2 py-0.5 rounded-full font-label-sm text-label-sm font-semibold bg-badge-sage-bg text-badge-sage-text"
+                          >
+                            Nuevo Conocimiento
+                          </span>
+                          <span class="font-label-sm text-label-sm text-neutral-muted font-medium"
+                            >Capítulo de libro</span
+                          >
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top max-w-md">
+                        <div
+                          class="font-semibold text-primary-container hover:text-secondary cursor-pointer leading-snug"
+                        >
+                          Cap. 4: Vigilancia participativa en salud materno-infantil: Dinámicas de riesgo en
+                          el Atlántico
+                        </div>
+                        <div class="font-mono text-neutral-muted font-label-sm text-label-sm mt-1">
+                          En: "Sistemas de Salud y Territorio: Enfoques Críticos" (pp. 112-148)
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-neutral-muted">
+                        <span class="font-semibold text-on-surface">Torres-Gómez, M. F.</span>, Villalobos, E.
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-center font-bold text-primary-container">2024</td>
+                      <td class="py-3.5 px-4 align-top">
+                        <span class="font-label-sm text-label-sm text-neutral-muted"
+                          >Editorial Médica Panamericana</span
+                        >
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-right">
+                        <button
+                          class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-cream-alt hover:bg-primary-container hover:text-on-primary transition-colors text-primary-container font-label-sm text-label-sm font-semibold"
+                        >
+                          <span class="">Ver</span>
+                          <span class="material-symbols-outlined text-[14px]">visibility</span>
+                        </button>
+                      </td>
+                    </tr>
+                    <!-- Item 4: Patente concedida / en trámite -->
+                    <tr
+                      class="product-row hover:bg-surface-cream-alt/40 transition-colors"
+                      data-tipo="Patente"
+                      data-tipologia="Desarrollo tecnológico e innovación"
+                      data-year="2023"
+                    >
+                      <td class="py-3.5 px-4 align-top">
+                        <div class="flex flex-col gap-1 items-start">
+                          <span
+                            class="px-2 py-0.5 rounded-full font-label-sm text-label-sm font-semibold bg-surface-container-high text-on-surface"
+                          >
+                            Tecnológico e Innovación
+                          </span>
+                          <span class="font-label-sm text-label-sm text-secondary font-semibold"
+                            >Patente de invención</span
+                          >
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top max-w-md">
+                        <div
+                          class="font-semibold text-primary-container hover:text-secondary cursor-pointer leading-snug"
+                        >
+                          Dispositivo biométrico no invasivo de tamizaje temprano para riesgo metabólico
+                          periférico en comunidades rurales
+                        </div>
+                        <div class="font-mono text-neutral-muted font-label-sm text-label-sm mt-1">
+                          Radicado SIC: NC2023/0014902 • Concedida por Superintendencia de Industria y
+                          Comercio
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-neutral-muted">
+                        <span class="font-semibold text-on-surface">Torres-Gómez, M. F.</span>, Barreto, H.
+                        (Ing. Biomédica)
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-center font-bold text-primary-container">2023</td>
+                      <td class="py-3.5 px-4 align-top">
+                        <span
+                          class="inline-flex items-center gap-1 font-label-sm text-label-sm font-semibold text-secondary bg-surface-cream-alt px-2 py-0.5 rounded"
+                        >
+                          <span class="material-symbols-outlined text-[14px]">verified_user</span> SIC
+                          Colombia
+                        </span>
+                        <div class="text-neutral-muted font-label-sm text-label-sm mt-0.5">
+                          Propiedad de Universidad Simón Bolívar
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-right">
+                        <button
+                          class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-cream-alt hover:bg-primary-container hover:text-on-primary transition-colors text-primary-container font-label-sm text-label-sm font-semibold"
+                        >
+                          <span class="">Patente</span>
+                          <span class="material-symbols-outlined text-[14px]">description</span>
+                        </button>
+                      </td>
+                    </tr>
+                    <!-- Item 5: Software -->
+                    <tr
+                      class="product-row hover:bg-surface-cream-alt/40 transition-colors"
+                      data-tipo="Software"
+                      data-tipologia="Desarrollo tecnológico e innovación"
+                      data-year="2024"
+                    >
+                      <td class="py-3.5 px-4 align-top">
+                        <div class="flex flex-col gap-1 items-start">
+                          <span
+                            class="px-2 py-0.5 rounded-full font-label-sm text-label-sm font-semibold bg-surface-container-high text-on-surface"
+                          >
+                            Tecnológico e Innovación
+                          </span>
+                          <span class="font-label-sm text-label-sm text-neutral-muted font-medium"
+                            >Software con soporte</span
+                          >
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top max-w-md">
+                        <div
+                          class="font-semibold text-primary-container hover:text-secondary cursor-pointer leading-snug"
+                        >
+                          EpiCaribe Analytics v2.4: Plataforma predictiva de estratificación geoespacial de
+                          riesgo epidemiológico
+                        </div>
+                        <div class="font-mono text-neutral-muted font-label-sm text-label-sm mt-1">
+                          Registro DNDA: 13-894-2024 • Certificado MinInterior
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-neutral-muted">
+                        <span class="font-semibold text-on-surface">Torres-Gómez, M. F.</span>, Castro, D.,
+                        Grupo Salud y Bienestar
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-center font-bold text-primary-container">2024</td>
+                      <td class="py-3.5 px-4 align-top">
+                        <span class="font-label-sm text-label-sm text-neutral-muted"
+                          >Dirección Nacional de Derecho de Autor</span
+                        >
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-right">
+                        <button
+                          class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-cream-alt hover:bg-primary-container hover:text-on-primary transition-colors text-primary-container font-label-sm text-label-sm font-semibold"
+                        >
+                          <span class="">DNDA</span>
+                          <span class="material-symbols-outlined text-[14px]">code</span>
+                        </button>
+                      </td>
+                    </tr>
+                    <!-- Item 6: Protocolo validado -->
+                    <tr
+                      class="product-row hover:bg-surface-cream-alt/40 transition-colors"
+                      data-tipo="Protocolo"
+                      data-tipologia="Desarrollo tecnológico e innovación"
+                      data-year="2023"
+                    >
+                      <td class="py-3.5 px-4 align-top">
+                        <div class="flex flex-col gap-1 items-start">
+                          <span
+                            class="px-2 py-0.5 rounded-full font-label-sm text-label-sm font-semibold bg-surface-container-high text-on-surface"
+                          >
+                            Tecnológico e Innovación
+                          </span>
+                          <span class="font-label-sm text-label-sm text-neutral-muted font-medium"
+                            >Protocolo de salud</span
+                          >
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top max-w-md">
+                        <div
+                          class="font-semibold text-primary-container hover:text-secondary cursor-pointer leading-snug"
+                        >
+                          Protocolo clínico-epidemiológico estandarizado para la búsqueda activa de
+                          hipertensión oculta en atención primaria
+                        </div>
+                        <div class="font-mono text-neutral-muted font-label-sm text-label-sm mt-1">
+                          Adoptado formalmente por la Secretaría de Salud Distrital de Barranquilla
+                          (Resolución 0418)
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-neutral-muted">
+                        <span class="font-semibold text-on-surface">Torres-Gómez, M. F.</span>, Comité Técnico
+                        Salud Caribe
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-center font-bold text-primary-container">2023</td>
+                      <td class="py-3.5 px-4 align-top">
+                        <span class="font-label-sm text-label-sm text-on-surface-variant"
+                          >Minciencias / Validación Clínica</span
+                        >
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-right">
+                        <button
+                          class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-cream-alt hover:bg-primary-container hover:text-on-primary transition-colors text-primary-container font-label-sm text-label-sm font-semibold"
+                        >
+                          <span class="">PDF</span>
+                          <span class="material-symbols-outlined text-[14px]">download</span>
+                        </button>
+                      </td>
+                    </tr>
+                    <!-- Item 7: Ponencia / Apropiación Social -->
+                    <tr
+                      class="product-row hover:bg-surface-cream-alt/40 transition-colors"
+                      data-tipo="Ponencia"
+                      data-tipologia="Apropiación social del conocimiento"
+                      data-year="2025"
+                    >
+                      <td class="py-3.5 px-4 align-top">
+                        <div class="flex flex-col gap-1 items-start">
+                          <span
+                            class="px-2 py-0.5 rounded-full font-label-sm text-label-sm font-semibold bg-badge-sage-bg text-badge-sage-text"
+                          >
+                            Apropiación Social
+                          </span>
+                          <span class="font-label-sm text-label-sm text-neutral-muted font-medium"
+                            >Ponencia magistral</span
+                          >
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top max-w-md">
+                        <div
+                          class="font-semibold text-primary-container hover:text-secondary cursor-pointer leading-snug"
+                        >
+                          Desafíos de la equidad en salud en el post-confinamiento: Experiencias desde el
+                          litoral caribeño
+                        </div>
+                        <div class="font-mono text-neutral-muted font-label-sm text-label-sm mt-1">
+                          XXIV Congreso Latinoamericano de Salud Pública y Epidemiología (ALAMES) • Ciudad de
+                          México
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-neutral-muted">
+                        <span class="font-semibold text-on-surface">Torres-Gómez, M. F.</span>
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-center font-bold text-primary-container">2025</td>
+                      <td class="py-3.5 px-4 align-top">
+                        <span class="font-label-sm text-label-sm text-neutral-muted"
+                          >Ponencia Internacional / ALAMES</span
+                        >
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-right">
+                        <button
+                          class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-cream-alt hover:bg-primary-container hover:text-on-primary transition-colors text-primary-container font-label-sm text-label-sm font-semibold"
+                        >
+                          <span class="">Actas</span>
+                          <span class="material-symbols-outlined text-[14px]">event_note</span>
+                        </button>
+                      </td>
+                    </tr>
+                    <!-- Item 8: Boletín Divulgativo territorial -->
+                    <tr
+                      class="product-row hover:bg-surface-cream-alt/40 transition-colors"
+                      data-tipo="Boletín divulgativo"
+                      data-tipologia="Apropiación social del conocimiento"
+                      data-year="2024"
+                    >
+                      <td class="py-3.5 px-4 align-top">
+                        <div class="flex flex-col gap-1 items-start">
+                          <span
+                            class="px-2 py-0.5 rounded-full font-label-sm text-label-sm font-semibold bg-badge-sage-bg text-badge-sage-text"
+                          >
+                            Apropiación Social
+                          </span>
+                          <span class="font-label-sm text-label-sm text-neutral-muted font-medium"
+                            >Boletín divulgativo</span
+                          >
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top max-w-md">
+                        <div
+                          class="font-semibold text-primary-container hover:text-secondary cursor-pointer leading-snug"
+                        >
+                          Salud en tu Barrio: Guía pedagógica comunitaria sobre hábitos cardiosaludables y
+                          prevención
+                        </div>
+                        <div class="font-mono text-neutral-muted font-label-sm text-label-sm mt-1">
+                          Distribución en 14 centros de atención primaria del departamento del Atlántico
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-neutral-muted">
+                        <span class="font-semibold text-on-surface">Torres-Gómez, M. F.</span>, Semillero
+                        Salud Colectiva
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-center font-bold text-primary-container">2024</td>
+                      <td class="py-3.5 px-4 align-top">
+                        <span class="font-label-sm text-label-sm text-neutral-muted"
+                          >Unisimón Divulgación Comunitaria</span
+                        >
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-right">
+                        <button
+                          class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-cream-alt hover:bg-primary-container hover:text-on-primary transition-colors text-primary-container font-label-sm text-label-sm font-semibold"
+                        >
+                          <span class="">Descargar</span>
+                          <span class="material-symbols-outlined text-[14px]">file_download</span>
+                        </button>
+                      </td>
+                    </tr>
+                    <!-- Item 9: Tesis de Maestría dirigida -->
+                    <tr
+                      class="product-row hover:bg-surface-cream-alt/40 transition-colors"
+                      data-tipo="Tesis de maestría"
+                      data-tipologia="Formación de recurso humano"
+                      data-year="2024"
+                    >
+                      <td class="py-3.5 px-4 align-top">
+                        <div class="flex flex-col gap-1 items-start">
+                          <span
+                            class="px-2 py-0.5 rounded-full font-label-sm text-label-sm font-semibold bg-surface-container-high text-on-surface"
+                          >
+                            Recurso Humano
+                          </span>
+                          <span class="font-label-sm text-label-sm text-neutral-muted font-medium"
+                            >Tesis de maestría</span
+                          >
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top max-w-md">
+                        <div
+                          class="font-semibold text-primary-container hover:text-secondary cursor-pointer leading-snug"
+                        >
+                          Factores asociados a la adherencia farmacológica en hipertensos usuarios del régimen
+                          subsidiado en Soledad, Atlántico
+                        </div>
+                        <div class="font-mono text-neutral-muted font-label-sm text-label-sm mt-1">
+                          Maestría en Epidemiología • Calificación: Meritoria con Distinción de Honor
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-neutral-muted">
+                        García Cantillo, L. (Estudiante) |
+                        <span class="font-semibold text-on-surface">Tutor: Torres-Gómez, M. F.</span>
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-center font-bold text-primary-container">2024</td>
+                      <td class="py-3.5 px-4 align-top">
+                        <span class="font-label-sm text-label-sm text-on-surface-variant"
+                          >Repositorio DSpace UNISIMÓN</span
+                        >
+                      </td>
+                      <td class="py-3.5 px-4 align-top text-right">
+                        <button
+                          class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-cream-alt hover:bg-primary-container hover:text-on-primary transition-colors text-primary-container font-label-sm text-label-sm font-semibold"
+                        >
+                          <span class="">Tesis</span>
+                          <span class="material-symbols-outlined text-[14px]">school</span>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- C. Paginación institucional -->
+              <div
+                class="p-space-md bg-surface-cream-alt/60 flex flex-col sm:flex-row items-center justify-between gap-space-sm font-body-sm text-body-sm text-neutral-muted"
+              >
+                <div class="flex items-center gap-2">
+                  <span class="">Mostrar</span>
+                  <select
+                    class="bg-surface-container-lowest rounded px-2 py-1 text-on-surface font-label-md text-label-md focus:outline-none"
+                  >
+                    <option value="10">10 por página</option>
+                    <option value="25">25 por página</option>
+                    <option value="50">50 por página</option>
+                  </select>
+                  <span class="">de 67 registros en SIGI</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button
+                    class="px-2.5 py-1 rounded bg-surface-container-lowest text-neutral-muted hover:text-on-surface disabled:opacity-40"
+                    disabled=""
+                  >
+                    Anterior
+                  </button>
+                  <button
+                    class="w-8 h-8 rounded bg-primary-container text-on-primary font-bold font-label-md text-label-md"
+                  >
+                    1
+                  </button>
+                  <button
+                    class="w-8 h-8 rounded bg-surface-container-lowest hover:bg-surface-container-high text-on-surface font-label-md text-label-md"
+                  >
+                    2
+                  </button>
+                  <button
+                    class="w-8 h-8 rounded bg-surface-container-lowest hover:bg-surface-container-high text-on-surface font-label-md text-label-md"
+                  >
+                    3
+                  </button>
+                  <span class="px-1 text-neutral-muted">...</span>
+                  <button
+                    class="w-8 h-8 rounded bg-surface-container-lowest hover:bg-surface-container-high text-on-surface font-label-md text-label-md"
+                  >
+                    7
+                  </button>
+                  <button
+                    class="px-2.5 py-1 rounded bg-surface-container-lowest text-on-surface hover:bg-surface-container-high"
+                  >
+                    Siguiente
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+        // Script vanilla para la navegación entre pestañas
+        function switchTab(tabId) {
+          const tabPerfil = document.getElementById('tab-perfil');
+          const tabProduccion = document.getElementById('tab-produccion');
+          const btnPerfil = document.getElementById('tab-btn-perfil');
+          const btnProduccion = document.getElementById('tab-btn-produccion');
+
+          if (tabId === 'perfil') {
+            tabPerfil.classList.remove('hidden');
+            tabProduccion.classList.add('hidden');
+
+            btnPerfil.className =
+              'flex items-center gap-2.5 px-space-lg py-2.5 rounded-lg font-headline-sm text-headline-sm text-on-primary bg-primary-container transition-all cursor-pointer shadow-sm';
+            btnProduccion.className =
+              'flex items-center gap-2.5 px-space-lg py-2.5 rounded-lg font-headline-sm text-headline-sm text-neutral-muted hover:text-on-surface hover:bg-surface-cream-alt transition-all cursor-pointer';
+          } else {
+            tabProduccion.classList.remove('hidden');
+            tabPerfil.classList.add('hidden');
+
+            btnProduccion.className =
+              'flex items-center gap-2.5 px-space-lg py-2.5 rounded-lg font-headline-sm text-headline-sm text-on-primary bg-primary-container transition-all cursor-pointer shadow-sm';
+            btnPerfil.className =
+              'flex items-center gap-2.5 px-space-lg py-2.5 rounded-lg font-headline-sm text-headline-sm text-neutral-muted hover:text-on-surface hover:bg-surface-cream-alt transition-all cursor-pointer';
+          }
+        }
+
+        // Activación rápida desde tarjeta de tipología
+        function filterAndShowTab(tipologiaName) {
+          switchTab('produccion');
+          const tipSelect = document.getElementById('filter-tipologia');
+          if (tipSelect) {
+            tipSelect.value = tipologiaName;
+            applyFilters();
+          }
+        }
+
+        // Filtrado reactivo en la tabla de productos
+        function applyFilters() {
+          const searchVal = (document.getElementById('filter-search').value || '').toLowerCase().trim();
+          const tipVal = document.getElementById('filter-tipologia').value;
+          const tipoVal = document.getElementById('filter-tipo').value;
+          const yearVal = document.getElementById('filter-year').value;
+
+          const rows = document.querySelectorAll('.product-row');
+          let visibleCount = 0;
+
+          rows.forEach((row) => {
+            const tip = row.getAttribute('data-tipologia') || '';
+            const tipo = row.getAttribute('data-tipo') || '';
+            const year = row.getAttribute('data-year') || '';
+            const text = row.innerText.toLowerCase();
+
+            const matchSearch = !searchVal || text.includes(searchVal);
+            const matchTip = !tipVal || tip === tipVal;
+            const matchTipo = !tipoVal || tipo === tipoVal;
+            const matchYear = !yearVal || year === yearVal;
+
+            if (matchSearch && matchTip && matchTipo && matchYear) {
+              row.style.display = '';
+              visibleCount++;
+            } else {
+              row.style.display = 'none';
+            }
+          });
+
+          const countElem = document.getElementById('filtered-count');
+          if (countElem) {
+            countElem.innerText = `Mostrando ${visibleCount} de 67 productos registrados`;
+          }
+        }
+
+        function resetFilters() {
+          document.getElementById('filter-search').value = '';
+          document.getElementById('filter-tipologia').value = '';
+          document.getElementById('filter-tipo').value = '';
+          document.getElementById('filter-year').value = '';
+          applyFilters();
+        }
+      </script>
+    </main>
+    <footer class="w-full bg-surface-dark-forest text-inverse-on-surface mt-space-2xl">
+      <div class="w-full max-w-[1240px] mx-auto px-gutter py-space-xl">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-lg mb-space-xl">
+          <div class="space-y-space-sm">
+            <div class="flex items-center gap-space-sm">
+              <span class="material-symbols-outlined text-secondary-fixed text-[28px]">school</span
+              ><span class="font-headline-sm text-headline-sm text-on-primary font-bold">UNISIMÓN</span>
+            </div>
+            <p class="font-body-sm text-body-sm text-on-primary-container">
+              Vicerrectoría de Investigación, Extensión e Innovación. Comprometidos con el impacto científico
+              y el desarrollo del Caribe y Colombia.
+            </p>
+            <div class="flex items-center gap-2 pt-1">
+              <span class="material-symbols-outlined text-on-primary-container text-[18px]">apartment</span
+              ><span class="font-body-sm text-body-sm text-on-primary-container"
+                >Sedes Barranquilla y Cúcuta</span
+              >
+            </div>
+          </div>
+          <div class="space-y-space-sm">
+            <h3 class="font-label-md text-label-md uppercase tracking-wider text-secondary-fixed">
+              Marco y Políticas
+            </h3>
+            <ul class="space-y-space-xs font-body-sm text-body-sm text-on-primary-container">
+              <li class="">
+                <a class="hover:text-on-primary transition-colors flex items-center gap-1.5" href="#"
+                  ><span class="material-symbols-outlined text-[16px]">open_in_new</span>Políticas de
+                  Minciencias</a
+                >
+              </li>
+              <li class="">
+                <a class="hover:text-on-primary transition-colors flex items-center gap-1.5" href="#"
+                  ><span class="material-symbols-outlined text-[16px]">policy</span>Ciencia Abierta y
+                  Acceso</a
+                >
+              </li>
+              <li class="">
+                <a class="hover:text-on-primary transition-colors flex items-center gap-1.5" href="#"
+                  ><span class="material-symbols-outlined text-[16px]">gavel</span>Comité de Ética en
+                  Investigación</a
+                >
+              </li>
+              <li class="">
+                <a class="hover:text-on-primary transition-colors flex items-center gap-1.5" href="#"
+                  ><span class="material-symbols-outlined text-[16px]">verified_user</span>Propiedad
+                  Intelectual y Patentes</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="space-y-space-sm">
+            <h3 class="font-label-md text-label-md uppercase tracking-wider text-secondary-fixed">
+              Transparencia e Institucional
+            </h3>
+            <ul class="space-y-space-xs font-body-sm text-body-sm text-on-primary-container">
+              <li class="">
+                <a class="hover:text-on-primary transition-colors flex items-center gap-1.5" href="#"
+                  ><span class="material-symbols-outlined text-[16px]">description</span>Rendición de
+                  Cuentas</a
+                >
+              </li>
+              <li class="">
+                <a class="hover:text-on-primary transition-colors flex items-center gap-1.5" href="#"
+                  ><span class="material-symbols-outlined text-[16px]">database</span>Repositorio DSpace
+                  UNISIMÓN</a
+                >
+              </li>
+              <li class="">
+                <a class="hover:text-on-primary transition-colors flex items-center gap-1.5" href="#"
+                  ><span class="material-symbols-outlined text-[16px]">fact_check</span>Indicadores de Calidad
+                  MEN</a
+                >
+              </li>
+              <li class="">
+                <a class="hover:text-on-primary transition-colors flex items-center gap-1.5" href="#"
+                  ><span class="material-symbols-outlined text-[16px]">privacy_tip</span>Tratamiento de Datos
+                  Personales</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="space-y-space-sm">
+            <h3 class="font-label-md text-label-md uppercase tracking-wider text-secondary-fixed">
+              Soporte y Contacto
+            </h3>
+            <div class="space-y-space-xs font-body-sm text-body-sm text-on-primary-container">
+              <p class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">mail</span>investigacion@unisimon.edu.co
+              </p>
+              <p class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">support_agent</span
+                >soporte.investigadores@unisimon.edu.co
+              </p>
+              <p class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">call</span>PBX: +57 (605) 344 4333
+              </p>
+              <p class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">schedule</span>Lunes a Viernes 8:00 -
+                17:00
+              </p>
+            </div>
+          </div>
+        </div>
+        <div
+          class="pt-space-md border-t border-primary-container flex flex-col md:flex-row items-center justify-between gap-space-sm text-on-primary-container font-label-sm text-label-sm"
+        >
+          <div class="">
+            © 2024 Universidad Simón Bolívar - Vigilada Mineducación. Personería Jurídica Resolución 338 de
+            1972.
+          </div>
+          <div class="flex items-center gap-space-md">
+            <span class="">SNIES: 1711</span><span class="text-primary-container">•</span
+            ><span class="">Acreditación Institucional de Alta Calidad</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

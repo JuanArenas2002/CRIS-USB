@@ -1,0 +1,2508 @@
+<!doctype html>
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="web_standard" name="shell-type" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @layer base {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          overscroll-behavior: none;
+        }
+        main > :first-child {
+          margin-top: 0 !important;
+        }
+        main > :last-child {
+          margin-bottom: 0 !important;
+        }
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-fixed": "#c1f279",
+              "on-background": "#121c2a",
+              "on-tertiary": "#ffffff",
+              "secondary-fixed": "#8cfaa1",
+              "surface-container": "#e6eeff",
+              "tertiary-container": "#2c4600",
+              "on-tertiary-fixed": "#111f00",
+              "on-primary-fixed": "#002115",
+              "surface-container-highest": "#d9e3f6",
+              "on-secondary": "#ffffff",
+              "surface-container-high": "#dee9fc",
+              "on-secondary-container": "#007434",
+              primary: "#003020",
+              "secondary-container": "#8cfaa1",
+              "surface-dim": "#d0dbed",
+              "surface-tint": "#386853",
+              "surface-container-low": "#eff4ff",
+              "surface-container-lowest": "#ffffff",
+              "badge-sage-bg": "#E3EDE2",
+              "on-primary-fixed-variant": "#1f4f3c",
+              "surface-variant": "#d9e3f6",
+              "badge-sage-text": "#1E4B27",
+              "on-secondary-fixed": "#00210a",
+              secondary: "#006d30",
+              "inverse-on-surface": "#eaf1ff",
+              "error-container": "#ffdad6",
+              "border-subtle": "#E7E2D6",
+              "primary-fixed-dim": "#9fd2b8",
+              outline: "#717973",
+              "secondary-fixed-dim": "#6fdd87",
+              "on-secondary-fixed-variant": "#005323",
+              "surface-cream-alt": "#F5F2EB",
+              "outline-variant": "#c0c9c2",
+              "neutral-muted": "#6B7280",
+              "on-surface-variant": "#414944",
+              tertiary: "#1c2e00",
+              "inverse-primary": "#9fd2b8",
+              "tertiary-fixed-dim": "#a6d560",
+              "primary-container": "#154734",
+              background: "#f8f9ff",
+              "on-error-container": "#93000a",
+              "canvas-cream": "#FBF9F4",
+              "surface-dark-forest": "#0E382B",
+              "on-tertiary-fixed-variant": "#324f00",
+              error: "#ba1a1a",
+              "on-surface": "#121c2a",
+              "on-tertiary-container": "#8bb847",
+              "on-error": "#ffffff",
+              "on-primary": "#ffffff",
+              "inverse-surface": "#27313f",
+              "on-primary-container": "#83b59c",
+              "primary-fixed": "#baeed3",
+              surface: "#f8f9ff",
+              "surface-bright": "#f8f9ff",
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+            spacing: {
+              "space-xl": "2.5rem",
+              "space-xs": "0.25rem",
+              "space-sm": "0.5rem",
+              "space-md": "1rem",
+              margin: "3rem",
+              gutter: "1.5rem",
+              "space-2xl": "4rem",
+              "gutter-mobile": "1rem",
+              "space-lg": "1.5rem",
+              "margin-mobile": "1.25rem",
+            },
+            fontFamily: {
+              "label-md": ["Inter"],
+              "label-sm": ["Inter"],
+              "headline-lg": ["Inter"],
+              "body-sm": ["Inter"],
+              "body-md": ["Inter"],
+              "body-lg": ["Inter"],
+              "stat-metric": ["Inter"],
+              "headline-sm": ["Inter"],
+              "display-hero": ["Inter"],
+              "display-hero-mobile": ["Inter"],
+              "headline-lg-mobile": ["Inter"],
+              "headline-md": ["Inter"],
+            },
+            fontSize: {
+              "label-md": [
+                "12px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.04em",
+                  fontWeight: "600",
+                },
+              ],
+              "label-sm": [
+                "11px",
+                {
+                  lineHeight: "14px",
+                  letterSpacing: "0.02em",
+                  fontWeight: "500",
+                },
+              ],
+              "headline-lg": [
+                "36px",
+                {
+                  lineHeight: "44px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+              "body-sm": ["13px", { lineHeight: "20px", fontWeight: "400" }],
+              "body-md": ["15px", { lineHeight: "24px", fontWeight: "400" }],
+              "body-lg": ["17px", { lineHeight: "28px", fontWeight: "400" }],
+              "stat-metric": [
+                "30px",
+                { lineHeight: "36px", fontWeight: "700" },
+              ],
+              "headline-sm": [
+                "18px",
+                { lineHeight: "26px", fontWeight: "600" },
+              ],
+              "display-hero": [
+                "52px",
+                {
+                  lineHeight: "60px",
+                  letterSpacing: "-0.03em",
+                  fontWeight: "700",
+                },
+              ],
+              "display-hero-mobile": [
+                "34px",
+                {
+                  lineHeight: "42px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+              "headline-lg-mobile": [
+                "26px",
+                {
+                  lineHeight: "34px",
+                  letterSpacing: "-0.01em",
+                  fontWeight: "700",
+                },
+              ],
+              "headline-md": [
+                "24px",
+                {
+                  lineHeight: "32px",
+                  letterSpacing: "-0.015em",
+                  fontWeight: "600",
+                },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-canvas-cream font-body-md text-body-md text-on-surface antialiased"
+  >
+    <header
+      class="fixed top-0 w-full z-50 bg-canvas-cream/90 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
+    >
+      <div
+        class="h-20 max-w-[1240px] mx-auto px-margin-mobile md:px-gutter lg:px-margin flex items-center justify-between gap-4"
+      >
+        <div class="flex items-center gap-3 shrink-0">
+          <img
+            alt="Image from https://www.unisimon.edu.co/recursos/img/unisimon-logo-50-year.png"
+            class="h-8 w-auto object-contain"
+            src="https://lh3.googleusercontent.com/aida/AEtjO1XBZGdslyxlAzs5zCkQrDdma25AlvcGGGD0xN2q_6zXzuhfJVynft5M9LeuonszbSsXxk1-NaJOjctQLLerB504uWfVn2qbHO9sui4vwF0gAhl0ZePMQwIUGLT0CHHly94lIjqWEKG41GtukgXa3d77-QEsRaf3Bs5qCCrAyk0UD1MvjTIZ5HKpk06xFB97EhzRx51ICXZFCiRFwKf8mCngoPF64YOU25rrLHgA3WYFaC6OynpLF8O4cymO"
+          />
+          <div class="hidden sm:flex flex-col">
+            <span
+              class="font-headline-sm text-headline-sm text-primary tracking-tight leading-none"
+              >UNISIMÓN RESEARCH</span
+            ><span
+              class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mt-0.5"
+              >Universidad Simón Bolívar</span
+            >
+          </div>
+        </div>
+        <nav
+          class="hidden xl:flex items-center gap-6"
+          data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg px-3 py-1.5"
+        >
+          <a
+            aria-current="page"
+            class="transition-colors bg-primary-container text-on-primary font-bold rounded-lg px-3 py-1.5"
+            data-path="investigadores"
+            href="#"
+            >Investigadores</a
+          ><a
+            class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
+            data-path="caso-destacado"
+            href="#"
+            >Caso destacado</a
+          ><a
+            class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
+            data-path="proyectos-por-area"
+            href="#"
+            >Proyectos por área</a
+          ><a
+            class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
+            data-path="grupos-de-investigacion"
+            href="#"
+            >Grupos de investigación</a
+          ><a
+            class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
+            data-path="publicaciones"
+            href="#"
+            >Publicaciones</a
+          >
+        </nav>
+        <div class="flex items-center gap-3 shrink-0">
+          <a
+            class="hidden md:inline-flex items-center justify-center h-10 px-4 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-secondary transition-colors"
+            data-path="explorar-proyectos"
+            href="#"
+            >Explorar proyectos</a
+          ><a
+            class="hidden sm:inline-flex items-center justify-center h-10 px-3.5 rounded-lg text-primary font-label-md text-label-md hover:bg-surface-cream-alt transition-colors"
+            data-path="contacto"
+            href="#"
+            >Contactar</a
+          >
+          <div
+            class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"
+          >
+            <span class="material-symbols-outlined text-on-primary text-[18px]"
+              >person</span
+            >
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="w-full pt-20 bg-canvas-cream min-h-screen">
+      <div class="flex flex-col w-full">
+        <!-- HERO BANNER SECTION (Editorial Deep Forest Canvas) -->
+        <section
+          class="relative w-full bg-surface-dark-forest text-on-primary overflow-hidden pb-space-2xl pt-space-xl"
+        >
+          <!-- Ambient organic wave visual background -->
+          <div class="absolute inset-0 pointer-events-none opacity-20">
+            <svg
+              class="w-full h-full object-cover"
+              fill="none"
+              viewbox="0 0 1440 480"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                class="text-secondary-fixed"
+                d="M-100 320C240 180 520 420 860 260C1200 100 1380 340 1600 220"
+                stroke="currentColor"
+                stroke-dasharray="6 6"
+                stroke-width="1.5"
+              ></path>
+              <path
+                class="text-tertiary-fixed"
+                d="M-60 160C280 320 640 120 980 280C1320 440 1420 180 1560 120"
+                stroke="currentColor"
+                stroke-width="2"
+              ></path>
+              <circle cx="980" cy="280" fill="#8cfaa1" r="6"></circle>
+              <circle cx="860" cy="260" fill="#c1f279" r="4"></circle>
+            </svg>
+          </div>
+          <div
+            class="relative max-w-[1240px] mx-auto px-margin-mobile md:px-gutter lg:px-margin flex flex-col gap-space-lg"
+          >
+            <!-- Breadcrumb badge pill -->
+            <div class="flex items-center gap-2">
+              <div
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-container text-primary-fixed font-label-sm text-label-sm tracking-wide"
+              >
+                <span
+                  class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"
+                ></span>
+                Investigación Unisimón
+              </div>
+              <span class="text-primary-fixed-dim font-label-sm text-label-sm"
+                >/ Portal Institucional</span
+              >
+            </div>
+            <!-- Main Headline & Narrative Copy -->
+            <div class="max-w-3xl flex flex-col gap-space-sm">
+              <h1
+                class="font-display-hero text-display-hero-mobile md:text-display-hero text-surface-container-lowest tracking-tight"
+              >
+                Las personas y los proyectos detrás del
+                <span class="text-secondary-fixed font-bold">conocimiento</span>
+                que producimos
+              </h1>
+              <p
+                class="font-body-lg text-body-lg text-primary-fixed-dim leading-relaxed"
+              >
+                Conoce a quienes investigan en la Universidad Simón Bolívar y
+                los proyectos científicos que están transformando la Región
+                Caribe colombiana y el mundo.
+              </p>
+            </div>
+            <!-- Fast Action Tags & Statistics Header Strip -->
+            <div
+              class="grid grid-cols-2 sm:grid-cols-4 gap-space-md pt-space-sm border-t border-primary/40"
+            >
+              <div class="flex flex-col">
+                <span
+                  class="font-stat-metric text-stat-metric text-surface-container-lowest"
+                  >12</span
+                >
+                <span class="font-label-sm text-label-sm text-primary-fixed-dim"
+                  >Investigadores destacados</span
+                >
+              </div>
+              <div class="flex flex-col">
+                <span
+                  class="font-stat-metric text-stat-metric text-secondary-fixed"
+                  >850+</span
+                >
+                <span class="font-label-sm text-label-sm text-primary-fixed-dim"
+                  >Publicaciones Scopus</span
+                >
+              </div>
+              <div class="flex flex-col">
+                <span
+                  class="font-stat-metric text-stat-metric text-surface-container-lowest"
+                  >46</span
+                >
+                <span class="font-label-sm text-label-sm text-primary-fixed-dim"
+                  >Grupos Minciencias (A1/A)</span
+                >
+              </div>
+              <div class="flex flex-col">
+                <span
+                  class="font-stat-metric text-stat-metric text-tertiary-fixed"
+                  >14.8k</span
+                >
+                <span class="font-label-sm text-label-sm text-primary-fixed-dim"
+                  >Citas en Google Scholar</span
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- SEARCH & SMART FILTER HUB (Sticky Floating Island) -->
+        <section
+          class="relative z-30 -mt-7 max-w-[1240px] mx-auto w-full px-margin-mobile md:px-gutter lg:px-margin"
+        >
+          <div
+            class="bg-surface-container-lowest rounded-2xl p-space-md shadow-xl flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md"
+          >
+            <!-- Search Input with Live Filter Micro-Interaction Hook -->
+            <div class="flex-1 relative flex items-center">
+              <span
+                class="material-symbols-outlined absolute left-3.5 text-on-surface-variant text-[20px]"
+                >search</span
+              >
+              <input
+                class="w-full h-11 pl-10 pr-4 bg-canvas-cream text-on-surface rounded-xl font-body-sm text-body-sm focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-secondary transition-all"
+                id="researcherSearchInput"
+                placeholder="Buscar por nombre, línea de investigación o palabra clave..."
+                type="text"
+              />
+            </div>
+            <!-- Faculty / Department & Sorting Dropdown Filters -->
+            <div
+              class="flex flex-wrap sm:flex-nowrap items-center gap-space-sm"
+            >
+              <div class="relative w-full sm:w-auto">
+                <select
+                  class="w-full sm:w-56 h-11 px-3 bg-canvas-cream text-on-surface rounded-xl font-label-md text-label-md appearance-none pr-8 cursor-pointer focus:outline-none focus:ring-2 focus:ring-secondary transition-all"
+                  id="facultyFilter"
+                >
+                  <option value="all">Todas las Facultades</option>
+                  <option value="Ciencias de la Salud">
+                    Ciencias de la Salud
+                  </option>
+                  <option value="Ingeniería y Tecnología">
+                    Ingeniería y Tecnología
+                  </option>
+                  <option value="Ciencias Sociales y Humanas">
+                    Ciencias Sociales y Humanas
+                  </option>
+                  <option value="Ciencias Básicas y Biomédicas">
+                    Ciencias Básicas y Biomédicas
+                  </option>
+                  <option value="Ciencias Jurídicas y Políticas">
+                    Ciencias Jurídicas y Políticas
+                  </option>
+                </select>
+                <span
+                  class="material-symbols-outlined absolute right-2.5 top-3 text-on-surface-variant pointer-events-none text-[18px]"
+                  >expand_more</span
+                >
+              </div>
+              <div class="relative w-full sm:w-auto">
+                <select
+                  class="w-full sm:w-48 h-11 px-3 bg-canvas-cream text-on-surface rounded-xl font-label-md text-label-md appearance-none pr-8 cursor-pointer focus:outline-none focus:ring-2 focus:ring-secondary transition-all"
+                  id="categoryFilter"
+                >
+                  <option value="all">Categoría Minciencias</option>
+                  <option value="Sénior">Investigador Sénior</option>
+                  <option value="Asociado">Investigador Asociado</option>
+                  <option value="Junior">Investigador Junior</option>
+                </select>
+                <span
+                  class="material-symbols-outlined absolute right-2.5 top-3 text-on-surface-variant pointer-events-none text-[18px]"
+                  >expand_more</span
+                >
+              </div>
+              <!-- Metric Sorting -->
+              <button
+                class="h-11 px-4 inline-flex items-center justify-center gap-1.5 rounded-xl bg-canvas-cream hover:bg-surface-container text-on-surface font-label-md text-label-md transition-colors shrink-0"
+                id="btnSortPublications"
+                title="Ordenar por publicaciones"
+              >
+                <span class="material-symbols-outlined text-[18px]">sort</span>
+                <span class="hidden md:inline">Mayor Impacto</span>
+              </button>
+            </div>
+          </div>
+        </section>
+        <!-- DIRECTORY SECTION: QUIÉNES INVESTIGAN EN UNISIMÓN -->
+        <section class="w-full py-space-2xl bg-canvas-cream">
+          <div
+            class="max-w-[1240px] mx-auto px-margin-mobile md:px-gutter lg:px-margin"
+          >
+            <!-- Section Title & Meta Heading -->
+            <div
+              class="flex flex-col md:flex-row md:items-end justify-between gap-space-sm mb-space-xl"
+            >
+              <div class="flex flex-col">
+                <span
+                  class="font-label-md text-label-md text-secondary tracking-widest uppercase font-bold"
+                  >Directorio de Investigadores</span
+                >
+                <h2
+                  class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary tracking-tight mt-1"
+                >
+                  Quiénes investigan en Unisimón
+                </h2>
+                <p
+                  class="font-body-md text-body-md text-neutral-muted max-w-2xl mt-1"
+                >
+                  Profesores e investigadores de nuestros grupos categorizados
+                  por Minciencias y sus líneas de investigación de alto impacto
+                  en el territorio.
+                </p>
+              </div>
+              <!-- Pill Counter Badge -->
+              <div
+                class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-badge-sage-bg text-badge-sage-text font-label-md text-label-md self-start md:self-end"
+              >
+                <span class="material-symbols-outlined text-[16px]"
+                  >groups</span
+                >
+                <span id="activeCountLabel">12 Perfiles Activos</span>
+              </div>
+            </div>
+            <!-- 12 RESEARCHER PROFILE CARDS GRID (12 Exact Items matching Reference Card) -->
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-gutter"
+              id="researcherGrid"
+            >
+              <!-- CARD 1: DR. GUSTAVO AROCA MARTÍNEZ (Strict Reference Card Replication) -->
+              <article
+                class="researcher-card group relative flex flex-col justify-between bg-surface-container-lowest rounded-[24px] p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] hover:-translate-y-1 transition-all duration-300"
+                data-category="Sénior"
+                data-faculty="Ciencias de la Salud"
+                data-h-google="33"
+                data-h-scopus="23"
+                data-name="Gustavo Aroca Martínez"
+                data-pubs="85"
+              >
+                <div class="flex flex-col">
+                  <!-- Top Photo Container with Disciplinary Badge Overlay -->
+                  <div
+                    class="relative w-full h-72 rounded-[20px] overflow-hidden bg-surface-dim"
+                  >
+                    <img
+                      class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      data-alt="Formal frontal academic portrait of Dr. Gustavo Aroca Martínez, a distinguished senior medical researcher in a tailored charcoal suit and silk tie, warm professional lighting inside a modern university health sciences campus, authoritative yet welcoming expression."
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBb2TGSU7l0hqhO_ByhbNHVjZFxMxuHMklalWGpc6k6nwVoKTb55R6Ap4hRTaRPt369sX34PT1SqC5AjRevSWco5q-1QaIq-ZukXDSwsJN1ZKW_41zmHY4qkD1DN0swzU6ajDjm1ufaHRDQJap2BB3XJSlp_mb7GZPeNaaOdEgyAdz_zd-_ZNqNHxOMvfR3ycOnyd72q1P5fV5WUS4F8hkGPkD156UqmqMz64va6GFNoVVykc7E8nG-VQ"
+                    />
+                    <div
+                      class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+                    ></div>
+                    <!-- Floating Disciplinary Pill Badge (Image Overlay Bottom-Left) -->
+                    <span
+                      class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-[#0E382B]/90 backdrop-blur-md text-surface-container-lowest font-label-sm text-label-sm font-semibold tracking-wide shadow-sm"
+                    >
+                      Ciencias de la Salud
+                    </span>
+                  </div>
+                  <!-- Profile Identity Header -->
+                  <div class="pt-4 pb-2">
+                    <h3
+                      class="font-headline-sm text-headline-sm text-[#0F241A] font-bold tracking-tight group-hover:text-primary transition-colors"
+                    >
+                      Dr. Gustavo Aroca Martínez
+                    </h3>
+                    <div
+                      class="flex items-center gap-1.5 text-neutral-muted mt-1 font-body-sm text-body-sm"
+                    >
+                      <span
+                        class="material-symbols-outlined text-[18px] text-primary"
+                        >person</span
+                      >
+                      <span>Investigador Sénior</span>
+                    </div>
+                  </div>
+                  <!-- Áreas de investigación tag row + Line-art watermark background -->
+                  <div class="relative my-2 py-1">
+                    <!-- Watermark heartbeat symbol in background -->
+                    <div
+                      class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-10 text-primary"
+                    >
+                      <svg
+                        fill="none"
+                        height="68"
+                        stroke="currentColor"
+                        stroke-width="1.2"
+                        viewbox="0 0 24 24"
+                        width="68"
+                      >
+                        <path
+                          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                        ></path>
+                        <path
+                          d="M3 12h4l2-4 3 8 2-6 2 3h4"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.5"
+                        ></path>
+                      </svg>
+                    </div>
+                    <!-- Areas Label Badge with Pin / Link icon -->
+                    <div
+                      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-semibold mb-2"
+                    >
+                      <span class="material-symbols-outlined text-[15px]"
+                        >link</span
+                      >
+                      Áreas de investigación
+                    </div>
+                    <!-- Tag Badges Collection -->
+                    <div class="flex flex-wrap gap-1.5 pr-8">
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Salud pública</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Epidemiología</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Nefrología</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Enfermedades crónicas</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <!-- Bottom Metrics Container & CTA Button -->
+                <div class="mt-4 flex flex-col gap-3">
+                  <div
+                    class="bg-[#F9FAF8] rounded-[14px] p-3 flex flex-col gap-2.5"
+                  >
+                    <!-- Publicaciones Metric Bar -->
+                    <div
+                      class="flex items-center justify-between pb-2 border-b border-surface-container"
+                    >
+                      <div class="flex items-center gap-2 text-on-surface">
+                        <span
+                          class="material-symbols-outlined text-primary text-[20px]"
+                          >feed</span
+                        >
+                        <span class="font-label-md text-label-md text-[#154734]"
+                          >Publicaciones</span
+                        >
+                      </div>
+                      <span
+                        class="font-stat-metric text-[26px] leading-none text-primary font-bold"
+                        >85</span
+                      >
+                    </div>
+                    <!-- H-Index Twin Split -->
+                    <div class="grid grid-cols-2 gap-2 pt-0.5">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="material-symbols-outlined text-secondary text-[20px]"
+                          >trending_up</span
+                        >
+                        <div class="flex flex-col">
+                          <span
+                            class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                            >Scopus</span
+                          >
+                          <span
+                            class="font-bold text-on-surface text-[15px] leading-tight"
+                            >23</span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="flex flex-col pl-3 border-l border-surface-container"
+                      >
+                        <span
+                          class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                          >Google Scholar</span
+                        >
+                        <span
+                          class="font-bold text-on-surface text-[15px] leading-tight"
+                          >33</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Full-width Action Button -->
+                  <a
+                    class="w-full h-10 rounded-xl bg-primary hover:bg-secondary text-surface-container-lowest font-label-md text-label-md flex items-center justify-center gap-2 transition-colors"
+                    href="#"
+                  >
+                    Ver perfil
+                    <span class="material-symbols-outlined text-[16px]"
+                      >arrow_forward</span
+                    >
+                  </a>
+                </div>
+              </article>
+              <!-- CARD 2: DRA. MARCELA OSPINO BARRIOS -->
+              <article
+                class="researcher-card group relative flex flex-col justify-between bg-surface-container-lowest rounded-[24px] p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] hover:-translate-y-1 transition-all duration-300"
+                data-category="Asociado"
+                data-faculty="Ciencias de la Salud"
+                data-h-google="24"
+                data-h-scopus="16"
+                data-name="Marcela Ospino Barrios"
+                data-pubs="48"
+              >
+                <div class="flex flex-col">
+                  <div
+                    class="relative w-full h-72 rounded-[20px] overflow-hidden bg-surface-dim"
+                  >
+                    <img
+                      class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                      data-alt="Professional studio portrait of Dra. Marcela Ospino Barrios, female Colombian health science researcher in her early forties with warm demeanor, hair down, dark blazer, brightly lit academic medical institute backdrop."
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJ0C6aJkSStNfvICMTKfi0jmabmpIgISYEstA2TTpSLaWFVbgGbWz0j46RGe8GO31Qzi5vefoBgKj256G8bDBW5gbOAzJwXAybVTpwDNrTZHWeWo7gxhWEqL-bRbOx4zH01NfmVbYntH-B_YY45ln3R6DwHELfCtfd_aKKQukrb-X1kCYImVkODL1QVvmEvno5Myw13kcuaqvTPeVzub2cM0fZ3AWL7hcTyVNIPffWe5JwEfOiThLtPw"
+                    />
+                    <div
+                      class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+                    ></div>
+                    <span
+                      class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-[#0E382B]/90 backdrop-blur-md text-surface-container-lowest font-label-sm text-label-sm font-semibold tracking-wide shadow-sm"
+                    >
+                      Ciencias de la Salud
+                    </span>
+                  </div>
+                  <div class="pt-4 pb-2">
+                    <h3
+                      class="font-headline-sm text-headline-sm text-[#0F241A] font-bold tracking-tight group-hover:text-primary transition-colors"
+                    >
+                      Dra. Marcela Ospino Barrios
+                    </h3>
+                    <div
+                      class="flex items-center gap-1.5 text-neutral-muted mt-1 font-body-sm text-body-sm"
+                    >
+                      <span
+                        class="material-symbols-outlined text-[18px] text-primary"
+                        >person</span
+                      >
+                      <span>Investigadora Asociada</span>
+                    </div>
+                  </div>
+                  <div class="relative my-2 py-1">
+                    <div
+                      class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-10 text-primary"
+                    >
+                      <span class="material-symbols-outlined text-[64px]"
+                        >cardiology</span
+                      >
+                    </div>
+                    <div
+                      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-semibold mb-2"
+                    >
+                      <span class="material-symbols-outlined text-[15px]"
+                        >link</span
+                      >
+                      Áreas de investigación
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 pr-8">
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Salud materno-infantil</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Riesgo cardiovascular</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Nutrición comunitaria</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 flex flex-col gap-3">
+                  <div
+                    class="bg-[#F9FAF8] rounded-[14px] p-3 flex flex-col gap-2.5"
+                  >
+                    <div
+                      class="flex items-center justify-between pb-2 border-b border-surface-container"
+                    >
+                      <div class="flex items-center gap-2 text-on-surface">
+                        <span
+                          class="material-symbols-outlined text-primary text-[20px]"
+                          >feed</span
+                        >
+                        <span class="font-label-md text-label-md text-[#154734]"
+                          >Publicaciones</span
+                        >
+                      </div>
+                      <span
+                        class="font-stat-metric text-[26px] leading-none text-primary font-bold"
+                        >48</span
+                      >
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-0.5">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="material-symbols-outlined text-secondary text-[20px]"
+                          >trending_up</span
+                        >
+                        <div class="flex flex-col">
+                          <span
+                            class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                            >Scopus</span
+                          >
+                          <span
+                            class="font-bold text-on-surface text-[15px] leading-tight"
+                            >16</span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="flex flex-col pl-3 border-l border-surface-container"
+                      >
+                        <span
+                          class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                          >Google Scholar</span
+                        >
+                        <span
+                          class="font-bold text-on-surface text-[15px] leading-tight"
+                          >24</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    class="w-full h-10 rounded-xl bg-primary hover:bg-secondary text-surface-container-lowest font-label-md text-label-md flex items-center justify-center gap-2 transition-colors"
+                    href="#"
+                  >
+                    Ver perfil
+                    <span class="material-symbols-outlined text-[16px]"
+                      >arrow_forward</span
+                    >
+                  </a>
+                </div>
+              </article>
+              <!-- CARD 3: DR. ANDRÉS CAMACHO RUEDA -->
+              <article
+                class="researcher-card group relative flex flex-col justify-between bg-surface-container-lowest rounded-[24px] p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] hover:-translate-y-1 transition-all duration-300"
+                data-category="Asociado"
+                data-faculty="Ingeniería y Tecnología"
+                data-h-google="19"
+                data-h-scopus="14"
+                data-name="Andrés Camacho Rueda"
+                data-pubs="31"
+              >
+                <div class="flex flex-col">
+                  <div
+                    class="relative w-full h-72 rounded-[20px] overflow-hidden bg-surface-dim"
+                  >
+                    <img
+                      class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      data-alt="Professional headshot of Dr. Andrés Camacho Rueda, male engineering researcher in his late thirties with an energetic smile, clean groomed beard, dark blue shirt, technology lab and circuits visible in softly blurred background."
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVekJzMIS-j1dxyrW9S514QWqQxFV6Nh0QeIVf6KeVfOWv1-icWydCS_zyirabofS0eb7aeBtKOQA76x8sUgr6ScYb3TFmd8HuIDpCKSrMLiXgrUJRtwW0rJ1nqn8gDyBWqp-RkJDXCEm7UJQ3CZA3L_6lBNQgXyeTl5TTVqAEfQ_24ltEdLV_81syZnzAwFdmplGFD2LLzR_dwCx3WaZwNBe4XOGolIAFgQy9-GGl5fg2aTqCKE2bWg"
+                    />
+                    <div
+                      class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+                    ></div>
+                    <span
+                      class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-[#0E382B]/90 backdrop-blur-md text-surface-container-lowest font-label-sm text-label-sm font-semibold tracking-wide shadow-sm"
+                    >
+                      Ingeniería y Tecnología
+                    </span>
+                  </div>
+                  <div class="pt-4 pb-2">
+                    <h3
+                      class="font-headline-sm text-headline-sm text-[#0F241A] font-bold tracking-tight group-hover:text-primary transition-colors"
+                    >
+                      Dr. Andrés Camacho Rueda
+                    </h3>
+                    <div
+                      class="flex items-center gap-1.5 text-neutral-muted mt-1 font-body-sm text-body-sm"
+                    >
+                      <span
+                        class="material-symbols-outlined text-[18px] text-primary"
+                        >person</span
+                      >
+                      <span>Investigador Asociado</span>
+                    </div>
+                  </div>
+                  <div class="relative my-2 py-1">
+                    <div
+                      class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-10 text-primary"
+                    >
+                      <span class="material-symbols-outlined text-[64px]"
+                        >memory</span
+                      >
+                    </div>
+                    <div
+                      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-semibold mb-2"
+                    >
+                      <span class="material-symbols-outlined text-[15px]"
+                        >link</span
+                      >
+                      Áreas de investigación
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 pr-8">
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Eficiencia energética</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Sensores IoT</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Smart Grid</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Realidad Aumentada</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 flex flex-col gap-3">
+                  <div
+                    class="bg-[#F9FAF8] rounded-[14px] p-3 flex flex-col gap-2.5"
+                  >
+                    <div
+                      class="flex items-center justify-between pb-2 border-b border-surface-container"
+                    >
+                      <div class="flex items-center gap-2 text-on-surface">
+                        <span
+                          class="material-symbols-outlined text-primary text-[20px]"
+                          >feed</span
+                        >
+                        <span class="font-label-md text-label-md text-[#154734]"
+                          >Publicaciones</span
+                        >
+                      </div>
+                      <span
+                        class="font-stat-metric text-[26px] leading-none text-primary font-bold"
+                        >31</span
+                      >
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-0.5">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="material-symbols-outlined text-secondary text-[20px]"
+                          >trending_up</span
+                        >
+                        <div class="flex flex-col">
+                          <span
+                            class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                            >Scopus</span
+                          >
+                          <span
+                            class="font-bold text-on-surface text-[15px] leading-tight"
+                            >14</span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="flex flex-col pl-3 border-l border-surface-container"
+                      >
+                        <span
+                          class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                          >Google Scholar</span
+                        >
+                        <span
+                          class="font-bold text-on-surface text-[15px] leading-tight"
+                          >19</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    class="w-full h-10 rounded-xl bg-primary hover:bg-secondary text-surface-container-lowest font-label-md text-label-md flex items-center justify-center gap-2 transition-colors"
+                    href="#"
+                  >
+                    Ver perfil
+                    <span class="material-symbols-outlined text-[16px]"
+                      >arrow_forward</span
+                    >
+                  </a>
+                </div>
+              </article>
+              <!-- CARD 4: DRA. LUCÍA FONTALVO MEZA -->
+              <article
+                class="researcher-card group relative flex flex-col justify-between bg-surface-container-lowest rounded-[24px] p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] hover:-translate-y-1 transition-all duration-300"
+                data-category="Sénior"
+                data-faculty="Ciencias Básicas y Biomédicas"
+                data-h-google="28"
+                data-h-scopus="19"
+                data-name="Lucía Fontalvo Meza"
+                data-pubs="55"
+              >
+                <div class="flex flex-col">
+                  <div
+                    class="relative w-full h-72 rounded-[20px] overflow-hidden bg-surface-dim"
+                  >
+                    <img
+                      class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      data-alt="Professional portrait of Dra. Lucía Fontalvo Meza, environmental scientist with red hair and confident expression, dressed in field-ready academic attire, lush coastal wetlands and estuary research station softly focused in background."
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBm9bMeGFX2SySqbNK6psRo2eCQ_2LYySXUYVVDfH7zHUp-riwaENJFIzqXQycBRZC4sdI6X9Pu4rie3ufwlPJ6ueLI7LctZvd3nhtRCsCVEASzEO-sioYgWYiWa5akr_VVUwOfkMewRB5-LxqDznIur_X5oTsuVnSsUrFu7xF6M7bhyuQ0jA9Rp8UXfTJvefa6e83yJNTP9DIeTmC9lJi855nf2vdtA9KzYCPh8Uo_fxb4y_CE28YULg"
+                    />
+                    <div
+                      class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+                    ></div>
+                    <span
+                      class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-[#0E382B]/90 backdrop-blur-md text-surface-container-lowest font-label-sm text-label-sm font-semibold tracking-wide shadow-sm"
+                    >
+                      Ciencias Básicas y Biomédicas
+                    </span>
+                  </div>
+                  <div class="pt-4 pb-2">
+                    <h3
+                      class="font-headline-sm text-headline-sm text-[#0F241A] font-bold tracking-tight group-hover:text-primary transition-colors"
+                    >
+                      Dra. Lucía Fontalvo Meza
+                    </h3>
+                    <div
+                      class="flex items-center gap-1.5 text-neutral-muted mt-1 font-body-sm text-body-sm"
+                    >
+                      <span
+                        class="material-symbols-outlined text-[18px] text-primary"
+                        >person</span
+                      >
+                      <span>Investigadora Sénior</span>
+                    </div>
+                  </div>
+                  <div class="relative my-2 py-1">
+                    <div
+                      class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-10 text-primary"
+                    >
+                      <span class="material-symbols-outlined text-[64px]"
+                        >eco</span
+                      >
+                    </div>
+                    <div
+                      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-semibold mb-2"
+                    >
+                      <span class="material-symbols-outlined text-[15px]"
+                        >link</span
+                      >
+                      Áreas de investigación
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 pr-8">
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Calidad del agua</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Ecosistemas costeros</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Manglares del Caribe</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Biorremediación</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 flex flex-col gap-3">
+                  <div
+                    class="bg-[#F9FAF8] rounded-[14px] p-3 flex flex-col gap-2.5"
+                  >
+                    <div
+                      class="flex items-center justify-between pb-2 border-b border-surface-container"
+                    >
+                      <div class="flex items-center gap-2 text-on-surface">
+                        <span
+                          class="material-symbols-outlined text-primary text-[20px]"
+                          >feed</span
+                        >
+                        <span class="font-label-md text-label-md text-[#154734]"
+                          >Publicaciones</span
+                        >
+                      </div>
+                      <span
+                        class="font-stat-metric text-[26px] leading-none text-primary font-bold"
+                        >55</span
+                      >
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-0.5">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="material-symbols-outlined text-secondary text-[20px]"
+                          >trending_up</span
+                        >
+                        <div class="flex flex-col">
+                          <span
+                            class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                            >Scopus</span
+                          >
+                          <span
+                            class="font-bold text-on-surface text-[15px] leading-tight"
+                            >19</span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="flex flex-col pl-3 border-l border-surface-container"
+                      >
+                        <span
+                          class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                          >Google Scholar</span
+                        >
+                        <span
+                          class="font-bold text-on-surface text-[15px] leading-tight"
+                          >28</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    class="w-full h-10 rounded-xl bg-primary hover:bg-secondary text-surface-container-lowest font-label-md text-label-md flex items-center justify-center gap-2 transition-colors"
+                    href="#"
+                  >
+                    Ver perfil
+                    <span class="material-symbols-outlined text-[16px]"
+                      >arrow_forward</span
+                    >
+                  </a>
+                </div>
+              </article>
+              <!-- CARD 5: DR. JAVIER PACHECO DAZA -->
+              <article
+                class="researcher-card group relative flex flex-col justify-between bg-surface-container-lowest rounded-[24px] p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] hover:-translate-y-1 transition-all duration-300"
+                data-category="Junior"
+                data-faculty="Ciencias Jurídicas y Políticas"
+                data-h-google="15"
+                data-h-scopus="9"
+                data-name="Javier Pacheco Daza"
+                data-pubs="27"
+              >
+                <div class="flex flex-col">
+                  <div
+                    class="relative w-full h-72 rounded-[20px] overflow-hidden bg-surface-dim"
+                  >
+                    <img
+                      class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      data-alt="Editorial portrait of Dr. Javier Pacheco Daza, legal and social researcher in his mid thirties, dressed in neat dark blazer, expressive eyes, scholarly library with leather-bound legal volumes in background."
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUfw23IL2-McohTSX1OnQujjD8zc1glvP_pNXx04YDOBvqZmHmq9Dzj-scjEWTy8K9dqe7MWrfv0BSAKLb75Rq3RKqFrgEEG8MTiQ1_ehrMdcEAE2zHF2NJJM5fWsAJtFltwcWuCXVrCtTTrG6LjSh_txaqteIo1ebUNS1Sfcc0YH_PdPGWrmo0D0XZ-jX8FNNnCkOk6dvQRdl-R7xVNHwOiaNWZb4H7N02HB_7F_TjzG58gEUhQ2FAg"
+                    />
+                    <div
+                      class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+                    ></div>
+                    <span
+                      class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-[#0E382B]/90 backdrop-blur-md text-surface-container-lowest font-label-sm text-label-sm font-semibold tracking-wide shadow-sm"
+                    >
+                      Ciencias Jurídicas y Políticas
+                    </span>
+                  </div>
+                  <div class="pt-4 pb-2">
+                    <h3
+                      class="font-headline-sm text-headline-sm text-[#0F241A] font-bold tracking-tight group-hover:text-primary transition-colors"
+                    >
+                      Dr. Javier Pacheco Daza
+                    </h3>
+                    <div
+                      class="flex items-center gap-1.5 text-neutral-muted mt-1 font-body-sm text-body-sm"
+                    >
+                      <span
+                        class="material-symbols-outlined text-[18px] text-primary"
+                        >person</span
+                      >
+                      <span>Investigador Junior</span>
+                    </div>
+                  </div>
+                  <div class="relative my-2 py-1">
+                    <div
+                      class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-10 text-primary"
+                    >
+                      <span class="material-symbols-outlined text-[64px]"
+                        >gavel</span
+                      >
+                    </div>
+                    <div
+                      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-semibold mb-2"
+                    >
+                      <span class="material-symbols-outlined text-[15px]"
+                        >link</span
+                      >
+                      Áreas de investigación
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 pr-8">
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Acceso a la justicia</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Migración fronteriza</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Derecho constitucional</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 flex flex-col gap-3">
+                  <div
+                    class="bg-[#F9FAF8] rounded-[14px] p-3 flex flex-col gap-2.5"
+                  >
+                    <div
+                      class="flex items-center justify-between pb-2 border-b border-surface-container"
+                    >
+                      <div class="flex items-center gap-2 text-on-surface">
+                        <span
+                          class="material-symbols-outlined text-primary text-[20px]"
+                          >feed</span
+                        >
+                        <span class="font-label-md text-label-md text-[#154734]"
+                          >Publicaciones</span
+                        >
+                      </div>
+                      <span
+                        class="font-stat-metric text-[26px] leading-none text-primary font-bold"
+                        >27</span
+                      >
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-0.5">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="material-symbols-outlined text-secondary text-[20px]"
+                          >trending_up</span
+                        >
+                        <div class="flex flex-col">
+                          <span
+                            class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                            >Scopus</span
+                          >
+                          <span
+                            class="font-bold text-on-surface text-[15px] leading-tight"
+                            >9</span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="flex flex-col pl-3 border-l border-surface-container"
+                      >
+                        <span
+                          class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                          >Google Scholar</span
+                        >
+                        <span
+                          class="font-bold text-on-surface text-[15px] leading-tight"
+                          >15</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    class="w-full h-10 rounded-xl bg-primary hover:bg-secondary text-surface-container-lowest font-label-md text-label-md flex items-center justify-center gap-2 transition-colors"
+                    href="#"
+                  >
+                    Ver perfil
+                    <span class="material-symbols-outlined text-[16px]"
+                      >arrow_forward</span
+                    >
+                  </a>
+                </div>
+              </article>
+              <!-- CARD 6: DRA. NATALIA ESCORCIA PÉREZ -->
+              <article
+                class="researcher-card group relative flex flex-col justify-between bg-surface-container-lowest rounded-[24px] p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] hover:-translate-y-1 transition-all duration-300"
+                data-category="Asociado"
+                data-faculty="Ciencias Sociales y Humanas"
+                data-h-google="21"
+                data-h-scopus="13"
+                data-name="Natalia Escorcia Pérez"
+                data-pubs="39"
+              >
+                <div class="flex flex-col">
+                  <div
+                    class="relative w-full h-72 rounded-[20px] overflow-hidden bg-surface-dim"
+                  >
+                    <img
+                      class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      data-alt="Modern portrait of Dra. Natalia Escorcia Pérez, social epidemiology professor in structured grey blazer and white top, poised and reflective stance, university courtyard and research institute terrace in background."
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuCX1L4uEO1ZTCpE_epoTNfTqxwVchEI7ufv3Q9wGk5r0oIz_hg5WqZ7Biv9OdzuSFqextWvYJHVg_YG-m3ZXbGytEYuJPJ4HtVNXUWPPKU70QzcQsZJWAOhVpI1CA2ctb2siicNjjZg_cRdTs0YPjk4PalEX-7XLAi4thyuu4XafKV0x4wg0ibFgkidbsGViWAhrjX315Xux_FqufpmyH4qUV5xoAdUyISGQUh1qsbGqHSCjeAWHDp4HQ"
+                    />
+                    <div
+                      class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+                    ></div>
+                    <span
+                      class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-[#0E382B]/90 backdrop-blur-md text-surface-container-lowest font-label-sm text-label-sm font-semibold tracking-wide shadow-sm"
+                    >
+                      Ciencias Sociales y Humanas
+                    </span>
+                  </div>
+                  <div class="pt-4 pb-2">
+                    <h3
+                      class="font-headline-sm text-headline-sm text-[#0F241A] font-bold tracking-tight group-hover:text-primary transition-colors"
+                    >
+                      Dra. Natalia Escorcia Pérez
+                    </h3>
+                    <div
+                      class="flex items-center gap-1.5 text-neutral-muted mt-1 font-body-sm text-body-sm"
+                    >
+                      <span
+                        class="material-symbols-outlined text-[18px] text-primary"
+                        >person</span
+                      >
+                      <span>Investigadora Asociada</span>
+                    </div>
+                  </div>
+                  <div class="relative my-2 py-1">
+                    <div
+                      class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-10 text-primary"
+                    >
+                      <span class="material-symbols-outlined text-[64px]"
+                        >psychology</span
+                      >
+                    </div>
+                    <div
+                      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-semibold mb-2"
+                    >
+                      <span class="material-symbols-outlined text-[15px]"
+                        >link</span
+                      >
+                      Áreas de investigación
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 pr-8">
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Psicología social</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Primera infancia</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Desarrollo cognitivo</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 flex flex-col gap-3">
+                  <div
+                    class="bg-[#F9FAF8] rounded-[14px] p-3 flex flex-col gap-2.5"
+                  >
+                    <div
+                      class="flex items-center justify-between pb-2 border-b border-surface-container"
+                    >
+                      <div class="flex items-center gap-2 text-on-surface">
+                        <span
+                          class="material-symbols-outlined text-primary text-[20px]"
+                          >feed</span
+                        >
+                        <span class="font-label-md text-label-md text-[#154734]"
+                          >Publicaciones</span
+                        >
+                      </div>
+                      <span
+                        class="font-stat-metric text-[26px] leading-none text-primary font-bold"
+                        >39</span
+                      >
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-0.5">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="material-symbols-outlined text-secondary text-[20px]"
+                          >trending_up</span
+                        >
+                        <div class="flex flex-col">
+                          <span
+                            class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                            >Scopus</span
+                          >
+                          <span
+                            class="font-bold text-on-surface text-[15px] leading-tight"
+                            >13</span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="flex flex-col pl-3 border-l border-surface-container"
+                      >
+                        <span
+                          class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                          >Google Scholar</span
+                        >
+                        <span
+                          class="font-bold text-on-surface text-[15px] leading-tight"
+                          >21</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    class="w-full h-10 rounded-xl bg-primary hover:bg-secondary text-surface-container-lowest font-label-md text-label-md flex items-center justify-center gap-2 transition-colors"
+                    href="#"
+                  >
+                    Ver perfil
+                    <span class="material-symbols-outlined text-[16px]"
+                      >arrow_forward</span
+                    >
+                  </a>
+                </div>
+              </article>
+              <!-- CARD 7: DR. CAMILO VILLARREAL NORIEGA -->
+              <article
+                class="researcher-card group relative flex flex-col justify-between bg-surface-container-lowest rounded-[24px] p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] hover:-translate-y-1 transition-all duration-300"
+                data-category="Junior"
+                data-faculty="Ingeniería y Tecnología"
+                data-h-google="14"
+                data-h-scopus="8"
+                data-name="Camilo Villarreal Noriega"
+                data-pubs="22"
+              >
+                <div class="flex flex-col">
+                  <div
+                    class="relative w-full h-72 rounded-[20px] overflow-hidden bg-surface-dim"
+                  >
+                    <img
+                      class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      data-alt="Professional portrait of Dr. Camilo Villarreal Noriega, logistics and environmental technology researcher wearing modern black-rimmed glasses and dark blazer, data server center glow in the background."
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_ltb2tN9JhSdXVoKKit8A9WWzf-Xzs-ksirh6TUJ-VUhUaUGKl05PjMxOWtPUcg7Ds37xkXQP4Uj4SWgdpcsiVQKhi8bluElTRWkM6RmqogIxQ9LEAI9W5cZ-CFcKbz8zjHfvgUj7zvO84NAeJbYcfFOb1KSViZSI7JEOTwwVdFP1BeoEbdQ-JyRkfo_58kyNr1V0cIKanTVfnQehy6h5fF3vOXj1C9d1V0F3ZkNDaCU3H_DwO3OlRA"
+                    />
+                    <div
+                      class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+                    ></div>
+                    <span
+                      class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-[#0E382B]/90 backdrop-blur-md text-surface-container-lowest font-label-sm text-label-sm font-semibold tracking-wide shadow-sm"
+                    >
+                      Ingeniería y Tecnología
+                    </span>
+                  </div>
+                  <div class="pt-4 pb-2">
+                    <h3
+                      class="font-headline-sm text-headline-sm text-[#0F241A] font-bold tracking-tight group-hover:text-primary transition-colors"
+                    >
+                      Dr. Camilo Villarreal Noriega
+                    </h3>
+                    <div
+                      class="flex items-center gap-1.5 text-neutral-muted mt-1 font-body-sm text-body-sm"
+                    >
+                      <span
+                        class="material-symbols-outlined text-[18px] text-primary"
+                        >person</span
+                      >
+                      <span>Investigador Junior</span>
+                    </div>
+                  </div>
+                  <div class="relative my-2 py-1">
+                    <div
+                      class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-10 text-primary"
+                    >
+                      <span class="material-symbols-outlined text-[64px]"
+                        >local_shipping</span
+                      >
+                    </div>
+                    <div
+                      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-semibold mb-2"
+                    >
+                      <span class="material-symbols-outlined text-[15px]"
+                        >link</span
+                      >
+                      Áreas de investigación
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 pr-8">
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Logística fluvial</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Analítica de datos</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Río Magdalena</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 flex flex-col gap-3">
+                  <div
+                    class="bg-[#F9FAF8] rounded-[14px] p-3 flex flex-col gap-2.5"
+                  >
+                    <div
+                      class="flex items-center justify-between pb-2 border-b border-surface-container"
+                    >
+                      <div class="flex items-center gap-2 text-on-surface">
+                        <span
+                          class="material-symbols-outlined text-primary text-[20px]"
+                          >feed</span
+                        >
+                        <span class="font-label-md text-label-md text-[#154734]"
+                          >Publicaciones</span
+                        >
+                      </div>
+                      <span
+                        class="font-stat-metric text-[26px] leading-none text-primary font-bold"
+                        >22</span
+                      >
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-0.5">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="material-symbols-outlined text-secondary text-[20px]"
+                          >trending_up</span
+                        >
+                        <div class="flex flex-col">
+                          <span
+                            class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                            >Scopus</span
+                          >
+                          <span
+                            class="font-bold text-on-surface text-[15px] leading-tight"
+                            >8</span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="flex flex-col pl-3 border-l border-surface-container"
+                      >
+                        <span
+                          class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                          >Google Scholar</span
+                        >
+                        <span
+                          class="font-bold text-on-surface text-[15px] leading-tight"
+                          >14</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    class="w-full h-10 rounded-xl bg-primary hover:bg-secondary text-surface-container-lowest font-label-md text-label-md flex items-center justify-center gap-2 transition-colors"
+                    href="#"
+                  >
+                    Ver perfil
+                    <span class="material-symbols-outlined text-[16px]"
+                      >arrow_forward</span
+                    >
+                  </a>
+                </div>
+              </article>
+              <!-- CARD 8: DR. ROBERTO SENIOR VARELA -->
+              <article
+                class="researcher-card group relative flex flex-col justify-between bg-surface-container-lowest rounded-[24px] p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] hover:-translate-y-1 transition-all duration-300"
+                data-category="Sénior"
+                data-faculty="Ciencias de la Salud"
+                data-h-google="37"
+                data-h-scopus="26"
+                data-name="Roberto Senior Varela"
+                data-pubs="94"
+              >
+                <div class="flex flex-col">
+                  <div
+                    class="relative w-full h-72 rounded-[20px] overflow-hidden bg-surface-dim"
+                  >
+                    <img
+                      class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      data-alt="Distinguished academic portrait of Dr. Roberto Senior Varela, senior neuroscientist in charcoal grey business suit, silver hair, confident scientific gaze, clean high-tech neuroscience laboratory background."
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0eTYNheQzX4NwT1GCSlCZogTrgM-I8rbuzQs671klSvjin6CJ6G10dMSgm72A5wf0jKCDQmrjNzFmWL12wLdXDQwS-WTLbPaU6CCklCLXuLoD0d5tVDAjX8nrzVXQe7wIlvQbiS8rBpNEeIix0Ap30A_-BvlQklV7n-Qx60AHmQNAQ7XbY1LOpgmJI3fhwFjd1_byX9r5y1QUh3q69H-ZarMkUNzyyRgdYrKUEPpXhnD0c0Eqiul4Jg"
+                    />
+                    <div
+                      class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+                    ></div>
+                    <span
+                      class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-[#0E382B]/90 backdrop-blur-md text-surface-container-lowest font-label-sm text-label-sm font-semibold tracking-wide shadow-sm"
+                    >
+                      Ciencias de la Salud
+                    </span>
+                  </div>
+                  <div class="pt-4 pb-2">
+                    <h3
+                      class="font-headline-sm text-headline-sm text-[#0F241A] font-bold tracking-tight group-hover:text-primary transition-colors"
+                    >
+                      Dr. Roberto Senior Varela
+                    </h3>
+                    <div
+                      class="flex items-center gap-1.5 text-neutral-muted mt-1 font-body-sm text-body-sm"
+                    >
+                      <span
+                        class="material-symbols-outlined text-[18px] text-primary"
+                        >person</span
+                      >
+                      <span>Investigador Sénior</span>
+                    </div>
+                  </div>
+                  <div class="relative my-2 py-1">
+                    <div
+                      class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-10 text-primary"
+                    >
+                      <span class="material-symbols-outlined text-[64px]"
+                        >neurology</span
+                      >
+                    </div>
+                    <div
+                      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-semibold mb-2"
+                    >
+                      <span class="material-symbols-outlined text-[15px]"
+                        >link</span
+                      >
+                      Áreas de investigación
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 pr-8">
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Neurociencias</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Genómica clínica</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Biomarcadores</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 flex flex-col gap-3">
+                  <div
+                    class="bg-[#F9FAF8] rounded-[14px] p-3 flex flex-col gap-2.5"
+                  >
+                    <div
+                      class="flex items-center justify-between pb-2 border-b border-surface-container"
+                    >
+                      <div class="flex items-center gap-2 text-on-surface">
+                        <span
+                          class="material-symbols-outlined text-primary text-[20px]"
+                          >feed</span
+                        >
+                        <span class="font-label-md text-label-md text-[#154734]"
+                          >Publicaciones</span
+                        >
+                      </div>
+                      <span
+                        class="font-stat-metric text-[26px] leading-none text-primary font-bold"
+                        >94</span
+                      >
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-0.5">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="material-symbols-outlined text-secondary text-[20px]"
+                          >trending_up</span
+                        >
+                        <div class="flex flex-col">
+                          <span
+                            class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                            >Scopus</span
+                          >
+                          <span
+                            class="font-bold text-on-surface text-[15px] leading-tight"
+                            >26</span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="flex flex-col pl-3 border-l border-surface-container"
+                      >
+                        <span
+                          class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                          >Google Scholar</span
+                        >
+                        <span
+                          class="font-bold text-on-surface text-[15px] leading-tight"
+                          >37</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    class="w-full h-10 rounded-xl bg-primary hover:bg-secondary text-surface-container-lowest font-label-md text-label-md flex items-center justify-center gap-2 transition-colors"
+                    href="#"
+                  >
+                    Ver perfil
+                    <span class="material-symbols-outlined text-[16px]"
+                      >arrow_forward</span
+                    >
+                  </a>
+                </div>
+              </article>
+              <!-- CARD 9: DRA. PATRICIA MARTÍNEZ SOTOMAYOR -->
+              <article
+                class="researcher-card group relative flex flex-col justify-between bg-surface-container-lowest rounded-[24px] p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] hover:-translate-y-1 transition-all duration-300"
+                data-category="Sénior"
+                data-faculty="Ciencias Sociales y Humanas"
+                data-h-google="29"
+                data-h-scopus="18"
+                data-name="Patricia Martínez Sotomayor"
+                data-pubs="62"
+              >
+                <div class="flex flex-col">
+                  <div
+                    class="relative w-full h-72 rounded-[20px] overflow-hidden bg-surface-dim"
+                  >
+                    <img
+                      class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      data-alt="Scholarly portrait of Dra. Patricia Martínez Sotomayor, education and social policy researcher in elegant dark emerald green blazer, warm natural lighting inside historic Caribbean academic archive room."
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZCmlXeMqdZU63itOw-qRYp2w2hCBL-YovbhSagQpZ-r9hXv9sY6Dr7li3cMhaQqUJeNnCWZKwxuEQMRx-HELrvOWBUjKk3ANTGuV5rTdqxh1ivqzLhunsMI0Sgbr1D1BI6bFSIVTk7CE3pTl9XoOHi6pzd7r8BMbxe8UPTInldr8j7i855RYtcKlXdK-Nz3woRtu8fWdPZaF3y1RXLSiQO7_TEggPWAW8Ex7ORYbxEY2Bt6o8sBlUIw"
+                    />
+                    <div
+                      class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+                    ></div>
+                    <span
+                      class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-[#0E382B]/90 backdrop-blur-md text-surface-container-lowest font-label-sm text-label-sm font-semibold tracking-wide shadow-sm"
+                    >
+                      Ciencias Sociales y Humanas
+                    </span>
+                  </div>
+                  <div class="pt-4 pb-2">
+                    <h3
+                      class="font-headline-sm text-headline-sm text-[#0F241A] font-bold tracking-tight group-hover:text-primary transition-colors"
+                    >
+                      Dra. Patricia Martínez Sotomayor
+                    </h3>
+                    <div
+                      class="flex items-center gap-1.5 text-neutral-muted mt-1 font-body-sm text-body-sm"
+                    >
+                      <span
+                        class="material-symbols-outlined text-[18px] text-primary"
+                        >person</span
+                      >
+                      <span>Investigadora Sénior</span>
+                    </div>
+                  </div>
+                  <div class="relative my-2 py-1">
+                    <div
+                      class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-10 text-primary"
+                    >
+                      <span class="material-symbols-outlined text-[64px]"
+                        >school</span
+                      >
+                    </div>
+                    <div
+                      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-semibold mb-2"
+                    >
+                      <span class="material-symbols-outlined text-[15px]"
+                        >link</span
+                      >
+                      Áreas de investigación
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 pr-8">
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Políticas públicas</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Innovación educativa</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Equidad de género</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 flex flex-col gap-3">
+                  <div
+                    class="bg-[#F9FAF8] rounded-[14px] p-3 flex flex-col gap-2.5"
+                  >
+                    <div
+                      class="flex items-center justify-between pb-2 border-b border-surface-container"
+                    >
+                      <div class="flex items-center gap-2 text-on-surface">
+                        <span
+                          class="material-symbols-outlined text-primary text-[20px]"
+                          >feed</span
+                        >
+                        <span class="font-label-md text-label-md text-[#154734]"
+                          >Publicaciones</span
+                        >
+                      </div>
+                      <span
+                        class="font-stat-metric text-[26px] leading-none text-primary font-bold"
+                        >62</span
+                      >
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-0.5">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="material-symbols-outlined text-secondary text-[20px]"
+                          >trending_up</span
+                        >
+                        <div class="flex flex-col">
+                          <span
+                            class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                            >Scopus</span
+                          >
+                          <span
+                            class="font-bold text-on-surface text-[15px] leading-tight"
+                            >18</span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="flex flex-col pl-3 border-l border-surface-container"
+                      >
+                        <span
+                          class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                          >Google Scholar</span
+                        >
+                        <span
+                          class="font-bold text-on-surface text-[15px] leading-tight"
+                          >29</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    class="w-full h-10 rounded-xl bg-primary hover:bg-secondary text-surface-container-lowest font-label-md text-label-md flex items-center justify-center gap-2 transition-colors"
+                    href="#"
+                  >
+                    Ver perfil
+                    <span class="material-symbols-outlined text-[16px]"
+                      >arrow_forward</span
+                    >
+                  </a>
+                </div>
+              </article>
+              <!-- CARD 10: DR. FERNANDO MENDOZA ORTIZ -->
+              <article
+                class="researcher-card group relative flex flex-col justify-between bg-surface-container-lowest rounded-[24px] p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] hover:-translate-y-1 transition-all duration-300"
+                data-category="Sénior"
+                data-faculty="Ingeniería y Tecnología"
+                data-h-google="31"
+                data-h-scopus="21"
+                data-name="Fernando Mendoza Ortiz"
+                data-pubs="73"
+              >
+                <div class="flex flex-col">
+                  <div
+                    class="relative w-full h-72 rounded-[20px] overflow-hidden bg-surface-dim"
+                  >
+                    <img
+                      class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      data-alt="Professional portrait of Dr. Fernando Mendoza Ortiz, artificial intelligence and robotics researcher, confident middle-aged man in formal collared shirt, advanced robotics prototyping workspace softly blurred in background."
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjMN7J0vrnvaSlMY6lngqlAwWLtT4WK60FwxRdjRl5pDohRt4ws22h30qQXMW3sBpKf9goCZW04DyKW4QWu8dyb624ZXs-PI1KJ2wi26T4FMuocyuIGvHS3HHXe1YfrARZr48DHV3LnaGs7Ty3whMQ1UUdo5lgVClrqyFlU_ec9I3PIovuJ9SbDcsxQvaAsvwUwF8QxHMqoC2iDV4BfsyNlRFYLTuyfl18-gN3R2ArecwuEBjPBUVAZA"
+                    />
+                    <div
+                      class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+                    ></div>
+                    <span
+                      class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-[#0E382B]/90 backdrop-blur-md text-surface-container-lowest font-label-sm text-label-sm font-semibold tracking-wide shadow-sm"
+                    >
+                      Ingeniería y Tecnología
+                    </span>
+                  </div>
+                  <div class="pt-4 pb-2">
+                    <h3
+                      class="font-headline-sm text-headline-sm text-[#0F241A] font-bold tracking-tight group-hover:text-primary transition-colors"
+                    >
+                      Dr. Fernando Mendoza Ortiz
+                    </h3>
+                    <div
+                      class="flex items-center gap-1.5 text-neutral-muted mt-1 font-body-sm text-body-sm"
+                    >
+                      <span
+                        class="material-symbols-outlined text-[18px] text-primary"
+                        >person</span
+                      >
+                      <span>Investigador Sénior</span>
+                    </div>
+                  </div>
+                  <div class="relative my-2 py-1">
+                    <div
+                      class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-10 text-primary"
+                    >
+                      <span class="material-symbols-outlined text-[64px]"
+                        >smart_toy</span
+                      >
+                    </div>
+                    <div
+                      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-semibold mb-2"
+                    >
+                      <span class="material-symbols-outlined text-[15px]"
+                        >link</span
+                      >
+                      Áreas de investigación
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 pr-8">
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Inteligencia Artificial</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Machine Learning</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Robótica aplicada</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 flex flex-col gap-3">
+                  <div
+                    class="bg-[#F9FAF8] rounded-[14px] p-3 flex flex-col gap-2.5"
+                  >
+                    <div
+                      class="flex items-center justify-between pb-2 border-b border-surface-container"
+                    >
+                      <div class="flex items-center gap-2 text-on-surface">
+                        <span
+                          class="material-symbols-outlined text-primary text-[20px]"
+                          >feed</span
+                        >
+                        <span class="font-label-md text-label-md text-[#154734]"
+                          >Publicaciones</span
+                        >
+                      </div>
+                      <span
+                        class="font-stat-metric text-[26px] leading-none text-primary font-bold"
+                        >73</span
+                      >
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-0.5">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="material-symbols-outlined text-secondary text-[20px]"
+                          >trending_up</span
+                        >
+                        <div class="flex flex-col">
+                          <span
+                            class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                            >Scopus</span
+                          >
+                          <span
+                            class="font-bold text-on-surface text-[15px] leading-tight"
+                            >21</span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="flex flex-col pl-3 border-l border-surface-container"
+                      >
+                        <span
+                          class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                          >Google Scholar</span
+                        >
+                        <span
+                          class="font-bold text-on-surface text-[15px] leading-tight"
+                          >31</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    class="w-full h-10 rounded-xl bg-primary hover:bg-secondary text-surface-container-lowest font-label-md text-label-md flex items-center justify-center gap-2 transition-colors"
+                    href="#"
+                  >
+                    Ver perfil
+                    <span class="material-symbols-outlined text-[16px]"
+                      >arrow_forward</span
+                    >
+                  </a>
+                </div>
+              </article>
+              <!-- CARD 11: DRA. CLAUDIA VALBUENA R. -->
+              <article
+                class="researcher-card group relative flex flex-col justify-between bg-surface-container-lowest rounded-[24px] p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] hover:-translate-y-1 transition-all duration-300"
+                data-category="Asociado"
+                data-faculty="Ciencias Básicas y Biomédicas"
+                data-h-google="22"
+                data-h-scopus="15"
+                data-name="Claudia Valbuena R."
+                data-pubs="43"
+              >
+                <div class="flex flex-col">
+                  <div
+                    class="relative w-full h-72 rounded-[20px] overflow-hidden bg-surface-dim"
+                  >
+                    <img
+                      class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      data-alt="Portrait of Dra. Claudia Valbuena R., Colombian biomedical scientist in clean white lab coat, observant analytical expression, state-of-the-art microbiology incubators and glass test tubes in soft background."
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuCM6G_gobv1GHjrGKsN07iYWW87VhrVlGNBFKHywwaVKM6Qa0bfFMCfBzxIcyL7qwWYLj6KeHFPs9A-QNnpTfVNxI-7YNDHr30BMwLqsF9hDEAb9uUb__qHfNiBhDopS3DxVd5Nr4yF1N1mBcMsfwo-I-eKHcxE9qOjnOmzWzhxYszbvQVrfm5NY-gb-PfQDatB3mzgcayJSfZepnJbvenkozvQ_5AiNGvndqL3iLRL3AWAy1MW-bq7wA"
+                    />
+                    <div
+                      class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+                    ></div>
+                    <span
+                      class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-[#0E382B]/90 backdrop-blur-md text-surface-container-lowest font-label-sm text-label-sm font-semibold tracking-wide shadow-sm"
+                    >
+                      Ciencias Básicas y Biomédicas
+                    </span>
+                  </div>
+                  <div class="pt-4 pb-2">
+                    <h3
+                      class="font-headline-sm text-headline-sm text-[#0F241A] font-bold tracking-tight group-hover:text-primary transition-colors"
+                    >
+                      Dra. Claudia Valbuena R.
+                    </h3>
+                    <div
+                      class="flex items-center gap-1.5 text-neutral-muted mt-1 font-body-sm text-body-sm"
+                    >
+                      <span
+                        class="material-symbols-outlined text-[18px] text-primary"
+                        >person</span
+                      >
+                      <span>Investigadora Asociada</span>
+                    </div>
+                  </div>
+                  <div class="relative my-2 py-1">
+                    <div
+                      class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-10 text-primary"
+                    >
+                      <span class="material-symbols-outlined text-[64px]"
+                        >biotech</span
+                      >
+                    </div>
+                    <div
+                      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-semibold mb-2"
+                    >
+                      <span class="material-symbols-outlined text-[15px]"
+                        >link</span
+                      >
+                      Áreas de investigación
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 pr-8">
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Biotecnología vegetal</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Fitoquímica</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Microbiología</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 flex flex-col gap-3">
+                  <div
+                    class="bg-[#F9FAF8] rounded-[14px] p-3 flex flex-col gap-2.5"
+                  >
+                    <div
+                      class="flex items-center justify-between pb-2 border-b border-surface-container"
+                    >
+                      <div class="flex items-center gap-2 text-on-surface">
+                        <span
+                          class="material-symbols-outlined text-primary text-[20px]"
+                          >feed</span
+                        >
+                        <span class="font-label-md text-label-md text-[#154734]"
+                          >Publicaciones</span
+                        >
+                      </div>
+                      <span
+                        class="font-stat-metric text-[26px] leading-none text-primary font-bold"
+                        >43</span
+                      >
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-0.5">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="material-symbols-outlined text-secondary text-[20px]"
+                          >trending_up</span
+                        >
+                        <div class="flex flex-col">
+                          <span
+                            class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                            >Scopus</span
+                          >
+                          <span
+                            class="font-bold text-on-surface text-[15px] leading-tight"
+                            >15</span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="flex flex-col pl-3 border-l border-surface-container"
+                      >
+                        <span
+                          class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                          >Google Scholar</span
+                        >
+                        <span
+                          class="font-bold text-on-surface text-[15px] leading-tight"
+                          >22</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    class="w-full h-10 rounded-xl bg-primary hover:bg-secondary text-surface-container-lowest font-label-md text-label-md flex items-center justify-center gap-2 transition-colors"
+                    href="#"
+                  >
+                    Ver perfil
+                    <span class="material-symbols-outlined text-[16px]"
+                      >arrow_forward</span
+                    >
+                  </a>
+                </div>
+              </article>
+              <!-- CARD 12: DR. HERNANDO BAQUERO LATORRE -->
+              <article
+                class="researcher-card group relative flex flex-col justify-between bg-surface-container-lowest rounded-[24px] p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] hover:-translate-y-1 transition-all duration-300"
+                data-category="Sénior"
+                data-faculty="Ciencias de la Salud"
+                data-h-google="35"
+                data-h-scopus="24"
+                data-name="Hernando Baquero Latorre"
+                data-pubs="78"
+              >
+                <div class="flex flex-col">
+                  <div
+                    class="relative w-full h-72 rounded-[20px] overflow-hidden bg-surface-dim"
+                  >
+                    <img
+                      class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      data-alt="Distinguished professional portrait of Dr. Hernando Baquero Latorre, senior pediatrician and neonatology clinical researcher, wearing a formal suit with physician lapel insignia, calm reassuring expression, modern medical simulation center background."
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgH1RqTr17fCTj4_Q52M1ZswsUL6VTdOIY-6cuIC22MuP6EFKY3OyC-s5pU_QzETgXJ__sh1AVOADoVuMuHZlcVkA2gLZK8xY4yazR56fQxRwdppdYnSzkAgf72kinmplJO1QOU-EqsOaARRjgkJehJSr2vAbX5_xrKjybGvzGAnEEiu3EluORItpoTWc_zGpLKrQioBbQJ1kZU6X5TyNYA4v56VquSQdKwn39z0HsOUJlMypp1mLwfA"
+                    />
+                    <div
+                      class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+                    ></div>
+                    <span
+                      class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-[#0E382B]/90 backdrop-blur-md text-surface-container-lowest font-label-sm text-label-sm font-semibold tracking-wide shadow-sm"
+                    >
+                      Ciencias de la Salud
+                    </span>
+                  </div>
+                  <div class="pt-4 pb-2">
+                    <h3
+                      class="font-headline-sm text-headline-sm text-[#0F241A] font-bold tracking-tight group-hover:text-primary transition-colors"
+                    >
+                      Dr. Hernando Baquero Latorre
+                    </h3>
+                    <div
+                      class="flex items-center gap-1.5 text-neutral-muted mt-1 font-body-sm text-body-sm"
+                    >
+                      <span
+                        class="material-symbols-outlined text-[18px] text-primary"
+                        >person</span
+                      >
+                      <span>Investigador Sénior</span>
+                    </div>
+                  </div>
+                  <div class="relative my-2 py-1">
+                    <div
+                      class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-10 text-primary"
+                    >
+                      <span class="material-symbols-outlined text-[64px]"
+                        >child_care</span
+                      >
+                    </div>
+                    <div
+                      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-semibold mb-2"
+                    >
+                      <span class="material-symbols-outlined text-[15px]"
+                        >link</span
+                      >
+                      Áreas de investigación
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 pr-8">
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Neonatología clínica</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Salud perinatal</span
+                      >
+                      <span
+                        class="px-2.5 py-0.5 rounded-md bg-surface-cream-alt text-on-surface-variant font-body-sm text-[12px]"
+                        >Ensayos clínicos</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 flex flex-col gap-3">
+                  <div
+                    class="bg-[#F9FAF8] rounded-[14px] p-3 flex flex-col gap-2.5"
+                  >
+                    <div
+                      class="flex items-center justify-between pb-2 border-b border-surface-container"
+                    >
+                      <div class="flex items-center gap-2 text-on-surface">
+                        <span
+                          class="material-symbols-outlined text-primary text-[20px]"
+                          >feed</span
+                        >
+                        <span class="font-label-md text-label-md text-[#154734]"
+                          >Publicaciones</span
+                        >
+                      </div>
+                      <span
+                        class="font-stat-metric text-[26px] leading-none text-primary font-bold"
+                        >78</span
+                      >
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-0.5">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="material-symbols-outlined text-secondary text-[20px]"
+                          >trending_up</span
+                        >
+                        <div class="flex flex-col">
+                          <span
+                            class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                            >Scopus</span
+                          >
+                          <span
+                            class="font-bold text-on-surface text-[15px] leading-tight"
+                            >24</span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="flex flex-col pl-3 border-l border-surface-container"
+                      >
+                        <span
+                          class="text-[10px] text-neutral-muted uppercase tracking-wider font-semibold"
+                          >Google Scholar</span
+                        >
+                        <span
+                          class="font-bold text-on-surface text-[15px] leading-tight"
+                          >35</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    class="w-full h-10 rounded-xl bg-primary hover:bg-secondary text-surface-container-lowest font-label-md text-label-md flex items-center justify-center gap-2 transition-colors"
+                    href="#"
+                  >
+                    Ver perfil
+                    <span class="material-symbols-outlined text-[16px]"
+                      >arrow_forward</span
+                    >
+                  </a>
+                </div>
+              </article>
+            </div>
+            <!-- No Results Feedback State (Hidden by default) -->
+            <div
+              class="hidden flex-col items-center justify-center py-space-2xl text-center"
+              id="noResultsBlock"
+            >
+              <span
+                class="material-symbols-outlined text-[48px] text-neutral-muted mb-2"
+                >person_search</span
+              >
+              <h4 class="font-headline-sm text-headline-sm text-primary">
+                No se encontraron investigadores
+              </h4>
+              <p
+                class="font-body-md text-body-md text-neutral-muted mt-1 max-w-md"
+              >
+                Prueba cambiando los filtros de facultad o el término de
+                búsqueda para ver más resultados.
+              </p>
+              <button
+                class="mt-4 px-4 py-2 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md hover:bg-secondary transition-colors"
+                id="resetFiltersBtn"
+              >
+                Restablecer filtros
+              </button>
+            </div>
+          </div>
+        </section>
+        <!-- BOTTOM IMPACT BANNER / CTA SECTION -->
+        <section
+          class="w-full py-space-xl bg-[#E8EFE5] text-[#154734] transition-colors"
+        >
+          <div
+            class="max-w-[1240px] mx-auto px-margin-mobile md:px-gutter lg:px-margin flex flex-col md:flex-row items-center justify-between gap-space-md"
+          >
+            <div class="flex items-center gap-4 max-w-2xl">
+              <div
+                class="w-12 h-12 rounded-2xl bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm"
+              >
+                <span class="material-symbols-outlined text-[26px]"
+                  >handshake</span
+                >
+              </div>
+              <div class="flex flex-col">
+                <h3
+                  class="font-headline-sm text-headline-sm font-bold text-primary"
+                >
+                  ¿Quieres vincularte a un grupo o proponer un proyecto
+                  conjunto?
+                </h3>
+                <p class="font-body-md text-body-md text-[#1E4B27] mt-0.5">
+                  Escríbenos y te conectamos directamente con el equipo y los
+                  líderes de investigación indicados.
+                </p>
+              </div>
+            </div>
+            <a
+              class="inline-flex items-center justify-center h-12 px-6 rounded-xl bg-[#528723] hover:bg-primary text-surface-container-lowest font-label-md text-label-md font-bold tracking-wide shadow-md transition-all hover:scale-105 shrink-0"
+              href="#"
+            >
+              Contactar a Investigación
+            </a>
+          </div>
+        </section>
+      </div>
+      <script>
+        // Dynamic Client-side Filtering and Sorting Logic
+        document.addEventListener("DOMContentLoaded", () => {
+          const searchInput = document.getElementById("researcherSearchInput");
+          const facultyFilter = document.getElementById("facultyFilter");
+          const categoryFilter = document.getElementById("categoryFilter");
+          const btnSortPubs = document.getElementById("btnSortPublications");
+          const resetBtn = document.getElementById("resetFiltersBtn");
+          const grid = document.getElementById("researcherGrid");
+          const noResults = document.getElementById("noResultsBlock");
+          const activeCountLabel = document.getElementById("activeCountLabel");
+
+          let isSortDesc = false;
+
+          function filterCards() {
+            const searchTerm = (searchInput?.value || "").toLowerCase().trim();
+            const selectedFaculty = facultyFilter?.value || "all";
+            const selectedCategory = categoryFilter?.value || "all";
+
+            const cards = Array.from(grid.querySelectorAll(".researcher-card"));
+            let visibleCount = 0;
+
+            cards.forEach((card) => {
+              const name = (card.getAttribute("data-name") || "").toLowerCase();
+              const faculty = card.getAttribute("data-faculty") || "";
+              const category = card.getAttribute("data-category") || "";
+              const tags = Array.from(card.querySelectorAll(".rounded-md"))
+                .map((el) => el.textContent.toLowerCase())
+                .join(" ");
+
+              const matchesSearch =
+                !searchTerm ||
+                name.includes(searchTerm) ||
+                tags.includes(searchTerm);
+              const matchesFaculty =
+                selectedFaculty === "all" || faculty === selectedFaculty;
+              const matchesCategory =
+                selectedCategory === "all" || category === selectedCategory;
+
+              if (matchesSearch && matchesFaculty && matchesCategory) {
+                card.classList.remove("hidden");
+                visibleCount++;
+              } else {
+                card.classList.add("hidden");
+              }
+            });
+
+            if (activeCountLabel) {
+              activeCountLabel.textContent = `${visibleCount} Perfil${visibleCount === 1 ? "" : "es"} Activo${visibleCount === 1 ? "" : "s"}`;
+            }
+
+            if (noResults) {
+              if (visibleCount === 0) {
+                noResults.classList.remove("hidden");
+                noResults.classList.add("flex");
+              } else {
+                noResults.classList.add("hidden");
+                noResults.classList.remove("flex");
+              }
+            }
+          }
+
+          function sortCardsByPubs() {
+            const cards = Array.from(grid.querySelectorAll(".researcher-card"));
+            isSortDesc = !isSortDesc;
+
+            cards.sort((a, b) => {
+              const pubA = parseInt(a.getAttribute("data-pubs") || "0", 10);
+              const pubB = parseInt(b.getAttribute("data-pubs") || "0", 10);
+              return isSortDesc ? pubB - pubA : pubA - pubB;
+            });
+
+            cards.forEach((c) => grid.appendChild(c));
+            btnSortPubs.classList.toggle("bg-primary", isSortDesc);
+            btnSortPubs.classList.toggle("text-on-primary", isSortDesc);
+          }
+
+          searchInput?.addEventListener("input", filterCards);
+          facultyFilter?.addEventListener("change", filterCards);
+          categoryFilter?.addEventListener("change", filterCards);
+          btnSortPubs?.addEventListener("click", sortCardsByPubs);
+
+          resetBtn?.addEventListener("click", () => {
+            if (searchInput) searchInput.value = "";
+            if (facultyFilter) facultyFilter.value = "all";
+            if (categoryFilter) categoryFilter.value = "all";
+            filterCards();
+          });
+        });
+      </script>
+    </main>
+    <footer class="w-full bg-surface-dark-forest text-on-primary py-space-2xl">
+      <div
+        class="max-w-[1240px] mx-auto px-margin-mobile md:px-gutter lg:px-margin"
+      >
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-space-xl"
+        >
+          <div class="flex flex-col gap-space-sm">
+            <div class="flex items-center gap-3">
+              <img
+                alt="Image from https://www.unisimon.edu.co/recursos/img/unisimon-logo-50-year.png"
+                class="h-7 w-auto object-contain brightness-0 invert"
+                src="https://lh3.googleusercontent.com/aida/AEtjO1XBZGdslyxlAzs5zCkQrDdma25AlvcGGGD0xN2q_6zXzuhfJVynft5M9LeuonszbSsXxk1-NaJOjctQLLerB504uWfVn2qbHO9sui4vwF0gAhl0ZePMQwIUGLT0CHHly94lIjqWEKG41GtukgXa3d77-QEsRaf3Bs5qCCrAyk0UD1MvjTIZ5HKpk06xFB97EhzRx51ICXZFCiRFwKf8mCngoPF64YOU25rrLHgA3WYFaC6OynpLF8O4cymO"
+              />
+            </div>
+            <span
+              class="font-headline-sm text-headline-sm tracking-tight text-surface-container-lowest mt-1"
+              >UNISIMÓN RESEARCH</span
+            >
+            <p class="font-body-sm text-body-sm text-primary-fixed-dim">
+              Portal institucional de divulgación científica, producción
+              académica y transferencia tecnológica de la Universidad Simón
+              Bolívar.
+            </p>
+          </div>
+          <div class="flex flex-col gap-space-xs">
+            <span
+              class="font-label-md text-label-md uppercase tracking-wider text-primary-fixed mb-2"
+              >Navegación</span
+            ><a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="investigadores"
+              href="#"
+              >Investigadores</a
+            ><a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="caso-destacado"
+              href="#"
+              >Caso destacado</a
+            ><a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="proyectos-por-area"
+              href="#"
+              >Proyectos por área</a
+            ><a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="grupos-de-investigacion"
+              href="#"
+              >Grupos de investigación</a
+            ><a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="publicaciones"
+              href="#"
+              >Publicaciones</a
+            >
+          </div>
+          <div class="flex flex-col gap-space-xs">
+            <span
+              class="font-label-md text-label-md uppercase tracking-wider text-primary-fixed mb-2"
+              >Ecosistema de Ciencia</span
+            ><a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="recursos"
+              href="#"
+              >Recursos</a
+            ><a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="convocatorias"
+              href="#"
+              >Convocatorias</a
+            ><a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="internacionalizacion"
+              href="#"
+              >Internacionalización</a
+            ><a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="egresados"
+              href="#"
+              >Egresados</a
+            >
+          </div>
+          <div class="flex flex-col gap-space-xs">
+            <span
+              class="font-label-md text-label-md uppercase tracking-wider text-primary-fixed mb-2"
+              >Contacto Institucional</span
+            >
+            <p class="font-body-sm text-body-sm text-primary-fixed-dim">
+              Barranquilla &amp; Cúcuta, Colombia
+            </p>
+            <p class="font-body-sm text-body-sm text-primary-fixed-dim">
+              Vicerrectoría de Investigación, Extensión e Innovación
+            </p>
+            <a
+              class="font-body-sm text-body-sm text-secondary-fixed hover:underline mt-2"
+              data-path="contacto"
+              href="#"
+              >investigacion@unisimon.edu.co</a
+            >
+          </div>
+        </div>
+        <div
+          class="pt-space-md flex flex-col sm:flex-row items-center justify-between gap-4"
+        >
+          <p
+            class="font-body-sm text-body-sm text-primary-fixed-dim text-center sm:text-left"
+          >
+            © Universidad Simón Bolívar - Dirección de TI. Todos los derechos
+            reservados.
+          </p>
+          <div class="flex items-center gap-6">
+            <a
+              class="font-label-sm text-label-sm text-primary-fixed-dim hover:text-surface-container-lowest transition-colors"
+              data-path="politicas-de-privacidad"
+              href="#"
+              >Políticas de Privacidad</a
+            ><a
+              class="font-label-sm text-label-sm text-primary-fixed-dim hover:text-surface-container-lowest transition-colors"
+              data-path="terminos-de-uso"
+              href="#"
+              >Términos de Uso</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

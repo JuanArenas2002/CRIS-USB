@@ -1,0 +1,1876 @@
+<!doctype html>
+<html lang="es" style="">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="web_standard" name="shell-type" />
+    <title>Grupo de Investigación en Salud y Bienestar Humano - UNISIMÓN RESEARCH</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @layer base {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          overscroll-behavior: none;
+        }
+        main > :first-child {
+          margin-top: 0 !important;
+        }
+        main > :last-child {
+          margin-bottom: 0 !important;
+        }
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'error-container': '#ffdad6',
+              'on-surface': '#121c2a',
+              'on-primary-fixed-variant': '#1f4f3c',
+              'on-surface-variant': '#414944',
+              background: '#f8f9ff',
+              'secondary-fixed': '#8cfaa1',
+              'surface-dark-forest': '#0E382B',
+              'on-background': '#121c2a',
+              'primary-fixed-dim': '#9fd2b8',
+              'outline-variant': '#c0c9c2',
+              'on-primary-container': '#83b59c',
+              'inverse-primary': '#9fd2b8',
+              'primary-fixed': '#baeed3',
+              'badge-sage-bg': '#E3EDE2',
+              'primary-container': '#154734',
+              'tertiary-fixed': '#c1f279',
+              'inverse-surface': '#27313f',
+              surface: '#f8f9ff',
+              'inverse-on-surface': '#eaf1ff',
+              'secondary-fixed-dim': '#6fdd87',
+              'on-tertiary': '#ffffff',
+              primary: '#003020',
+              'surface-dim': '#d0dbed',
+              'on-tertiary-fixed': '#111f00',
+              'on-error-container': '#93000a',
+              'on-secondary-fixed': '#00210a',
+              'surface-bright': '#f8f9ff',
+              'on-secondary-fixed-variant': '#005323',
+              'tertiary-container': '#2c4600',
+              'on-tertiary-container': '#8bb847',
+              tertiary: '#1c2e00',
+              'on-primary-fixed': '#002115',
+              'canvas-cream': '#FBF9F4',
+              outline: '#717973',
+              secondary: '#006d30',
+              'badge-sage-text': '#1E4B27',
+              'secondary-container': '#8cfaa1',
+              'border-subtle': '#E7E2D6',
+              'surface-container': '#e6eeff',
+              'surface-container-high': '#dee9fc',
+              error: '#ba1a1a',
+              'on-tertiary-fixed-variant': '#324f00',
+              'surface-container-highest': '#d9e3f6',
+              'on-error': '#ffffff',
+              'surface-container-low': '#eff4ff',
+              'tertiary-fixed-dim': '#a6d560',
+              'on-primary': '#ffffff',
+              'surface-cream-alt': '#F5F2EB',
+              'surface-container-lowest': '#ffffff',
+              'on-secondary': '#ffffff',
+              'surface-tint': '#386853',
+              'neutral-muted': '#6B7280',
+              'on-secondary-container': '#007434',
+              'surface-variant': '#d9e3f6',
+            },
+            borderRadius: {
+              DEFAULT: '0.25rem',
+              lg: '0.5rem',
+              xl: '0.75rem',
+              full: '9999px',
+            },
+            spacing: {
+              'space-lg': '1.5rem',
+              'space-2xl': '4rem',
+              'space-xs': '0.25rem',
+              gutter: '1.5rem',
+              'gutter-mobile': '1rem',
+              margin: '3rem',
+              'margin-mobile': '1.25rem',
+              'space-xl': '2.5rem',
+              'space-sm': '0.5rem',
+              'space-md': '1rem',
+            },
+            fontFamily: {
+              'display-hero-mobile': ['Inter'],
+              'headline-lg-mobile': ['Inter'],
+              'stat-metric': ['Inter'],
+              'body-sm': ['Inter'],
+              'headline-lg': ['Inter'],
+              'body-lg': ['Inter'],
+              'display-hero': ['Inter'],
+              'label-md': ['Inter'],
+              'body-md': ['Inter'],
+              'label-sm': ['Inter'],
+              'headline-sm': ['Inter'],
+              'headline-md': ['Inter'],
+            },
+            fontSize: {
+              'display-hero-mobile': [
+                '34px',
+                { lineHeight: '42px', letterSpacing: '-0.02em', fontWeight: '700' },
+              ],
+              'headline-lg-mobile': [
+                '26px',
+                { lineHeight: '34px', letterSpacing: '-0.01em', fontWeight: '700' },
+              ],
+              'stat-metric': ['30px', { lineHeight: '36px', fontWeight: '700' }],
+              'body-sm': ['13px', { lineHeight: '20px', fontWeight: '400' }],
+              'headline-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.02em', fontWeight: '700' }],
+              'body-lg': ['17px', { lineHeight: '28px', fontWeight: '400' }],
+              'display-hero': ['52px', { lineHeight: '60px', letterSpacing: '-0.03em', fontWeight: '700' }],
+              'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.04em', fontWeight: '600' }],
+              'body-md': ['15px', { lineHeight: '24px', fontWeight: '400' }],
+              'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.02em', fontWeight: '500' }],
+              'headline-sm': ['18px', { lineHeight: '26px', fontWeight: '600' }],
+              'headline-md': ['24px', { lineHeight: '32px', letterSpacing: '-0.015em', fontWeight: '600' }],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-canvas-cream font-body-md text-body-md text-on-surface antialiased">
+    <svg
+      aria-hidden="true"
+      class="inline-defs-container"
+      style="position: absolute; width: 0; height: 0; overflow: hidden"
+    ></svg>
+    <main class="w-full bg-canvas-cream pt-4">
+      <div class="flex flex-col w-full">
+        <div
+          class="w-full max-w-[1240px] mx-auto px-margin-mobile md:px-gutter lg:px-margin pt-4 flex flex-col gap-5"
+        >
+          <!-- Block 1: Header & Tabs -->
+          <section
+            class="w-full bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-sm flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5 relative overflow-hidden"
+          >
+            <div
+              class="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-surface-cream-alt/40 pointer-events-none -z-0"
+            ></div>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 z-10">
+              <div
+                class="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shrink-0 shadow-inner"
+              >
+                <span
+                  class="material-symbols-outlined text-[32px] md:text-[36px]"
+                  style="font-variation-settings: 'FILL' 1"
+                  >hub</span
+                >
+              </div>
+              <div class="flex flex-col gap-1">
+                <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">
+                  Grupo de Investigación en Salud y Bienestar Humano
+                </h1>
+                <div
+                  class="flex flex-wrap items-center gap-y-1 gap-x-3 text-on-surface-variant font-body-sm text-body-sm"
+                >
+                  <span class="flex items-center gap-1.5 text-primary font-medium">
+                    <span class="material-symbols-outlined text-[16px] text-secondary">verified_user</span
+                    >Líder: Dra. María Fernanda Torres Gómez
+                  </span>
+                  <span class="text-neutral-muted">·</span>
+                  <span class="">Universidad Simón Bolívar (Barranquilla)</span>
+                </div>
+              </div>
+            </div>
+            <div
+              class="flex sm:flex-row lg:flex-col xl:flex-row items-center gap-2.5 shrink-0 w-full sm:w-auto z-10 pt-1 lg:pt-0"
+            >
+              <a
+                class="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-secondary transition-all shadow-sm"
+                href="https://scienti.minciencias.gov.co/gruplac"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span class="">Ver en GrupLAC</span>
+                <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+              </a>
+              <button
+                class="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-surface-cream-alt text-primary font-label-md text-label-md hover:bg-badge-sage-bg transition-colors"
+                id="btn-export-pdf"
+                onclick="window.print()"
+              >
+                <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+                <span class="">Descargar Ficha PDF</span>
+              </button>
+            </div>
+          </section>
+          <!-- Tabs Navigation -->
+          <nav
+            aria-label="Secciones del Grupo de Investigación"
+            class="w-full flex items-center overflow-x-auto gap-2 p-1.5 bg-surface-cream-alt rounded-xl no-scrollbar"
+          >
+            <button
+              class="tab-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-label-md text-label-md font-semibold transition-all bg-primary-container text-on-primary shadow-sm"
+              id="tab-btn-perfil"
+              onclick="switchTab('perfil')"
+            >
+              <span class="material-symbols-outlined text-[18px]">analytics</span>
+              <span class="">Perfil e indicadores</span>
+            </button>
+            <button
+              class="tab-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-label-md text-label-md font-semibold hover:text-primary hover:bg-surface-container-lowest transition-all text-on-surface-variant"
+              id="tab-btn-integrantes"
+              onclick="switchTab('integrantes')"
+            >
+              <span class="material-symbols-outlined text-[18px]">group</span>
+              <span class="">Integrantes</span>
+              <span
+                class="px-2 py-0.5 rounded-full bg-badge-sage-bg text-badge-sage-text text-[11px] font-bold"
+                >18</span
+              >
+            </button>
+            <button
+              class="tab-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-label-md text-label-md font-semibold hover:text-primary hover:bg-surface-container-lowest transition-all text-on-surface-variant"
+              id="tab-btn-produccion"
+              onclick="switchTab('produccion')"
+            >
+              <span class="material-symbols-outlined text-[18px]">menu_book</span>
+              <span class="">Producción científica</span>
+              <span
+                class="px-2 py-0.5 rounded-full bg-badge-sage-bg text-badge-sage-text text-[11px] font-bold"
+                >142</span
+              >
+            </button>
+            <button
+              class="tab-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-label-md text-label-md font-semibold hover:text-primary hover:bg-surface-container-lowest transition-all text-on-surface-variant"
+              id="tab-btn-proyectos"
+              onclick="switchTab('proyectos')"
+            >
+              <span class="material-symbols-outlined text-[18px]">assignment</span>
+              <span class="">Proyectos</span>
+              <span
+                class="px-2 py-0.5 rounded-full bg-badge-sage-bg text-badge-sage-text text-[11px] font-bold"
+                >24</span
+              >
+            </button>
+          </nav>
+          <!-- Perfil e indicadores (Active Tab) -->
+          <div class="tab-pane flex-col gap-5 w-full flex" id="tab-content-perfil">
+            <!-- Block 2: Información institucional -->
+            <section class="w-full bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-sm">
+              <div class="flex items-center gap-3 pb-3 mb-4 bg-surface-cream-alt/40 p-2.5 rounded-lg">
+                <div
+                  class="w-9 h-9 rounded-lg bg-badge-sage-bg text-badge-sage-text flex items-center justify-center shrink-0"
+                >
+                  <span class="material-symbols-outlined text-[20px]">corporate_fare</span>
+                </div>
+                <div>
+                  <h2 class="font-headline-md text-headline-md text-primary">Información institucional</h2>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
+                <div class="flex flex-col gap-3">
+                  <h3
+                    class="font-label-md text-label-md text-secondary uppercase tracking-wider flex items-center gap-2 pb-1"
+                  >
+                    <span class="material-symbols-outlined text-[16px]">badge</span>Identificación y Contacto
+                  </h3>
+                  <div class="flex flex-col gap-2.5 font-body-sm text-body-sm">
+                    <div>
+                      <span class="text-neutral-muted block font-label-sm text-label-sm"
+                        >Nombre oficial registrado</span
+                      >
+                      <span class="font-semibold text-on-surface"
+                        >Grupo de Investigación en Salud y Bienestar Humano</span
+                      >
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                      <div>
+                        <span class="text-neutral-muted block font-label-sm text-label-sm"
+                          >Código GrupLAC</span
+                        >
+                        <span class="font-mono font-medium text-primary">COL0012489</span>
+                      </div>
+                      <div>
+                        <span class="text-neutral-muted block font-label-sm text-label-sm"
+                          >Año de creación</span
+                        >
+                        <span class="font-medium text-on-surface">2008 (18 años)</span>
+                      </div>
+                    </div>
+                    <div>
+                      <span class="text-neutral-muted block font-label-sm text-label-sm"
+                        >Correo de contacto institucional</span
+                      >
+                      <a
+                        class="text-secondary hover:text-primary underline font-medium break-all"
+                        href="mailto:grupo.salud@unisimon.edu.co"
+                        >grupo.salud@unisimon.edu.co</a
+                      >
+                    </div>
+                    <div>
+                      <span class="text-neutral-muted block font-label-sm text-label-sm"
+                        >Estado administrativo</span
+                      >
+                      <span
+                        class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-semibold mt-1"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Activo y Avalado
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-3">
+                  <h3
+                    class="font-label-md text-label-md text-secondary uppercase tracking-wider flex items-center gap-2 pb-1"
+                  >
+                    <span class="material-symbols-outlined text-[16px]">school</span>Clasificación y
+                    Conocimiento
+                  </h3>
+                  <div class="flex flex-col gap-2.5 font-body-sm text-body-sm">
+                    <div>
+                      <span class="text-neutral-muted block font-label-sm text-label-sm"
+                        >Clasificación actual</span
+                      >
+                      <span class="font-bold text-primary font-headline-sm text-headline-sm">A1</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                      <div>
+                        <span class="text-neutral-muted block font-label-sm text-label-sm"
+                          >Convocatoria oficial</span
+                        >
+                        <span class="font-medium text-on-surface">Nacional 894 de 2021</span>
+                      </div>
+                    </div>
+                    <div>
+                      <span class="text-neutral-muted block font-label-sm text-label-sm"
+                        >Gran área del conocimiento (OCDE)</span
+                      >
+                      <span class="font-medium text-on-surface">Ciencias Médicas y de la Salud</span>
+                    </div>
+                    <div>
+                      <span class="text-neutral-muted block font-label-sm text-label-sm"
+                        >Área de conocimiento</span
+                      >
+                      <span class="font-medium text-on-surface"
+                        >Ciencias de la Salud / Salud Pública y Epidemiología</span
+                      >
+                    </div>
+                    <div>
+                      <span class="text-neutral-muted block font-label-sm text-label-sm"
+                        >Programa Nacional CTeI</span
+                      >
+                      <span class="font-medium text-on-surface"
+                        >Ciencia, Tecnología e Innovación en Salud</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-3">
+                  <h3
+                    class="font-label-md text-label-md text-secondary uppercase tracking-wider flex items-center gap-2 pb-1"
+                  >
+                    <span class="material-symbols-outlined text-[16px]">account_balance</span>Estructura &amp;
+                    Red Interinstitucional
+                  </h3>
+                  <div class="flex flex-col gap-2.5 font-body-sm text-body-sm">
+                    <div class="bg-surface-cream-alt p-3.5 rounded-lg flex flex-col gap-2 mt-1">
+                      <span
+                        class="font-label-sm text-label-sm text-on-surface-variant font-bold uppercase tracking-wider mb-0.5"
+                        >Instituciones asociadas avalantes</span
+                      >
+                      <div
+                        class="flex items-center justify-between text-[12px] bg-surface-container-lowest px-3 py-1.5 rounded shadow-xs"
+                      >
+                        <span class="font-medium text-primary">Univ. Simón Bolívar</span>
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-badge-sage-bg text-badge-sage-text font-bold text-[10px]"
+                          >Principal</span
+                        >
+                      </div>
+                      <div
+                        class="flex items-center justify-between text-[12px] bg-surface-container-lowest px-3 py-1.5 rounded shadow-xs"
+                      >
+                        <span class="text-on-surface">Univ. Santiago de Cali</span>
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-surface-cream-alt text-on-surface-variant text-[10px]"
+                          >Avalado</span
+                        >
+                      </div>
+                      <div
+                        class="flex items-center justify-between text-[12px] bg-surface-container-lowest px-3 py-1.5 rounded shadow-xs"
+                      >
+                        <span class="text-on-surface">Universidad de Boyacá</span>
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-surface-cream-alt text-on-surface-variant text-[10px]"
+                          >Avalado</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <!-- Block 3: Líneas de Investigación Priorizadas (60-65%) + ODS Vinculados (35-40%) -->
+            <section
+              class="w-full bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-sm border border-subtle/50 flex flex-col lg:flex-row gap-6 items-stretch justify-between"
+            >
+              <div
+                class="flex flex-col justify-between pr-0 lg:pr-6 border-b lg:border-b-0 lg:border-r border-subtle/60 pb-6 lg:pb-0 flex-1"
+              >
+                <div class="flex items-center gap-2 mb-3.5">
+                  <div
+                    class="w-9 h-9 rounded-lg bg-badge-sage-bg text-secondary flex items-center justify-center shrink-0"
+                  >
+                    <span class="material-symbols-outlined text-[20px]">checklist_rtl</span>
+                  </div>
+                  <h3 class="font-headline-sm text-headline-sm text-primary tracking-tight font-bold">
+                    Líneas de Investigación Priorizadas
+                  </h3>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div
+                    class="flex items-center gap-2.5 p-2.5 rounded-lg bg-canvas-cream border border-subtle/80 hover:bg-surface-cream-alt transition-colors"
+                  >
+                    <span class="material-symbols-outlined text-secondary text-[18px] shrink-0"
+                      >check_circle</span
+                    ><span class="font-body-sm text-[12px] text-on-surface font-medium leading-tight"
+                      >Determinantes sociales de la salud y desigualdades territoriales</span
+                    >
+                  </div>
+                  <div
+                    class="flex items-center gap-2.5 p-2.5 rounded-lg bg-canvas-cream border border-subtle/80 hover:bg-surface-cream-alt transition-colors"
+                  >
+                    <span class="material-symbols-outlined text-secondary text-[18px] shrink-0"
+                      >check_circle</span
+                    ><span class="font-body-sm text-[12px] text-on-surface font-medium leading-tight"
+                      >Prevención, tamizaje y control de enfermedades crónicas</span
+                    >
+                  </div>
+                  <div
+                    class="flex items-center gap-2.5 p-2.5 rounded-lg bg-canvas-cream border border-subtle/80 hover:bg-surface-cream-alt transition-colors"
+                  >
+                    <span class="material-symbols-outlined text-secondary text-[18px] shrink-0"
+                      >check_circle</span
+                    ><span class="font-body-sm text-[12px] text-on-surface font-medium leading-tight"
+                      >Salud materno-infantil y nutrición en primera infancia</span
+                    >
+                  </div>
+                  <div
+                    class="flex items-center gap-2.5 p-2.5 rounded-lg bg-canvas-cream border border-subtle/80 hover:bg-surface-cream-alt transition-colors"
+                  >
+                    <span class="material-symbols-outlined text-secondary text-[18px] shrink-0"
+                      >check_circle</span
+                    ><span class="font-body-sm text-[12px] text-on-surface font-medium leading-tight"
+                      >Evaluación de políticas y modelos de intervención en salud pública</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col justify-between pl-0 lg:pl-6 shrink-0 lg:w-auto">
+                <div class="flex items-center justify-between gap-3 mb-3.5">
+                  <div class="flex items-center gap-2.5">
+                    <span
+                      class="material-symbols-outlined text-[24px] text-secondary"
+                      style="font-variation-settings: 'FILL' 1"
+                      >public</span
+                    >
+                    <h3 class="font-headline-sm text-headline-sm font-bold text-primary tracking-tight">
+                      ODS Vinculados
+                    </h3>
+                  </div>
+                  <span
+                    class="px-3 py-1 rounded-full bg-surface-cream-alt text-on-surface-variant text-[12px] font-medium"
+                    >Agenda 2030</span
+                  >
+                </div>
+                <div class="flex items-center justify-between gap-3 sm:gap-4 pt-1 pb-1 w-full flex-nowrap">
+                  <div class="flex flex-col items-center shrink-0">
+                    <div
+                      class="w-11 h-11 md:w-12 md:h-12 rounded-full flex flex-col items-center justify-center text-white shadow-xs transition-transform hover:scale-105"
+                      style="background-color: #388e3c"
+                    >
+                      <span class="text-[8px] font-bold uppercase tracking-wider leading-none mb-0.5"
+                        >ODS</span
+                      ><span class="text-[15px] md:text-[16px] font-extrabold leading-none">3</span>
+                    </div>
+                    <span class="text-[12px] font-medium text-on-surface-variant mt-2 text-center"
+                      >Salud</span
+                    >
+                  </div>
+                  <div class="flex flex-col items-center shrink-0">
+                    <div
+                      class="w-11 h-11 md:w-12 md:h-12 rounded-full flex flex-col items-center justify-center text-white shadow-xs transition-transform hover:scale-105"
+                      style="background-color: #ff3a21"
+                    >
+                      <span class="text-[8px] font-bold uppercase tracking-wider leading-none mb-0.5"
+                        >ODS</span
+                      ><span class="text-[15px] md:text-[16px] font-extrabold leading-none">5</span>
+                    </div>
+                    <span class="text-[12px] font-medium text-on-surface-variant mt-2 text-center"
+                      >Género</span
+                    >
+                  </div>
+                  <div class="flex flex-col items-center shrink-0">
+                    <div
+                      class="w-11 h-11 md:w-12 md:h-12 rounded-full flex flex-col items-center justify-center text-white shadow-xs transition-transform hover:scale-105"
+                      style="background-color: #26bde2"
+                    >
+                      <span class="text-[8px] font-bold uppercase tracking-wider leading-none mb-0.5"
+                        >ODS</span
+                      ><span class="text-[15px] md:text-[16px] font-extrabold leading-none">6</span>
+                    </div>
+                    <span class="text-[12px] font-medium text-on-surface-variant mt-2 text-center">Agua</span>
+                  </div>
+                  <div class="flex flex-col items-center shrink-0">
+                    <div
+                      class="w-11 h-11 md:w-12 md:h-12 rounded-full flex flex-col items-center justify-center text-white shadow-xs transition-transform hover:scale-105"
+                      style="background-color: #dd1367"
+                    >
+                      <span class="text-[8px] font-bold uppercase tracking-wider leading-none mb-0.5"
+                        >ODS</span
+                      ><span class="text-[15px] md:text-[16px] font-extrabold leading-none">10</span>
+                    </div>
+                    <span class="text-[12px] font-medium text-on-surface-variant mt-2 text-center"
+                      >Equidad</span
+                    >
+                  </div>
+                  <div class="flex flex-col items-center shrink-0">
+                    <div
+                      class="w-11 h-11 md:w-12 md:h-12 rounded-full flex flex-col items-center justify-center text-white shadow-xs transition-transform hover:scale-105"
+                      style="background-color: #19486a"
+                    >
+                      <span class="text-[8px] font-bold uppercase tracking-wider leading-none mb-0.5"
+                        >ODS</span
+                      ><span class="text-[15px] md:text-[16px] font-extrabold leading-none">17</span>
+                    </div>
+                    <span class="text-[12px] font-medium text-on-surface-variant mt-2 text-center"
+                      >Alianzas</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </section>
+            <!-- Block 4: Histórico de clasificación Minciencias -->
+            <section
+              class="w-full bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-sm flex flex-col gap-4"
+            >
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <div>
+                  <h2 class="font-headline-md text-headline-md text-primary">
+                    Histórico de clasificación Minciencias
+                  </h2>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Evolución ordinal del grupo en las convocatorias oficiales del Sistema Nacional de Ciencia
+                    y Tecnología
+                  </p>
+                </div>
+              </div>
+              <div class="w-full bg-canvas-cream rounded-xl p-4 md:p-5 overflow-x-auto">
+                <div class="min-w-[680px] flex flex-col gap-3">
+                  <div class="grid grid-cols-6 items-center text-center font-label-sm text-label-sm pb-1">
+                    <span class="text-left font-semibold text-primary pl-2">Convocatoria</span>
+                    <span class="font-semibold text-on-surface-variant">Convocatoria 1 (2014)</span>
+                    <span class="font-semibold text-on-surface-variant">Convocatoria 2 (2015)</span>
+                    <span class="font-semibold text-on-surface-variant">Convocatoria 3 (2017)</span>
+                    <span class="font-semibold text-on-surface-variant">Convocatoria 4 (2019)</span>
+                    <span class="font-bold text-secondary flex items-center justify-center gap-1"
+                      >Convocatoria 5 (2021) <span class="text-[14px]">★</span></span
+                    >
+                  </div>
+                  <div
+                    class="relative py-6 px-4 bg-surface-container-lowest rounded-lg shadow-inner border border-subtle/60"
+                  >
+                    <div
+                      class="absolute inset-0 flex flex-col justify-between py-6 px-4 pointer-events-none opacity-20"
+                    >
+                      <div class="w-full h-px bg-secondary"></div>
+                      <div class="w-full h-px bg-secondary"></div>
+                      <div class="w-full h-px bg-secondary"></div>
+                      <div class="w-full h-px bg-secondary"></div>
+                      <div class="w-full h-px bg-secondary"></div>
+                    </div>
+                    <svg
+                      class="w-full h-36"
+                      fill="none"
+                      viewBox="0 0 700 150"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <defs>
+                        <linearGradient id="hist-grad-smooth" x1="0" x2="0" y1="0" y2="1">
+                          <stop offset="0%" stop-color="#16834B" stop-opacity="0.3"></stop>
+                          <stop offset="70%" stop-color="#16834B" stop-opacity="0.06"></stop>
+                          <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"></stop>
+                        </linearGradient>
+                        <filter height="140%" id="node-shadow" width="140%" x="-20%" y="-20%">
+                          <feDropShadow
+                            dx="0"
+                            dy="1.5"
+                            flood-opacity="0.15"
+                            stdDeviation="1.5"
+                          ></feDropShadow>
+                        </filter>
+                      </defs>
+                      <text fill="#0E382B" font-size="11" font-weight="700" x="12" y="26">Cat. A1</text>
+                      <text fill="#414944" font-size="11" x="12" y="56">Cat. A</text>
+                      <text fill="#414944" font-size="11" x="12" y="86">Cat. B</text>
+                      <text fill="#414944" font-size="11" x="12" y="116">Cat. C</text>
+                      <text fill="#6B7280" font-size="10" x="12" y="142">Reconocido</text>
+                      <path
+                        d="M 140 115 L 250 85 L 360 55 L 470 55 L 580 25 L 580 145 L 140 145 Z"
+                        fill="url(#hist-grad-smooth)"
+                      ></path>
+                      <path
+                        d="M 140 115 L 250 85 L 360 55 L 470 55 L 580 25"
+                        stroke="#16834B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.5"
+                      ></path>
+                      <g class="cursor-pointer group" filter="url(#node-shadow)" tabindex="0">
+                        <rect
+                          fill="#E8F5EC"
+                          height="20"
+                          rx="5"
+                          stroke="#baeed3"
+                          stroke-width="1"
+                          width="52"
+                          x="114"
+                          y="83"
+                        ></rect>
+                        <text
+                          fill="#176653"
+                          font-size="10"
+                          font-weight="700"
+                          text-anchor="middle"
+                          x="140"
+                          y="97"
+                        >
+                          Cat. C
+                        </text>
+                        <circle
+                          class="group-hover:r-8 transition-all"
+                          cx="140"
+                          cy="115"
+                          fill="#FFFFFF"
+                          r="6"
+                          stroke="#176653"
+                          stroke-width="3"
+                        ></circle>
+                      </g>
+                      <g class="cursor-pointer group" filter="url(#node-shadow)" tabindex="0">
+                        <rect
+                          fill="#E8F5EC"
+                          height="20"
+                          rx="5"
+                          stroke="#baeed3"
+                          stroke-width="1"
+                          width="52"
+                          x="224"
+                          y="53"
+                        ></rect>
+                        <text
+                          fill="#176653"
+                          font-size="10"
+                          font-weight="700"
+                          text-anchor="middle"
+                          x="250"
+                          y="67"
+                        >
+                          Cat. B
+                        </text>
+                        <circle
+                          class="group-hover:r-8 transition-all"
+                          cx="250"
+                          cy="85"
+                          fill="#FFFFFF"
+                          r="6"
+                          stroke="#176653"
+                          stroke-width="3"
+                        ></circle>
+                      </g>
+                      <g class="cursor-pointer group" filter="url(#node-shadow)" tabindex="0">
+                        <rect
+                          fill="#E8F5EC"
+                          height="20"
+                          rx="5"
+                          stroke="#baeed3"
+                          stroke-width="1"
+                          width="52"
+                          x="334"
+                          y="23"
+                        ></rect>
+                        <text
+                          fill="#176653"
+                          font-size="10"
+                          font-weight="700"
+                          text-anchor="middle"
+                          x="360"
+                          y="37"
+                        >
+                          Cat. A
+                        </text>
+                        <circle
+                          class="group-hover:r-8 transition-all"
+                          cx="360"
+                          cy="55"
+                          fill="#FFFFFF"
+                          r="6"
+                          stroke="#176653"
+                          stroke-width="3"
+                        ></circle>
+                      </g>
+                      <g class="cursor-pointer group" filter="url(#node-shadow)" tabindex="0">
+                        <rect
+                          fill="#E8F5EC"
+                          height="20"
+                          rx="5"
+                          stroke="#baeed3"
+                          stroke-width="1"
+                          width="52"
+                          x="444"
+                          y="23"
+                        ></rect>
+                        <text
+                          fill="#176653"
+                          font-size="10"
+                          font-weight="700"
+                          text-anchor="middle"
+                          x="470"
+                          y="37"
+                        >
+                          Cat. A
+                        </text>
+                        <circle
+                          class="group-hover:r-8 transition-all"
+                          cx="470"
+                          cy="55"
+                          fill="#FFFFFF"
+                          r="6"
+                          stroke="#176653"
+                          stroke-width="3"
+                        ></circle>
+                      </g>
+                      <g class="cursor-pointer group" filter="url(#node-shadow)" tabindex="0">
+                        <circle
+                          class="animate-ping"
+                          cx="580"
+                          cy="25"
+                          fill="#8cfaa1"
+                          opacity="0.4"
+                          r="13"
+                        ></circle>
+                        <rect
+                          fill="#003020"
+                          height="22"
+                          rx="5"
+                          stroke="#8cfaa1"
+                          stroke-width="1"
+                          width="74"
+                          x="543"
+                          y="-4"
+                        ></rect>
+                        <text
+                          fill="#baeed3"
+                          font-size="11"
+                          font-weight="700"
+                          text-anchor="middle"
+                          x="580"
+                          y="11"
+                        >
+                          Cat. A1 ★
+                        </text>
+                        <circle
+                          class="group-hover:r-10 transition-all"
+                          cx="580"
+                          cy="25"
+                          fill="#006d30"
+                          r="8"
+                          stroke="#FFFFFF"
+                          stroke-width="3"
+                        ></circle>
+                      </g>
+                    </svg>
+                  </div>
+                  <div
+                    class="flex flex-col sm:flex-row items-center justify-between text-[12px] text-neutral-muted pt-1 gap-2"
+                  >
+                    <span class="flex items-center gap-2">
+                      <span class="w-2.5 h-2.5 rounded-full bg-secondary inline-block"></span>
+                      <span class=""
+                        >Escala oficial: <strong class="text-primary">A1</strong> (Máxima) &gt;
+                        <strong class="text-primary">A</strong> &gt;
+                        <strong class="text-primary">B</strong> &gt;
+                        <strong class="text-primary">C</strong> &gt;
+                        <strong class="text-primary">Reconocido</strong></span
+                      >
+                    </span>
+                    <span class=""
+                      >Resultados consolidados según modelo de medición de Grupos de Minciencias.</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </section>
+            <!-- Block 5: Producción por tipología Minciencias -->
+            <section
+              class="w-full bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-sm flex flex-col gap-4"
+            >
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary text-[22px]">category</span>
+                    <h2 class="font-headline-md text-headline-md text-primary">
+                      Producción por tipología Minciencias
+                    </h2>
+                  </div>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                    Distribución de los 142 productos de investigación en las cuatro grandes tipologías de
+                    medición
+                  </p>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div
+                  class="bg-canvas-cream border border-subtle/80 hover:border-secondary rounded-xl p-5 flex flex-col justify-between transition-all hover:shadow-md relative overflow-hidden group"
+                >
+                  <div class="absolute top-0 left-0 right-0 h-1 bg-[#16834B]"></div>
+                  <div>
+                    <div
+                      class="w-11 h-11 rounded-xl bg-badge-sage-bg text-secondary flex items-center justify-center mb-3 shadow-xs group-hover:scale-105 transition-transform"
+                    >
+                      <span class="material-symbols-outlined text-[24px]">menu_book</span>
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-primary leading-tight">
+                      Generación de nuevo conocimiento
+                    </h3>
+                  </div>
+                  <div class="mt-5 pt-3 bg-surface-container-lowest rounded-xl p-3 border border-subtle/50">
+                    <div class="flex items-baseline justify-between">
+                      <div class="flex items-baseline gap-2">
+                        <span class="font-stat-metric text-stat-metric text-secondary font-bold">64</span>
+                        <span class="font-label-sm text-label-sm text-neutral-muted font-medium"
+                          >Productos</span
+                        >
+                      </div>
+                      <span class="text-[11px] font-bold text-secondary bg-badge-sage-bg px-2 py-0.5 rounded"
+                        >45.1%</span
+                      >
+                    </div>
+                    <button
+                      class="w-full mt-2.5 inline-flex items-center justify-between text-secondary font-label-md text-label-md font-semibold hover:text-primary transition-colors pt-1 border-t border-subtle/40"
+                      onclick="filterProduccion('GNC')"
+                    >
+                      <span class="">Explorar productos</span>
+                      <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="bg-canvas-cream border border-subtle/80 hover:border-[#154734] rounded-xl p-5 flex flex-col justify-between transition-all hover:shadow-md relative overflow-hidden group"
+                >
+                  <div class="absolute top-0 left-0 right-0 h-1 bg-[#154734]"></div>
+                  <div>
+                    <div
+                      class="w-11 h-11 rounded-xl bg-surface-cream-alt text-primary-container flex items-center justify-center mb-3 shadow-xs group-hover:scale-105 transition-transform"
+                    >
+                      <span class="material-symbols-outlined text-[24px]">precision_manufacturing</span>
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-primary leading-tight">
+                      Desarrollo tecnológico e innovación
+                    </h3>
+                  </div>
+                  <div class="mt-5 pt-3 bg-surface-container-lowest rounded-xl p-3 border border-subtle/50">
+                    <div class="flex items-baseline justify-between">
+                      <div class="flex items-baseline gap-2">
+                        <span class="font-stat-metric text-stat-metric text-primary font-bold">22</span>
+                        <span class="font-label-sm text-label-sm text-neutral-muted font-medium"
+                          >Productos</span
+                        >
+                      </div>
+                      <span
+                        class="text-[11px] font-bold text-primary bg-surface-cream-alt px-2 py-0.5 rounded"
+                        >15.5%</span
+                      >
+                    </div>
+                    <button
+                      class="w-full mt-2.5 inline-flex items-center justify-between text-secondary font-label-md text-label-md font-semibold hover:text-primary transition-colors pt-1 border-t border-subtle/40"
+                      onclick="filterProduccion('DTI')"
+                    >
+                      <span class="">Explorar productos</span>
+                      <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="bg-canvas-cream border border-subtle/80 hover:border-sky-600 rounded-xl p-5 flex flex-col justify-between transition-all hover:shadow-md relative overflow-hidden group"
+                >
+                  <div class="absolute top-0 left-0 right-0 h-1 bg-sky-600"></div>
+                  <div>
+                    <div
+                      class="w-11 h-11 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center mb-3 shadow-xs group-hover:scale-105 transition-transform"
+                    >
+                      <span class="material-symbols-outlined text-[24px]">campaign</span>
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-primary leading-tight">
+                      Apropiación social del conocimiento
+                    </h3>
+                  </div>
+                  <div class="mt-5 pt-3 bg-surface-container-lowest rounded-xl p-3 border border-subtle/50">
+                    <div class="flex items-baseline justify-between">
+                      <div class="flex items-baseline gap-2">
+                        <span class="font-stat-metric text-stat-metric text-sky-800 font-bold">31</span>
+                        <span class="font-label-sm text-label-sm text-neutral-muted font-medium"
+                          >Productos</span
+                        >
+                      </div>
+                      <span class="text-[11px] font-bold text-sky-800 bg-sky-100 px-2 py-0.5 rounded"
+                        >21.8%</span
+                      >
+                    </div>
+                    <button
+                      class="w-full mt-2.5 inline-flex items-center justify-between text-sky-700 font-label-md text-label-md font-semibold hover:text-primary transition-colors pt-1 border-t border-subtle/40"
+                      onclick="filterProduccion('ASC')"
+                    >
+                      <span class="">Explorar productos</span>
+                      <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="bg-canvas-cream border border-subtle/80 hover:border-amber-600 rounded-xl p-5 flex flex-col justify-between transition-all hover:shadow-md relative overflow-hidden group"
+                >
+                  <div class="absolute top-0 left-0 right-0 h-1 bg-amber-600"></div>
+                  <div>
+                    <div
+                      class="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-3 shadow-xs group-hover:scale-105 transition-transform"
+                    >
+                      <span class="material-symbols-outlined text-[24px]">school</span>
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-primary leading-tight">
+                      Formación de recurso humano
+                    </h3>
+                  </div>
+                  <div class="mt-5 pt-3 bg-surface-container-lowest rounded-xl p-3 border border-subtle/50">
+                    <div class="flex items-baseline justify-between">
+                      <div class="flex items-baseline gap-2">
+                        <span class="font-stat-metric text-stat-metric text-amber-800 font-bold">25</span>
+                        <span class="font-label-sm text-label-sm text-neutral-muted font-medium"
+                          >Productos</span
+                        >
+                      </div>
+                      <span class="text-[11px] font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded"
+                        >17.6%</span
+                      >
+                    </div>
+                    <button
+                      class="w-full mt-2.5 inline-flex items-center justify-between text-amber-800 font-label-md text-label-md font-semibold hover:text-primary transition-colors pt-1 border-t border-subtle/40"
+                      onclick="filterProduccion('FRH')"
+                    >
+                      <span class="">Explorar productos</span>
+                      <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+          <!-- Integrantes Tab Pane -->
+          <div class="tab-pane flex-col gap-6 w-full hidden" id="tab-content-integrantes">
+            <div class="bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-sm flex flex-col gap-5">
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h2 class="font-headline-md text-headline-md text-primary">
+                    Directorio de Investigadores y Miembros
+                  </h2>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant">
+                    18 Investigadores categorizados vinculados activamente al plan de trabajo del grupo
+                  </p>
+                </div>
+                <div class="relative w-full md:w-72">
+                  <input
+                    class="w-full h-11 pl-10 pr-4 rounded-lg bg-canvas-cream text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-secondary"
+                    id="search-integrantes"
+                    onkeyup="filterResearchers()"
+                    placeholder="Buscar por nombre o rol..."
+                    type="text"
+                  />
+                  <span class="material-symbols-outlined absolute left-3 top-3 text-[20px] text-neutral-muted"
+                    >search</span
+                  >
+                </div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="researchers-grid">
+                <div
+                  class="researcher-card bg-canvas-cream rounded-xl p-5 flex flex-col justify-between transition-all hover:shadow-md"
+                >
+                  <div>
+                    <div class="flex items-center gap-4">
+                      <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 shadow-sm relative">
+                        <img
+                          class="w-full h-full object-cover"
+                          data-alt="Portrait photograph of Dr. Maria Fernanda Torres Gomez"
+                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWzpwskSCK7LJuEa2DWx35VTGLT9pgduXAYgXRlJ9X12C4vjGCYKDhZKZD0VI8DxXRIPQOZalFMglfdCNAW2qqisbtSNAey8tgfNq_zKb05iEQBeq2mTe57qwVKruSfIjCLECf9pVBD_ycgBcjo34zFnKGpcVyuiC4kesd8Xp_tjFeUdJDUYbSneVrKPBMhw8vWH3MKXMJcE3pLQ1J4FuOcae0Wgof81HlyCfwPPOpEFFQYphpFiKmPA"
+                        />
+                      </div>
+                      <div>
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-bold"
+                          >Líder del Grupo</span
+                        >
+                        <h4 class="font-headline-sm text-headline-sm text-primary mt-1">
+                          Dra. María Fernanda Torres Gómez
+                        </h4>
+                        <p class="text-[12px] text-neutral-muted">Investigadora Asociada (Minciencias)</p>
+                      </div>
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-3">
+                      Médica epidemióloga, PhD en Salud Pública. Énfasis en prevención comunitaria de
+                      enfermedades crónicas en el Caribe.
+                    </p>
+                    <div
+                      class="flex items-center gap-4 mt-3 pt-2.5 bg-surface-container-lowest p-2 rounded-lg text-[12px]"
+                    >
+                      <div class=""><strong class="text-primary font-bold">28</strong> pubs</div>
+                      <div class="text-neutral-muted">|</div>
+                      <div class="">Índice h: <strong class="text-secondary font-bold">9</strong></div>
+                      <div class="text-neutral-muted">|</div>
+                      <div class="">Unisimón</div>
+                    </div>
+                  </div>
+                  <a
+                    class="mt-4 w-full inline-flex items-center justify-center h-9 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm font-semibold hover:bg-secondary transition-colors"
+                    href="#"
+                    >Ver perfil de investigadora →</a
+                  >
+                </div>
+                <div
+                  class="researcher-card bg-canvas-cream rounded-xl p-5 flex flex-col justify-between transition-all hover:shadow-md"
+                >
+                  <div>
+                    <div class="flex items-center gap-4">
+                      <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 shadow-sm relative">
+                        <img
+                          class="w-full h-full object-cover"
+                          data-alt="Dr. Carlos Eduardo Mendoza"
+                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfysqGjs5vZC3N41hwB71qRJLX_VdJ5MDWcwNctJ0JS59rCW5t63KjQp2sXPxTAZxH9CqQ8ou2lPOdt7-2qzqT6YamW83MqSyDiWA7DKYFYhRS0bEGhumReRf1vygX_HDqLlJe40Z0VWTQGbwC_HEwH-zdwTmZ8xM-hDhbJXLNa2ic-f6sF8gxbaV9UEo5K7ToNpl59vQGe3PZbuT8J6_zinn9uXWix0_2DT9efgaLQ8RyJ253CATTqA"
+                        />
+                      </div>
+                      <div>
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-bold"
+                          >Investigador Sénior</span
+                        >
+                        <h4 class="font-headline-sm text-headline-sm text-primary mt-1">
+                          Dr. Carlos Eduardo Mendoza
+                        </h4>
+                        <p class="text-[12px] text-neutral-muted">PhD en Biología Molecular y Celular</p>
+                      </div>
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-3">
+                      Docente investigador titular. Modelos genómicos de susceptibilidad cardiometabólica en
+                      poblaciones latinoamericanas.
+                    </p>
+                    <div
+                      class="flex items-center gap-4 mt-3 pt-2.5 bg-surface-container-lowest p-2 rounded-lg text-[12px]"
+                    >
+                      <div class=""><strong class="text-primary font-bold">42</strong> pubs</div>
+                      <div class="text-neutral-muted">|</div>
+                      <div class="">Índice h: <strong class="text-secondary font-bold">14</strong></div>
+                      <div class="text-neutral-muted">|</div>
+                      <div class="">Unisimón</div>
+                    </div>
+                  </div>
+                  <a
+                    class="mt-4 w-full inline-flex items-center justify-center h-9 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm font-semibold hover:bg-secondary transition-colors"
+                    href="#"
+                    >Ver perfil de investigador →</a
+                  >
+                </div>
+                <div
+                  class="researcher-card bg-canvas-cream rounded-xl p-5 flex flex-col justify-between transition-all hover:shadow-md"
+                >
+                  <div>
+                    <div class="flex items-center gap-4">
+                      <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 shadow-sm relative">
+                        <img
+                          class="w-full h-full object-cover"
+                          data-alt="Dra. Natalia Restrepo Velez"
+                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7li8YUK44-le16MI8zhEn5bjFHINjwSD4uu5W_8iYw9uaygZ9dDScjiyG7LeTD_I79rtFfYLteb0EodJW2Wnqv4YX6r3kDEgfAcw6_EKU4m-iTxsAO0QYHSwRx_BFQmApxxjhY0i3bSl0dgbN57wHjvYU-9yATPFxjvhkVZ1bSVyXE1XeU_3OcPYQFXd7q2ziS8tgJY_R7CEhXwVsxRZLeg0J6wt_pW4nUt1n5dFXNMownPoJ59ghrA"
+                        />
+                      </div>
+                      <div>
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-bold"
+                          >Investigadora Asociada</span
+                        >
+                        <h4 class="font-headline-sm text-headline-sm text-primary mt-1">
+                          Dra. Natalia Restrepo Vélez
+                        </h4>
+                        <p class="text-[12px] text-neutral-muted">PhD en Psicología de la Salud</p>
+                      </div>
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-3">
+                      Especialista en intervenciones psicosociales en cuidadores de pacientes crónicos y
+                      promoción de salud mental comunitaria.
+                    </p>
+                    <div
+                      class="flex items-center gap-4 mt-3 pt-2.5 bg-surface-container-lowest p-2 rounded-lg text-[12px]"
+                    >
+                      <div class=""><strong class="text-primary font-bold">19</strong> pubs</div>
+                      <div class="text-neutral-muted">|</div>
+                      <div class="">Índice h: <strong class="text-secondary font-bold">7</strong></div>
+                      <div class="text-neutral-muted">|</div>
+                      <div class="">Univ. Santiago de Cali</div>
+                    </div>
+                  </div>
+                  <a
+                    class="mt-4 w-full inline-flex items-center justify-center h-9 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm font-semibold hover:bg-secondary transition-colors"
+                    href="#"
+                    >Ver perfil de investigadora →</a
+                  >
+                </div>
+                <div
+                  class="researcher-card bg-canvas-cream rounded-xl p-5 flex flex-col justify-between transition-all hover:shadow-md"
+                >
+                  <div>
+                    <div class="flex items-center gap-4">
+                      <div
+                        class="w-16 h-16 rounded-xl overflow-hidden shrink-0 shadow-sm bg-primary-container text-primary-fixed flex items-center justify-center font-bold text-[20px]"
+                      >
+                        <span class="">JA</span>
+                      </div>
+                      <div>
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-surface-cream-alt text-on-surface-variant font-label-sm text-label-sm font-bold"
+                          >Investigador Junior</span
+                        >
+                        <h4 class="font-headline-sm text-headline-sm text-primary mt-1">
+                          MSc. Jorge Andrés Alvarado
+                        </h4>
+                        <p class="text-[12px] text-neutral-muted">Magíster en Epidemiología Clínica</p>
+                      </div>
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-3">
+                      Análisis bioestadístico, diseño de cohortes longitudinales y vigilancia epidemiológica
+                      hospitalaria.
+                    </p>
+                    <div
+                      class="flex items-center gap-4 mt-3 pt-2.5 bg-surface-container-lowest p-2 rounded-lg text-[12px]"
+                    >
+                      <div class=""><strong class="text-primary font-bold">11</strong> pubs</div>
+                      <div class="text-neutral-muted">|</div>
+                      <div class="">Índice h: <strong class="text-secondary font-bold">5</strong></div>
+                      <div class="text-neutral-muted">|</div>
+                      <div class="">Unisimón</div>
+                    </div>
+                  </div>
+                  <a
+                    class="mt-4 w-full inline-flex items-center justify-center h-9 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm font-semibold hover:bg-secondary transition-colors"
+                    href="#"
+                    >Ver perfil de investigador →</a
+                  >
+                </div>
+                <div
+                  class="researcher-card bg-canvas-cream rounded-xl p-5 flex flex-col justify-between transition-all hover:shadow-md"
+                >
+                  <div>
+                    <div class="flex items-center gap-4">
+                      <div
+                        class="w-16 h-16 rounded-xl overflow-hidden shrink-0 shadow-sm bg-secondary text-on-secondary flex items-center justify-center font-bold text-[20px]"
+                      >
+                        <span class="">LP</span>
+                      </div>
+                      <div>
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-surface-cream-alt text-on-surface-variant font-label-sm text-label-sm font-bold"
+                          >Estudiante de Doctorado</span
+                        >
+                        <h4 class="font-headline-sm text-headline-sm text-primary mt-1">
+                          MSc. Laura Patricia Guzmán
+                        </h4>
+                        <p class="text-[12px] text-neutral-muted">Doctoranda en Ciencias de la Salud</p>
+                      </div>
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-3">
+                      Becaria Bicentenario Minciencias. Evaluación de determinantes ambientales y salud
+                      materno-infantil en La Guajira.
+                    </p>
+                    <div
+                      class="flex items-center gap-4 mt-3 pt-2.5 bg-surface-container-lowest p-2 rounded-lg text-[12px]"
+                    >
+                      <div class=""><strong class="text-primary font-bold">6</strong> pubs</div>
+                      <div class="text-neutral-muted">|</div>
+                      <div class="">Índice h: <strong class="text-secondary font-bold">3</strong></div>
+                      <div class="text-neutral-muted">|</div>
+                      <div class="">Unisimón</div>
+                    </div>
+                  </div>
+                  <a
+                    class="mt-4 w-full inline-flex items-center justify-center h-9 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm font-semibold hover:bg-secondary transition-colors"
+                    href="#"
+                    >Ver perfil de investigadora →</a
+                  >
+                </div>
+                <div
+                  class="researcher-card bg-canvas-cream rounded-xl p-5 flex flex-col justify-between transition-all hover:shadow-md"
+                >
+                  <div>
+                    <div class="flex items-center gap-4">
+                      <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 shadow-sm relative">
+                        <img
+                          class="w-full h-full object-cover"
+                          data-alt="Dr. Felipe Benavides"
+                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYkea6OxzpBKTDaFKTh_bv80_VtGC-hPINk92fB4z8CGPqQe1k4AqR8dIk1UNmeQPqQsPD83fsgIjfVfLioDxxG0S-ddYwHdvW8pQOylFNRRw0LzOUS4MA9Q4Imety0nJGASzqDmMEkg_mKgdw6Pax17q7g3x1z_HZFhA1bE53mLO_45A5lOkZKKLNZUYsczL505zddkbLvp9-COhXypu3a1Bhazb5YapIDPRMxHi9azPvQKlY8bn1xg"
+                        />
+                      </div>
+                      <div>
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-bold"
+                          >Investigador Asociado</span
+                        >
+                        <h4 class="font-headline-sm text-headline-sm text-primary mt-1">
+                          Dr. Felipe Benavides R.
+                        </h4>
+                        <p class="text-[12px] text-neutral-muted">
+                          Especialista en Medicina Interna &amp; PhD
+                        </p>
+                      </div>
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-3">
+                      Ensayos clínicos controlados de terapias antihipertensivas e impacto del síndrome
+                      metabólico en adultos mayores.
+                    </p>
+                    <div
+                      class="flex items-center gap-4 mt-3 pt-2.5 bg-surface-container-lowest p-2 rounded-lg text-[12px]"
+                    >
+                      <div class=""><strong class="text-primary font-bold">17</strong> pubs</div>
+                      <div class="text-neutral-muted">|</div>
+                      <div class="">Índice h: <strong class="text-secondary font-bold">8</strong></div>
+                      <div class="text-neutral-muted">|</div>
+                      <div class="">Universidad de Boyacá</div>
+                    </div>
+                  </div>
+                  <a
+                    class="mt-4 w-full inline-flex items-center justify-center h-9 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm font-semibold hover:bg-secondary transition-colors"
+                    href="#"
+                    >Ver perfil de investigador →</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Producción Tab Pane -->
+          <div class="tab-pane flex-col gap-6 w-full hidden" id="tab-content-produccion">
+            <div class="bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-sm flex flex-col gap-5">
+              <div>
+                <h2 class="font-headline-md text-headline-md text-primary">
+                  Producción Científica y Tecnológica
+                </h2>
+                <p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Catálogo completo de 142 productos validados en GrupLAC por tipología Minciencias
+                </p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2 pt-1">
+                <button
+                  class="prod-filter-btn px-4 py-1.5 rounded-full font-label-sm text-label-sm font-semibold bg-primary text-on-primary transition-all"
+                  id="filter-btn-ALL"
+                  onclick="filterType('ALL')"
+                >
+                  Todos (142)
+                </button>
+                <button
+                  class="prod-filter-btn px-4 py-1.5 rounded-full font-label-sm text-label-sm font-semibold bg-canvas-cream text-on-surface-variant hover:bg-badge-sage-bg transition-all"
+                  id="filter-btn-GNC"
+                  onclick="filterType('GNC')"
+                >
+                  Nuevo conocimiento (64)
+                </button>
+                <button
+                  class="prod-filter-btn px-4 py-1.5 rounded-full font-label-sm text-label-sm font-semibold bg-canvas-cream text-on-surface-variant hover:bg-badge-sage-bg transition-all"
+                  id="filter-btn-DTI"
+                  onclick="filterType('DTI')"
+                >
+                  Desarrollo tecnológico (22)
+                </button>
+                <button
+                  class="prod-filter-btn px-4 py-1.5 rounded-full font-label-sm text-label-sm font-semibold bg-canvas-cream text-on-surface-variant hover:bg-badge-sage-bg transition-all"
+                  id="filter-btn-ASC"
+                  onclick="filterType('ASC')"
+                >
+                  Apropiación social (31)
+                </button>
+                <button
+                  class="prod-filter-btn px-4 py-1.5 rounded-full font-label-sm text-label-sm font-semibold bg-canvas-cream text-on-surface-variant hover:bg-badge-sage-bg transition-all"
+                  id="filter-btn-FRH"
+                  onclick="filterType('FRH')"
+                >
+                  Formación RH (25)
+                </button>
+              </div>
+              <div class="flex flex-col gap-3 mt-1" id="products-container">
+                <div
+                  class="prod-item bg-canvas-cream rounded-xl p-4 flex flex-col sm:flex-row items-start justify-between gap-4 transition-all hover:bg-surface-cream-alt"
+                  data-category="GNC"
+                >
+                  <div class="flex items-start gap-3.5">
+                    <div
+                      class="w-9 h-9 rounded-lg bg-surface-container-lowest text-secondary flex items-center justify-center shrink-0 mt-0.5"
+                    >
+                      <span class="material-symbols-outlined text-[18px]">article</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-bold"
+                          >Generación de nuevo conocimiento</span
+                        >
+                        <span class="text-[12px] font-mono text-secondary font-semibold"
+                          >Artículo Q1 · Scopus</span
+                        >
+                        <span class="text-[12px] text-neutral-muted">2024</span>
+                      </div>
+                      <h4 class="font-headline-sm text-headline-sm text-primary font-semibold">
+                        Social determinants of health and cardiovascular multimorbidity in vulnerable
+                        Caribbean populations: A prospective cohort study
+                      </h4>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant">
+                        Torres-Gómez, M. F., Mendoza, C. E., Alvarado, J. A., et al. —
+                        <em>The Lancet Regional Health - Americas</em>, Vol. 32, 100712.
+                      </p>
+                      <div class="flex items-center gap-4 text-[12px] text-secondary font-medium mt-0.5">
+                        <span class="">DOI: 10.1016/j.lana.2024.100712</span>
+                        <span class="">Citas: 14</span>
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    class="shrink-0 inline-flex items-center gap-1 text-primary hover:text-secondary font-label-sm text-label-sm font-semibold self-end sm:self-center"
+                    href="#"
+                  >
+                    <span class="">Ver DOI</span>
+                    <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                  </a>
+                </div>
+                <div
+                  class="prod-item bg-canvas-cream rounded-xl p-4 flex flex-col sm:flex-row items-start justify-between gap-4 transition-all hover:bg-surface-cream-alt"
+                  data-category="DTI"
+                >
+                  <div class="flex items-start gap-3.5">
+                    <div
+                      class="w-9 h-9 rounded-lg bg-surface-container-lowest text-primary flex items-center justify-center shrink-0 mt-0.5"
+                    >
+                      <span class="material-symbols-outlined text-[18px]">terminal</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-label-sm text-label-sm font-bold"
+                          >Desarrollo tecnológico</span
+                        >
+                        <span class="text-[12px] font-mono text-primary font-semibold"
+                          >Software con registro soporte lógico</span
+                        >
+                        <span class="text-[12px] text-neutral-muted">2023</span>
+                      </div>
+                      <h4 class="font-headline-sm text-headline-sm text-primary font-semibold">
+                        Sisalud-Caribe v2.0: Sistema de estratificación de riesgo cardiometabólico y
+                        adherencia terapéutica comunitaria
+                      </h4>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant">
+                        Registro DNDA: 13-984-2023. Certificado por Dirección Nacional de Derecho de Autor.
+                        Implementado en 4 centros de salud de Barranquilla.
+                      </p>
+                      <div class="text-[12px] text-neutral-muted mt-0.5">
+                        Titular: Universidad Simón Bolívar
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    class="shrink-0 inline-flex items-center gap-1 text-primary hover:text-secondary font-label-sm text-label-sm font-semibold self-end sm:self-center"
+                    href="#"
+                  >
+                    <span class="">Ficha técnica</span>
+                    <span class="material-symbols-outlined text-[16px]">visibility</span>
+                  </a>
+                </div>
+                <div
+                  class="prod-item bg-canvas-cream rounded-xl p-4 flex flex-col sm:flex-row items-start justify-between gap-4 transition-all hover:bg-surface-cream-alt"
+                  data-category="ASC"
+                >
+                  <div class="flex items-start gap-3.5">
+                    <div
+                      class="w-9 h-9 rounded-lg bg-surface-container-lowest text-secondary flex items-center justify-center shrink-0 mt-0.5"
+                    >
+                      <span class="material-symbols-outlined text-[18px]">record_voice_over</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-bold"
+                          >Apropiación social</span
+                        >
+                        <span class="text-[12px] font-mono text-secondary font-semibold"
+                          >Estrategia comunitaria de salud</span
+                        >
+                        <span class="text-[12px] text-neutral-muted">2023</span>
+                      </div>
+                      <h4 class="font-headline-sm text-headline-sm text-primary font-semibold">
+                        Guía comunitaria para la promoción de hábitos saludables y control de hipertensión
+                        arterial en líderes barriales
+                      </h4>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant">
+                        Programa de transferencia participativa con más de 1,200 familias beneficiadas en el
+                        suroccidente del Distrito de Barranquilla.
+                      </p>
+                    </div>
+                  </div>
+                  <a
+                    class="shrink-0 inline-flex items-center gap-1 text-primary hover:text-secondary font-label-sm text-label-sm font-semibold self-end sm:self-center"
+                    href="#"
+                  >
+                    <span class="">Evidencia pública</span>
+                    <span class="material-symbols-outlined text-[16px]">link</span>
+                  </a>
+                </div>
+                <div
+                  class="prod-item bg-canvas-cream rounded-xl p-4 flex flex-col sm:flex-row items-start justify-between gap-4 transition-all hover:bg-surface-cream-alt"
+                  data-category="FRH"
+                >
+                  <div class="flex items-start gap-3.5">
+                    <div
+                      class="w-9 h-9 rounded-lg bg-surface-container-lowest text-primary flex items-center justify-center shrink-0 mt-0.5"
+                    >
+                      <span class="material-symbols-outlined text-[18px]">school</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-surface-cream-alt text-on-surface-variant font-label-sm text-label-sm font-bold"
+                          >Formación de recurso humano</span
+                        >
+                        <span class="text-[12px] font-mono text-primary font-semibold"
+                          >Tesis de Maestría Laureada</span
+                        >
+                        <span class="text-[12px] text-neutral-muted">2023</span>
+                      </div>
+                      <h4 class="font-headline-sm text-headline-sm text-primary font-semibold">
+                        Eficacia de una intervención multimodal basada en telesalud para el control glucémico
+                        en diabetes tipo 2
+                      </h4>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant">
+                        Estudiante graduado: Dr. Carlos Javier Barrios. Directora de tesis: Dra. María
+                        Fernanda Torres Gómez. Maestría en Ciencias Médicas Unisimón.
+                      </p>
+                    </div>
+                  </div>
+                  <a
+                    class="shrink-0 inline-flex items-center gap-1 text-primary hover:text-secondary font-label-sm text-label-sm font-semibold self-end sm:self-center"
+                    href="#"
+                  >
+                    <span class="">Repositorio</span>
+                    <span class="material-symbols-outlined text-[16px]">download</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Proyectos Tab Pane -->
+          <div class="tab-pane flex-col gap-6 w-full hidden" id="tab-content-proyectos">
+            <div class="bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-sm flex flex-col gap-5">
+              <div>
+                <h2 class="font-headline-md text-headline-md text-primary">
+                  Proyectos de Investigación y Desarrollo
+                </h2>
+                <p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Portafolio de 24 proyectos financiados con impacto regional y rigor metodológico
+                </p>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div
+                  class="bg-canvas-cream rounded-xl p-5 flex flex-col justify-between transition-all hover:shadow-md"
+                >
+                  <div>
+                    <div class="flex items-center justify-between gap-2 mb-2.5">
+                      <span
+                        class="px-2.5 py-0.5 rounded-full bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-bold flex items-center gap-1.5"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>En ejecución
+                      </span>
+                      <span class="font-mono text-[12px] text-neutral-muted">2023 - 2026</span>
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-primary leading-tight">
+                      Vigilancia genómica y determinantes biológicos de la hipertensión resistente en
+                      comunidades afrodescendientes del Caribe colombiano
+                    </h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-2.5">
+                      Investigación multicéntrica enfocada en identificar biomarcadores de resistencia
+                      farmacológica y diseñar esquemas terapéuticos individualizados.
+                    </p>
+                  </div>
+                  <div
+                    class="mt-4 pt-3 bg-surface-container-lowest p-2.5 rounded-lg flex flex-col gap-1.5 text-[12px]"
+                  >
+                    <div class="flex justify-between">
+                      <span class="text-neutral-muted">Investigadora principal:</span>
+                      <span class="font-semibold text-primary">Dra. María Fernanda Torres Gómez</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-neutral-muted">Fuente financiamiento:</span>
+                      <span class="font-medium text-secondary">Minciencias - Convocatoria 912</span>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bg-canvas-cream rounded-xl p-5 flex flex-col justify-between transition-all hover:shadow-md"
+                >
+                  <div>
+                    <div class="flex items-center justify-between gap-2 mb-2.5">
+                      <span
+                        class="px-2.5 py-0.5 rounded-full bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm font-bold flex items-center gap-1.5"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>En ejecución
+                      </span>
+                      <span class="font-mono text-[12px] text-neutral-muted">2024 - 2026</span>
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-primary leading-tight">
+                      Ecosistema de tele-monitoreo inteligente y salud móvil para pacientes geriátricos con
+                      multimorbilidad en zonas rurales
+                    </h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-2.5">
+                      Desarrollo de algoritmos de alerta temprana para prevenir hospitalizaciones no
+                      programadas en el departamento del Atlántico.
+                    </p>
+                  </div>
+                  <div
+                    class="mt-4 pt-3 bg-surface-container-lowest p-2.5 rounded-lg flex flex-col gap-1.5 text-[12px]"
+                  >
+                    <div class="flex justify-between">
+                      <span class="text-neutral-muted">Investigador principal:</span>
+                      <span class="font-semibold text-primary">Dr. Carlos Eduardo Mendoza</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-neutral-muted">Fuente financiamiento:</span>
+                      <span class="font-medium text-secondary"
+                        >Fondo CTeI - Sistema General de Regalías (SGR)</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bg-canvas-cream rounded-xl p-5 flex flex-col justify-between transition-all hover:shadow-md"
+                >
+                  <div>
+                    <div class="flex items-center justify-between gap-2 mb-2.5">
+                      <span
+                        class="px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface font-label-sm text-label-sm font-bold"
+                        >Finalizado</span
+                      >
+                      <span class="font-mono text-[12px] text-neutral-muted">2020 - 2023</span>
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-primary leading-tight">
+                      Impacto de la pandemia de COVID-19 en el control de patologías crónicas no transmisibles
+                      en el área metropolitana de Barranquilla
+                    </h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-2.5">
+                      Evaluación serológica, clínica y de determinantes asistenciales durante la crisis
+                      sanitaria, con generación de 6 artículos internacionales.
+                    </p>
+                  </div>
+                  <div
+                    class="mt-4 pt-3 bg-surface-container-lowest p-2.5 rounded-lg flex flex-col gap-1.5 text-[12px]"
+                  >
+                    <div class="flex justify-between">
+                      <span class="text-neutral-muted">Investigadora principal:</span>
+                      <span class="font-semibold text-primary">Dra. María Fernanda Torres Gómez</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-neutral-muted">Fuente financiamiento:</span>
+                      <span class="font-medium text-on-surface"
+                        >Recursos Propios Convocatoria Interna Unisimón</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bg-canvas-cream rounded-xl p-5 flex flex-col justify-between transition-all hover:shadow-md"
+                >
+                  <div>
+                    <div class="flex items-center justify-between gap-2 mb-2.5">
+                      <span
+                        class="px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface font-label-sm text-label-sm font-bold"
+                        >Finalizado</span
+                      >
+                      <span class="font-mono text-[12px] text-neutral-muted">2019 - 2022</span>
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-primary leading-tight">
+                      Diseño e implementación del programa de intervención psicoeducativa en familias
+                      cuidadoras de pacientes con enfermedad cerebrovascular
+                    </h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-2.5">
+                      Intervención comunitaria evaluada con metodología mixta; derivó en manual institucional
+                      adoptado por redes de salud distritales.
+                    </p>
+                  </div>
+                  <div
+                    class="mt-4 pt-3 bg-surface-container-lowest p-2.5 rounded-lg flex flex-col gap-1.5 text-[12px]"
+                  >
+                    <div class="flex justify-between">
+                      <span class="text-neutral-muted">Investigadora principal:</span>
+                      <span class="font-semibold text-primary">Dra. Natalia Restrepo Vélez</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-neutral-muted">Fuente financiamiento:</span>
+                      <span class="font-medium text-on-surface"
+                        >Alianza Interinstitucional Unisimón - USC</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Sync Status & Back to Top Bar -->
+          <section
+            class="w-full bg-surface-container-lowest rounded-xl p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 text-on-surface-variant text-body-sm font-body-sm"
+          >
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px] text-secondary">sync</span>
+              <span class=""
+                >Última sincronización: <strong>18 de octubre de 2026</strong> · Fuente: Sistema Institucional
+                de Investigación &amp; Minciencias (GrupLAC)</span
+              >
+            </div>
+            <div class="flex items-center gap-3">
+              <button
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-canvas-cream hover:bg-surface-cream-alt text-primary font-label-sm text-label-sm font-semibold transition-colors"
+                onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+              >
+                <span class="material-symbols-outlined text-[16px]">arrow_upward</span>
+                <span class="">Ir arriba</span>
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+      <script>
+        // Tabs Navigation Logic
+        function switchTab(tabId) {
+          const tabs = ['perfil', 'integrantes', 'produccion', 'proyectos'];
+
+          tabs.forEach((t) => {
+            const content = document.getElementById('tab-content-' + t);
+            const btn = document.getElementById('tab-btn-' + t);
+
+            if (content && btn) {
+              if (t === tabId) {
+                content.classList.remove('hidden');
+                content.classList.add('flex');
+
+                btn.classList.add('bg-primary-container', 'text-on-primary', 'shadow-sm');
+                btn.classList.remove('text-on-surface-variant');
+              } else {
+                content.classList.add('hidden');
+                content.classList.remove('flex');
+
+                btn.classList.remove('bg-primary-container', 'text-on-primary', 'shadow-sm');
+                btn.classList.add('text-on-surface-variant');
+              }
+            }
+          });
+
+          window.scrollTo({ top: 120, behavior: 'smooth' });
+        }
+
+        // Quick jump & filter from Tipology Cards to Producción Tab
+        function filterProduccion(categoryCode) {
+          switchTab('produccion');
+          setTimeout(() => {
+            filterType(categoryCode);
+          }, 50);
+        }
+
+        // Filter products by Typology
+        function filterType(category) {
+          const buttons = document.querySelectorAll('.prod-filter-btn');
+          buttons.forEach((btn) => {
+            btn.classList.remove('bg-primary', 'text-on-primary');
+            btn.classList.add('bg-canvas-cream', 'text-on-surface-variant');
+          });
+
+          const activeBtn = document.getElementById('filter-btn-' + category);
+          if (activeBtn) {
+            activeBtn.classList.add('bg-primary', 'text-on-primary');
+            activeBtn.classList.remove('bg-canvas-cream', 'text-on-surface-variant');
+          }
+
+          const items = document.querySelectorAll('.prod-item');
+          items.forEach((item) => {
+            if (category === 'ALL' || item.getAttribute('data-category') === category) {
+              item.style.display = 'flex';
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        }
+
+        // Filter researchers by text search
+        function filterResearchers() {
+          const query = document.getElementById('search-integrantes').value.toLowerCase();
+          const cards = document.querySelectorAll('.researcher-card');
+
+          cards.forEach((card) => {
+            const text = card.innerText.toLowerCase();
+            if (text.includes(query)) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        }
+      </script>
+    </main>
+    <!-- Institutional Footer -->
+    <footer class="w-full bg-surface-dark-forest text-on-primary py-6 mt-8">
+      <div class="max-w-[1240px] mx-auto px-margin-mobile md:px-gutter lg:px-margin">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-space-xl">
+          <div class="flex flex-col gap-space-sm">
+            <div class="flex items-center gap-3">
+              <img
+                alt="Universidad Simón Bolívar"
+                class="h-7 w-auto object-contain brightness-0 invert"
+                src="https://lh3.googleusercontent.com/aida/AEtjO1XBZGdslyxlAzs5zCkQrDdma25AlvcGGGD0xN2q_6zXzuhfJVynft5M9LeuonszbSsXxk1-NaJOjctQLLerB504uWfVn2qbHO9sui4vwF0gAhl0ZePMQwIUGLT0CHHly94lIjqWEKG41GtukgXa3d77-QEsRaf3Bs5qCCrAyk0UD1MvjTIZ5HKpk06xFB97EhzRx51ICXZFCiRFwKf8mCngoPF64YOU25rrLHgA3WYFaC6OynpLF8O4cymO"
+              />
+            </div>
+            <span class="font-headline-sm text-headline-sm tracking-tight text-surface-container-lowest mt-1"
+              >UNISIMÓN RESEARCH</span
+            >
+            <p class="font-body-sm text-body-sm text-primary-fixed-dim">
+              Portal institucional de divulgación científica, producción académica y transferencia tecnológica
+              de la Universidad Simón Bolívar.
+            </p>
+          </div>
+          <div class="flex flex-col gap-space-xs">
+            <span class="font-label-md text-label-md uppercase tracking-wider text-primary-fixed mb-2"
+              >Navegación</span
+            >
+            <a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="investigadores"
+              href="#"
+              >Investigadores</a
+            >
+            <a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="caso-destacado"
+              href="#"
+              >Caso destacado</a
+            >
+            <a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="proyectos-por-area"
+              href="#"
+              >Proyectos por área</a
+            >
+            <a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="grupos-de-investigacion"
+              href="#"
+              >Grupos de investigación</a
+            >
+            <a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="publicaciones"
+              href="#"
+              >Publicaciones</a
+            >
+          </div>
+          <div class="flex flex-col gap-space-xs">
+            <span class="font-label-md text-label-md uppercase tracking-wider text-primary-fixed mb-2"
+              >Ecosistema de Ciencia</span
+            >
+            <a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="recursos"
+              href="#"
+              >Recursos</a
+            >
+            <a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="convocatorias"
+              href="#"
+              >Convocatorias</a
+            >
+            <a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="internacionalizacion"
+              href="#"
+              >Internacionalización</a
+            >
+            <a
+              class="font-body-sm text-body-sm text-surface-container-lowest hover:text-secondary-fixed transition-colors"
+              data-path="egresados"
+              href="#"
+              >Egresados</a
+            >
+          </div>
+          <div class="flex flex-col gap-space-xs">
+            <span class="font-label-md text-label-md uppercase tracking-wider text-primary-fixed mb-2"
+              >Contacto Institucional</span
+            >
+            <p class="font-body-sm text-body-sm text-primary-fixed-dim">
+              Barranquilla &amp; Cúcuta, Colombia
+            </p>
+            <p class="font-body-sm text-body-sm text-primary-fixed-dim">
+              Vicerrectoría de Investigación, Extensión e Innovación
+            </p>
+            <a
+              class="font-body-sm text-body-sm text-secondary-fixed hover:underline mt-2"
+              data-path="contacto"
+              href="mailto:investigacion@unisimon.edu.co"
+              >investigacion@unisimon.edu.co</a
+            >
+          </div>
+        </div>
+        <div
+          class="pt-space-md border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4"
+        >
+          <p class="font-body-sm text-body-sm text-primary-fixed-dim text-center sm:text-left">
+            © Universidad Simón Bolívar - Dirección de TI. Todos los derechos reservados.
+          </p>
+          <div class="flex items-center gap-6">
+            <a
+              class="font-label-sm text-label-sm text-primary-fixed-dim hover:text-surface-container-lowest transition-colors"
+              data-path="politicas-de-privacidad"
+              href="#"
+              >Políticas de Privacidad</a
+            >
+            <a
+              class="font-label-sm text-label-sm text-primary-fixed-dim hover:text-surface-container-lowest transition-colors"
+              data-path="terminos-de-uso"
+              href="#"
+              >Términos de Uso</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

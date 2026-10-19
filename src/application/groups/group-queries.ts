@@ -1,0 +1,34 @@
+import { queryOptions } from '@tanstack/react-query';
+import { sortGroups, type GroupDetail, type GroupRepository } from '@/domain/groups/group';
+
+export type PublicGroupDetail = { kind: 'found'; group: GroupDetail } | { kind: 'not-found' };
+
+/** Regla de publicación: solo grupos activos. */
+export const toPublicGroupDetail = (g: GroupDetail | null): PublicGroupDetail =>
+  g && g.active ? { kind: 'found', group: g } : { kind: 'not-found' };
+
+/** Solo grupos activos y ordenados por categoría: es lo que el portal publica. */
+export function groupQueries(repo: GroupRepository) {
+  return {
+    list: () =>
+      queryOptions({
+        queryKey: ['groups', 'list'],
+        queryFn: async ({ signal }) => sortGroups((await repo.list(signal)).filter((g) => g.active)),
+        staleTime: 10 * 60 * 1000,
+      }),
+    members: (id: number) =>
+      queryOptions({
+        queryKey: ['groups', 'members', id],
+        queryFn: ({ signal }) => repo.members(id, signal),
+        staleTime: 10 * 60 * 1000,
+      }),
+    detail: (id: number) =>
+      queryOptions({
+        queryKey: ['groups', 'detail', id],
+        queryFn: async ({ signal }) => toPublicGroupDetail(await repo.getById(id, signal)),
+        staleTime: 10 * 60 * 1000,
+      }),
+  };
+}
+
+export type GroupQueries = ReturnType<typeof groupQueries>;
