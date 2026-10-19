@@ -26,7 +26,12 @@ const root = document.getElementById('root')!;
 // Solo se hidrata si el HTML prerenderizado corresponde exactamente a esta URL (404.html sirve a otras).
 const prerendered = window.__CRIS__;
 const matches = prerendered?.path === location.pathname && !location.search;
-if (prerendered && matches) hydrate(queryClient, prerendered.queries);
+if (prerendered && matches) {
+  hydrate(queryClient, prerendered.queries);
+  // El HTML se generó en el build: se pinta tal cual y luego se refresca en segundo plano, para que
+  // lo cambiado después (fotos, ODS, datos de Metri-K) aparezca sin volver a desplegar.
+  void queryClient.invalidateQueries();
+}
 
 const app = (
   <StrictMode>

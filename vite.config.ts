@@ -3,14 +3,14 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
 import { createPublicApi } from './scripts/public-api.ts';
+import { storeOptionsFromEnv } from './scripts/stores.ts';
 
 /** /api público (BFF) en dev y preview; en preview además sirve las páginas prerenderizadas sin "/" final. */
 function publicApi(env: Record<string, string>): Plugin {
   const handler = createPublicApi({
     metrikUrl: env.CRIS_METRIK_URL || undefined,
-    photosDir: env.CRIS_PHOTOS_DIR || undefined,
-    odsFile: env.CRIS_ODS_FILE || undefined,
     adminToken: env.CRIS_ADMIN_TOKEN || undefined,
+    ...storeOptionsFromEnv(env),
   });
   return {
     name: 'cris-public-api',
@@ -28,8 +28,8 @@ function publicApi(env: Record<string, string>): Plugin {
 }
 
 export default defineConfig(({ mode }) => {
-  // CRIS_* (no VITE_*) → solo en Node, nunca llega al bundle del navegador.
-  const env = loadEnv(mode, process.cwd(), 'CRIS_');
+  // CRIS_* y BLOB_* (no VITE_*) → solo en Node, nunca llegan al bundle del navegador.
+  const env = loadEnv(mode, process.cwd(), ['CRIS_', 'BLOB_']);
   return {
     plugins: [react(), tailwindcss(), publicApi(env)],
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },

@@ -11,8 +11,8 @@ import http, { type IncomingMessage, type ServerResponse } from 'node:http';
 import { pathToFileURL } from 'node:url';
 import { fetchPublicGroups } from './groups-source.ts';
 import { fetchGroupMembers, fetchInvestigatorGroups, fetchInvestigators } from './investigators-source.ts';
-import { createOdsStore } from './ods-store.ts';
-import { MAX_PHOTO_BYTES, createPhotoStore } from './photo-store.ts';
+import { MAX_PHOTO_BYTES, photoUrl } from './photo-store.ts';
+import { createStores, storeOptionsFromEnv, type StoreOptions } from './stores.ts';
 import { summarizeGroup, type GroupDetail } from '../src/domain/groups/group.ts';
 import { isOdsId } from '../src/domain/ods/ods.ts';
 import {
@@ -26,8 +26,7 @@ import {
 } from '../src/domain/authors/author.ts';
 
 export const DEFAULT_METRIK_URL = 'https://metrik.unisimon.edu.co/back/api';
-export const DEFAULT_PHOTOS_DIR = 'data/photos';
-export const DEFAULT_ODS_FILE = 'data/ods.json';
+export { DEFAULT_ODS_FILE, DEFAULT_PHOTOS_DIR } from './stores.ts';
 const TTL_MS = 10 * 60 * 1000;
 const MAX_ODS_BYTES = 1024;
 const MAX_PAGE_SIZE = 100;
@@ -66,22 +65,29 @@ async function readBody(req: IncomingMessage, max: number): Promise<Buffer | nul
 
 export function createPublicApi({
   metrikUrl = DEFAULT_METRIK_URL,
-  photosDir = DEFAULT_PHOTOS_DIR,
-  odsFile = DEFAULT_ODS_FILE,
   adminToken,
-}: { metrikUrl?: string; photosDir?: string; odsFile?: string; adminToken?: string } = {}) {
+  ...storage
+}: { metrikUrl?: string; adminToken?: string } & StoreOptions = {}) {
   const base = metrikUrl.replace(/\/+$/, '');
-  const photos = createPhotoStore(photosDir);
-  const odsStore = createOdsStore(odsFile);
+  const { photos, ods: odsStore } = createStores(storage);
   const metrikGroups = cached<GroupDetail[]>(() => fetchPublicGroups(`${base}/group`));
-  // Los ODS se leen en cada consulta (no pasan por la caché de Metri-K): un cambio se ve al instante.
+  // Fotos y ODS no pasan por la caché de Metri-K: un cambio del admin se ve al instante.
   const groups = async () => {
-    const ods = odsStore.all();
+    const ods = await odsStore.all();
     return (await metrikGroups()).map((g) => ({ ...g, ods: ods[g.id] ?? [] }));
   };
   const directory = cached(() => fetchInvestigators(base));
-  const withPhoto = <T extends Author>(a: T): T => ({ ...a, photoUrl: photos.url(a.id) });
-  const investigators = async () => (await directory()).authors.map(withPhoto);
+  const photoUrls = async () => {
+    const v = await photos.versions();
+    return <T extends Author>(a: T): T => {
+      const version = v.get(a.id);
+      return { ...a, photoUrl: version === undefined ? null : photoUrl(a.id, version) };
+    };
+  };
+  const investigators = async () => {
+    const withPhoto = await photoUrls();
+    return (await directory()).authors.map(withPhoto);
+  };
   const memberships = new Map<number, () => Promise<GroupRef[]>>();
   const groupsOf = (id: number) => {
     if (!memberships.has(id))
@@ -101,6 +107,7 @@ export function createPublicApi({
       );
     // Los integrantes publicados heredan las métricas del perfil (pubs e índice h en su tarjeta).
     const published = new Map((await investigators()).map((a) => [a.id, a]));
+    const withPhoto = await photoUrls();
     return (await groupMembers.get(groupId)!()).map((m) => ({
       ...withPhoto(m),
       metrics: published.get(m.id)?.metrics ?? m.metrics,
@@ -148,31 +155,41 @@ export function createPublicApi({
           const list = (parsed as { ods?: unknown } | null)?.ods;
           if (!Array.isArray(list) || list.length > 17 || !list.every(isOdsId))
             return send(400, { detail: 'Se espera { "ods": [números del 1 al 17] }' });
-          return send(200, { ods: odsStore.set(id, list) });
+          try {
+            return send(200, { ods: await odsStore.set(id, list) });
+          } catch (err) {
+            return send(500, { detail: `No se pudieron guardar los ODS: ${(err as Error).message}` });
+          }
         }
         const id = Number(photo![1]);
         if (!(await investigators()).some((a) => a.id === id)) return send(404, { detail: 'No encontrado' });
         if (req.method === 'DELETE') {
-          photos.remove(id);
+          await photos.remove(id);
           return send(200, { photoUrl: null });
         }
         const body = await readBody(req, MAX_PHOTO_BYTES);
         if (!body) return send(413, { detail: 'La foto supera 1 MB' });
         try {
-          photos.save(id, body);
+          await photos.save(id, body);
         } catch (err) {
-          return send(400, { detail: (err as Error).message });
+          const bad = err instanceof RangeError || err instanceof TypeError;
+          return send(bad ? 400 : 500, { detail: (err as Error).message });
         }
-        return send(200, { photoUrl: photos.url(id) });
+        const version = (await photos.versions()).get(id);
+        return send(200, { photoUrl: version === undefined ? null : photoUrl(id, version) });
       }
       if (req.method !== 'GET' && req.method !== 'HEAD') return send(405, { detail: 'Método no permitido' });
 
       if (photo) {
-        const data = photos.read(Number(photo[1]));
+        const data = await photos.read(Number(photo[1]));
         if (!data) return send(404, { detail: 'Sin foto' });
         res.statusCode = 200;
         res.setHeader('Content-Type', 'image/webp');
-        res.setHeader('Cache-Control', sp.has('v') ? 'public, max-age=31536000, immutable' : 'no-cache');
+        // Con ?v la URL cambia en cada foto nueva: el navegador y el CDN la guardan para siempre.
+        res.setHeader(
+          'Cache-Control',
+          sp.has('v') ? 'public, max-age=31536000, s-maxage=31536000, immutable' : 'no-cache',
+        );
         return res.end(data);
       }
 
@@ -201,7 +218,10 @@ export function createPublicApi({
           ? send(200, {
               ...a,
               // Cada grupo lleva sus ODS: el perfil muestra los que el investigador hereda de sus grupos.
-              groups: (await groupsOf(a.id)).map((g) => ({ ...g, ods: odsStore.get(g.id) })),
+              groups: await (async () => {
+                const ods = await odsStore.all();
+                return (await groupsOf(a.id)).map((g) => ({ ...g, ods: ods[g.id] ?? [] }));
+              })(),
               production: production.get(a.id) ?? null,
             })
           : send(404, { detail: 'No encontrado' });
@@ -228,14 +248,13 @@ export function createPublicApi({
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const { CRIS_METRIK_URL, CRIS_PHOTOS_DIR, CRIS_ODS_FILE, CRIS_ADMIN_TOKEN, PORT = '8787' } = process.env;
+  const { CRIS_METRIK_URL, CRIS_ADMIN_TOKEN, PORT = '8787' } = process.env;
   http
     .createServer(
       createPublicApi({
         metrikUrl: CRIS_METRIK_URL,
-        photosDir: CRIS_PHOTOS_DIR,
-        odsFile: CRIS_ODS_FILE,
         adminToken: CRIS_ADMIN_TOKEN,
+        ...storeOptionsFromEnv(process.env),
       }),
     )
     .listen(Number(PORT), '127.0.0.1', () => console.log(`API pública en http://127.0.0.1:${PORT}/api/`));

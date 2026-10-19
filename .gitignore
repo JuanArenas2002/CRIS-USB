@@ -5,3 +5,4 @@ dist-ssr
 .env.local
 data/
 tsconfig.tsbuildinfo
+.vercel

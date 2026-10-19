@@ -6,11 +6,11 @@ import { pathToFileURL } from 'node:url';
 import { loadEnv } from 'vite';
 import { fetchPublicGroups, mapLimit } from './groups-source.ts';
 import { fetchGroupMembers, fetchInvestigators, withProfiles } from './investigators-source.ts';
-import { DEFAULT_METRIK_URL, DEFAULT_ODS_FILE, DEFAULT_PHOTOS_DIR } from './public-api.ts';
-import { createOdsStore } from './ods-store.ts';
-import { createPhotoStore } from './photo-store.ts';
+import { DEFAULT_METRIK_URL } from './public-api.ts';
+import { photoUrl } from './photo-store.ts';
+import { createStores, storeOptionsFromEnv } from './stores.ts';
 
-const env = loadEnv('production', process.cwd(), ['CRIS_', 'VITE_']);
+const env = loadEnv('production', process.cwd(), ['CRIS_', 'VITE_', 'BLOB_']);
 const metrik = (env.CRIS_METRIK_URL || DEFAULT_METRIK_URL).replace(/\/+$/, '');
 const siteUrl = (env.VITE_SITE_URL || 'http://localhost:5173').replace(/\/+$/, '');
 
@@ -19,16 +19,19 @@ const ssr = await import(pathToFileURL(path.resolve('dist-ssr/entry-server.js'))
 const template = await fs.readFile(path.join(dist, 'index.html'), 'utf8');
 
 // 1. Datos (si Metri-K falla, el build falla: no se publica un sitio vacío).
-const odsByGroup = createOdsStore(env.CRIS_ODS_FILE || DEFAULT_ODS_FILE).all();
+// Fotos y ODS del mismo almacenamiento que el BFF (disco en local, Vercel Blob en Vercel).
+const stores = createStores(storeOptionsFromEnv(env));
+const odsByGroup = await stores.ods.all();
+const photoVersions = await stores.photos.versions();
+const photoOf = (id) => (photoVersions.has(id) ? photoUrl(id, photoVersions.get(id)) : null);
 const groups = (await fetchPublicGroups(`${metrik}/group`)).map((g) => ({
   ...g,
   ods: odsByGroup[g.id] ?? [],
 }));
-const photos = createPhotoStore(env.CRIS_PHOTOS_DIR || DEFAULT_PHOTOS_DIR);
 const authors = (await withProfiles(metrik, await fetchInvestigators(metrik))).map((a) => ({
   ...a,
   groups: a.groups.map((g) => ({ ...g, ods: odsByGroup[g.id] ?? [] })),
-  photoUrl: photos.url(a.id),
+  photoUrl: photoOf(a.id),
 }));
 const authorsQ = ssr.createServerAuthorQueries(authors);
 const published = new Map(authors.map((a) => [a.id, a]));
@@ -38,7 +41,7 @@ const members = new Map(
     g.id,
     (await fetchGroupMembers(metrik, g.id)).map((m) => ({
       ...m,
-      photoUrl: photos.url(m.id),
+      photoUrl: photoOf(m.id),
       metrics: published.get(m.id)?.metrics ?? m.metrics,
       profilePublished: published.has(m.id),
     })),
