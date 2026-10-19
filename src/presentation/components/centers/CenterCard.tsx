@@ -104,24 +104,25 @@ export function CenterCard({ center: c }: { center: Center }) {
               <span className="text-label-sm tracking-wider text-primary-fixed-dim uppercase">
                 {t('card.label')}
               </span>
-              <span
-                className={`mt-2 truncate leading-[30px] font-bold tracking-tight text-secondary-fixed ${
-                  (c.acronym ?? c.code).length > 8 ? 'text-[24px]' : 'text-[30px]'
-                }`}
-              >
-                {c.acronym ?? c.code}
-              </span>
+              {/* Con logo, el logo ocupa el lugar de la sigla. */}
+              {c.logoUrl ? (
+                <img
+                  src={c.logoUrl}
+                  alt={t('detail.logoAlt', { name: c.acronym ?? c.name })}
+                  loading="lazy"
+                  className="mt-2 h-16 w-auto max-w-full self-start rounded-xl bg-white object-contain p-1.5"
+                />
+              ) : (
+                <span
+                  className={`mt-2 truncate leading-[30px] font-bold tracking-tight text-secondary-fixed ${
+                    (c.acronym ?? c.code).length > 8 ? 'text-[24px]' : 'text-[30px]'
+                  }`}
+                >
+                  {c.acronym ?? c.code}
+                </span>
+              )}
             </div>
-            {c.logoUrl ? (
-              <img
-                src={c.logoUrl}
-                alt={t('detail.logoAlt', { name: c.acronym ?? c.name })}
-                loading="lazy"
-                className="h-14 w-14 shrink-0 rounded-xl bg-white object-contain p-1.5"
-              />
-            ) : (
-              <Icon name="domain" className="text-[40px] text-tertiary-fixed/80" />
-            )}
+            <Icon name="domain" className="text-[40px] text-tertiary-fixed/80" />
           </div>
           <div className="relative mt-4 flex items-center justify-between gap-2">
             <p className="inline-flex rounded-full bg-primary-container/90 px-3 py-1 text-label-sm font-semibold tracking-wide">
@@ -191,12 +192,22 @@ export function CenterRow({ center: c }: { center: Center }) {
     <li
       className={`group relative grid grid-cols-[6.5rem_1fr_auto] items-center gap-4 px-4 py-4 transition-colors hover:bg-surface-cream-alt/60 md:px-5 ${COLS}`}
     >
-      <span
-        className="flex h-12 items-center justify-center truncate rounded-xl bg-surface-dark-forest px-2 text-label-md font-bold text-secondary-fixed"
-        title={c.acronym ?? c.code}
-      >
-        {c.acronym ?? c.code}
-      </span>
+      {c.logoUrl ? (
+        <img
+          src={c.logoUrl}
+          alt={t('detail.logoAlt', { name: c.acronym ?? c.name })}
+          title={c.acronym ?? c.code}
+          loading="lazy"
+          className="h-12 w-full rounded-xl border border-border-subtle bg-white object-contain p-1"
+        />
+      ) : (
+        <span
+          className="flex h-12 items-center justify-center truncate rounded-xl bg-surface-dark-forest px-2 text-label-md font-bold text-secondary-fixed"
+          title={c.acronym ?? c.code}
+        >
+          {c.acronym ?? c.code}
+        </span>
+      )}
 
       <div className="min-w-0">
         <h3 className="text-body-md font-semibold text-[#0F241A] group-hover:text-primary">
