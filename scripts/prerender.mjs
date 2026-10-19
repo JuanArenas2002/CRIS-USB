@@ -121,6 +121,19 @@ await fs.writeFile(
 `,
 );
 
+// Verificación de Google Search Console por archivo HTML (CRIS_GOOGLE_VERIFICATION, separadas por
+// coma). Acepta "google123abc.html", "google123abc" o la línea completa que muestra Google.
+for (const raw of (env.CRIS_GOOGLE_VERIFICATION || '').split(',')) {
+  const name = raw
+    .replace(/^\s*google-site-verification:\s*/i, '')
+    .trim()
+    .replace(/(\.html)?$/, '.html');
+  if (name === '.html') continue;
+  if (!/^google[0-9a-f]{8,}\.html$/.test(name)) throw new Error(`CRIS_GOOGLE_VERIFICATION inválido: ${raw}`);
+  await fs.writeFile(path.join(dist, name), `google-site-verification: ${name}`);
+  console.log(`Google Search Console: /${name}`);
+}
+
 console.log(
   `Prerender: ${authors.length} investigadores (${profilePaths.length} indexables), ${groupPaths.length} grupos. Sitemap en ${siteUrl}/sitemap.xml`,
 );
