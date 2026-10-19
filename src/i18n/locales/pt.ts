@@ -494,7 +494,7 @@ const pt: typeof es = {
       view: 'Ver centro',
       linesCount_one: '{{count}} linha',
       linesCount_other: '{{count}} linhas',
-      colCode: 'Sigla',
+      colCode: 'Logo',
       colCenter: 'Centro',
       colStatus: 'Situação',
     },

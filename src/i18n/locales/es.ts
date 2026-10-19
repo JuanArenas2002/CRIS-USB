@@ -500,7 +500,7 @@ const es = {
       view: 'Ver centro',
       linesCount_one: '{{count}} línea',
       linesCount_other: '{{count}} líneas',
-      colCode: 'Sigla',
+      colCode: 'Logo',
       colCenter: 'Centro',
       colStatus: 'Estado',
     },

@@ -493,7 +493,7 @@ const en: typeof es = {
       view: 'View center',
       linesCount_one: '{{count}} line',
       linesCount_other: '{{count}} lines',
-      colCode: 'Acronym',
+      colCode: 'Logo',
       colCenter: 'Center',
       colStatus: 'Status',
     },
