@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { beforeEach, vi } from 'vitest';
-import { createStores } from './stores';
+import { createStores, storeOptionsFromEnv } from './stores';
 
 // Vercel Blob simulado en memoria (misma forma que el SDK: put / get / list / del).
 const blobs = new Map<string, { body: Buffer; uploadedAt: Date; access: string }>();
@@ -68,4 +68,12 @@ test('Blob: ODS en un solo JSON, normalizados; lista vacía quita el grupo', asy
   expect(blobs.get('cris/ods.json')?.access).toBe('public');
   await ods.set(14, []);
   expect(await ods.all()).toEqual({ 2: [5] });
+});
+
+test('variables del store con prefijo propio (Vercel deja elegirlo al conectar)', () => {
+  expect(storeOptionsFromEnv({ CRIS_READ_WRITE_TOKEN: 'vercel_blob_rw_abc_123' }).blobToken).toBe(
+    'vercel_blob_rw_abc_123',
+  );
+  expect(storeOptionsFromEnv({ FOTOS_STORE_ID: 'store_abc' }).blobStoreId).toBe('store_abc');
+  expect(storeOptionsFromEnv({ OTRO_READ_WRITE_TOKEN: 'no-es-de-blob' }).blobToken).toBeUndefined();
 });

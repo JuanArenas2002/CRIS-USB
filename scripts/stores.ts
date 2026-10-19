@@ -56,11 +56,18 @@ export function createStores({
   };
 }
 
+/**
+ * Al conectar el store, Vercel deja elegir un prefijo para sus variables (`BLOB` por defecto):
+ * se aceptan `{PREFIJO}_READ_WRITE_TOKEN` / `{PREFIJO}_STORE_ID`, reconocidos por su valor.
+ */
+const byPrefix = (env: Record<string, string | undefined>, suffix: string, valuePrefix: string) =>
+  Object.entries(env).find(([k, v]) => k.endsWith(suffix) && v?.startsWith(valuePrefix))?.[1];
+
 /** Lee la configuración de almacenamiento de un objeto de entorno (process.env o loadEnv). */
 export const storeOptionsFromEnv = (env: Record<string, string | undefined>): StoreOptions => ({
   photosDir: env.CRIS_PHOTOS_DIR,
   odsFile: env.CRIS_ODS_FILE,
-  blobToken: env.BLOB_READ_WRITE_TOKEN,
-  blobStoreId: env.BLOB_STORE_ID,
+  blobToken: env.BLOB_READ_WRITE_TOKEN || byPrefix(env, '_READ_WRITE_TOKEN', 'vercel_blob_rw_'),
+  blobStoreId: env.BLOB_STORE_ID || byPrefix(env, '_STORE_ID', 'store_'),
   blobAccess: env.CRIS_BLOB_ACCESS,
 });
