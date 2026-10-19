@@ -74,12 +74,19 @@ export function AuthorCard({ author }: { author: Author }) {
           {ids.length ? (
             <ul className="flex flex-wrap gap-1.5 pr-8" aria-label="Identificadores disponibles">
               {ids.map((p) => (
-                <li
-                  key={p.label}
-                  className="inline-flex items-center gap-1.5 rounded-md bg-surface-cream-alt py-0.5 pr-2.5 pl-1 text-[12px] text-on-surface-variant"
-                >
-                  <IdLogo label={p.label} size={16} />
-                  {p.label}
+                <li key={p.label}>
+                  {/* Por encima del enlace que cubre la tarjeta (z-10): abre el perfil externo, no el del portal. */}
+                  <a
+                    href={p.url}
+                    target="_blank"
+                    rel="noopener"
+                    title={`${p.label}: ${p.value}`}
+                    className="relative z-10 inline-flex items-center gap-1.5 rounded-md bg-surface-cream-alt py-0.5 pr-2.5 pl-1 text-[12px] text-on-surface-variant transition-colors hover:bg-badge-sage-bg hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-secondary"
+                  >
+                    <IdLogo label={p.label} size={16} />
+                    {p.label}
+                    <span className="sr-only">{`, perfil de ${name} (abre en una pestaña nueva)`}</span>
+                  </a>
                 </li>
               ))}
             </ul>

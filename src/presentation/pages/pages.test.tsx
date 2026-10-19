@@ -9,6 +9,11 @@ test('directorio: tarjetas con enlace rastreable al perfil y métricas reales', 
   renderApp('/');
   const link = await screen.findByRole('link', { name: 'Ana María Pérez' });
   expect(link).toHaveAttribute('href', '/investigadores/7-ana-maria-perez');
+  // Cada identificador de la tarjeta enlaza a su perfil externo.
+  expect(screen.getByRole('link', { name: /^ORCID, perfil de Ana María Pérez/ })).toHaveAttribute(
+    'href',
+    'https://orcid.org/0000-0002-1825-0097',
+  );
   expect(screen.getByText('1 Perfil Activo')).toBeInTheDocument();
   expect(screen.getByText('Investigador Sénior')).toBeInTheDocument(); // categoría Minciencias
   await waitFor(() => expect(document.title).toBe('Directorio de investigadores | Unisimón Research'));
