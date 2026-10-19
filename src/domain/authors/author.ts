@@ -38,6 +38,8 @@ export interface Author {
   metrics: AuthorMetrics | null;
   /** Foto alojada por el propio portal (Metri-K no tiene fotos); null si no se ha asignado. */
   photoUrl: string | null;
+  /** Centros de investigación activos a los que aporta (Metri-K `/center/investigator/{id}`). */
+  centers?: CenterRef[];
 }
 
 export interface AuthorMetrics {
@@ -88,7 +90,6 @@ export interface AuthorProduction {
 /** Perfil completo: además, todos los grupos activos y, si es destacado, su producción. */
 export interface AuthorProfile extends Author {
   groups: GroupRef[];
-  /** Centros de investigación activos a los que aporta (Metri-K `/center/investigator/{id}`). */
   centers: CenterRef[];
   production: AuthorProduction | null;
 }

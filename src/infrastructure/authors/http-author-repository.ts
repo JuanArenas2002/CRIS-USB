@@ -31,6 +31,17 @@ const author = {
   scholarUrl: httpsUrl,
   mainGroup: groupRef.nullable(),
   photoUrl: z.string().startsWith('/api/investigators/').nullable(),
+  centers: z
+    .array(
+      z.object({
+        id: z.number().int(),
+        code: z.string(),
+        acronym: z.string().nullable(),
+        name: z.string(),
+        logoUrl: z.string().nullable().default(null),
+      }),
+    )
+    .default([]),
   metrics: z
     .object({
       hIndex: z.number().int().nullable(),
@@ -82,17 +93,6 @@ const authorSchema = z.object(author) as unknown as z.ZodType<Author>;
 const profileSchema = z.object({
   ...author,
   groups: z.array(groupRef),
-  centers: z
-    .array(
-      z.object({
-        id: z.number().int(),
-        code: z.string(),
-        acronym: z.string().nullable(),
-        name: z.string(),
-        logoUrl: z.string().nullable().default(null),
-      }),
-    )
-    .default([]),
   production,
 }) as unknown as z.ZodType<AuthorProfile>;
 

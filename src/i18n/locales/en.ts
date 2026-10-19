@@ -190,6 +190,7 @@ const en: typeof es = {
     },
     card: {
       scientificIds: 'Scientific identifiers',
+      centers: 'Research centers',
       idsAvailable: 'Available identifiers',
       externalProfile: ', profile of {{name}} (opens in a new tab)',
       noIds: 'No external identifiers registered',

@@ -157,6 +157,9 @@ test('investigadores: solo los seleccionados y activos en GrupLAC, sin datos per
   const { status, text, body } = await get('/api/investigators?size=5000');
   expect(status).toBe(200);
   expect(body.items.map((a: { id: number }) => a.id)).toEqual([1]); // 2 no está seleccionado
+  expect(body.items[0].centers).toEqual([
+    { id: 1, code: 'CI-1', acronym: 'CU', name: 'Centro Uno', logoUrl: null },
+  ]);
   for (const s of SECRETS) expect(text).not.toContain(s);
   expect((await get('/api/investigators?cat=junior')).body.total).toBe(0);
   expect((await get('/api/investigators?q=perez')).body.items[0].name).toBe('ANA PEREZ');

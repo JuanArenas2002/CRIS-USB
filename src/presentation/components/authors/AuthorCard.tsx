@@ -65,6 +65,30 @@ export function AuthorCard({ author }: { author: Author }) {
             <Icon name="person" className="text-[18px] text-primary" />
             {labels.researcher(author.category)}
           </p>
+          {/* Centros a los que aporta: logo y sigla (el nombre, para lectores de pantalla). */}
+          {author.centers?.length ? (
+            <ul className="mt-2 flex flex-wrap gap-1.5" aria-label={t('card.centers')}>
+              {author.centers.map((c) => (
+                <li
+                  key={c.id}
+                  className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border-subtle bg-white px-2 text-[12px] font-semibold text-on-surface-variant"
+                >
+                  {c.logoUrl ? (
+                    <img
+                      src={c.logoUrl}
+                      alt=""
+                      loading="lazy"
+                      className="h-6 w-auto max-w-14 object-contain"
+                    />
+                  ) : (
+                    <Icon name="domain" className="text-[16px] text-secondary" />
+                  )}
+                  {c.acronym ?? c.code}
+                  <span className="sr-only">{c.name}</span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
 
         <div className="relative my-2 py-1">

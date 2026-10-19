@@ -99,9 +99,20 @@ export function createPublicApi({
       return { ...a, photoUrl: version === undefined ? null : photoUrl(a.id, version) };
     };
   };
+  // Cada investigador publicado lleva sus centros (tarjeta y perfil), con el logo del portal.
+  // ponytail: una consulta a Metri-K por investigador (cacheada); bien para los ~10 publicados,
+  // pedir a Metri-K un endpoint masivo si se publican cientos.
   const investigators = async () => {
-    const withPhoto = await photoUrls();
-    return (await directory()).authors.map(withPhoto);
+    const [withPhoto, v] = await Promise.all([photoUrls(), logos.versions()]);
+    return Promise.all(
+      (await directory()).authors.map(async (a) => ({
+        ...withPhoto(a),
+        centers: (await centersOf(a.id).catch(() => [])).map((c) => {
+          const version = v.get(c.id);
+          return { ...c, logoUrl: version === undefined ? null : logoUrl(c.id, version) };
+        }),
+      })),
+    );
   };
   const memberships = new Map<number, () => Promise<GroupRef[]>>();
   const groupsOf = (id: number) => {
@@ -295,13 +306,6 @@ export function createPublicApi({
                   ods: ods[g.id] ?? [],
                   type: type.get(g.id) ?? null,
                 }));
-              })(),
-              centers: await (async () => {
-                const v = await logos.versions();
-                return (await centersOf(a.id)).map((c) => {
-                  const version = v.get(c.id);
-                  return { ...c, logoUrl: version === undefined ? null : logoUrl(c.id, version) };
-                });
               })(),
               production: production.get(a.id) ?? null,
             })

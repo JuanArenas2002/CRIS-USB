@@ -190,6 +190,7 @@ const pt: typeof es = {
     },
     card: {
       scientificIds: 'Identificadores científicos',
+      centers: 'Centros de pesquisa',
       idsAvailable: 'Identificadores disponíveis',
       externalProfile: ', perfil de {{name}} (abre em uma nova aba)',
       noIds: 'Sem identificadores externos registrados',

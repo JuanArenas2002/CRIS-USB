@@ -195,6 +195,7 @@ const es = {
     },
     card: {
       scientificIds: 'Identificadores científicos',
+      centers: 'Centros de investigación',
       idsAvailable: 'Identificadores disponibles',
       externalProfile: ', perfil de {{name}} (abre en una pestaña nueva)',
       noIds: 'Sin identificadores externos registrados',
