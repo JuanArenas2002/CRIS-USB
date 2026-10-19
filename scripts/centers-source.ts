@@ -9,7 +9,7 @@ import type { CenterDetail, CenterLine, CenterResolution } from '../src/domain/c
 import { normalizeOds } from '../src/domain/ods/ods.ts';
 import { cleanText, getData, httpsUrl, mapLimit, obj, str, type Raw } from './groups-source.ts';
 
-type CenterBase = Omit<CenterDetail, 'lines' | 'resolutions' | 'ods' | 'linesCount'>;
+type CenterBase = Omit<CenterDetail, 'lines' | 'resolutions' | 'ods' | 'linesCount' | 'logoUrl' | 'website'>;
 
 /** Centro público; null para registros vacíos (Metri-K tiene un `id 0` con todo en "N/A"). */
 export function toPublicCenter(raw: Raw): CenterBase | null {
@@ -97,6 +97,9 @@ export async function fetchPublicCenters(base: string): Promise<CenterDetail[]> 
       ...c,
       ods: normalizeOds(project(ods, (o) => Number(str(o.number)))),
       linesCount: centerLines.length,
+      // Metri-K no los tiene: los asigna el portal (public-api.ts, /admin/centros).
+      logoUrl: null,
+      website: null,
       lines: centerLines,
       resolutions: project(resolutions, toCenterResolution).sort((a, b) =>
         (b.date ?? '').localeCompare(a.date ?? ''),

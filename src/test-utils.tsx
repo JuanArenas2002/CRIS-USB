@@ -107,6 +107,8 @@ export function makeCenterDetail(over: Partial<CenterDetail> = {}): CenterDetail
     },
     ods: [8, 9, 17],
     linesCount: 1,
+    logoUrl: null,
+    website: null,
     lines: [{ id: 1, code: 'LC001', name: 'Emprendimiento Tecnológico' }],
     resolutions: [
       {

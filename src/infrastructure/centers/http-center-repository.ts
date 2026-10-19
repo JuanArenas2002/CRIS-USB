@@ -26,6 +26,8 @@ const info = {
     .nullable(),
   ods: z.array(z.number().int().min(1).max(17)),
   linesCount: z.number().int(),
+  logoUrl: z.string().nullable(),
+  website: z.url({ protocol: /^https?$/ }).nullable(),
 };
 
 const centerSchema = z.object(info) as unknown as z.ZodType<Center>;

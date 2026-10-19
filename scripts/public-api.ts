@@ -2,8 +2,8 @@
 // - Metri-K expone datos personales (cédulas, correos, teléfonos, hashes de contraseña); aquí se
 //   proyectan a campos públicos (groups-source.ts / investigators-source.ts) y nada más sale.
 // - Búsqueda, filtros y paginación se resuelven en memoria: Metri-K no los ofrece.
-// - Solo lectura, salvo las fotos de investigadores (PUT/DELETE) y los ODS de los grupos (PUT),
-//   ambos con token de administración.
+// - Solo lectura, salvo las fotos de investigadores y los logos de centros (PUT/DELETE), los ODS de
+//   los grupos y la página oficial de los centros (PUT), todo con token de administración.
 // Dev/preview: montado como middleware en vite.config.ts.
 // Producción: `node scripts/public-api.ts` detrás de nginx (ver README).
 import { createHash, timingSafeEqual } from 'node:crypto';
@@ -12,7 +12,8 @@ import { pathToFileURL } from 'node:url';
 import { fetchPublicCenters, fetchResolutionPdf } from './centers-source.ts';
 import { fetchPublicGroups } from './groups-source.ts';
 import { fetchGroupMembers, fetchInvestigatorGroups, fetchInvestigators } from './investigators-source.ts';
-import { MAX_PHOTO_BYTES, photoUrl } from './photo-store.ts';
+import { MAX_PHOTO_BYTES, logoUrl, photoUrl } from './photo-store.ts';
+import { normalizeWebsite } from './ods-store.ts';
 import { createStores, storeOptionsFromEnv, type StoreOptions } from './stores.ts';
 import { summarizeCenter, type CenterDetail } from '../src/domain/centers/center.ts';
 import { summarizeGroup, type GroupDetail } from '../src/domain/groups/group.ts';
@@ -71,10 +72,21 @@ export function createPublicApi({
   ...storage
 }: { metrikUrl?: string; adminToken?: string; onVercel?: boolean } & StoreOptions = {}) {
   const base = metrikUrl.replace(/\/+$/, '');
-  const { photos, ods: odsStore } = createStores(storage);
+  const { photos, ods: odsStore, logos, sites } = createStores(storage);
   const metrikGroups = cached<GroupDetail[]>(() => fetchPublicGroups(`${base}/group`));
-  const centers = cached<CenterDetail[]>(() => fetchPublicCenters(base));
-  // Fotos y ODS no pasan por la caché de Metri-K: un cambio del admin se ve al instante.
+  const metrikCenters = cached<CenterDetail[]>(() => fetchPublicCenters(base));
+  const centers = async () => {
+    const [v, site] = await Promise.all([logos.versions(), sites.all()]);
+    return (await metrikCenters()).map((c) => {
+      const version = v.get(c.id);
+      return {
+        ...c,
+        logoUrl: version === undefined ? null : logoUrl(c.id, version),
+        website: site[c.id] ?? null,
+      };
+    });
+  };
+  // Fotos, logos y ODS no pasan por la caché de Metri-K: un cambio del admin se ve al instante.
   const groups = async () => {
     const ods = await odsStore.all();
     return (await metrikGroups()).map((g) => ({ ...g, ods: ods[g.id] ?? [] }));
@@ -138,11 +150,31 @@ export function createPublicApi({
       const p = url.pathname;
       const sp = url.searchParams;
       const photo = /^\/api\/investigators\/(\d{1,12})\/photo$/.exec(p);
+      const logo = /^\/api\/centers\/(\d{1,12})\/logo$/.exec(p);
       const groupOds = /^\/api\/groups\/(\d{1,12})\/ods$/.exec(p);
+      const site = /^\/api\/centers\/(\d{1,12})\/website$/.exec(p);
+      // Fotos y logos: misma validación (WebP ≤ 1 MB) y mismo tipo de almacenamiento.
+      const image = photo
+        ? {
+            store: photos,
+            id: Number(photo[1]),
+            key: 'photoUrl',
+            url: photoUrl,
+            exists: async (id: number) => (await investigators()).some((a) => a.id === id),
+          }
+        : logo
+          ? {
+              store: logos,
+              id: Number(logo[1]),
+              key: 'logoUrl',
+              url: logoUrl,
+              exists: async (id: number) => (await metrikCenters()).some((c) => c.id === id && c.active),
+            }
+          : null;
 
-      // ── Escritura: fotos y ODS, con token ─────────────────────────────────────────────
+      // ── Escritura: fotos, logos, ODS y páginas oficiales, con token ───────────────────
       if (req.method === 'PUT' || req.method === 'DELETE') {
-        if (!photo && !(groupOds && req.method === 'PUT'))
+        if (!image && !((groupOds || site) && req.method === 'PUT'))
           return send(405, { detail: 'Método no permitido' });
         if (!adminToken)
           return send(503, { detail: 'Administración deshabilitada (falta CRIS_ADMIN_TOKEN)' });
@@ -164,36 +196,56 @@ export function createPublicApi({
           if (!Array.isArray(list) || list.length > 17 || !list.every(isOdsId))
             return send(400, { detail: 'Se espera { "ods": [números del 1 al 17] }' });
           try {
-            return send(200, { ods: await odsStore.set(id, list) });
+            return send(200, { ods: (await odsStore.set(id, list)) ?? [] });
           } catch (err) {
             return send(500, { detail: `No se pudieron guardar los ODS: ${(err as Error).message}` });
           }
         }
-        const id = Number(photo![1]);
-        if (!(await investigators()).some((a) => a.id === id)) return send(404, { detail: 'No encontrado' });
+        if (site) {
+          const id = Number(site[1]);
+          if (!(await metrikCenters()).some((c) => c.id === id && c.active))
+            return send(404, { detail: 'No encontrado' });
+          const body = await readBody(req, MAX_ODS_BYTES);
+          let website: unknown;
+          try {
+            website = body && (JSON.parse(body.toString('utf8')) as { website?: unknown }).website;
+          } catch {
+            website = undefined;
+          }
+          // null o "" quitan la página; cualquier otro valor debe ser una URL http(s) válida.
+          if (!(website === null || website === '' || normalizeWebsite(website)))
+            return send(400, { detail: 'Se espera { "website": "https://…" } o { "website": null }' });
+          try {
+            return send(200, { website: await sites.set(id, website) });
+          } catch (err) {
+            return send(500, { detail: `No se pudo guardar la página: ${(err as Error).message}` });
+          }
+        }
+        const { store, id, key, url: imageUrl, exists } = image!;
+        if (!(await exists(id))) return send(404, { detail: 'No encontrado' });
         if (req.method === 'DELETE') {
-          await photos.remove(id);
-          return send(200, { photoUrl: null });
+          await store.remove(id);
+          return send(200, { [key]: null });
         }
         const body = await readBody(req, MAX_PHOTO_BYTES);
-        if (!body) return send(413, { detail: 'La foto supera 1 MB' });
+        if (!body) return send(413, { detail: 'La imagen supera 1 MB' });
         try {
-          await photos.save(id, body);
+          await store.save(id, body);
         } catch (err) {
           const bad = err instanceof RangeError || err instanceof TypeError;
           return send(bad ? 400 : 500, { detail: (err as Error).message });
         }
-        const version = (await photos.versions()).get(id);
-        return send(200, { photoUrl: version === undefined ? null : photoUrl(id, version) });
+        const version = (await store.versions()).get(id);
+        return send(200, { [key]: version === undefined ? null : imageUrl(id, version) });
       }
       if (req.method !== 'GET' && req.method !== 'HEAD') return send(405, { detail: 'Método no permitido' });
 
-      if (photo) {
-        const data = await photos.read(Number(photo[1]));
-        if (!data) return send(404, { detail: 'Sin foto' });
+      if (image) {
+        const data = await image.store.read(image.id);
+        if (!data) return send(404, { detail: 'Sin imagen' });
         res.statusCode = 200;
         res.setHeader('Content-Type', 'image/webp');
-        // Con ?v la URL cambia en cada foto nueva: el navegador y el CDN la guardan para siempre.
+        // Con ?v la URL cambia en cada imagen nueva: el navegador y el CDN la guardan para siempre.
         res.setHeader(
           'Cache-Control',
           sp.has('v') ? 'public, max-age=31536000, s-maxage=31536000, immutable' : 'no-cache',

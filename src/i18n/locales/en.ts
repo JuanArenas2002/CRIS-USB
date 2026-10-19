@@ -538,6 +538,8 @@ const en: typeof es = {
       resolutionsLead: 'Administrative acts establishing and recognizing the center.',
       noResolutions: 'No resolutions recorded in Metri-K.',
       viewPdf: 'View resolution (PDF)',
+      website: 'Official website',
+      logoAlt: '{{name}} logo',
       back: 'Back to centers',
       metaBase: 'Research center {{name}} at Universidad Simón Bolívar',
       metaLines: '. Lines: {{lines}}',

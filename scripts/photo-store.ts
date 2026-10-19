@@ -18,6 +18,7 @@ export function assertPhoto(data: Buffer) {
 
 /** Versión = instante de la última subida (ms): cambia con cada foto, así la URL es inmutable. */
 export const photoUrl = (id: number, version: number) => `/api/investigators/${id}/photo?v=${version}`;
+export const logoUrl = (id: number, version: number) => `/api/centers/${id}/logo?v=${version}`;
 
 export interface PhotoStore {
   /** id del investigador → versión de su foto. */

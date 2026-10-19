@@ -1,7 +1,8 @@
 // Vercel Blob: fotos y ODS cuando el portal corre en Vercel (las funciones no tienen disco persistente).
 // - Fotos: `cris/photos/{id}.webp`. El navegador no las pide a Blob: las sirve el BFF, así el store
 //   puede ser privado y la URL del portal no cambia.
-// - ODS: un solo `cris/ods.json` con { idGrupo: [ods] }.
+// - Logos de centros: `cris/logos/{id}.webp`, igual que las fotos.
+// - ODS: un solo `cris/ods.json` con { idGrupo: [ods] }; páginas oficiales: `cris/center-sites.json`.
 // Lecturas con `useCache: false` (sin la caché del CDN de Blob) y una caché corta en memoria por
 // instancia, para no gastar operaciones de Blob en cada visita.
 // Credenciales, según cómo Vercel conectó el store al proyecto:
@@ -10,7 +11,7 @@
 //   `x-vercel-oidc-token`, ver vercel-api.ts) y en el build (VERCEL_OIDC_TOKEN).
 import { del, get, list, put } from '@vercel/blob';
 import { assertPhoto, type PhotoStore } from './photo-store.ts';
-import { parseOdsMap, withOds, type OdsMap, type OdsStore } from './ods-store.ts';
+import { parseMap, withEntry, type MapStore, type Normalize } from './ods-store.ts';
 
 export type BlobAccess = 'public' | 'private';
 export interface BlobConfig {
@@ -30,7 +31,6 @@ const auth = (cfg: BlobConfig) =>
   cfg.token ? { token: cfg.token } : { storeId: cfg.storeId, ...(oidcToken ? { oidcToken } : {}) };
 
 const PHOTOS = 'cris/photos/';
-const ODS_FILE = 'cris/ods.json';
 const CACHE_MS = 30 * 1000;
 
 async function readBuffer(pathname: string, cfg: BlobConfig): Promise<Buffer | null> {
@@ -55,14 +55,14 @@ function memo<T>(load: () => Promise<T>) {
   };
 }
 
-export function createBlobPhotoStore(cfg: BlobConfig): PhotoStore {
+export function createBlobPhotoStore(cfg: BlobConfig, prefix = PHOTOS): PhotoStore {
   const versions = memo(async () => {
     const out = new Map<number, number>();
     let cursor: string | undefined;
     do {
-      const page = await list({ prefix: PHOTOS, cursor, ...auth(cfg) });
+      const page = await list({ prefix, cursor, ...auth(cfg) });
       for (const b of page.blobs) {
-        const m = /^cris\/photos\/(\d{1,12})\.webp$/.exec(b.pathname);
+        const m = /^(\d{1,12})\.webp$/.exec(b.pathname.slice(prefix.length));
         if (m) out.set(Number(m[1]), new Date(b.uploadedAt).getTime());
       }
       cursor = page.hasMore ? page.cursor : undefined;
@@ -71,10 +71,10 @@ export function createBlobPhotoStore(cfg: BlobConfig): PhotoStore {
   });
   return {
     versions: () => versions.get(),
-    read: (id) => readBuffer(`${PHOTOS}${id}.webp`, cfg),
+    read: (id) => readBuffer(`${prefix}${id}.webp`, cfg),
     async save(id, data) {
       assertPhoto(data);
-      await put(`${PHOTOS}${id}.webp`, data, {
+      await put(`${prefix}${id}.webp`, data, {
         access: cfg.access,
         ...auth(cfg),
         contentType: 'image/webp',
@@ -84,17 +84,22 @@ export function createBlobPhotoStore(cfg: BlobConfig): PhotoStore {
       versions.reset();
     },
     async remove(id) {
-      await del(`${PHOTOS}${id}.webp`, auth(cfg));
+      await del(`${prefix}${id}.webp`, auth(cfg));
       versions.reset();
     },
   };
 }
 
-export function createBlobOdsStore(cfg: BlobConfig): OdsStore {
-  const load = async (): Promise<OdsMap> => {
-    const buf = await readBuffer(ODS_FILE, cfg).catch(() => null);
+/** Un JSON { id: valor } en `pathname` (ODS de grupos, páginas oficiales de centros). */
+export function createBlobMapStore<T>(
+  cfg: BlobConfig,
+  pathname: string,
+  normalize: Normalize<T>,
+): MapStore<T> {
+  const load = async (): Promise<Record<string, T>> => {
+    const buf = await readBuffer(pathname, cfg).catch(() => null);
     try {
-      return buf ? parseOdsMap(JSON.parse(buf.toString('utf8'))) : {};
+      return buf ? parseMap(JSON.parse(buf.toString('utf8')), normalize) : {};
     } catch {
       return {};
     }
@@ -102,9 +107,9 @@ export function createBlobOdsStore(cfg: BlobConfig): OdsStore {
   const cache = memo(load);
   return {
     all: () => cache.get(),
-    async set(groupId, ods) {
-      const [next, clean] = withOds(await load(), groupId, ods); // sin caché: parte de lo último guardado
-      await put(ODS_FILE, JSON.stringify(next, null, 2), {
+    async set(id, value) {
+      const [next, clean] = withEntry(await load(), id, value, normalize); // sin caché: parte de lo último guardado
+      await put(pathname, JSON.stringify(next, null, 2), {
         access: cfg.access,
         ...auth(cfg),
         contentType: 'application/json',

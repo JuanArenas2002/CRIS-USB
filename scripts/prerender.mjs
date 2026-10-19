@@ -8,7 +8,7 @@ import { fetchPublicCenters } from './centers-source.ts';
 import { fetchPublicGroups, mapLimit } from './groups-source.ts';
 import { fetchGroupMembers, fetchInvestigators, withProfiles } from './investigators-source.ts';
 import { DEFAULT_METRIK_URL } from './public-api.ts';
-import { photoUrl } from './photo-store.ts';
+import { logoUrl, photoUrl } from './photo-store.ts';
 import { createStores, storeOptionsFromEnv } from './stores.ts';
 
 const env = loadEnv('production', process.cwd(), ['CRIS_', 'VITE_', 'BLOB_']);
@@ -52,7 +52,13 @@ const members = new Map(
   ]),
 );
 const groupsQ = ssr.createServerGroupQueries(groups, members);
-const centers = await fetchPublicCenters(metrik);
+const logoVersions = await stores.logos.versions();
+const sites = await stores.sites.all();
+const centers = (await fetchPublicCenters(metrik)).map((c) => ({
+  ...c,
+  logoUrl: logoVersions.has(c.id) ? logoUrl(c.id, logoVersions.get(c.id)) : null,
+  website: sites[c.id] ?? null,
+}));
 const centersQ = ssr.createServerCenterQueries(centers);
 
 async function writePage(url, file, prefetch = async () => {}) {

@@ -112,7 +112,16 @@ export function CenterCard({ center: c }: { center: Center }) {
                 {c.acronym ?? c.code}
               </span>
             </div>
-            <Icon name="domain" className="text-[40px] text-tertiary-fixed/80" />
+            {c.logoUrl ? (
+              <img
+                src={c.logoUrl}
+                alt={t('detail.logoAlt', { name: c.acronym ?? c.name })}
+                loading="lazy"
+                className="h-14 w-14 shrink-0 rounded-xl bg-white object-contain p-1.5"
+              />
+            ) : (
+              <Icon name="domain" className="text-[40px] text-tertiary-fixed/80" />
+            )}
           </div>
           <div className="relative mt-4 flex items-center justify-between gap-2">
             <p className="inline-flex rounded-full bg-primary-container/90 px-3 py-1 text-label-sm font-semibold tracking-wide">

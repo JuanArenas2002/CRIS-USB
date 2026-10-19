@@ -545,6 +545,8 @@ const es = {
       resolutionsLead: 'Actos administrativos de creación y reconocimiento del centro.',
       noResolutions: 'Sin resoluciones registradas en Metri-K.',
       viewPdf: 'Ver resolución (PDF)',
+      website: 'Página oficial',
+      logoAlt: 'Logo de {{name}}',
       back: 'Volver a centros',
       metaBase: 'Centro de investigación {{name}} de la Universidad Simón Bolívar',
       metaLines: '. Líneas: {{lines}}',

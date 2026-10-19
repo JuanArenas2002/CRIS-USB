@@ -29,6 +29,10 @@ export interface Center {
   /** ODS a los que aporta el centro (Metri-K `/ods/center/{id}`), ascendentes. */
   ods: OdsId[];
   linesCount: number;
+  /** Logo subido en /admin/centros (Metri-K no aloja logos). */
+  logoUrl: string | null;
+  /** Página oficial del centro, asignada en /admin/centros. */
+  website: string | null;
 }
 
 export interface CenterLine {

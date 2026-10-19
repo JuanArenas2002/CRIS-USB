@@ -72,6 +72,8 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
       ...(c.acronym ? { alternateName: c.acronym } : {}),
       identifier: c.code,
       url: absoluteUrl(path),
+      ...(c.website ? { sameAs: c.website } : {}),
+      ...(c.logoUrl ? { logo: absoluteUrl(c.logoUrl) } : {}),
       parentOrganization: ORGANIZATION,
       ...(c.createdAt ? { foundingDate: c.createdAt } : {}),
       ...(city ? { location: { '@type': 'Place', name: city } } : {}),
@@ -131,9 +133,17 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
         <section className={`${card} relative overflow-hidden p-5 md:p-6`}>
           <div className="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full bg-surface-cream-alt/40" />
           <div className="relative flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary-container text-on-primary shadow-inner md:h-16 md:w-16">
-              <Icon name="domain" className="text-[32px] md:text-[36px]" />
-            </span>
+            {c.logoUrl ? (
+              <img
+                src={c.logoUrl}
+                alt={t('detail.logoAlt', { name: c.acronym ?? c.name })}
+                className="h-20 w-20 shrink-0 rounded-xl border border-border-subtle bg-white object-contain p-2 md:h-24 md:w-24"
+              />
+            ) : (
+              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary-container text-on-primary shadow-inner md:h-16 md:w-16">
+                <Icon name="domain" className="text-[32px] md:text-[36px]" />
+              </span>
+            )}
             <div className="flex min-w-0 flex-col gap-1">
               <p className="flex flex-wrap items-center gap-2">
                 <span className="rounded bg-primary-container px-2 py-0.5 text-label-sm font-bold text-on-primary">
@@ -156,6 +166,17 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
                 ) : null}
                 {director ? <span className="text-neutral-muted">·</span> : null}
                 <span>Universidad Simón Bolívar{city ? ` (${city})` : ''}</span>
+                {c.website ? (
+                  <a
+                    href={c.website}
+                    target="_blank"
+                    rel="noopener"
+                    className="inline-flex items-center gap-1 font-semibold text-secondary hover:underline"
+                  >
+                    <Icon name="language" className="text-[16px]" /> {t('detail.website')}
+                    <span className="sr-only">{t('common:newTab')}</span>
+                  </a>
+                ) : null}
               </p>
             </div>
           </div>

@@ -539,6 +539,8 @@ const pt: typeof es = {
       resolutionsLead: 'Atos administrativos de criação e reconhecimento do centro.',
       noResolutions: 'Sem resoluções registradas no Metri-K.',
       viewPdf: 'Ver resolução (PDF)',
+      website: 'Página oficial',
+      logoAlt: 'Logotipo de {{name}}',
       back: 'Voltar aos centros',
       metaBase: 'Centro de pesquisa {{name}} da Universidad Simón Bolívar',
       metaLines: '. Linhas: {{lines}}',

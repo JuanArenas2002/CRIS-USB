@@ -118,6 +118,8 @@ beforeAll(async () => {
     metrikUrl: 'http://metrik/api',
     photosDir,
     odsFile: path.join(odsDir, 'ods.json'),
+    logosDir: path.join(odsDir, 'logos'),
+    sitesFile: path.join(odsDir, 'center-sites.json'),
     adminToken: TOKEN,
   });
   vi.stubGlobal('fetch', (input: string, init?: RequestInit) =>
@@ -287,4 +289,32 @@ test('centros: el PDF de la resolución se sirve aparte, solo si existe', async 
   expect(res.headers.get('content-type')).toBe('application/pdf');
   expect(Buffer.from(await res.arrayBuffer())).toEqual(PDF);
   expect((await fetch(`${base}/api/centers/1/resolutions/99`)).status).toBe(404);
+});
+
+test('centros: logo (WebP, con token) y página oficial (URL http/s) asignados por el admin', async () => {
+  const send = (sub: string, method: string, body?: BodyInit, token = TOKEN) =>
+    fetch(`${base}/api/centers/1/${sub}`, { method, body, headers: { 'X-Admin-Token': token } });
+  expect((await send('logo', 'PUT', new Uint8Array(WEBP), 'otro')).status).toBe(401);
+  expect((await send('logo', 'PUT', '<svg/>')).status).toBe(400);
+  expect(
+    (await fetch(`${base}/api/centers/0/logo`, { method: 'PUT', headers: { 'X-Admin-Token': TOKEN } }))
+      .status,
+  ).toBe(404);
+  const { logoUrl } = await (await send('logo', 'PUT', new Uint8Array(WEBP))).json();
+  expect(logoUrl).toMatch(/^\/api\/centers\/1\/logo\?v=\d+$/);
+  expect(Buffer.from(await (await fetch(base + logoUrl)).arrayBuffer())).toEqual(WEBP);
+
+  expect((await send('website', 'PUT', JSON.stringify({ website: 'javascript:alert(1)' }))).status).toBe(400);
+  expect((await send('website', 'PUT', JSON.stringify({ website: 'nada' }))).status).toBe(400);
+  expect(await (await send('website', 'PUT', JSON.stringify({ website: 'www.cu.co' }))).json()).toEqual({
+    website: 'https://www.cu.co/',
+  });
+  expect((await get('/api/centers')).body[0]).toMatchObject({ logoUrl, website: 'https://www.cu.co/' });
+  expect((await get('/api/centers/1')).body).toMatchObject({ logoUrl, website: 'https://www.cu.co/' });
+
+  expect(await (await send('logo', 'DELETE')).json()).toEqual({ logoUrl: null });
+  expect(await (await send('website', 'PUT', JSON.stringify({ website: null }))).json()).toEqual({
+    website: null,
+  });
+  expect((await get('/api/centers/1')).body).toMatchObject({ logoUrl: null, website: null });
 });
