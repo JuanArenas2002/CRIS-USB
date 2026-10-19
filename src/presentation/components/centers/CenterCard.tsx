@@ -7,16 +7,28 @@ import { Icon } from '@/presentation/components/ui/Icon';
 
 export const centerPath = (c: Pick<Center, 'id' | 'name'>) => `/centros/${authorSlug(c)}`;
 
-/** Estado del centro: punto verde "Activo" o pausa "Inactivo" (registro histórico). */
-export function CenterStatus({ active }: { active: boolean }) {
+/**
+ * Estado del centro como icono (check verde = activo); el texto va en un tooltip (hover y foco) y
+ * para lectores de pantalla. `relative z-10`: por encima del enlace que cubre filas y tarjetas.
+ */
+export function CenterStatus({ size = 'md' }: { size?: 'sm' | 'md' }) {
   const { t } = useTranslation('centers');
-  return active ? (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-badge-sage-bg px-2.5 py-0.5 text-label-sm font-semibold text-badge-sage-text">
-      <span className="h-1.5 w-1.5 rounded-full bg-secondary" /> {t('active')}
-    </span>
-  ) : (
-    <span className="inline-flex items-center gap-1 rounded-full bg-error-container px-2.5 py-0.5 text-label-sm font-semibold text-[#93000a]">
-      <Icon name="pause_circle" className="text-[13px]" /> {t('inactive')}
+  const box = size === 'sm' ? 'h-7 w-7' : 'h-9 w-9';
+  return (
+    <span className="group/status relative z-10 inline-flex">
+      <span
+        tabIndex={0}
+        className={`flex ${box} items-center justify-center rounded-full bg-badge-sage-bg text-secondary focus-visible:outline-2 focus-visible:outline-secondary`}
+      >
+        <Icon name="check_circle" className={size === 'sm' ? 'text-[17px]' : 'text-[20px]'} />
+        <span className="sr-only">{t('active')}</span>
+      </span>
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 rounded-md bg-surface-dark-forest px-2.5 py-1 text-label-sm font-semibold whitespace-nowrap text-on-primary opacity-0 shadow-md ring-1 ring-white/20 transition-opacity group-focus-within/status:opacity-100 group-hover/status:opacity-100"
+      >
+        {t('active')}
+      </span>
     </span>
   );
 }
@@ -65,11 +77,7 @@ export function CenterCard({ center: c }: { center: Center }) {
   return (
     <article className="group relative flex flex-col justify-between rounded-[24px] bg-surface-container-lowest p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
       <div className="flex flex-col">
-        <div
-          className={`relative overflow-hidden rounded-[20px] p-5 text-on-primary ${
-            c.active ? 'bg-surface-dark-forest' : 'bg-[#3d4a44]'
-          }`}
-        >
+        <div className="relative overflow-hidden rounded-[20px] bg-surface-dark-forest p-5 text-on-primary">
           <svg
             aria-hidden="true"
             className="absolute inset-0 h-full w-full text-secondary-fixed/45"
@@ -110,7 +118,7 @@ export function CenterCard({ center: c }: { center: Center }) {
             <p className="inline-flex rounded-full bg-primary-container/90 px-3 py-1 text-label-sm font-semibold tracking-wide">
               {c.code}
             </p>
-            <CenterStatus active={c.active} />
+            <CenterStatus size="sm" />
           </div>
         </div>
 
@@ -175,9 +183,7 @@ export function CenterRow({ center: c }: { center: Center }) {
       className={`group relative grid grid-cols-[6.5rem_1fr_auto] items-center gap-4 px-4 py-4 transition-colors hover:bg-surface-cream-alt/60 md:px-5 ${COLS}`}
     >
       <span
-        className={`flex h-12 items-center justify-center truncate rounded-xl px-2 text-label-md font-bold ${
-          c.active ? 'bg-surface-dark-forest text-secondary-fixed' : 'bg-[#3d4a44] text-surface-cream-alt'
-        }`}
+        className="flex h-12 items-center justify-center truncate rounded-xl bg-surface-dark-forest px-2 text-label-md font-bold text-secondary-fixed"
         title={c.acronym ?? c.code}
       >
         {c.acronym ?? c.code}
@@ -199,7 +205,6 @@ export function CenterRow({ center: c }: { center: Center }) {
             {c.director ? ` · ${displayName(c.director.name)}` : ''}
             {` · ${t('card.linesCount', { count: c.linesCount })}`}
           </span>
-          {!c.active ? <span className="lg:hidden">{` · ${t('inactive')}`}</span> : null}
         </p>
       </div>
 
@@ -214,7 +219,7 @@ export function CenterRow({ center: c }: { center: Center }) {
         {c.city ? displayName(c.city) : '—'}
       </p>
       <p className="hidden lg:block">
-        <CenterStatus active={c.active} />
+        <CenterStatus />
       </p>
       <Icon name="chevron_right" className="text-[20px] text-neutral-muted group-hover:text-primary" />
     </li>

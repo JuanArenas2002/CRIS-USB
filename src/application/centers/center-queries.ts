@@ -3,16 +3,16 @@ import { sortCenters, type CenterDetail, type CenterRepository } from '@/domain/
 
 export type PublicCenterDetail = { kind: 'found'; center: CenterDetail } | { kind: 'not-found' };
 
-/** Regla de publicación (plantillacentro.html): activos e inactivos, estos como registro histórico. */
+/** Regla de publicación (igual que grupos): solo centros activos. */
 export const toPublicCenterDetail = (c: CenterDetail | null): PublicCenterDetail =>
-  c ? { kind: 'found', center: c } : { kind: 'not-found' };
+  c && c.active ? { kind: 'found', center: c } : { kind: 'not-found' };
 
 export function centerQueries(repo: CenterRepository) {
   return {
     list: () =>
       queryOptions({
         queryKey: ['centers', 'list'],
-        queryFn: async ({ signal }) => sortCenters(await repo.list(signal)),
+        queryFn: async ({ signal }) => sortCenters((await repo.list(signal)).filter((c) => c.active)),
         staleTime: 10 * 60 * 1000,
       }),
     detail: (id: number) =>

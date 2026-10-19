@@ -36,12 +36,6 @@ export function CentersPage() {
   const [params, setParams] = useSearchParams();
   const filters: CenterFilters = {
     search: params.get('q') ?? '',
-    status:
-      params.get('estado') === 'activos'
-        ? 'active'
-        : params.get('estado') === 'inactivos'
-          ? 'inactive'
-          : null,
     campus: params.get('sede'),
     ods: Number(params.get('ods')) || null,
   };
@@ -67,7 +61,6 @@ export function CentersPage() {
 
   const centers = data ?? [];
   const visible = filterCenters(centers, filters);
-  const active = centers.filter((c) => c.active).length;
   const campuses = campusesOf(centers);
   const odsInUse = ODS.filter((o) => centers.some((c) => c.ods.includes(o.id)));
 
@@ -80,7 +73,6 @@ export function CentersPage() {
       'city',
       'dane',
       'created',
-      'status',
       'director',
       'lines',
       'ods',
@@ -92,7 +84,6 @@ export function CentersPage() {
       c.city ? displayName(c.city) : null,
       c.daneCode,
       c.createdAt ? labels.date(c.createdAt) : null,
-      c.active ? t('active') : t('inactive'),
       c.director ? displayName(c.director.name) : null,
       c.linesCount,
       c.ods.join(', '),
@@ -163,13 +154,13 @@ export function CentersPage() {
               {
                 key: 'active',
                 label: t('statActive'),
-                value: data && active,
+                value: data && centers.length,
                 accent: 'text-surface-container-lowest',
               },
               {
-                key: 'inactive',
-                label: t('statInactive'),
-                value: data && centers.length - active,
+                key: 'campuses',
+                label: t('statCampuses'),
+                value: data && campuses.length,
                 accent: 'text-primary-fixed-dim',
               },
               {
@@ -220,17 +211,6 @@ export function CentersPage() {
               className={`${fieldClass} w-full pr-4 pl-10 text-body-sm`}
             />
           </div>
-          <Select
-            id="center-status"
-            label={t('filterStatus')}
-            value={params.get('estado') ?? ''}
-            onChange={(v) => setParam('estado', v)}
-            options={[
-              ['', t('allStatuses')],
-              ['activos', t('statusActive', { count: active })],
-              ['inactivos', t('statusInactive', { count: centers.length - active })],
-            ]}
-          />
           <Select
             id="center-campus"
             label={t('filterCampus')}

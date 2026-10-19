@@ -131,11 +131,7 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
         <section className={`${card} relative overflow-hidden p-5 md:p-6`}>
           <div className="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full bg-surface-cream-alt/40" />
           <div className="relative flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-            <span
-              className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl text-on-primary shadow-inner md:h-16 md:w-16 ${
-                c.active ? 'bg-primary-container' : 'bg-neutral-muted'
-              }`}
-            >
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary-container text-on-primary shadow-inner md:h-16 md:w-16">
               <Icon name="domain" className="text-[32px] md:text-[36px]" />
             </span>
             <div className="flex min-w-0 flex-col gap-1">
@@ -146,7 +142,7 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
                 {c.acronym ? (
                   <span className="text-headline-sm font-bold text-secondary">{c.acronym}</span>
                 ) : null}
-                <CenterStatus active={c.active} />
+                <CenterStatus size="sm" />
               </p>
               <h1 className="text-headline-lg-mobile font-bold tracking-tight text-primary md:text-headline-lg">
                 {c.name}
@@ -161,9 +157,6 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
                 {director ? <span className="text-neutral-muted">·</span> : null}
                 <span>Universidad Simón Bolívar{city ? ` (${city})` : ''}</span>
               </p>
-              {!c.active ? (
-                <p className="text-body-sm text-neutral-muted">{t('detail.inactiveNote')}</p>
-              ) : null}
             </div>
           </div>
         </section>
@@ -187,7 +180,7 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
                   : '—'}
               </Field>
               <Field label={t('detail.status')}>
-                <CenterStatus active={c.active} />
+                <CenterStatus size="sm" />
               </Field>
             </InfoColumn>
             <InfoColumn icon="location_on" title={t('detail.location')}>

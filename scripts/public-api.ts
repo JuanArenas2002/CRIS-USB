@@ -255,11 +255,11 @@ export function createPublicApi({
         const c = (await centers()).find((x) => x.id === Number(ctr[1]));
         return c ? send(200, c) : send(404, { detail: 'No encontrado' });
       }
-      // PDF de una resolución. Bajo demanda: Metri-K lo trae en base64 y pesa megas.
+      // PDF de una resolución (solo de centros activos). Bajo demanda: Metri-K lo trae en base64.
       const resolution = /^\/api\/centers\/(\d{1,12})\/resolutions\/(\d{1,12})$/.exec(p);
       if (resolution) {
         const centerId = Number(resolution[1]);
-        const c = (await centers()).find((x) => x.id === centerId);
+        const c = (await centers()).find((x) => x.id === centerId && x.active);
         if (!c?.resolutions.some((r) => r.id === Number(resolution[2]) && r.hasFile))
           return send(404, { detail: 'No encontrado' });
         const file = await fetchResolutionPdf(base, centerId, Number(resolution[2]));

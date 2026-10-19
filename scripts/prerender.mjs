@@ -95,12 +95,10 @@ for (const g of groups.filter((x) => x.active)) {
     ]),
   );
 }
-// Centros: catálogo (con el conteo de grupos del banner) y una ficha por centro, activos e inactivos.
-await writePage('/centros', path.join(dist, 'centros', 'index.html'), (qc) =>
-  Promise.all([qc.fetchQuery(centersQ.list()), qc.fetchQuery(groupsQ.list())]),
-);
+// Centros: catálogo y una ficha por centro activo (como grupos).
+await writePage('/centros', path.join(dist, 'centros', 'index.html'), (qc) => qc.fetchQuery(centersQ.list()));
 const centerPaths = [];
-for (const c of centers) {
+for (const c of centers.filter((x) => x.active)) {
   const url = `/centros/${ssr.authorSlug(c)}`;
   centerPaths.push(url);
   await writePage(url, path.join(dist, url, 'index.html'), (qc) => qc.fetchQuery(centersQ.detail(c.id)));

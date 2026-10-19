@@ -73,7 +73,6 @@ export const sortCenters = (centers: Center[]) =>
 
 export interface CenterFilters {
   search: string;
-  status: 'active' | 'inactive' | null;
   /** Código DANE de la sede. */
   campus: string | null;
   ods: number | null;
@@ -85,7 +84,6 @@ export function filterCenters(centers: Center[], f: CenterFilters): Center[] {
   const q = norm(f.search.trim());
   return centers.filter(
     (c) =>
-      (!f.status || c.active === (f.status === 'active')) &&
       (!f.campus || c.daneCode === f.campus) &&
       (!f.ods || c.ods.includes(f.ods as never)) &&
       (!q ||

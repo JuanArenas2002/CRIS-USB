@@ -250,7 +250,7 @@ test('admin ODS: con token lista los grupos activos con sus ODS marcados', async
   sessionStorage.clear();
 });
 
-test('centros: lista por defecto (estándar de grupos), filtro por estado y cambio a tarjetas', async () => {
+test('centros: solo activos, lista por defecto (estándar de grupos), estado como icono y cambio a tarjetas', async () => {
   renderApp(
     '/centros',
     fakeRepo(),
@@ -266,15 +266,26 @@ test('centros: lista por defecto (estándar de grupos), filtro por estado y camb
   expect(
     await screen.findByRole('link', { name: 'Centro de Crecimiento Empresarial MACONDOLAB' }),
   ).toHaveAttribute('href', '/centros/1-centro-de-crecimiento-empresarial-macondolab');
+  // El inactivo no se publica, ni hay filtro de estado.
+  expect(screen.queryByRole('link', { name: 'Centro Marino' })).not.toBeInTheDocument();
+  expect(screen.queryByLabelText('Estado')).not.toBeInTheDocument();
+  // Estado: icono con el texto solo para lectores de pantalla (y tooltip).
+  expect(screen.getAllByText('Activo').length).toBeGreaterThan(0);
   expect(screen.getByRole('button', { name: /Lista/ })).toHaveAttribute('aria-pressed', 'true');
   expect(document.querySelectorAll('article')).toHaveLength(0);
 
-  await userEvent.selectOptions(screen.getByLabelText('Estado'), 'inactivos');
-  expect(screen.queryByRole('link', { name: /MACONDOLAB/ })).not.toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Centro Marino' })).toBeInTheDocument();
-
   await userEvent.click(screen.getByRole('button', { name: /Tarjetas/ }));
   expect(document.querySelectorAll('article')).toHaveLength(1);
+});
+
+test('centro inactivo no se publica', async () => {
+  renderApp(
+    '/centros/8-x',
+    fakeRepo(),
+    fakeGroupRepo(),
+    fakeCenterRepo([makeCenterDetail({ id: 8, active: false })]),
+  );
+  expect(await screen.findByText('No encontramos esta página')).toBeInTheDocument();
 });
 
 test('centro: ficha con dirección, líneas, ODS oficiales y resolución en PDF', async () => {
