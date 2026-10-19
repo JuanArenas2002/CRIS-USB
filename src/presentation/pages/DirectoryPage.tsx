@@ -12,14 +12,24 @@ import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata'
 import { ORGANIZATION, SITE_NAME, SITE_URL, safeJson } from '@/shared/seo';
 import { DIRECTORY_PAGE_SIZE } from '@/application/authors/author-queries';
 
-const websiteJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: SITE_NAME,
-  url: SITE_URL + '/',
-  inLanguage: 'es-CO',
-  publisher: ORGANIZATION,
-};
+// WebSite + la universidad como Organization (tipo que Google reconoce en resultados enriquecidos).
+// ponytail: sin `logo` hasta tener una versión cuadrada ≥ 112 px (el logo actual es 400×65).
+const websiteJsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    url: SITE_URL + '/',
+    inLanguage: 'es-CO',
+    publisher: ORGANIZATION,
+  },
+  {
+    '@context': 'https://schema.org',
+    ...ORGANIZATION,
+    alternateName: 'Unisimón',
+    sameAs: ['https://www.unisimon.edu.co'],
+  },
+];
 
 export function DirectoryPage() {
   const search = useAuthorSearch();

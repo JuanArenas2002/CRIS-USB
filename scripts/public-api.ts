@@ -253,7 +253,7 @@ export function createPublicApi({
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const { CRIS_METRIK_URL, CRIS_ADMIN_TOKEN, PORT = '8787' } = process.env;
+  const { CRIS_METRIK_URL, CRIS_ADMIN_TOKEN, PORT = '8787', HOST = '127.0.0.1' } = process.env;
   http
     .createServer(
       createPublicApi({
@@ -262,5 +262,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
         ...storeOptionsFromEnv(process.env),
       }),
     )
-    .listen(Number(PORT), '127.0.0.1', () => console.log(`API pública en http://127.0.0.1:${PORT}/api/`));
+    .listen(Number(PORT), HOST, () => console.log(`API pública en http://${HOST}:${PORT}/api/`));
 }
