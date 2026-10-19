@@ -1,7 +1,8 @@
 // @vitest-environment node
 import { authorQueries, toPublicProfile } from '@/application/authors/author-queries';
 import { createQueryClient } from '@/app/App';
-import { fakeGroupRepo, fakeRepo, makeAuthor } from '@/test-utils';
+import { fakeCenterRepo, fakeGroupRepo, fakeRepo, makeAuthor } from '@/test-utils';
+import { centerQueries } from '@/application/centers/center-queries';
 import { groupQueries } from '@/application/groups/group-queries';
 import { render } from './entry-server';
 
@@ -12,7 +13,13 @@ test('prerender de perfil: HTML con contenido, metadatos únicos y JSON-LD verif
   qc.setQueryData(queries.profile(7).queryKey, toPublicProfile(author));
 
   const slug = '/investigadores/7-ana-script-perez';
-  const { html, head } = render(slug, qc, queries, groupQueries(fakeGroupRepo()));
+  const { html, head } = render(
+    slug,
+    qc,
+    queries,
+    groupQueries(fakeGroupRepo()),
+    centerQueries(fakeCenterRepo()),
+  );
 
   expect(html).toContain('<h1');
   expect(html).toContain('Ana &lt;/script&gt; Pérez');

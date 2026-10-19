@@ -9,10 +9,12 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 import http, { type IncomingMessage, type ServerResponse } from 'node:http';
 import { pathToFileURL } from 'node:url';
+import { fetchPublicCenters, fetchResolutionPdf } from './centers-source.ts';
 import { fetchPublicGroups } from './groups-source.ts';
 import { fetchGroupMembers, fetchInvestigatorGroups, fetchInvestigators } from './investigators-source.ts';
 import { MAX_PHOTO_BYTES, photoUrl } from './photo-store.ts';
 import { createStores, storeOptionsFromEnv, type StoreOptions } from './stores.ts';
+import { summarizeCenter, type CenterDetail } from '../src/domain/centers/center.ts';
 import { summarizeGroup, type GroupDetail } from '../src/domain/groups/group.ts';
 import { isOdsId } from '../src/domain/ods/ods.ts';
 import {
@@ -71,6 +73,7 @@ export function createPublicApi({
   const base = metrikUrl.replace(/\/+$/, '');
   const { photos, ods: odsStore } = createStores(storage);
   const metrikGroups = cached<GroupDetail[]>(() => fetchPublicGroups(`${base}/group`));
+  const centers = cached<CenterDetail[]>(() => fetchPublicCenters(base));
   // Fotos y ODS no pasan por la caché de Metri-K: un cambio del admin se ve al instante.
   const groups = async () => {
     const ods = await odsStore.all();
@@ -244,6 +247,29 @@ export function createPublicApi({
       if (grp) {
         const g = (await groups()).find((x) => x.id === Number(grp[1]));
         return g ? send(200, g) : send(404, { detail: 'No encontrado' });
+      }
+
+      if (p === '/api/centers') return send(200, (await centers()).map(summarizeCenter));
+      const ctr = /^\/api\/centers\/(\d{1,12})$/.exec(p);
+      if (ctr) {
+        const c = (await centers()).find((x) => x.id === Number(ctr[1]));
+        return c ? send(200, c) : send(404, { detail: 'No encontrado' });
+      }
+      // PDF de una resolución. Bajo demanda: Metri-K lo trae en base64 y pesa megas.
+      const resolution = /^\/api\/centers\/(\d{1,12})\/resolutions\/(\d{1,12})$/.exec(p);
+      if (resolution) {
+        const centerId = Number(resolution[1]);
+        const c = (await centers()).find((x) => x.id === centerId);
+        if (!c?.resolutions.some((r) => r.id === Number(resolution[2]) && r.hasFile))
+          return send(404, { detail: 'No encontrado' });
+        const file = await fetchResolutionPdf(base, centerId, Number(resolution[2]));
+        if (!file) return send(404, { detail: 'No encontrado' });
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `inline; filename="${file.name}"`);
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400');
+        return res.end(req.method === 'HEAD' ? undefined : file.pdf);
       }
       return send(404, { detail: 'No encontrado' });
     } catch {

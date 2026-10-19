@@ -31,6 +31,35 @@ const groupRaw = {
   lastCategory: 'A1',
   mentor: { user: { username: 'mentor', password: '$2b$10$hash' }, person },
 };
+// Centros (forma real de Metri-K): director con datos personales, registro vacío "N/A" y PDF en base64.
+const PDF = Buffer.from('%PDF-1.4 resolución de prueba');
+const centerRaw = {
+  id: 1,
+  code: 'CI-1',
+  name: 'Centro Uno',
+  acronym: 'CU',
+  state: true,
+  date_created: '2004-08-20T00:00:00.000Z',
+  director: { person: { ...person, name: 'ANA', lastname: 'PEREZ' }, orcid: '0000-0002-1825-0097' },
+  municipality: { code: '08001', name: 'BARRANQUILLA', department: { name: 'ATLÁNTICO' } },
+};
+const centersMock: Record<string, unknown[]> = {
+  '/api/center': [centerRaw, { id: 0, code: 'N/A', name: 'N/A', director: { person: { name: 'N/A' } } }],
+  '/api/lineCenter/center/1': [{ id: 3, code: 'LC001', name: 'Emprendimiento', state: true }],
+  '/api/ods/center/1': [
+    { id: 1, number: '17', title: 'Alianzas' },
+    { id: 2, number: '8', title: 'Trabajo' },
+  ],
+  '/api/resolutionCenter/center/1': [
+    {
+      id: 9,
+      number: 'Resolucion 1',
+      type: 'Reconocimiento',
+      date: '2022-12-14T05:00:00.000Z',
+      file: PDF.toString('base64'),
+    },
+  ],
+};
 const metrik = vi.fn(async (url: string) => {
   const p = new URL(url).pathname;
   const data =
@@ -72,7 +101,7 @@ const metrik = vi.fn(async (url: string) => {
             ? [groupRaw]
             : p.startsWith('/api/lineGroup/') || p.startsWith('/api/group/categories/')
               ? []
-              : null;
+              : (centersMock[p] ?? null);
   return data ? Response.json({ data, message: 'ok' }) : Response.json({ message: 'x' }, { status: 404 });
 });
 
@@ -233,4 +262,29 @@ test('ODS: se guardan normalizados y salen en el detalle y en el listado', async
   expect((await get('/api/investigators/1')).body.groups[0].ods).toEqual([3, 5, 17]);
   expect(await (await putOds(14, { ods: [] }, TOKEN)).json()).toEqual({ ods: [] });
   expect((await get('/api/groups/14')).body.ods).toEqual([]);
+});
+
+test('centros: listado y detalle sin datos personales ni PDF; el registro "N/A" no sale', async () => {
+  const list = await get('/api/centers');
+  expect(list.body.map((c: { code: string }) => c.code)).toEqual(['CI-1']);
+  expect(list.body[0]).toMatchObject({ acronym: 'CU', daneCode: '08001', ods: [8, 17], linesCount: 1 });
+  expect(list.body[0]).not.toHaveProperty('resolutions');
+  const detail = await get('/api/centers/1');
+  expect(detail.body.director.name).toBe('ANA PEREZ');
+  expect(detail.body.resolutions).toEqual([
+    expect.objectContaining({ id: 9, type: 'Reconocimiento', date: '2022-12-14', hasFile: true }),
+  ]);
+  for (const t of [list.text, detail.text]) {
+    for (const s of SECRETS) expect(t).not.toContain(s);
+    expect(t).not.toContain(PDF.toString('base64'));
+  }
+  expect((await get('/api/centers/0')).status).toBe(404);
+});
+
+test('centros: el PDF de la resolución se sirve aparte, solo si existe', async () => {
+  const res = await fetch(`${base}/api/centers/1/resolutions/9`);
+  expect(res.status).toBe(200);
+  expect(res.headers.get('content-type')).toBe('application/pdf');
+  expect(Buffer.from(await res.arrayBuffer())).toEqual(PDF);
+  expect((await fetch(`${base}/api/centers/1/resolutions/99`)).status).toBe(404);
 });

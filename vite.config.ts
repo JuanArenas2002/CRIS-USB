@@ -19,7 +19,7 @@ function publicApi(env: Record<string, string>): Plugin {
       server.middlewares.use(handler);
       server.middlewares.use((req, _res, next) => {
         // Equivale a `try_files $uri $uri/index.html` de nginx.
-        if (req.url && /^\/(investigadores|grupos)\/[^/?.]+(\?|$)/.test(req.url))
+        if (req.url && /^\/(investigadores|grupos|centros)\/[^/?.]+(\?|$)/.test(req.url))
           req.url = req.url.replace(/^([^?]+)/, '$1/');
         next();
       });

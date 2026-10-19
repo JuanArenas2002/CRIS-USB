@@ -1,5 +1,7 @@
 import { summarizeGroup, type GroupDetail, type GroupRepository } from '@/domain/groups/group';
 import { groupQueries } from '@/application/groups/group-queries';
+import { centerQueries } from '@/application/centers/center-queries';
+import { summarizeCenter, type CenterDetail, type CenterRepository } from '@/domain/centers/center';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { AppProviders, AppRoutes, createQueryClient } from '@/app/App';
@@ -84,11 +86,62 @@ export const fakeGroupRepo = (groups: GroupDetail[] = [makeGroupDetail()]): Grou
   members: async () => [{ ...makeAuthor(), profilePublished: true }],
 });
 
-export function renderApp(url: string, repo: AuthorRepository = fakeRepo(), groupRepo = fakeGroupRepo()) {
+export function makeCenterDetail(over: Partial<CenterDetail> = {}): CenterDetail {
+  return {
+    id: 1,
+    code: 'CI-1',
+    acronym: 'MACONDOLAB',
+    name: 'Centro de Crecimiento Empresarial MACONDOLAB',
+    active: true,
+    createdAt: '2004-08-20',
+    foundedYear: 2004,
+    city: 'BARRANQUILLA',
+    department: 'ATLÁNTICO',
+    daneCode: '08001',
+    director: {
+      name: 'GLORIA MARIA NARANJO AFRICANO',
+      orcid: '0000-0001-9610-1604',
+      cvlacUrl: null,
+      scholarUrl: null,
+      scopusId: null,
+    },
+    ods: [8, 9, 17],
+    linesCount: 1,
+    lines: [{ id: 1, code: 'LC001', name: 'Emprendimiento Tecnológico' }],
+    resolutions: [
+      {
+        id: 5,
+        number: 'Resolucion 2075 2022',
+        type: 'Reconocimiento',
+        date: '2022-12-14',
+        description: 'Reconocimiento oficial del centro.',
+        hasFile: true,
+      },
+    ],
+    ...over,
+  };
+}
+
+export const fakeCenterRepo = (centers: CenterDetail[] = [makeCenterDetail()]): CenterRepository => ({
+  list: async () => centers.map(summarizeCenter),
+  getById: async (id) => centers.find((c) => c.id === id) ?? null,
+});
+
+export function renderApp(
+  url: string,
+  repo: AuthorRepository = fakeRepo(),
+  groupRepo = fakeGroupRepo(),
+  centerRepo = fakeCenterRepo(),
+) {
   const queryClient = createQueryClient();
   queryClient.setDefaultOptions({ queries: { ...queryClient.getDefaultOptions().queries, retry: false } });
   return render(
-    <AppProviders queryClient={queryClient} queries={authorQueries(repo)} groups={groupQueries(groupRepo)}>
+    <AppProviders
+      queryClient={queryClient}
+      queries={authorQueries(repo)}
+      groups={groupQueries(groupRepo)}
+      centers={centerQueries(centerRepo)}
+    >
       <MemoryRouter initialEntries={[url]}>
         <AppRoutes />
       </MemoryRouter>

@@ -35,10 +35,20 @@ export function OdsIcon({ id, size = 64, note }: { id: OdsId; size?: number; not
 }
 
 /** Bloque "ODS vinculados" de la plantilla de grupo: icono oficial + etiqueta corta. */
-export function OdsLinked({ ods }: { ods: OdsId[] }) {
+export function OdsLinked({
+  ods,
+  empty,
+}: {
+  ods: OdsId[];
+  /** Texto si no hay ODS (por defecto, el de grupos). */ empty?: string;
+}) {
   const { t } = useTranslation('groups');
   if (!ods.length)
-    return <p className="rounded-lg bg-canvas-cream p-4 text-body-sm text-neutral-muted">{t('ods.none')}</p>;
+    return (
+      <p className="rounded-lg bg-canvas-cream p-4 text-body-sm text-neutral-muted">
+        {empty ?? t('ods.none')}
+      </p>
+    );
   return (
     <ul className="flex flex-wrap gap-x-4 gap-y-3">
       {ods.map((id) => (

@@ -15,7 +15,9 @@ import {
   queryAuthors,
   type AuthorProfile,
 } from '@/domain/authors/author';
+import { centerQueries, type CenterQueries } from '@/application/centers/center-queries';
 import { groupQueries, type GroupQueries } from '@/application/groups/group-queries';
+import { summarizeCenter, type CenterDetail } from '@/domain/centers/center';
 import { summarizeGroup, type GroupDetail, type GroupMember } from '@/domain/groups/group';
 import { NAV_ITEMS } from '@/shared/navigation';
 import { headTags, titleTag, safeJson, type PageMeta } from '@/shared/seo';
@@ -42,10 +44,30 @@ export function createServerGroupQueries(
   });
 }
 
-export function render(url: string, queryClient: QueryClient, queries: AuthorQueries, groups: GroupQueries) {
+/** Centros ya proyectados por scripts/centers-source.ts (sin datos personales). */
+export function createServerCenterQueries(centers: CenterDetail[]): CenterQueries {
+  return centerQueries({
+    list: async () => centers.map(summarizeCenter),
+    getById: async (id) => centers.find((c) => c.id === id) ?? null,
+  });
+}
+
+export function render(
+  url: string,
+  queryClient: QueryClient,
+  queries: AuthorQueries,
+  groups: GroupQueries,
+  centers: CenterQueries,
+) {
   const head: { meta?: PageMeta } = {};
   const html = renderToString(
-    <AppProviders queryClient={queryClient} queries={queries} groups={groups} onHead={(m) => (head.meta = m)}>
+    <AppProviders
+      queryClient={queryClient}
+      queries={queries}
+      groups={groups}
+      centers={centers}
+      onHead={(m) => (head.meta = m)}
+    >
       <StaticRouter location={url}>
         <AppRoutes />
       </StaticRouter>

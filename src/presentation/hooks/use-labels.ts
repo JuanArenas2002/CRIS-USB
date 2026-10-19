@@ -32,6 +32,14 @@ export function useLabels() {
       return m ? t('groups:convocation', { number: m[1], year: m[2] }) : s;
     },
     number: (n: number) => number.format(n),
+    /** "2004-08-20" → "20/08/2004" (formato del idioma activo; sin desfase de zona horaria). */
+    date: (iso: string) =>
+      new Intl.DateTimeFormat(activeLocale(), {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        timeZone: 'UTC',
+      }).format(new Date(`${iso}T00:00:00Z`)),
     percent: (n: number) => percent.format(n),
   };
 }

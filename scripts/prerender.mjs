@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { loadEnv } from 'vite';
+import { fetchPublicCenters } from './centers-source.ts';
 import { fetchPublicGroups, mapLimit } from './groups-source.ts';
 import { fetchGroupMembers, fetchInvestigators, withProfiles } from './investigators-source.ts';
 import { DEFAULT_METRIK_URL } from './public-api.ts';
@@ -51,11 +52,13 @@ const members = new Map(
   ]),
 );
 const groupsQ = ssr.createServerGroupQueries(groups, members);
+const centers = await fetchPublicCenters(metrik);
+const centersQ = ssr.createServerCenterQueries(centers);
 
 async function writePage(url, file, prefetch = async () => {}) {
   const qc = ssr.createQueryClient();
   await prefetch(qc);
-  const { html, head } = ssr.render(url, qc, authorsQ, groupsQ);
+  const { html, head } = ssr.render(url, qc, authorsQ, groupsQ, centersQ);
   const out = template.replace('<!--app-head-->', () => head).replace('<!--app-html-->', () => html);
   await fs.mkdir(path.dirname(file), { recursive: true });
   await fs.writeFile(file, out);
@@ -92,6 +95,16 @@ for (const g of groups.filter((x) => x.active)) {
     ]),
   );
 }
+// Centros: catálogo (con el conteo de grupos del banner) y una ficha por centro, activos e inactivos.
+await writePage('/centros', path.join(dist, 'centros', 'index.html'), (qc) =>
+  Promise.all([qc.fetchQuery(centersQ.list()), qc.fetchQuery(groupsQ.list())]),
+);
+const centerPaths = [];
+for (const c of centers) {
+  const url = `/centros/${ssr.authorSlug(c)}`;
+  centerPaths.push(url);
+  await writePage(url, path.join(dist, url, 'index.html'), (qc) => qc.fetchQuery(centersQ.detail(c.id)));
+}
 for (const section of ssr.NAV_ITEMS.filter((i) => !i.ready).map((i) => i.to)) {
   await writePage(section, path.join(dist, section, 'index.html'));
 }
@@ -101,7 +114,7 @@ await writePage('/404', path.join(dist, '404.html'));
 const xmlEsc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${['/', '/grupos', ...groupPaths, ...profilePaths].map((p) => `  <url><loc>${xmlEsc(siteUrl + p)}</loc></url>`).join('\n')}
+${['/', '/grupos', ...groupPaths, '/centros', ...centerPaths, ...profilePaths].map((p) => `  <url><loc>${xmlEsc(siteUrl + p)}</loc></url>`).join('\n')}
 </urlset>
 `;
 await fs.writeFile(path.join(dist, 'sitemap.xml'), sitemap);
@@ -135,5 +148,5 @@ for (const raw of (env.CRIS_GOOGLE_VERIFICATION || '').split(',')) {
 }
 
 console.log(
-  `Prerender: ${authors.length} investigadores (${profilePaths.length} indexables), ${groupPaths.length} grupos. Sitemap en ${siteUrl}/sitemap.xml`,
+  `Prerender: ${authors.length} investigadores (${profilePaths.length} indexables), ${groupPaths.length} grupos, ${centerPaths.length} centros. Sitemap en ${siteUrl}/sitemap.xml`,
 );

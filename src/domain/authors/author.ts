@@ -153,7 +153,9 @@ export function initials(name: string): string {
 }
 
 /** Perfiles externos construidos solo con los identificadores que trae la fuente. */
-export function externalProfiles(a: Author): ExternalProfile[] {
+export function externalProfiles(
+  a: Pick<Author, 'orcid' | 'scopusId' | 'cvlacUrl' | 'scholarUrl'>,
+): ExternalProfile[] {
   const out: ExternalProfile[] = [];
   if (a.orcid) out.push({ label: 'ORCID', value: a.orcid, url: `https://orcid.org/${a.orcid}` });
   if (a.scopusId)

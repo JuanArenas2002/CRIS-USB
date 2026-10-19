@@ -1,0 +1,1856 @@
+<!doctype html>
+<html lang="es" style="">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="web_standard" name="shell-type" />
+    <title>UNISIMÓN RESEARCH</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @layer base {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          overscroll-behavior: none;
+        }
+        main > :first-child {
+          margin-top: 0 !important;
+        }
+        main > :last-child {
+          margin-bottom: 0 !important;
+        }
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              tertiary: '#1c2e00',
+              'tertiary-fixed-dim': '#a6d560',
+              error: '#ba1a1a',
+              'inverse-on-surface': '#eaf1ff',
+              'surface-variant': '#d9e3f6',
+              'secondary-container': '#8cfaa1',
+              secondary: '#006d30',
+              'canvas-cream': '#FBF9F4',
+              'badge-sage-bg': '#E3EDE2',
+              'surface-container-high': '#dee9fc',
+              primary: '#003020',
+              'tertiary-container': '#2c4600',
+              'surface-dark-forest': '#0E382B',
+              'on-tertiary-fixed-variant': '#324f00',
+              'on-primary': '#ffffff',
+              'surface-cream-alt': '#F5F2EB',
+              'on-secondary-fixed': '#00210a',
+              'primary-fixed-dim': '#9fd2b8',
+              'surface-container-lowest': '#ffffff',
+              'neutral-muted': '#6B7280',
+              'on-primary-fixed': '#002115',
+              surface: '#f8f9ff',
+              'inverse-primary': '#9fd2b8',
+              'on-background': '#121c2a',
+              outline: '#717973',
+              'outline-variant': '#c0c9c2',
+              'on-surface-variant': '#414944',
+              'secondary-fixed': '#8cfaa1',
+              background: '#f8f9ff',
+              'surface-container': '#e6eeff',
+              'on-tertiary-container': '#8bb847',
+              'on-primary-container': '#83b59c',
+              'surface-container-highest': '#d9e3f6',
+              'primary-container': '#154734',
+              'on-secondary-fixed-variant': '#005323',
+              'surface-dim': '#d0dbed',
+              'on-secondary-container': '#007434',
+              'on-secondary': '#ffffff',
+              'surface-container-low': '#eff4ff',
+              'on-error-container': '#93000a',
+              'badge-sage-text': '#1E4B27',
+              'on-error': '#ffffff',
+              'surface-tint': '#386853',
+              'primary-fixed': '#baeed3',
+              'on-tertiary': '#ffffff',
+              'surface-bright': '#f8f9ff',
+              'secondary-fixed-dim': '#6fdd87',
+              'error-container': '#ffdad6',
+              'on-tertiary-fixed': '#111f00',
+              'tertiary-fixed': '#c1f279',
+              'border-subtle': '#E7E2D6',
+              'on-primary-fixed-variant': '#1f4f3c',
+              'inverse-surface': '#27313f',
+              'on-surface': '#121c2a',
+            },
+            borderRadius: { DEFAULT: '0.25rem', lg: '0.5rem', xl: '0.75rem', full: '9999px' },
+            spacing: {
+              'space-xl': '2.5rem',
+              'margin-mobile': '1.25rem',
+              'space-xs': '0.25rem',
+              'gutter-mobile': '1rem',
+              'space-sm': '0.5rem',
+              'space-lg': '1.5rem',
+              'space-md': '1rem',
+              margin: '3rem',
+              'space-2xl': '4rem',
+              gutter: '1.5rem',
+            },
+            fontFamily: {
+              'body-md': ['Inter'],
+              'headline-sm': ['Inter'],
+              'headline-lg': ['Inter'],
+              'headline-md': ['Inter'],
+              'stat-metric': ['Inter'],
+              'body-sm': ['Inter'],
+              'display-hero-mobile': ['Inter'],
+              'body-lg': ['Inter'],
+              'display-hero': ['Inter'],
+              'label-sm': ['Inter'],
+              'label-md': ['Inter'],
+              'headline-lg-mobile': ['Inter'],
+            },
+            fontSize: {
+              'body-md': ['15px', { lineHeight: '24px', fontWeight: '400' }],
+              'headline-sm': ['18px', { lineHeight: '26px', fontWeight: '600' }],
+              'headline-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.02em', fontWeight: '700' }],
+              'headline-md': ['24px', { lineHeight: '32px', letterSpacing: '-0.015em', fontWeight: '600' }],
+              'stat-metric': ['30px', { lineHeight: '36px', fontWeight: '700' }],
+              'body-sm': ['13px', { lineHeight: '20px', fontWeight: '400' }],
+              'display-hero-mobile': [
+                '34px',
+                { lineHeight: '42px', letterSpacing: '-0.02em', fontWeight: '700' },
+              ],
+              'body-lg': ['17px', { lineHeight: '28px', fontWeight: '400' }],
+              'display-hero': ['52px', { lineHeight: '60px', letterSpacing: '-0.03em', fontWeight: '700' }],
+              'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.02em', fontWeight: '500' }],
+              'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.04em', fontWeight: '600' }],
+              'headline-lg-mobile': [
+                '26px',
+                { lineHeight: '34px', letterSpacing: '-0.01em', fontWeight: '700' },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-canvas-cream font-body-md text-body-md text-on-surface antialiased">
+    <header
+      class="fixed top-0 left-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-md shadow-[0_1px_8px_rgba(21,71,52,0.06)]"
+    >
+      <div class="h-20 max-w-[1240px] mx-auto px-gutter flex items-center justify-between gap-space-md">
+        <div class="flex items-center gap-space-md shrink-0">
+          <img
+            alt="Unisimón Logo"
+            class="h-9 w-auto object-contain"
+            src="https://lh3.googleusercontent.com/aida/AEtjO1Wura1Ce14uKyYS5vwksU0qw0mk5n3aQPJ9tZ3HOxrXHMB3yoIV6L0gvsTUT881mrrxpQCHivONq9FDloo8TTwFblLgLT5Qbbh7AP3q73U5LvMfxeFPhqJSWaWffBA47tskctc16YzpZqo7u-7LiikemtPWMve7B4Qx9aO0hmPsgsmIWk6bJlnX11Kv4iISeiUTRjlVYAtIPKhU5iXCE3Re3KWHhLVfCiGD6SsUusJwJv4gtteOXF9mS8DZ"
+          />
+          <div class="flex flex-col">
+            <span class="font-headline-sm text-headline-sm text-primary tracking-tight leading-none"
+              >UNISIMÓN</span
+            ><span class="font-label-md text-label-md uppercase tracking-wider text-secondary leading-tight"
+              >RESEARCH</span
+            >
+          </div>
+        </div>
+        <nav
+          class="hidden xl:flex items-center gap-space-xs"
+          data-active-classes="bg-primary-container text-on-primary font-headline-sm rounded-lg"
+        >
+          <a
+            class="px-space-md py-space-sm rounded-lg font-body-md text-body-md text-on-surface-variant hover:bg-surface-cream-alt hover:text-primary transition-all"
+            data-path="investigadores"
+            href="#"
+            >Investigadores</a
+          ><a
+            class="px-space-md py-space-sm rounded-lg font-body-md text-body-md text-on-surface-variant hover:bg-surface-cream-alt hover:text-primary transition-all"
+            data-path="grupos-de-investigacion"
+            href="#"
+            >Grupos de investigación</a
+          ><a
+            aria-current="page"
+            class="px-space-md py-space-sm transition-all bg-primary-container text-on-primary font-headline-sm rounded-lg"
+            data-path="centros-de-investigacion"
+            href="#"
+            >Centros de investigación</a
+          ><a
+            class="px-space-md py-space-sm rounded-lg font-body-md text-body-md text-on-surface-variant hover:bg-surface-cream-alt hover:text-primary transition-all"
+            data-path="proyectos"
+            href="#"
+            >Proyectos</a
+          ><a
+            class="px-space-md py-space-sm rounded-lg font-body-md text-body-md text-on-surface-variant hover:bg-surface-cream-alt hover:text-primary transition-all"
+            data-path="publicaciones"
+            href="#"
+            >Publicaciones</a
+          >
+        </nav>
+        <div class="flex items-center gap-space-md">
+          <div class="relative hidden sm:flex items-center">
+            <span
+              class="material-symbols-outlined absolute left-3 text-neutral-muted text-[20px] pointer-events-none"
+              >search</span
+            ><input
+              class="w-64 lg:w-72 pl-10 pr-4 py-2 bg-surface-cream-alt text-on-surface placeholder:text-neutral-muted text-body-sm font-body-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary transition-all"
+              placeholder="Buscar producción, autores, proyectos..."
+              type="search"
+            />
+          </div>
+          <button
+            aria-label="Buscar"
+            class="sm:hidden flex items-center justify-center w-9 h-9 rounded-lg text-on-surface-variant hover:bg-surface-cream-alt"
+          >
+            <span class="material-symbols-outlined text-[22px]">search</span>
+          </button>
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="w-full pt-20 bg-canvas-cream min-h-screen">
+      <div class="flex flex-col w-full">
+        <!-- Top Academic Navigation & Section Banner -->
+        <section class="w-full bg-surface-cream-alt py-space-xl">
+          <div class="max-w-[1240px] mx-auto px-gutter">
+            <!-- Breadcrumbs -->
+            <nav
+              class="flex items-center gap-space-xs text-body-sm font-body-sm text-neutral-muted mb-space-md"
+            >
+              <a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+                <span class="material-symbols-outlined text-[16px]">home</span>
+                <span class="">Inicio</span>
+              </a>
+              <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+              <a class="hover:text-primary transition-colors" href="#">Investigación</a>
+              <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+              <span class="text-primary font-semibold">Centros de investigación</span>
+            </nav>
+            <!-- Section Title & Meta Header -->
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-lg">
+              <div class="max-w-3xl">
+                <div
+                  class="inline-flex items-center gap-space-xs px-space-md py-1 rounded-full bg-badge-sage-bg text-badge-sage-text font-label-md text-label-md mb-space-sm uppercase tracking-wider"
+                >
+                  <span class="material-symbols-outlined text-[15px]">corporate_fare</span>
+                  <span class="">Vicerrectoría de Investigación, Extensión e Innovación</span>
+                </div>
+                <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">
+                  Centros de Investigación
+                </h1>
+                <p class="font-body-lg text-body-lg text-on-surface-variant mt-space-xs">
+                  Unidades académicas y científicas de vanguardia dedicadas a la generación de conocimiento,
+                  innovación tecnológica y transferencia para el desarrollo regional y global.
+                </p>
+              </div>
+              <!-- Action Buttons -->
+              <div class="flex items-center flex-wrap gap-space-sm">
+                <button
+                  class="inline-flex items-center gap-2 px-space-md py-2.5 rounded-lg bg-surface-container-lowest text-primary shadow-sm hover:bg-surface-cream-alt transition-all font-body-sm text-body-sm font-semibold"
+                  id="btn-export-csv"
+                >
+                  <span class="material-symbols-outlined text-[18px] text-secondary">download</span>
+                  <span class="">Descargar catálogo (CSV)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- KPI Metrics Cards Row -->
+        <section class="w-full -mt-6">
+          <div class="max-w-[1240px] mx-auto px-gutter">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+              <!-- Card 1 -->
+              <div
+                class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex items-start justify-between"
+              >
+                <div>
+                  <span class="text-neutral-muted font-label-md text-label-md uppercase tracking-wider block"
+                    >Registrados</span
+                  >
+                  <div class="font-stat-metric text-stat-metric text-primary mt-1">8</div>
+                </div>
+                <div
+                  class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary"
+                >
+                  <span class="material-symbols-outlined text-[26px]">domain</span>
+                </div>
+              </div>
+              <!-- Card 2 -->
+              <div
+                class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex items-start justify-between"
+              >
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-secondary animate-pulse"></span>
+                    <span class="text-neutral-muted font-label-md text-label-md uppercase tracking-wider"
+                      >activos</span
+                    >
+                  </div>
+                  <div class="font-stat-metric text-stat-metric text-secondary mt-1">6</div>
+                </div>
+                <div
+                  class="w-12 h-12 rounded-xl bg-secondary-container/40 flex items-center justify-center text-secondary"
+                >
+                  <span class="material-symbols-outlined text-[26px]">science</span>
+                </div>
+              </div>
+              <!-- Card 3 -->
+              <div
+                class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex items-start justify-between"
+              >
+                <div>
+                  <span class="text-neutral-muted font-label-md text-label-md uppercase tracking-wider block"
+                    >inactivos</span
+                  >
+                  <div class="font-stat-metric text-stat-metric text-on-surface-variant mt-1">2</div>
+                </div>
+                <div
+                  class="w-12 h-12 rounded-xl bg-surface-cream-alt flex items-center justify-center text-neutral-muted"
+                >
+                  <span class="material-symbols-outlined text-[26px]">inventory_2</span>
+                </div>
+              </div>
+              <!-- Card 4 -->
+              <div
+                class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex items-start justify-between"
+              >
+                <div>
+                  <span class="text-neutral-muted font-label-md text-label-md uppercase tracking-wider block"
+                    >Distribución Territorial</span
+                  >
+                  <div class="font-headline-sm text-headline-sm text-primary mt-1">
+                    Barranquilla <span class="font-bold text-secondary">7</span>
+                  </div>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Sede Cúcuta <span class="font-bold text-primary">1</span>
+                  </p>
+                </div>
+                <div
+                  class="w-12 h-12 rounded-xl bg-badge-sage-bg flex items-center justify-center text-primary-container"
+                >
+                  <span class="material-symbols-outlined text-[26px]">map</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Filter & Control Bar -->
+        <section class="w-full pt-space-xl">
+          <div class="max-w-[1240px] mx-auto px-gutter">
+            <div
+              class="bg-surface-container-lowest p-space-md sm:p-space-lg rounded-xl shadow-sm space-y-space-md"
+            >
+              <!-- First row: Search and View Mode -->
+              <div
+                class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md"
+              >
+                <!-- Main Search Input -->
+                <div class="relative flex-1">
+                  <span
+                    class="material-symbols-outlined absolute left-3.5 top-3 text-neutral-muted text-[22px] pointer-events-none"
+                    >search</span
+                  >
+                  <input
+                    class="w-full pl-11 pr-4 py-2.5 rounded-lg bg-surface-cream-alt text-on-surface placeholder:text-neutral-muted font-body-sm text-body-sm focus:outline-none focus:bg-surface-container-lowest transition-all"
+                    id="search-input"
+                    placeholder="Buscar por nombre del centro, sigla (MACONDOLAB, AudacIA, CICV...), código (CI-...) o área..."
+                    type="text"
+                  />
+                </div>
+                <!-- View Switcher -->
+                <div
+                  class="flex items-center gap-1 bg-surface-cream-alt p-1 rounded-lg shrink-0 self-end lg:self-auto"
+                >
+                  <button
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-label-md text-label-md transition-all bg-surface-container-lowest text-primary shadow-sm"
+                    id="view-grid-btn"
+                  >
+                    <span class="material-symbols-outlined text-[18px]">grid_view</span>
+                    <span class="">Tarjetas</span>
+                  </button>
+                  <button
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-primary font-label-md text-label-md transition-all text-neutral-muted"
+                    id="view-table-btn"
+                  >
+                    <span class="material-symbols-outlined text-[18px]">table_rows</span>
+                    <span class="">Tabla Institucional</span>
+                  </button>
+                </div>
+              </div>
+              <!-- Filter Selects -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-space-sm pt-space-xs">
+                <!-- Filter 1: Estado -->
+                <div class="flex flex-col gap-1">
+                  <label
+                    class="font-label-sm text-label-sm uppercase tracking-wider text-neutral-muted font-bold"
+                    >Estado</label
+                  >
+                  <select
+                    class="w-full px-3 py-2 rounded-lg bg-surface-cream-alt text-on-surface font-body-sm text-body-sm focus:outline-none"
+                    id="filter-status"
+                  >
+                    <option value="all">Todos los estados</option>
+                    <option value="Activo">Activos (6)</option>
+                    <option value="Inactivo">Inactivos / Históricos (2)</option>
+                  </select>
+                </div>
+                <!-- Filter 2: Sede / Municipio -->
+                <div class="flex flex-col gap-1">
+                  <label
+                    class="font-label-sm text-label-sm uppercase tracking-wider text-neutral-muted font-bold"
+                    >Sede / Municipio</label
+                  >
+                  <select
+                    class="w-full px-3 py-2 rounded-lg bg-surface-cream-alt text-on-surface font-body-sm text-body-sm focus:outline-none"
+                    id="filter-campus"
+                  >
+                    <option value="all">Todas las sedes</option>
+                    <option value="08001">Barranquilla (08001)</option>
+                    <option value="54001">Cúcuta (54001)</option>
+                  </select>
+                </div>
+                <!-- Filter 3: Línea Temática -->
+                <div class="flex flex-col gap-1">
+                  <label
+                    class="font-label-sm text-label-sm uppercase tracking-wider text-neutral-muted font-bold"
+                    >Área Científica</label
+                  >
+                  <select
+                    class="w-full px-3 py-2 rounded-lg bg-surface-cream-alt text-on-surface font-body-sm text-body-sm focus:outline-none"
+                    id="filter-area"
+                  >
+                    <option value="all">Todas las áreas</option>
+                    <option value="tecnologia">Tecnología, IA y Empresa</option>
+                    <option value="salud">Ciencias de la Vida y Salud</option>
+                    <option value="social">Sociedad, Frontera y Educación</option>
+                    <option value="ambiente">Medio Ambiente y Clima</option>
+                  </select>
+                </div>
+                <!-- Clear Filters -->
+                <div class="flex items-end">
+                  <button
+                    class="w-full py-2 px-3 rounded-lg text-neutral-muted hover:text-error hover:bg-error-container/20 font-label-md text-label-md flex items-center justify-center gap-1.5 transition-colors"
+                    id="clear-filters-btn"
+                  >
+                    <span class="material-symbols-outlined text-[16px]">restart_alt</span>
+                    <span class="">Limpiar filtros</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Evidence Reference Banner (Exact match to official image https://lh3.googleusercontent.com/aida-public/AB6AXuAT9_wc0J8Lu2PapmcEt1gF18p2XLwSDb4PfyDioQG6lSXf2Ab0YVdKOzO7grH3yHCuimUXVwuv3gAmxZbUZF76oXUfjfeyPK1ZpXl-_pwhsKK-YVd_ECjZMbw8eWxihjChGr7zgMFGaxjg-B5DOuJDumTj1cNnJvPJYaGY4otovQo5D7mRyqksf7eDwEWUZamlWU6fxUJpJrvA9SqXRnx6n_wRH5PONcZ7z3OBuW3ozRAcd_c-Uha1DCmzxjiTi447odk) -->
+        <section class="w-full pt-space-lg">
+          <div class="max-w-[1240px] mx-auto px-gutter">
+            <!-- Collapsible original source preview -->
+            <div
+              class="mt-space-sm p-space-sm bg-surface-container-lowest rounded-xl shadow-sm hidden"
+              id="evidence-container"
+            >
+              <div class="flex items-center justify-between pb-2 px-2">
+                <span
+                  class="font-label-sm text-label-sm uppercase tracking-wider text-neutral-muted font-bold"
+                  >Captura Fuente de Base de Datos Institucional</span
+                >
+                <button class="text-neutral-muted hover:text-on-surface" id="close-evidence">
+                  <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+              </div>
+              <img
+                alt="Tabla de Centros de Investigación Institucionales Unisimón"
+                class="w-full h-auto rounded-lg object-contain shadow-sm"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT9_wc0J8Lu2PapmcEt1gF18p2XLwSDb4PfyDioQG6lSXf2Ab0YVdKOzO7grH3yHCuimUXVwuv3gAmxZbUZF76oXUfjfeyPK1ZpXl-_pwhsKK-YVd_ECjZMbw8eWxihjChGr7zgMFGaxjg-B5DOuJDumTj1cNnJvPJYaGY4otovQo5D7mRyqksf7eDwEWUZamlWU6fxUJpJrvA9SqXRnx6n_wRH5PONcZ7z3OBuW3ozRAcd_c-Uha1DCmzxjiTi447odk"
+              />
+            </div>
+          </div>
+        </section>
+        <!-- CATALOG: VIEW A (Card Grid) -->
+        <section class="w-full py-space-xl" id="grid-view-container">
+          <div class="max-w-[1240px] mx-auto px-gutter">
+            <!-- Status Count Bar -->
+            <div class="flex items-center justify-between mb-space-md">
+              <p class="font-body-sm text-body-sm text-neutral-muted">
+                Mostrando <span class="font-bold text-primary" id="displayed-count">8</span> centros de
+                investigación institucionales
+              </p>
+              <span class="font-label-sm text-label-sm text-neutral-muted uppercase tracking-wider"
+                >Orden: Código CI</span
+              >
+            </div>
+            <!-- Centros Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-lg" id="centers-grid">
+              <!-- CI-1: MACONDOLAB -->
+              <article
+                class="center-card bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                data-acronym="MACONDOLAB"
+                data-area="tecnologia"
+                data-campus="08001"
+                data-code="CI-1"
+                data-name="Centro de Crecimiento Empresarial - MACONDOLAB"
+                data-status="Activo"
+              >
+                <div class="">
+                  <div class="flex items-center justify-between mb-space-sm">
+                    <span
+                      class="px-2.5 py-1 rounded bg-primary-container text-on-primary font-label-md text-label-md font-bold tracking-wide"
+                      >CI-1</span
+                    >
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold"
+                    >
+                      <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Activo
+                    </span>
+                  </div>
+                  <div class="mb-space-sm">
+                    <span class="text-secondary font-headline-sm text-headline-sm font-bold block"
+                      >MACONDOLAB</span
+                    >
+                    <h3 class="font-headline-sm text-headline-sm text-primary leading-snug">
+                      Centro de Crecimiento Empresarial
+                    </h3>
+                  </div>
+                  <div
+                    class="space-y-1.5 py-space-xs mb-space-sm text-neutral-muted font-body-sm text-body-sm"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-[#0d9488]">location_on</span>
+                      <span class=""
+                        >Barranquilla · Código DANE: <strong class="text-on-surface">08001</strong></span
+                      >
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-[#d97706]">calendar_today</span>
+                      <span class="">Creación: <strong class="text-on-surface">20/08/2004</strong></span>
+                    </div>
+                  </div>
+                  <p class="font-body-md text-body-md text-on-surface-variant mb-space-md line-clamp-3">
+                    Centro de excelencia en aceleración empresarial, innovación tecnológica y transferencia de
+                    conocimiento al sector productivo del Caribe.
+                  </p>
+                  <div class="flex flex-wrap gap-1.5 mb-space-lg">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #a21942"></span
+                      ><span class="font-semibold text-on-surface">ODS 8</span> Trabajo Decente
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #fd6925"></span
+                      ><span class="font-semibold text-on-surface">ODS 9</span> Industria e Innovación
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #19486a"></span
+                      ><span class="font-semibold text-on-surface">ODS 17</span> Alianzas
+                    </span>
+                  </div>
+                </div>
+              </article>
+              <!-- CI-2: CICV -->
+              <article
+                class="center-card bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                data-acronym="CICV"
+                data-area="salud"
+                data-campus="08001"
+                data-code="CI-2"
+                data-name="Centro de Investigaciones en Ciencias de la Vida - CICV"
+                data-status="Activo"
+              >
+                <div class="">
+                  <div class="flex items-center justify-between mb-space-sm">
+                    <span
+                      class="px-2.5 py-1 rounded bg-primary-container text-on-primary font-label-md text-label-md font-bold tracking-wide"
+                      >CI-2</span
+                    >
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold"
+                    >
+                      <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Activo
+                    </span>
+                  </div>
+                  <div class="mb-space-sm">
+                    <span class="text-secondary font-headline-sm text-headline-sm font-bold block">CICV</span>
+                    <h3 class="font-headline-sm text-headline-sm text-primary leading-snug">
+                      Centro de Investigaciones en Ciencias de la Vida
+                    </h3>
+                  </div>
+                  <div
+                    class="space-y-1.5 py-space-xs mb-space-sm text-neutral-muted font-body-sm text-body-sm"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-[#0d9488]">location_on</span>
+                      <span class=""
+                        >Barranquilla · Código DANE: <strong class="text-on-surface">08001</strong></span
+                      >
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-[#d97706]">calendar_today</span>
+                      <span class="">Creación: <strong class="text-on-surface">05/07/2003</strong></span>
+                    </div>
+                  </div>
+                  <p class="font-body-md text-body-md text-on-surface-variant mb-space-md line-clamp-3">
+                    Enfoque en biomedicina, genética, biotecnología aplicada a la salud, enfermedades
+                    tropicales y salud molecular.
+                  </p>
+                  <div class="flex flex-wrap gap-1.5 mb-space-lg">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #4c9f38"></span
+                      ><span class="font-semibold text-on-surface">ODS 3</span> Salud y Bienestar
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #26bde2"></span
+                      ><span class="font-semibold text-on-surface">ODS 6</span> Agua Limpia
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #fd6925"></span
+                      ><span class="font-semibold text-on-surface">ODS 9</span> Innovación
+                    </span>
+                  </div>
+                </div>
+              </article>
+              <!-- CI-3: CIISO -->
+              <article
+                class="center-card bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                data-acronym="CIISO"
+                data-area="social"
+                data-campus="08001"
+                data-code="CI-3"
+                data-name="Centro de Investigación e Innovación Social José Consuegra Higgins - CIISO"
+                data-status="Activo"
+              >
+                <div class="">
+                  <div class="flex items-center justify-between mb-space-sm">
+                    <span
+                      class="px-2.5 py-1 rounded bg-primary-container text-on-primary font-label-md text-label-md font-bold tracking-wide"
+                      >CI-3</span
+                    >
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold"
+                    >
+                      <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Activo
+                    </span>
+                  </div>
+                  <div class="mb-space-sm">
+                    <span class="text-secondary font-headline-sm text-headline-sm font-bold block"
+                      >CIISO</span
+                    >
+                    <h3 class="font-headline-sm text-headline-sm text-primary leading-snug">
+                      Centro de Investigación e Innovación Social José Consuegra Higgins
+                    </h3>
+                  </div>
+                  <div
+                    class="space-y-1.5 py-space-xs mb-space-sm text-neutral-muted font-body-sm text-body-sm"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-[#0d9488]">location_on</span>
+                      <span class=""
+                        >Barranquilla · Código DANE: <strong class="text-on-surface">08001</strong></span
+                      >
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-[#d97706]">calendar_today</span>
+                      <span class="">Creación: <strong class="text-on-surface">04/02/2004</strong></span>
+                    </div>
+                  </div>
+                  <p class="font-body-md text-body-md text-on-surface-variant mb-space-md line-clamp-3">
+                    Estudios sociales, desarrollo comunitario, políticas públicas, paz y cohesión territorial
+                    en el Caribe colombiano.
+                  </p>
+                  <div class="flex flex-wrap gap-1.5 mb-space-lg">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #e5243b"></span
+                      ><span class="font-semibold text-on-surface">ODS 1</span> Fin de la Pobreza
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #dd1367"></span
+                      ><span class="font-semibold text-on-surface">ODS 10</span> Reducción de Desigualdades
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #00689d"></span
+                      ><span class="font-semibold text-on-surface">ODS 16</span> Paz y Justicia
+                    </span>
+                  </div>
+                </div>
+              </article>
+              <!-- CI-4: CICMAR (Inactivo) -->
+              <article
+                class="center-card bg-surface-container-lowest/80 rounded-xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                data-acronym="CICMAR"
+                data-area="ambiente"
+                data-campus="08001"
+                data-code="CI-4"
+                data-name="Centro de Investigaciones Marinas y Limnológicas del Caribe – CICMAR"
+                data-status="Inactivo"
+              >
+                <div class="">
+                  <div class="flex items-center justify-between mb-space-sm">
+                    <span
+                      class="px-2.5 py-1 rounded bg-neutral-muted text-on-primary font-label-md text-label-md font-bold tracking-wide"
+                      >CI-4</span
+                    >
+                    <span
+                      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm font-semibold"
+                    >
+                      <span class="material-symbols-outlined text-[13px]">pause_circle</span> Inactivo
+                    </span>
+                  </div>
+                  <div class="mb-space-sm">
+                    <span class="text-neutral-muted font-headline-sm text-headline-sm font-bold block"
+                      >CICMAR</span
+                    >
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface leading-snug">
+                      Centro de Investigaciones Marinas y Limnológicas del Caribe
+                    </h3>
+                  </div>
+                  <div
+                    class="space-y-1.5 py-space-xs mb-space-sm text-neutral-muted font-body-sm text-body-sm"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-[#0d9488]">location_on</span>
+                      <span class=""
+                        >Barranquilla · Código DANE: <strong class="text-on-surface">08001</strong></span
+                      >
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-[#d97706]">calendar_today</span>
+                      <span class="">Creación: <strong class="text-on-surface">01/10/2015</strong></span>
+                    </div>
+                  </div>
+                  <p class="font-body-md text-body-md text-on-surface-variant mb-space-md line-clamp-3">
+                    Estudios oceanográficos, conservación limnológica y biodiversidad de ecosistemas acuáticos
+                    marinos y fluviales.
+                  </p>
+                  <div class="flex flex-wrap gap-1.5 mb-space-lg">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #0a97d9"></span
+                      ><span class="font-semibold text-on-surface">ODS 14</span> Vida Submarina
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #3f7e44"></span
+                      ><span class="font-semibold text-on-surface">ODS 13</span> Acción por el Clima
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #56c02b"></span
+                      ><span class="font-semibold text-on-surface">ODS 15</span> Ecosistemas Terrestres
+                    </span>
+                  </div>
+                </div>
+              </article>
+              <!-- CI-5: AudacIA -->
+              <article
+                class="center-card bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                data-acronym="AudacIA"
+                data-area="tecnologia"
+                data-campus="08001"
+                data-code="CI-5"
+                data-name="Centro de Desarrollo Tecnológico e Innovación - AudacIA"
+                data-status="Activo"
+              >
+                <div class="">
+                  <div class="flex items-center justify-between mb-space-sm">
+                    <span
+                      class="px-2.5 py-1 rounded bg-primary-container text-on-primary font-label-md text-label-md font-bold tracking-wide"
+                      >CI-5</span
+                    >
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold"
+                    >
+                      <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Activo
+                    </span>
+                  </div>
+                  <div class="mb-space-sm">
+                    <span class="text-secondary font-headline-sm text-headline-sm font-bold block"
+                      >AudacIA</span
+                    >
+                    <h3 class="font-headline-sm text-headline-sm text-primary leading-snug">
+                      Centro de Desarrollo Tecnológico e Innovación
+                    </h3>
+                  </div>
+                  <div
+                    class="space-y-1.5 py-space-xs mb-space-sm text-neutral-muted font-body-sm text-body-sm"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-[#0d9488]">location_on</span>
+                      <span class=""
+                        >Barranquilla · Código DANE: <strong class="text-on-surface">08001</strong></span
+                      >
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-[#d97706]">calendar_today</span>
+                      <span class="">Creación: <strong class="text-on-surface">01/01/2021</strong></span>
+                    </div>
+                  </div>
+                  <p class="font-body-md text-body-md text-on-surface-variant mb-space-md line-clamp-3">
+                    Inteligencia artificial aplicada, ciencia de datos, analítica avanzada, robótica y
+                    proyectos de transformación digital de alto impacto.
+                  </p>
+                  <div class="flex flex-wrap gap-1.5 mb-space-lg">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #fd6925"></span
+                      ><span class="font-semibold text-on-surface">ODS 9</span> Innovación e Infraestructura
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #c5192d"></span
+                      ><span class="font-semibold text-on-surface">ODS 4</span> Educación de Calidad
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #a21942"></span
+                      ><span class="font-semibold text-on-surface">ODS 8</span> Crecimiento Económico
+                    </span>
+                  </div>
+                </div>
+              </article>
+              <!-- CI-6: CIEF (Sede Cúcuta) -->
+              <article
+                class="center-card bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                data-acronym="CIEF"
+                data-area="social"
+                data-campus="54001"
+                data-code="CI-6"
+                data-name="Centro de Investigación en Estudios Fronterizos - CIEF"
+                data-status="Activo"
+              >
+                <div class="">
+                  <div class="flex items-center justify-between mb-space-sm">
+                    <span
+                      class="px-2.5 py-1 rounded bg-primary-container text-on-primary font-label-md text-label-md font-bold tracking-wide"
+                      >CI-6</span
+                    >
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold"
+                    >
+                      <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Activo
+                    </span>
+                  </div>
+                  <div class="mb-space-sm">
+                    <span class="text-secondary font-headline-sm text-headline-sm font-bold block"
+                      >CIEF · Sede Cúcuta</span
+                    >
+                    <h3 class="font-headline-sm text-headline-sm text-primary leading-snug">
+                      Centro de Investigación en Estudios Fronterizos
+                    </h3>
+                  </div>
+                  <div
+                    class="space-y-1.5 py-space-xs mb-space-sm text-neutral-muted font-body-sm text-body-sm"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-[#0d9488]">location_on</span>
+                      <span class=""
+                        >Cúcuta (Norte de Santander) · DANE:
+                        <strong class="text-on-surface">54001</strong></span
+                      >
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-[#d97706]">calendar_today</span>
+                      <span class="">Creación: <strong class="text-on-surface">01/01/2021</strong></span>
+                    </div>
+                  </div>
+                  <p class="font-body-md text-body-md text-on-surface-variant mb-space-md line-clamp-3">
+                    Análisis de dinámicas transfronterizas colombo-venezolanas, migración, economía regional y
+                    garantía de derechos humanos.
+                  </p>
+                  <div class="flex flex-wrap gap-1.5 mb-space-lg">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #dd1367"></span
+                      ><span class="font-semibold text-on-surface">ODS 10</span> Reducción Desigualdades
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #00689d"></span
+                      ><span class="font-semibold text-on-surface">ODS 16</span> Paz y Justicia
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #e5243b"></span
+                      ><span class="font-semibold text-on-surface">ODS 1</span> Fin de la Pobreza
+                    </span>
+                  </div>
+                </div>
+              </article>
+              <!-- CI-7: Centro de Investigación e Innovación en Educación (Inactivo) -->
+              <article
+                class="center-card bg-surface-container-lowest/80 rounded-xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                data-acronym="CIIE"
+                data-area="social"
+                data-campus="08001"
+                data-code="CI-7"
+                data-name="Centro de Investigación e Innovación en Educación"
+                data-status="Inactivo"
+              >
+                <div class="">
+                  <div class="flex items-center justify-between mb-space-sm">
+                    <span
+                      class="px-2.5 py-1 rounded bg-neutral-muted text-on-primary font-label-md text-label-md font-bold tracking-wide"
+                      >CI-7</span
+                    >
+                    <span
+                      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm font-semibold"
+                    >
+                      <span class="material-symbols-outlined text-[13px]">pause_circle</span> Inactivo
+                    </span>
+                  </div>
+                  <div class="mb-space-sm">
+                    <span class="text-neutral-muted font-headline-sm text-headline-sm font-bold block"
+                      >EDUCACIÓN</span
+                    >
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface leading-snug">
+                      Centro de Investigación e Innovación en Educación
+                    </h3>
+                  </div>
+                  <div
+                    class="space-y-1.5 py-space-xs mb-space-sm text-neutral-muted font-body-sm text-body-sm"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-[#0d9488]">location_on</span>
+                      <span class=""
+                        >Barranquilla · Código DANE: <strong class="text-on-surface">08001</strong></span
+                      >
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-[#d97706]">calendar_today</span>
+                      <span class="">Creación: <strong class="text-on-surface">01/08/2021</strong></span>
+                    </div>
+                  </div>
+                  <p class="font-body-md text-body-md text-on-surface-variant mb-space-md line-clamp-3">
+                    Pedagogías transformadoras, inclusión educativa, tecnologías para el aprendizaje y
+                    formación docente avanzada en el Caribe.
+                  </p>
+                  <div class="flex flex-wrap gap-1.5 mb-space-lg">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #c5192d"></span
+                      ><span class="font-semibold text-on-surface">ODS 4</span> Educación de Calidad
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #dd1367"></span
+                      ><span class="font-semibold text-on-surface">ODS 10</span> Inclusión
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #ff3a21"></span
+                      ><span class="font-semibold text-on-surface">ODS 5</span> Igualdad de Género
+                    </span>
+                  </div>
+                </div>
+              </article>
+              <!-- CI-8: Cambio Climático y Biodiversidad -->
+              <article
+                class="center-card bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                data-acronym="CICCB"
+                data-area="ambiente"
+                data-campus="08001"
+                data-code="CI-8"
+                data-name="Centro de investigación e Innovación en cambio climático y biodiversidad"
+                data-status="Activo"
+              >
+                <div class="">
+                  <div class="flex items-center justify-between mb-space-sm">
+                    <span
+                      class="px-2.5 py-1 rounded bg-primary-container text-on-primary font-label-md text-label-md font-bold tracking-wide"
+                      >CI-8</span
+                    >
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold"
+                    >
+                      <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Activo
+                    </span>
+                  </div>
+                  <div class="mb-space-sm">
+                    <span class="text-secondary font-headline-sm text-headline-sm font-bold block"
+                      >CAMBIO CLIMÁTICO</span
+                    >
+                    <h3 class="font-headline-sm text-headline-sm text-primary leading-snug">
+                      Centro de Investigación e Innovación en Cambio Climático y Biodiversidad
+                    </h3>
+                  </div>
+                  <div
+                    class="space-y-1.5 py-space-xs mb-space-sm text-neutral-muted font-body-sm text-body-sm"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-[#0d9488]">location_on</span>
+                      <span class=""
+                        >Barranquilla · Código DANE: <strong class="text-on-surface">08001</strong></span
+                      >
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-[#d97706]">calendar_today</span>
+                      <span class="">Creación: <strong class="text-on-surface">01/05/2022</strong></span>
+                    </div>
+                  </div>
+                  <p class="font-body-md text-body-md text-on-surface-variant mb-space-md line-clamp-3">
+                    Resiliencia climática, sostenibilidad ambiental, monitoreo de biomas costeros y mitigación
+                    de la huella ecológica continental y marina.
+                  </p>
+                  <div class="flex flex-wrap gap-1.5 mb-space-lg">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #3f7e44"></span
+                      ><span class="font-semibold text-on-surface">ODS 13</span> Acción por el Clima
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #56c02b"></span
+                      ><span class="font-semibold text-on-surface">ODS 15</span> Vida de Ecosistemas
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-label-sm text-neutral-muted bg-white border border-[#E7E2D6] shadow-sm"
+                    >
+                      <span class="w-2 h-2 rounded-full" style="background-color: #0a97d9"></span
+                      ><span class="font-semibold text-on-surface">ODS 14</span> Vida Submarina
+                    </span>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+        <!-- CATALOG: VIEW B (Official Institutional Table View) -->
+        <section class="w-full py-space-xl hidden" id="table-view-container">
+          <div class="max-w-[1240px] mx-auto px-gutter">
+            <div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+              <!-- Table Header Bar -->
+              <div
+                class="p-space-lg bg-surface-cream-alt flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2"
+              >
+                <div>
+                  <h3 class="font-headline-sm text-headline-sm text-primary">
+                    Matriz de Registro Oficial de Centros de Investigación
+                  </h3>
+                  <p class="font-body-sm text-body-sm text-neutral-muted">
+                    Estructura homologada ante el Ministerio de Ciencia, Tecnología e Innovación (MinCiencias)
+                  </p>
+                </div>
+                <span
+                  class="px-3 py-1 bg-badge-sage-bg text-badge-sage-text font-label-sm text-label-sm rounded-full font-bold"
+                >
+                  8 Registros Totales
+                </span>
+              </div>
+              <!-- Responsive Table Container -->
+              <div class="overflow-x-auto">
+                <table class="w-full text-left font-body-sm text-body-sm">
+                  <thead
+                    class="bg-surface-cream-alt/60 text-neutral-muted font-label-md text-label-md uppercase tracking-wider"
+                  >
+                    <tr>
+                      <th class="py-3.5 px-space-md font-bold">CODIGO_CENTRO</th>
+                      <th class="py-3.5 px-space-md font-bold">NOMBRE_CENTRO</th>
+                      <th class="py-3.5 px-space-md font-bold">ID_MUNICIPIO (SEDE)</th>
+                      <th class="py-3.5 px-space-md font-bold">FECHA_CREACION</th>
+                      <th class="py-3.5 px-space-md font-bold">ESTADO</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-surface-cream-alt" id="table-rows">
+                    <!-- CI-1 -->
+                    <tr
+                      class="table-row-item hover:bg-surface-cream-alt/30 transition-colors"
+                      data-area="tecnologia"
+                      data-campus="08001"
+                      data-code="CI-1"
+                      data-search="CI-1 MACONDOLAB Centro de Crecimiento Empresarial"
+                      data-status="Activo"
+                    >
+                      <td class="py-4 px-space-md font-bold text-primary whitespace-nowrap">CI-1</td>
+                      <td class="py-4 px-space-md">
+                        <div class="font-semibold text-primary">
+                          Centro de Crecimiento Empresarial - MACONDOLAB
+                        </div>
+                        <div class="text-neutral-muted text-[12px]">
+                          Innovación empresarial y desarrollo tecnológico
+                        </div>
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap">
+                        <span class="inline-flex items-center gap-1">
+                          <span class="material-symbols-outlined text-[16px] text-secondary"
+                            >location_on</span
+                          >
+                          08001 (Barranquilla)
+                        </span>
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap font-medium text-on-surface">
+                        20/08/2004
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap">
+                        <span
+                          class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold"
+                        >
+                          <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Activo
+                        </span>
+                      </td>
+                    </tr>
+                    <!-- CI-2 -->
+                    <tr
+                      class="table-row-item hover:bg-surface-cream-alt/30 transition-colors"
+                      data-area="salud"
+                      data-campus="08001"
+                      data-code="CI-2"
+                      data-search="CI-2 CICV Centro de Investigaciones en Ciencias de la Vida"
+                      data-status="Activo"
+                    >
+                      <td class="py-4 px-space-md font-bold text-primary whitespace-nowrap">CI-2</td>
+                      <td class="py-4 px-space-md">
+                        <div class="font-semibold text-primary">
+                          Centro de Investigaciones en Ciencias de la Vida - CICV
+                        </div>
+                        <div class="text-neutral-muted text-[12px]">
+                          Biomedicina, genética, biotecnología y salud
+                        </div>
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap">
+                        <span class="inline-flex items-center gap-1">
+                          <span class="material-symbols-outlined text-[16px] text-secondary"
+                            >location_on</span
+                          >
+                          08001 (Barranquilla)
+                        </span>
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap font-medium text-on-surface">
+                        05/07/2003
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap">
+                        <span
+                          class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold"
+                        >
+                          <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Activo
+                        </span>
+                      </td>
+                    </tr>
+                    <!-- CI-3 -->
+                    <tr
+                      class="table-row-item hover:bg-surface-cream-alt/30 transition-colors"
+                      data-area="social"
+                      data-campus="08001"
+                      data-code="CI-3"
+                      data-search="CI-3 CIISO Centro de Investigacion e Innovacion Social Jose Consuegra Higgins"
+                      data-status="Activo"
+                    >
+                      <td class="py-4 px-space-md font-bold text-primary whitespace-nowrap">CI-3</td>
+                      <td class="py-4 px-space-md">
+                        <div class="font-semibold text-primary">
+                          Centro de Investigación e Innovación Social José Consuegra Higgins - CIISO
+                        </div>
+                        <div class="text-neutral-muted text-[12px]">
+                          Desarrollo comunitario, paz, sociedad y políticas públicas
+                        </div>
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap">
+                        <span class="inline-flex items-center gap-1">
+                          <span class="material-symbols-outlined text-[16px] text-secondary"
+                            >location_on</span
+                          >
+                          08001 (Barranquilla)
+                        </span>
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap font-medium text-on-surface">
+                        04/02/2004
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap">
+                        <span
+                          class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold"
+                        >
+                          <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Activo
+                        </span>
+                      </td>
+                    </tr>
+                    <!-- CI-4 -->
+                    <tr
+                      class="table-row-item hover:bg-surface-cream-alt/30 transition-colors"
+                      data-area="ambiente"
+                      data-campus="08001"
+                      data-code="CI-4"
+                      data-search="CI-4 CICMAR Centro de Investigaciones Marinas y Limnologicas del Caribe"
+                      data-status="Inactivo"
+                    >
+                      <td class="py-4 px-space-md font-bold text-neutral-muted whitespace-nowrap">CI-4</td>
+                      <td class="py-4 px-space-md">
+                        <div class="font-medium text-neutral-muted">
+                          Centro de Investigaciones Marinas y Limnológicas del Caribe – CICMAR
+                        </div>
+                        <div class="text-neutral-muted text-[12px]">
+                          Oceanografía y ecosistemas acuáticos (histórico)
+                        </div>
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap text-neutral-muted">
+                        <span class="inline-flex items-center gap-1">
+                          <span class="material-symbols-outlined text-[16px]">location_on</span>
+                          08001 (Barranquilla)
+                        </span>
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap font-medium text-neutral-muted">
+                        01/10/2015
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap">
+                        <span
+                          class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm font-semibold"
+                        >
+                          <span class="material-symbols-outlined text-[13px]">pause_circle</span> Inactivo
+                        </span>
+                      </td>
+                    </tr>
+                    <!-- CI-5 -->
+                    <tr
+                      class="table-row-item hover:bg-surface-cream-alt/30 transition-colors"
+                      data-area="tecnologia"
+                      data-campus="08001"
+                      data-code="CI-5"
+                      data-search="CI-5 AudacIA Centro de Desarrollo Tecnologico e Innovacion"
+                      data-status="Activo"
+                    >
+                      <td class="py-4 px-space-md font-bold text-primary whitespace-nowrap">CI-5</td>
+                      <td class="py-4 px-space-md">
+                        <div class="font-semibold text-primary">
+                          Centro de Desarrollo Tecnológico e Innovación - AudacIA
+                        </div>
+                        <div class="text-neutral-muted text-[12px]">
+                          Inteligencia artificial aplicada, analítica y transformación digital
+                        </div>
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap">
+                        <span class="inline-flex items-center gap-1">
+                          <span class="material-symbols-outlined text-[16px] text-secondary"
+                            >location_on</span
+                          >
+                          08001 (Barranquilla)
+                        </span>
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap font-medium text-on-surface">
+                        01/01/2021
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap">
+                        <span
+                          class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold"
+                        >
+                          <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Activo
+                        </span>
+                      </td>
+                    </tr>
+                    <!-- CI-6 -->
+                    <tr
+                      class="table-row-item hover:bg-surface-cream-alt/30 transition-colors"
+                      data-area="social"
+                      data-campus="54001"
+                      data-code="CI-6"
+                      data-search="CI-6 CIEF Centro de Investigacion en Estudios Fronterizos Cucuta"
+                      data-status="Activo"
+                    >
+                      <td class="py-4 px-space-md font-bold text-primary whitespace-nowrap">CI-6</td>
+                      <td class="py-4 px-space-md">
+                        <div class="font-semibold text-primary">
+                          Centro de Investigación en Estudios Fronterizos - CIEF
+                        </div>
+                        <div class="text-neutral-muted text-[12px]">
+                          Dinámicas colombo-venezolanas, migración y territorio
+                        </div>
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap">
+                        <span class="inline-flex items-center gap-1 font-semibold text-primary">
+                          <span class="material-symbols-outlined text-[16px] text-secondary"
+                            >location_on</span
+                          >
+                          54001 (Cúcuta)
+                        </span>
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap font-medium text-on-surface">
+                        01/01/2021
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap">
+                        <span
+                          class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold"
+                        >
+                          <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Activo
+                        </span>
+                      </td>
+                    </tr>
+                    <!-- CI-7 -->
+                    <tr
+                      class="table-row-item hover:bg-surface-cream-alt/30 transition-colors"
+                      data-area="social"
+                      data-campus="08001"
+                      data-code="CI-7"
+                      data-search="CI-7 Centro de Investigacion e Innovacion en Educacion"
+                      data-status="Inactivo"
+                    >
+                      <td class="py-4 px-space-md font-bold text-neutral-muted whitespace-nowrap">CI-7</td>
+                      <td class="py-4 px-space-md">
+                        <div class="font-medium text-neutral-muted">
+                          Centro de Investigación e Innovación en Educación
+                        </div>
+                        <div class="text-neutral-muted text-[12px]">
+                          Pedagogías inclusivas y mediaciones educativas (histórico)
+                        </div>
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap text-neutral-muted">
+                        <span class="inline-flex items-center gap-1">
+                          <span class="material-symbols-outlined text-[16px]">location_on</span>
+                          08001 (Barranquilla)
+                        </span>
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap font-medium text-neutral-muted">
+                        01/08/2021
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap">
+                        <span
+                          class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm font-semibold"
+                        >
+                          <span class="material-symbols-outlined text-[13px]">pause_circle</span> Inactivo
+                        </span>
+                      </td>
+                    </tr>
+                    <!-- CI-8 -->
+                    <tr
+                      class="table-row-item hover:bg-surface-cream-alt/30 transition-colors"
+                      data-area="ambiente"
+                      data-campus="08001"
+                      data-code="CI-8"
+                      data-search="CI-8 Centro de investigacion e Innovacion en cambio climatico y biodiversidad"
+                      data-status="Activo"
+                    >
+                      <td class="py-4 px-space-md font-bold text-primary whitespace-nowrap">CI-8</td>
+                      <td class="py-4 px-space-md">
+                        <div class="font-semibold text-primary">
+                          Centro de investigación e Innovación en cambio climático y biodiversidad
+                        </div>
+                        <div class="text-neutral-muted text-[12px]">
+                          Resiliencia ecológica, monitoreo de biomas y mitigación de huella
+                        </div>
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap">
+                        <span class="inline-flex items-center gap-1">
+                          <span class="material-symbols-outlined text-[16px] text-secondary"
+                            >location_on</span
+                          >
+                          08001 (Barranquilla)
+                        </span>
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap font-medium text-on-surface">
+                        01/05/2022
+                      </td>
+                      <td class="py-4 px-space-md whitespace-nowrap">
+                        <span
+                          class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold"
+                        >
+                          <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Activo
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Empty state container for filtered results -->
+        <div class="max-w-[1240px] mx-auto px-gutter py-space-xl hidden text-center" id="no-results-msg">
+          <div class="bg-surface-container-lowest p-space-2xl rounded-xl shadow-sm max-w-lg mx-auto">
+            <span class="material-symbols-outlined text-neutral-muted text-[48px] mb-space-sm"
+              >search_off</span
+            >
+            <h3 class="font-headline-sm text-headline-sm text-primary mb-1">
+              No se encontraron centros de investigación
+            </h3>
+            <p class="font-body-sm text-body-sm text-neutral-muted mb-space-md">
+              Intenta ajustar los criterios de búsqueda, cambiar el filtro de sede o restablecer todos los
+              filtros.
+            </p>
+            <button
+              class="px-space-md py-2 bg-primary-container text-on-primary rounded-lg font-label-md text-label-md font-semibold"
+              id="reset-empty-btn"
+            >
+              Restablecer filtros
+            </button>
+          </div>
+        </div>
+        <!-- Interactive Campus Geolocation & Scientific Ecosystem Banner -->
+        <section class="w-full py-space-2xl bg-surface-dark-forest text-on-primary">
+          <div class="max-w-[1240px] mx-auto px-gutter">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
+              <!-- Content left -->
+              <div class="lg:col-span-7 space-y-space-md">
+                <div
+                  class="inline-flex items-center gap-2 px-space-md py-1 rounded-full bg-primary-container text-primary-fixed font-label-md text-label-md"
+                >
+                  <span class="material-symbols-outlined text-[16px]">hub</span>
+                  <span class="">Articulación Institucional</span>
+                </div>
+                <h2 class="font-headline-lg text-headline-lg text-on-primary leading-tight">
+                  Centros articulados con más de 45 Grupos de Investigación A1 y A de MinCiencias
+                </h2>
+                <p class="font-body-md text-body-md text-on-primary-container">
+                  Cada Centro de Investigación opera como un núcleo integrador que articula investigadores
+                  sénior, estudiantes doctorales, semilleros y laboratorios especializados de la Universidad
+                  Simón Bolívar con empresas del sector real, organismos de cooperación internacional y el
+                  Estado colombiano.
+                </p>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-space-md pt-space-sm">
+                  <div class="bg-primary-container/40 p-space-md rounded-xl">
+                    <div class="font-stat-metric text-stat-metric text-secondary-fixed">45+</div>
+                    <div class="font-label-sm text-label-sm text-on-primary-container mt-1">
+                      Grupos Clasificados
+                    </div>
+                  </div>
+                  <div class="bg-primary-container/40 p-space-md rounded-xl">
+                    <div class="font-stat-metric text-stat-metric text-secondary-fixed">240+</div>
+                    <div class="font-label-sm text-label-sm text-on-primary-container mt-1">
+                      Investigadores Activos
+                    </div>
+                  </div>
+                  <div class="bg-primary-container/40 p-space-md rounded-xl">
+                    <div class="font-stat-metric text-stat-metric text-secondary-fixed">88%</div>
+                    <div class="font-label-sm text-label-sm text-on-primary-container mt-1">
+                      Alianzas Internacionales
+                    </div>
+                  </div>
+                </div>
+                <div class="pt-space-md flex flex-wrap gap-space-sm">
+                  <a
+                    class="px-space-md py-3 rounded-lg bg-secondary text-on-secondary font-label-md text-label-md font-bold hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-colors inline-flex items-center gap-2"
+                    href="#"
+                  >
+                    <span class="material-symbols-outlined text-[18px]">handshake</span>
+                    <span class="">Proponer Alianza o Convenio</span>
+                  </a>
+                  <a
+                    class="px-space-md py-3 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md font-bold hover:bg-primary-container/80 transition-colors inline-flex items-center gap-2"
+                    href="#"
+                  >
+                    <span class="material-symbols-outlined text-[18px]">groups</span>
+                    <span class="">Explorar Grupos Vinculados</span>
+                  </a>
+                </div>
+              </div>
+              <!-- Visual Map Right (Static Location Box) -->
+              <div class="lg:col-span-5 bg-primary-container/50 p-space-lg rounded-2xl">
+                <div class="flex items-center justify-between mb-space-md">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary-fixed text-[22px]">pin_drop</span>
+                    <span class="font-headline-sm text-headline-sm text-on-primary">Sedes Territoriales</span>
+                  </div>
+                  <span class="text-secondary-fixed font-label-sm text-label-sm font-bold">Colombia</span>
+                </div>
+                <!-- Campus Pill 1: Barranquilla -->
+                <div class="bg-surface-dark-forest/80 p-space-md rounded-xl mb-space-sm">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <span class="font-headline-sm text-headline-sm text-on-primary block"
+                        >Sede Barranquilla</span
+                      >
+                      <span class="text-secondary-fixed font-label-sm text-label-sm"
+                        >Código DANE: 08001 · Atlántico</span
+                      >
+                    </div>
+                    <span
+                      class="px-2.5 py-1 rounded bg-secondary-container/20 text-secondary-fixed font-label-sm text-label-sm font-bold"
+                      >7 Centros</span
+                    >
+                  </div>
+                  <p class="font-body-sm text-body-sm text-on-primary-container mt-2">
+                    MacondoLab, CICV, CIISO, CICMAR (H), AudacIA, Educación (H), Cambio Climático.
+                  </p>
+                </div>
+                <!-- Campus Pill 2: Cúcuta -->
+                <div class="bg-surface-dark-forest/80 p-space-md rounded-xl">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <span class="font-headline-sm text-headline-sm text-on-primary block">Sede Cúcuta</span>
+                      <span class="text-secondary-fixed font-label-sm text-label-sm"
+                        >Código DANE: 54001 · Nte. Santander</span
+                      >
+                    </div>
+                    <span
+                      class="px-2.5 py-1 rounded bg-secondary-container/20 text-secondary-fixed font-label-sm text-label-sm font-bold"
+                      >1 Centro</span
+                    >
+                  </div>
+                  <p class="font-body-sm text-body-sm text-on-primary-container mt-2">
+                    Centro de Investigación en Estudios Fronterizos (CIEF) · Sede La Playa.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Inline Script for Interactive Filtering, Search, View Switch, and CSV Export -->
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search-input');
+            const statusFilter = document.getElementById('filter-status');
+            const campusFilter = document.getElementById('filter-campus');
+            const areaFilter = document.getElementById('filter-area');
+            const clearBtn = document.getElementById('clear-filters-btn');
+            const resetEmptyBtn = document.getElementById('reset-empty-btn');
+
+            const viewGridBtn = document.getElementById('view-grid-btn');
+            const viewTableBtn = document.getElementById('view-table-btn');
+            const gridViewContainer = document.getElementById('grid-view-container');
+            const tableViewContainer = document.getElementById('table-view-container');
+
+            const cards = document.querySelectorAll('.center-card');
+            const tableRows = document.querySelectorAll('.table-row-item');
+            const displayedCount = document.getElementById('displayed-count');
+            const noResultsMsg = document.getElementById('no-results-msg');
+
+            const toggleEvidenceBtn = document.getElementById('toggle-evidence-btn');
+            const closeEvidenceBtn = document.getElementById('close-evidence');
+            const evidenceContainer = document.getElementById('evidence-container');
+            const btnExportCsv = document.getElementById('btn-export-csv');
+
+            // Toggle Evidence Capture View
+            if (toggleEvidenceBtn && evidenceContainer) {
+              toggleEvidenceBtn.addEventListener('click', () => {
+                evidenceContainer.classList.toggle('hidden');
+              });
+            }
+            if (closeEvidenceBtn && evidenceContainer) {
+              closeEvidenceBtn.addEventListener('click', () => {
+                evidenceContainer.classList.add('hidden');
+              });
+            }
+
+            // Switch view mode
+            viewGridBtn.addEventListener('click', () => {
+              viewGridBtn.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+              viewGridBtn.classList.remove('text-neutral-muted');
+              viewTableBtn.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+              viewTableBtn.classList.add('text-neutral-muted');
+
+              gridViewContainer.classList.remove('hidden');
+              tableViewContainer.classList.add('hidden');
+            });
+
+            viewTableBtn.addEventListener('click', () => {
+              viewTableBtn.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+              viewTableBtn.classList.remove('text-neutral-muted');
+              viewGridBtn.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+              viewGridBtn.classList.add('text-neutral-muted');
+
+              tableViewContainer.classList.remove('hidden');
+              gridViewContainer.classList.add('hidden');
+            });
+
+            // Filter Logic
+            function applyFilters() {
+              const query = searchInput.value.toLowerCase().trim();
+              const selectedStatus = statusFilter.value;
+              const selectedCampus = campusFilter.value;
+              const selectedArea = areaFilter.value;
+
+              let visibleCount = 0;
+
+              // Process Cards
+              cards.forEach((card) => {
+                const code = (card.getAttribute('data-code') || '').toLowerCase();
+                const name = (card.getAttribute('data-name') || '').toLowerCase();
+                const acronym = (card.getAttribute('data-acronym') || '').toLowerCase();
+                const status = card.getAttribute('data-status');
+                const campus = card.getAttribute('data-campus');
+                const area = card.getAttribute('data-area');
+
+                const matchesQuery =
+                  !query || code.includes(query) || name.includes(query) || acronym.includes(query);
+                const matchesStatus = selectedStatus === 'all' || status === selectedStatus;
+                const matchesCampus = selectedCampus === 'all' || campus === selectedCampus;
+                const matchesArea = selectedArea === 'all' || area === selectedArea;
+
+                if (matchesQuery && matchesStatus && matchesCampus && matchesArea) {
+                  card.classList.remove('hidden');
+                  visibleCount++;
+                } else {
+                  card.classList.add('hidden');
+                }
+              });
+
+              // Process Table Rows
+              tableRows.forEach((row) => {
+                const textData = (row.getAttribute('data-search') || '').toLowerCase();
+                const status = row.getAttribute('data-status');
+                const campus = row.getAttribute('data-campus');
+                const area = row.getAttribute('data-area');
+
+                const matchesQuery = !query || textData.includes(query);
+                const matchesStatus = selectedStatus === 'all' || status === selectedStatus;
+                const matchesCampus = selectedCampus === 'all' || campus === selectedCampus;
+                const matchesArea = selectedArea === 'all' || area === selectedArea;
+
+                if (matchesQuery && matchesStatus && matchesCampus && matchesArea) {
+                  row.classList.remove('hidden');
+                } else {
+                  row.classList.add('hidden');
+                }
+              });
+
+              // Update Counter and Empty State
+              displayedCount.textContent = visibleCount;
+              if (visibleCount === 0) {
+                noResultsMsg.classList.remove('hidden');
+              } else {
+                noResultsMsg.classList.add('hidden');
+              }
+            }
+
+            function resetAllFilters() {
+              searchInput.value = '';
+              statusFilter.value = 'all';
+              campusFilter.value = 'all';
+              areaFilter.value = 'all';
+              applyFilters();
+            }
+
+            searchInput.addEventListener('input', applyFilters);
+            statusFilter.addEventListener('change', applyFilters);
+            campusFilter.addEventListener('change', applyFilters);
+            areaFilter.addEventListener('change', applyFilters);
+            clearBtn.addEventListener('click', resetAllFilters);
+            resetEmptyBtn.addEventListener('click', resetAllFilters);
+
+            // Export Catalog to CSV Function
+            btnExportCsv.addEventListener('click', () => {
+              const csvRows = [
+                ['CODIGO_CENTRO', 'NOMBRE_CENTRO', 'ID_MUNICIPIO', 'SEDE', 'FECHA_CREACION', 'ESTADO'],
+                [
+                  'CI-1',
+                  'Centro de Crecimiento Empresarial - MACONDOLAB',
+                  '08001',
+                  'Barranquilla',
+                  '20/08/2004',
+                  'Activo',
+                ],
+                [
+                  'CI-2',
+                  'Centro de Investigaciones en Ciencias de la Vida - CICV',
+                  '08001',
+                  'Barranquilla',
+                  '05/07/2003',
+                  'Activo',
+                ],
+                [
+                  'CI-3',
+                  'Centro de Investigación e Innovación Social José Consuegra Higgins - CIISO',
+                  '08001',
+                  'Barranquilla',
+                  '04/02/2004',
+                  'Activo',
+                ],
+                [
+                  'CI-4',
+                  'Centro de Investigaciones Marinas y Limnológicas del Caribe – CICMAR',
+                  '08001',
+                  'Barranquilla',
+                  '01/10/2015',
+                  'Inactivo',
+                ],
+                [
+                  'CI-5',
+                  'Centro de Desarrollo Tecnológico e Innovación - AudacIA',
+                  '08001',
+                  'Barranquilla',
+                  '01/01/2021',
+                  'Activo',
+                ],
+                [
+                  'CI-6',
+                  'Centro de Investigación en Estudios Fronterizos - CIEF',
+                  '54001',
+                  'Cúcuta',
+                  '01/01/2021',
+                  'Activo',
+                ],
+                [
+                  'CI-7',
+                  'Centro de Investigación e Innovación en Educación',
+                  '08001',
+                  'Barranquilla',
+                  '01/08/2021',
+                  'Inactivo',
+                ],
+                [
+                  'CI-8',
+                  'Centro de investigación e Innovación en cambio climático y biodiversidad',
+                  '08001',
+                  'Barranquilla',
+                  '01/05/2022',
+                  'Activo',
+                ],
+              ];
+
+              const csvContent =
+                'data:text/csv;charset=utf-8,' +
+                csvRows.map((e) => e.map((x) => `"${x}"`).join(',')).join('\n');
+              const encodedUri = encodeURI(csvContent);
+              const link = document.createElement('a');
+              link.setAttribute('href', encodedUri);
+              link.setAttribute('download', 'unisimon_centros_investigacion.csv');
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            });
+          });
+        </script>
+      </div>
+    </main>
+    <footer class="w-full bg-surface-dark-forest text-on-primary py-space-2xl">
+      <div class="max-w-[1240px] mx-auto px-gutter">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-space-xl pb-space-xl">
+          <div class="md:col-span-5 flex flex-col gap-space-sm">
+            <div class="flex items-center gap-space-sm mb-space-xs">
+              <div class="w-2.5 h-2.5 rounded-full bg-secondary-fixed"></div>
+              <span class="font-headline-md text-headline-md font-bold tracking-tight text-on-primary"
+                >UNISIMÓN RESEARCH</span
+              >
+            </div>
+            <p class="font-body-md text-body-md text-on-primary-container max-w-md">
+              Ecosistema de conocimiento, ciencia aplicada y desarrollo tecnológico de la Universidad Simón
+              Bolívar. Investigación con impacto transformador regional e internacional.
+            </p>
+            <div
+              class="mt-space-sm inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-primary-container text-primary-fixed font-label-md text-label-md w-fit"
+            >
+              <span class="material-symbols-outlined text-[16px]">verified</span
+              ><span class="">Acreditación Institucional de Alta Calidad</span>
+            </div>
+          </div>
+          <div class="md:col-span-4 flex flex-col gap-space-xs">
+            <h4 class="font-headline-sm text-headline-sm text-on-primary mb-space-xs">
+              Sedes de Investigación
+            </h4>
+            <div class="space-y-space-md">
+              <div class="flex items-start gap-space-xs">
+                <span class="material-symbols-outlined text-secondary-fixed text-[20px] mt-0.5"
+                  >location_on</span
+                >
+                <div>
+                  <p class="font-label-md text-label-md text-on-primary font-bold">Sede Barranquilla</p>
+                  <p class="font-body-sm text-body-sm text-on-primary-container">
+                    Carrera 59 No. 59-65 · Edificio Macondo &amp; Labs
+                  </p>
+                  <p class="font-body-sm text-body-sm text-on-primary-container">
+                    investigacion@unisimonbolivar.edu.co
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-start gap-space-xs">
+                <span class="material-symbols-outlined text-secondary-fixed text-[20px] mt-0.5"
+                  >location_on</span
+                >
+                <div>
+                  <p class="font-label-md text-label-md text-on-primary font-bold">Sede Cúcuta</p>
+                  <p class="font-body-sm text-body-sm text-on-primary-container">
+                    Avenida 3 No. 13-34 Barrio La Playa
+                  </p>
+                  <p class="font-body-sm text-body-sm text-on-primary-container">
+                    investigacioncucuta@unisimon.edu.co
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="md:col-span-3 flex flex-col gap-space-xs">
+            <h4 class="font-headline-sm text-headline-sm text-on-primary mb-space-xs">Acceso Rápido</h4>
+            <ul class="space-y-space-xs font-body-sm text-body-sm text-on-primary-container">
+              <li class="">
+                <a class="hover:text-primary-fixed transition-colors flex items-center gap-1.5" href="#"
+                  ><span class="material-symbols-outlined text-[14px]">chevron_right</span>Portal
+                  Institucional</a
+                >
+              </li>
+              <li class="">
+                <a class="hover:text-primary-fixed transition-colors flex items-center gap-1.5" href="#"
+                  ><span class="material-symbols-outlined text-[14px]">chevron_right</span>Vicerrectoría de
+                  Investigación</a
+                >
+              </li>
+              <li class="">
+                <a class="hover:text-primary-fixed transition-colors flex items-center gap-1.5" href="#"
+                  ><span class="material-symbols-outlined text-[14px]">chevron_right</span>Repositorio
+                  Científico DSpace</a
+                >
+              </li>
+              <li class="">
+                <a class="hover:text-primary-fixed transition-colors flex items-center gap-1.5" href="#"
+                  ><span class="material-symbols-outlined text-[14px]">chevron_right</span>Comité de Ética en
+                  Investigación</a
+                >
+              </li>
+              <li class="">
+                <a class="hover:text-primary-fixed transition-colors flex items-center gap-1.5" href="#"
+                  ><span class="material-symbols-outlined text-[14px]">chevron_right</span>MinCiencias Scienti
+                  Hub</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div
+          class="pt-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-md font-body-sm text-body-sm text-on-primary-container"
+        >
+          <p class="">
+            © 2025 Universidad Simón Bolívar. Vigilada Mineducación. Todos los derechos reservados.
+          </p>
+          <div class="flex items-center gap-space-lg">
+            <a class="hover:text-on-primary transition-colors" href="#">Política de Privacidad</a
+            ><a class="hover:text-on-primary transition-colors" href="#">Términos de Uso</a
+            ><a class="hover:text-on-primary transition-colors" href="#">Transparencia</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

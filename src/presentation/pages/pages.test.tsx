@@ -3,7 +3,15 @@ import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import { ApiError } from '@/infrastructure/http/api-client';
 import { cleanToken } from '@/presentation/components/admin/AdminToken';
-import { fakeGroupRepo, fakeRepo, makeAuthor, makeGroupDetail, renderApp } from '@/test-utils';
+import {
+  fakeGroupRepo,
+  fakeRepo,
+  makeAuthor,
+  makeGroupDetail,
+  renderApp,
+  fakeCenterRepo,
+  makeCenterDetail,
+} from '@/test-utils';
 
 test('directorio: tarjetas con enlace rastreable al perfil y métricas reales', async () => {
   renderApp('/');
@@ -87,14 +95,14 @@ test('perfil: investigador inexistente o retirado no es público (404 noindex)',
   );
 });
 
-test('menú: las 5 secciones en orden; las pendientes llevan a "en construcción" (noindex)', async () => {
+test('menú: las 6 secciones en orden; las pendientes llevan a "en construcción" (noindex)', async () => {
   renderApp('/proyectos');
   const nav = screen.getByRole('navigation', { name: 'Principal' });
   expect(
     within(nav)
       .getAllByRole('link')
       .map((a) => a.textContent),
-  ).toEqual(['Grupos', 'Investigadores', 'Proyectos', 'Productos', 'Relacionamiento']);
+  ).toEqual(['Grupos', 'Centros', 'Investigadores', 'Proyectos', 'Productos', 'Relacionamiento']);
   expect(within(nav).getByRole('link', { name: 'Proyectos' })).toHaveAttribute('aria-current', 'page');
   expect(screen.getByRole('heading', { level: 1, name: 'Proyectos' })).toBeInTheDocument();
   await waitFor(() =>
@@ -240,4 +248,50 @@ test('admin ODS: con token lista los grupos activos con sus ODS marcados', async
   expect(screen.getByRole('button', { name: 'Guardar' })).toBeEnabled();
   expect(screen.getByText('Cambios sin guardar')).toBeInTheDocument();
   sessionStorage.clear();
+});
+
+test('centros: lista por defecto (estándar de grupos), filtro por estado y cambio a tarjetas', async () => {
+  renderApp(
+    '/centros',
+    fakeRepo(),
+    fakeGroupRepo(),
+    fakeCenterRepo([
+      makeCenterDetail(),
+      makeCenterDetail({ id: 8, code: 'CI-7', acronym: 'CICMAR', name: 'Centro Marino', active: false }),
+    ]),
+  );
+  expect(
+    await screen.findByRole('heading', { level: 1, name: 'Centros de investigación' }),
+  ).toBeInTheDocument();
+  expect(
+    await screen.findByRole('link', { name: 'Centro de Crecimiento Empresarial MACONDOLAB' }),
+  ).toHaveAttribute('href', '/centros/1-centro-de-crecimiento-empresarial-macondolab');
+  expect(screen.getByRole('button', { name: /Lista/ })).toHaveAttribute('aria-pressed', 'true');
+  expect(document.querySelectorAll('article')).toHaveLength(0);
+
+  await userEvent.selectOptions(screen.getByLabelText('Estado'), 'inactivos');
+  expect(screen.queryByRole('link', { name: /MACONDOLAB/ })).not.toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Centro Marino' })).toBeInTheDocument();
+
+  await userEvent.click(screen.getByRole('button', { name: /Tarjetas/ }));
+  expect(document.querySelectorAll('article')).toHaveLength(1);
+});
+
+test('centro: ficha con dirección, líneas, ODS oficiales y resolución en PDF', async () => {
+  renderApp('/centros/1-nombre-viejo', fakeRepo(), fakeGroupRepo(), fakeCenterRepo());
+  expect(
+    await screen.findByRole('heading', { level: 1, name: 'Centro de Crecimiento Empresarial MACONDOLAB' }),
+  ).toBeInTheDocument();
+  expect(screen.getAllByText(/Gloria Maria Naranjo Africano/).length).toBeGreaterThan(0);
+  expect(screen.getByText('Emprendimiento Tecnológico')).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: /^ODS 17/ })).toHaveAttribute('src', '/assets/ods/ods-17.webp');
+  expect(screen.getByRole('link', { name: /Ver resolución \(PDF\)/ })).toHaveAttribute(
+    'href',
+    '/api/centers/1/resolutions/5',
+  );
+  await waitFor(() =>
+    expect(document.querySelector('link[rel="canonical"]')?.getAttribute('href')).toMatch(
+      /\/centros\/1-centro-de-crecimiento-empresarial-macondolab$/,
+    ),
+  );
 });

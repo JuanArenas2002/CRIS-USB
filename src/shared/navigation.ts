@@ -10,6 +10,7 @@ export interface NavItem {
 
 export const NAV_ITEMS: NavItem[] = [
   { key: 'groups', to: '/grupos', ready: true },
+  { key: 'centers', to: '/centros', ready: true },
   { key: 'authors', to: '/', ready: true },
   { key: 'projects', to: '/proyectos', ready: false },
   { key: 'products', to: '/productos', ready: false },
