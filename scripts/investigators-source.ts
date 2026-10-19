@@ -13,6 +13,7 @@ import type {
   Thesis,
 } from '../src/domain/authors/author.ts';
 import { parseCategory } from '../src/domain/authors/author.ts';
+import { fetchInvestigatorCenters } from './centers-source.ts';
 import {
   cleanText,
   getData,
@@ -176,7 +177,7 @@ export async function fetchInvestigatorGroups(base: string, id: number): Promise
   });
 }
 
-/** Perfiles completos para el prerender (una petición de grupos por investigador, 6 a la vez). */
+/** Perfiles completos para el prerender (grupos y centros de cada investigador, 6 a la vez). */
 export async function withProfiles(
   base: string,
   { authors, production }: Awaited<ReturnType<typeof fetchInvestigators>>,
@@ -184,6 +185,7 @@ export async function withProfiles(
   return mapLimit(authors, 6, async (a) => ({
     ...a,
     groups: await fetchInvestigatorGroups(base, a.id),
+    centers: await fetchInvestigatorCenters(base, a.id),
     production: production.get(a.id) ?? null,
   }));
 }

@@ -82,6 +82,11 @@ const authorSchema = z.object(author) as unknown as z.ZodType<Author>;
 const profileSchema = z.object({
   ...author,
   groups: z.array(groupRef),
+  centers: z
+    .array(
+      z.object({ id: z.number().int(), code: z.string(), acronym: z.string().nullable(), name: z.string() }),
+    )
+    .default([]),
   production,
 }) as unknown as z.ZodType<AuthorProfile>;
 

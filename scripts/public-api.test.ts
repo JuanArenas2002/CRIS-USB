@@ -54,6 +54,7 @@ const centerRaw = {
 };
 const centersMock: Record<string, unknown[]> = {
   '/api/center': [centerRaw, { id: 0, code: 'N/A', name: 'N/A', director: { person: { name: 'N/A' } } }],
+  '/api/center/investigator/1': [centerRaw],
   '/api/lineCenter/center/1': [{ id: 3, code: 'LC001', name: 'Emprendimiento', state: true }],
   '/api/ods/center/1': [
     { id: 1, number: '17', title: 'Alianzas' },
@@ -167,6 +168,7 @@ test('detalle con grupos proyectados; inexistente o retirado → 404', async () 
     { id: 14, code: 'COL1', name: 'Grupo Uno', category: 'A1', ods: [], type: null },
   ]);
   for (const s of SECRETS) expect(text).not.toContain(s);
+  expect(body.centers).toEqual([{ id: 1, code: 'CI-1', acronym: 'CU', name: 'Centro Uno' }]);
   expect((await get('/api/investigators/3')).status).toBe(404);
   expect((await get('/api/investigators/999')).status).toBe(404);
 });

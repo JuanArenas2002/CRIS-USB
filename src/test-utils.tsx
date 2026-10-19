@@ -21,6 +21,9 @@ export function makeAuthor(over: Partial<AuthorProfile> = {}): AuthorProfile {
     scholarUrl: null,
     mainGroup: { id: 1, code: 'COL0000001', name: 'Bioinformática y Salud' },
     groups: [{ id: 1, code: 'COL0000001', name: 'Bioinformática y Salud', category: 'A1', ods: [3, 4] }],
+    centers: [
+      { id: 1, code: 'CI-1', acronym: 'MACONDOLAB', name: 'Centro de Crecimiento Empresarial MACONDOLAB' },
+    ],
     metrics: null,
     photoUrl: null,
     production: null,

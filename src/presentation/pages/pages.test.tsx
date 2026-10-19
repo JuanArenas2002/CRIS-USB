@@ -72,6 +72,10 @@ test('perfil: canonicaliza el slug y muestra identificadores', async () => {
     'href',
     '/grupos/1-bioinformatica-y-salud',
   );
+  expect(screen.getByRole('link', { name: /MACONDOLAB/ })).toHaveAttribute(
+    'href',
+    '/centros/1-centro-de-crecimiento-empresarial-macondolab',
+  );
   await waitFor(() =>
     expect(document.querySelector('link[rel="canonical"]')?.getAttribute('href')).toMatch(
       /\/investigadores\/7-ana-maria-perez$/,
@@ -102,7 +106,7 @@ test('menú: las 6 secciones en orden; las pendientes llevan a "en construcción
     within(nav)
       .getAllByRole('link')
       .map((a) => a.textContent),
-  ).toEqual(['Grupos', 'Centros', 'Investigadores', 'Proyectos', 'Productos', 'Relacionamiento']);
+  ).toEqual(['Centros', 'Grupos', 'Investigadores', 'Proyectos', 'Productos', 'Relacionamiento']);
   expect(within(nav).getByRole('link', { name: 'Proyectos' })).toHaveAttribute('aria-current', 'page');
   expect(screen.getByRole('heading', { level: 1, name: 'Proyectos' })).toBeInTheDocument();
   await waitFor(() =>

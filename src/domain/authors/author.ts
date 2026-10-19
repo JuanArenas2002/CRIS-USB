@@ -1,3 +1,4 @@
+import type { CenterRef } from '../centers/center';
 import type { OdsId } from '../ods/ods';
 
 /** Categorías Minciencias de investigador, de mayor a menor. */
@@ -87,6 +88,8 @@ export interface AuthorProduction {
 /** Perfil completo: además, todos los grupos activos y, si es destacado, su producción. */
 export interface AuthorProfile extends Author {
   groups: GroupRef[];
+  /** Centros de investigación activos a los que aporta (Metri-K `/center/investigator/{id}`). */
+  centers: CenterRef[];
   production: AuthorProduction | null;
 }
 

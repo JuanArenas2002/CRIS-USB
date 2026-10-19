@@ -12,7 +12,7 @@ function mockFetch(status: number, body: unknown) {
 afterEach(() => vi.unstubAllGlobals());
 
 const repo = () => httpAuthorRepository(createApiClient({ baseUrl: 'http://bff' }));
-const { groups: _groups, production: _production, ...author } = makeAuthor();
+const { groups: _groups, centers: _centers, production: _production, ...author } = makeAuthor();
 
 test('list: arma los parámetros del BFF y valida la respuesta', async () => {
   const fetch = mockFetch(200, { items: [author], total: 1, page: 2, pages: 1 });

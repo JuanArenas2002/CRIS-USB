@@ -209,6 +209,7 @@ const pt: typeof es = {
       mainGroup: 'Grupo principal',
       noCategory: 'Sem categoria',
       groups: 'Grupos de pesquisa vinculados:',
+      centers: 'Centros de pesquisa aos quais contribui:',
       groupCategory: 'Cat. {{category}} Minciencias',
       academicProfiles: 'Perfis acadêmicos:',
       odsLinked: 'ODS vinculados:',

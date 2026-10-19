@@ -214,6 +214,7 @@ const es = {
       mainGroup: 'Grupo principal',
       noCategory: 'Sin categoría',
       groups: 'Grupos de investigación adscritos:',
+      centers: 'Centros de investigación a los que aporta:',
       groupCategory: 'Cat. {{category}} Minciencias',
       academicProfiles: 'Perfiles académicos:',
       odsLinked: 'ODS vinculados:',

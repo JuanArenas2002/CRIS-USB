@@ -9,13 +9,13 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 import http, { type IncomingMessage, type ServerResponse } from 'node:http';
 import { pathToFileURL } from 'node:url';
-import { fetchPublicCenters, fetchResolutionPdf } from './centers-source.ts';
+import { fetchInvestigatorCenters, fetchPublicCenters, fetchResolutionPdf } from './centers-source.ts';
 import { fetchPublicGroups } from './groups-source.ts';
 import { fetchGroupMembers, fetchInvestigatorGroups, fetchInvestigators } from './investigators-source.ts';
 import { MAX_PHOTO_BYTES, logoUrl, photoUrl } from './photo-store.ts';
 import { normalizeWebsite } from './ods-store.ts';
 import { createStores, storeOptionsFromEnv, type StoreOptions } from './stores.ts';
-import { summarizeCenter, type CenterDetail } from '../src/domain/centers/center.ts';
+import { summarizeCenter, type CenterDetail, type CenterRef } from '../src/domain/centers/center.ts';
 import { hasPublicDetail, summarizeGroup, type GroupDetail } from '../src/domain/groups/group.ts';
 import { isOdsId } from '../src/domain/ods/ods.ts';
 import {
@@ -111,6 +111,15 @@ export function createPublicApi({
         cached(() => fetchInvestigatorGroups(base, id)),
       );
     return memberships.get(id)!();
+  };
+  const centerLinks = new Map<number, () => Promise<CenterRef[]>>();
+  const centersOf = (id: number) => {
+    if (!centerLinks.has(id))
+      centerLinks.set(
+        id,
+        cached(() => fetchInvestigatorCenters(base, id)),
+      );
+    return centerLinks.get(id)!();
   };
 
   const groupMembers = new Map<number, () => Promise<Author[]>>();
@@ -287,6 +296,7 @@ export function createPublicApi({
                   type: type.get(g.id) ?? null,
                 }));
               })(),
+              centers: await centersOf(a.id),
               production: production.get(a.id) ?? null,
             })
           : send(404, { detail: 'No encontrado' });

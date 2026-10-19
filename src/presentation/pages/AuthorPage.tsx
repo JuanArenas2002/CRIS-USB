@@ -17,6 +17,7 @@ import { isIndexable } from '@/application/authors/author-queries';
 import { hasPublicDetail } from '@/domain/groups/group';
 import { inheritOds } from '@/domain/ods/ods';
 import { ProductionByYear } from '@/presentation/components/authors/ProductionByYear';
+import { centerPath } from '@/presentation/components/centers/CenterCard';
 import {
   EMPTY_FILTERS,
   ProductsTable,
@@ -87,6 +88,7 @@ function Profile({ author }: { author: AuthorProfile }) {
     ...author.groups.filter((g) => g.id !== author.mainGroup?.id),
   ];
   const ods = inheritOds(groups);
+  const centers = author.centers ?? [];
 
   const [params, setParams] = useSearchParams();
   const tab: Tab = params.get('tab') === 'produccion' ? 'produccion' : 'perfil';
@@ -126,14 +128,22 @@ function Profile({ author }: { author: AuthorProfile }) {
         name,
         affiliation: ORGANIZATION,
         ...(author.photoUrl ? { image: absoluteUrl(author.photoUrl) } : {}),
-        ...(groups.length
+        ...(groups.length || centers.length
           ? {
-              memberOf: groups.map((g) => ({
-                '@type': 'Organization',
-                name: g.name,
-                identifier: g.code,
-                ...(hasPublicDetail(g) ? { url: absoluteUrl(`/grupos/${authorSlug(g)}`) } : {}),
-              })),
+              memberOf: [
+                ...groups.map((g) => ({
+                  '@type': 'Organization',
+                  name: g.name,
+                  identifier: g.code,
+                  ...(hasPublicDetail(g) ? { url: absoluteUrl(`/grupos/${authorSlug(g)}`) } : {}),
+                })),
+                ...centers.map((c) => ({
+                  '@type': 'ResearchOrganization',
+                  name: c.name,
+                  identifier: c.code,
+                  url: absoluteUrl(centerPath(c)),
+                })),
+              ],
             }
           : {}),
         ...(author.orcid
@@ -281,6 +291,36 @@ function Profile({ author }: { author: AuthorProfile }) {
                         </span>
                       );
                     })}
+                  </div>
+                </div>
+              ) : null}
+
+              {centers.length ? (
+                <div className="flex flex-col gap-2">
+                  <span className="flex items-center gap-1.5 text-label-md font-semibold text-on-surface-variant">
+                    <Icon name="domain" className="text-[18px] text-primary-container" />{' '}
+                    {t('profile.centers')}
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {centers.map((c) => (
+                      <Link
+                        key={c.id}
+                        to={centerPath(c)}
+                        className="group inline-flex items-center gap-2 rounded-lg border border-border-subtle bg-surface-container-lowest px-3 py-1.5 text-body-sm text-on-surface transition-colors hover:border-primary-container hover:text-primary-container"
+                      >
+                        <Icon name="domain" className="text-[16px] text-secondary" />
+                        <span className="font-semibold">{c.name}</span>
+                        {c.acronym ? (
+                          <span className="rounded bg-badge-sage-bg px-1.5 py-0.5 text-label-sm font-semibold text-badge-sage-text">
+                            {c.acronym}
+                          </span>
+                        ) : null}
+                        <Icon
+                          name="arrow_forward"
+                          className="text-[14px] text-neutral-muted transition-transform group-hover:translate-x-0.5"
+                        />
+                      </Link>
+                    ))}
                   </div>
                 </div>
               ) : null}

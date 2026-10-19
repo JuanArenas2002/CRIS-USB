@@ -5,7 +5,8 @@
 //   GET /lineCenter/center/{id}          → líneas
 //   GET /ods/center/{id}                 → ODS
 //   GET /resolutionCenter/center/{id}    → resoluciones, con el PDF en base64 dentro (`file`)
-import type { CenterDetail, CenterLine, CenterResolution } from '../src/domain/centers/center.ts';
+//   GET /center/investigator/{id}        → centros a los que aporta un investigador
+import type { CenterDetail, CenterLine, CenterRef, CenterResolution } from '../src/domain/centers/center.ts';
 import { normalizeOds } from '../src/domain/ods/ods.ts';
 import { cleanText, getData, httpsUrl, mapLimit, obj, str, type Raw } from './groups-source.ts';
 
@@ -119,4 +120,12 @@ export async function fetchResolutionPdf(
   if (!raw || !isPdfBase64(raw.file)) return null;
   const name = (str(raw.number) ?? `resolucion-${resolutionId}`).replace(/[^\w.-]+/g, '_');
   return { pdf: Buffer.from(raw.file, 'base64'), name: `${name}.pdf` };
+}
+
+/** Centros activos a los que aporta un investigador (solo referencia pública). */
+export async function fetchInvestigatorCenters(base: string, id: number): Promise<CenterRef[]> {
+  return project(await getData(`${base}/center/investigator/${id}`), (r) => {
+    const c = toPublicCenter(r);
+    return c && c.active ? { id: c.id, code: c.code, acronym: c.acronym, name: c.name } : null;
+  });
 }

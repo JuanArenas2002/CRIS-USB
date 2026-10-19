@@ -35,6 +35,9 @@ export interface Center {
   website: string | null;
 }
 
+/** Referencia a un centro (p. ej. los centros a los que aporta un investigador). */
+export type CenterRef = Pick<Center, 'id' | 'code' | 'acronym' | 'name'>;
+
 export interface CenterLine {
   id: number;
   code: string | null;
