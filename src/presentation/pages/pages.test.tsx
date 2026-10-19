@@ -182,6 +182,8 @@ test('grupos: lista por defecto y cambio a tarjetas', async () => {
   await userEvent.click(screen.getByRole('button', { name: /Tarjetas/ }));
   expect(screen.getByRole('button', { name: /Tarjetas/ })).toHaveAttribute('aria-pressed', 'true');
   expect(document.querySelectorAll('article')).toHaveLength(1);
+  // Tipo de grupo de Metri-K como icono, con el texto para lectores de pantalla (y tooltip).
+  expect(within(document.querySelector('article')!).getAllByText('Institucional').length).toBeGreaterThan(0);
 });
 
 test('perfil destacado: indicadores y "Explorar productos" abre la producción filtrada', async () => {

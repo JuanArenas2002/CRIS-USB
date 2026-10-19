@@ -3,11 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { authorSlug, displayName } from '@/domain/authors/author';
 import type { Group } from '@/domain/groups/group';
 import { categoryTone } from './category-tone';
+import { GroupTypeIcon, isInterinstitutional } from './GroupTypeIcon';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { useLabels } from '@/presentation/hooks/use-labels';
-
-/** Metri-K: `type` = "Institucional" | "Interinstitucional" (o vacío). */
-const isInter = (g: Group) => /^interinstitucional$/i.test(g.type?.trim() ?? '');
 
 /** Fila de la vista en lista: densa y escaneable; toda la fila enlaza al detalle. */
 export function GroupRow({ group }: { group: Group }) {
@@ -38,7 +36,9 @@ export function GroupRow({ group }: { group: Group }) {
             {` · ${t('card.linesCount', { count: group.lines.length })}`}
           </span>
           {/* Interinstitucional: en móvil y tableta va aquí; en escritorio tiene su columna. */}
-          {isInter(group) ? <span className="lg:hidden">{` · ${labels.domain(group.type!)}`}</span> : null}
+          {isInterinstitutional(group) ? (
+            <span className="lg:hidden">{` · ${labels.domain(group.type!)}`}</span>
+          ) : null}
         </p>
       </div>
 
@@ -47,27 +47,7 @@ export function GroupRow({ group }: { group: Group }) {
       </p>
       <p className="hidden lg:block">
         {group.type ? (
-          // Solo icono; el texto va en el tooltip y para lectores de pantalla. z-10: por encima del
-          // enlace que cubre la fila, para que el tooltip aparezca al pasar el mouse.
-          <span className="group/type relative z-10 inline-flex">
-            <span
-              tabIndex={0}
-              className={`flex h-9 w-9 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-secondary ${
-                isInter(group)
-                  ? 'bg-badge-sage-bg text-secondary'
-                  : 'bg-surface-cream-alt text-on-surface-variant'
-              }`}
-            >
-              <Icon name={isInter(group) ? 'handshake' : 'account_balance'} className="text-[20px]" />
-              <span className="sr-only">{labels.domain(group.type)}</span>
-            </span>
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded-md bg-surface-dark-forest px-2.5 py-1 text-label-sm font-semibold whitespace-nowrap text-on-primary opacity-0 shadow-md transition-opacity group-hover/type:opacity-100 group-focus-within/type:opacity-100"
-            >
-              {labels.domain(group.type)}
-            </span>
-          </span>
+          <GroupTypeIcon group={group} />
         ) : (
           <span className="text-body-sm text-neutral-muted">—</span>
         )}

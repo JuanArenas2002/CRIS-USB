@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { authorSlug, displayName } from '@/domain/authors/author';
 import type { Group } from '@/domain/groups/group';
 import { categoryTone } from './category-tone';
+import { GroupTypeIcon } from './GroupTypeIcon';
 import { Icon } from '@/presentation/components/ui/Icon';
 
 /** Tarjeta resumida: lo esencial para elegir un grupo; el detalle vive en /grupos/:slug. */
@@ -52,9 +53,12 @@ export function GroupCard({ group }: { group: Group }) {
             </div>
             <Icon name="workspace_premium" className="text-[40px] text-tertiary-fixed/80" />
           </div>
-          <p className="relative mt-4 inline-flex rounded-full bg-primary-container/90 px-3 py-1 text-label-sm font-semibold tracking-wide">
-            {group.code}
-          </p>
+          <div className="relative mt-4 flex items-center justify-between gap-2">
+            <p className="inline-flex rounded-full bg-primary-container/90 px-3 py-1 text-label-sm font-semibold tracking-wide">
+              {group.code}
+            </p>
+            <GroupTypeIcon group={group} />
+          </div>
         </div>
 
         <div className="pt-4 pb-2">
