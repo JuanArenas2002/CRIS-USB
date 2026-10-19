@@ -122,7 +122,12 @@ export function createPublicApi({
     function send(status: number, body: unknown) {
       res.statusCode = status;
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.setHeader('Cache-Control', status === 200 ? 'public, max-age=300' : 'no-store');
+      // El navegador siempre revalida; el CDN (Vercel) guarda 30 s. Así lo que cambie el admin
+      // (fotos, ODS) se ve en menos de un minuto sin consultar Metri-K en cada visita.
+      res.setHeader(
+        'Cache-Control',
+        status === 200 ? 'public, max-age=0, s-maxage=30, stale-while-revalidate=60' : 'no-store',
+      );
       res.end(JSON.stringify(body));
     }
 
