@@ -47,14 +47,26 @@ export function GroupRow({ group }: { group: Group }) {
       </p>
       <p className="hidden lg:block">
         {group.type ? (
-          <span
-            className={`inline-block max-w-full truncate rounded-full px-2.5 py-0.5 text-label-sm font-semibold ${
-              isInter(group)
-                ? 'bg-badge-sage-bg text-badge-sage-text'
-                : 'bg-surface-cream-alt text-on-surface-variant'
-            }`}
-          >
-            {labels.domain(group.type)}
+          // Solo icono; el texto va en el tooltip y para lectores de pantalla. z-10: por encima del
+          // enlace que cubre la fila, para que el tooltip aparezca al pasar el mouse.
+          <span className="group/type relative z-10 inline-flex">
+            <span
+              tabIndex={0}
+              className={`flex h-9 w-9 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-secondary ${
+                isInter(group)
+                  ? 'bg-badge-sage-bg text-secondary'
+                  : 'bg-surface-cream-alt text-on-surface-variant'
+              }`}
+            >
+              <Icon name={isInter(group) ? 'handshake' : 'account_balance'} className="text-[20px]" />
+              <span className="sr-only">{labels.domain(group.type)}</span>
+            </span>
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded-md bg-surface-dark-forest px-2.5 py-1 text-label-sm font-semibold whitespace-nowrap text-on-primary opacity-0 shadow-md transition-opacity group-hover/type:opacity-100 group-focus-within/type:opacity-100"
+            >
+              {labels.domain(group.type)}
+            </span>
           </span>
         ) : (
           <span className="text-body-sm text-neutral-muted">—</span>
