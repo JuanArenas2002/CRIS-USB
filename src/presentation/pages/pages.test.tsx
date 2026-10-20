@@ -347,3 +347,31 @@ test('grupos: cada grupo muestra logo y sigla de su centro, enlazados a la ficha
   await within(section).findByText('Bioinformática y Salud');
   expect(within(section).queryByRole('list', { name: 'Centros de investigación' })).not.toBeInTheDocument();
 });
+
+test('admin fotos: lista a todos los seleccionados, no solo la primera página', async () => {
+  sessionStorage.setItem('cris-admin-token', 't');
+  // 130: más de una página del directorio (12) y más de una del BFF (100).
+  const authors = Array.from({ length: 130 }, (_, i) =>
+    makeAuthor({ id: i + 1, name: `Investigador ${i + 1}` }),
+  );
+  renderApp('/admin/fotos', fakeRepo({}, authors));
+  expect(await screen.findByText('130 investigadores seleccionados en el ranking')).toBeInTheDocument();
+  expect(screen.getByText('Investigador 1')).toBeInTheDocument();
+  expect(screen.getByText('Investigador 130')).toBeInTheDocument();
+});
+
+test('admin fotos: buscador por nombre, sin importar tildes ni mayúsculas', async () => {
+  sessionStorage.setItem('cris-admin-token', 't');
+  const authors = [
+    makeAuthor({ id: 1, name: 'JOSÉ PÉREZ LARA' }),
+    makeAuthor({ id: 2, name: 'Ana María Gómez' }),
+  ];
+  renderApp('/admin/fotos', fakeRepo({}, authors));
+  await userEvent.type(await screen.findByLabelText('Buscar investigador por nombre'), 'jose perez');
+  expect(screen.getByText('José Pérez Lara')).toBeInTheDocument();
+  expect(screen.queryByText('Ana María Gómez')).not.toBeInTheDocument();
+  expect(screen.getByText('1 de 2 investigadores seleccionados en el ranking')).toBeInTheDocument();
+  await userEvent.clear(screen.getByLabelText('Buscar investigador por nombre'));
+  await userEvent.type(screen.getByLabelText('Buscar investigador por nombre'), 'zzz');
+  expect(screen.getByText('Ningún investigador coincide con «zzz».')).toBeInTheDocument();
+});

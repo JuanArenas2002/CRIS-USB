@@ -8,6 +8,8 @@ import {
 import type { AuthorRepository } from '@/domain/authors/author-repository';
 
 export const DIRECTORY_PAGE_SIZE = 12;
+/** Máximo por página del BFF (MAX_PAGE_SIZE en scripts/public-api.ts). */
+const ALL_PAGE_SIZE = 100;
 
 export interface DirectoryFilters {
   search: string;
@@ -45,6 +47,19 @@ export function authorQueries(repo: AuthorRepository) {
             signal,
           ),
         placeholderData: keepPreviousData,
+      }),
+    /** Todos los publicados (los seleccionados en el ranking), página a página. Para el admin. */
+    all: () =>
+      queryOptions({
+        queryKey: ['authors', 'all'],
+        queryFn: async ({ signal }) => {
+          const items: Author[] = [];
+          for (let page = 1; ; page++) {
+            const r = await repo.list({ page, pageSize: ALL_PAGE_SIZE }, signal);
+            items.push(...r.items);
+            if (page >= r.pages) return items;
+          }
+        },
       }),
     profile: (id: number) =>
       queryOptions({

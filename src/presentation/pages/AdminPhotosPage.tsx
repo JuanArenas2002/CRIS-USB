@@ -22,9 +22,15 @@ export function AdminPhotosPage() {
   });
   const queries = useContext(AuthorQueriesContext)!;
   const qc = useQueryClient();
-  const list = useQuery(queries.directory({ search: '', page: 1 }));
+  // Todos los seleccionados en el ranking, no solo la primera página del directorio.
+  const list = useQuery(queries.all());
   const { token, error: tokenError, save: saveToken, clear: clearToken, rejected } = useAdminToken();
   const onChanged = () => qc.invalidateQueries({ queryKey: ['authors'] });
+  const [search, setSearch] = useState('');
+  // Sin tildes ni mayúsculas: "jose" encuentra a "JOSÉ". Filtra en memoria (la lista ya está cargada).
+  const fold = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+  const q = fold(search.trim());
+  const visible = list.data?.filter((a) => !q || fold(displayName(a.name)).includes(q));
 
   return (
     <div className="container-page py-10">
@@ -45,9 +51,31 @@ export function AdminPhotosPage() {
         </div>
       ) : (
         <>
-          <div className="mt-6 flex items-center gap-3">
-            <span className="text-body-sm text-neutral-muted">
-              {list.data ? `${list.data.total} investigadores publicados` : 'Cargando…'}
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <div className="relative w-full sm:w-80">
+              <Icon
+                name="search"
+                className="pointer-events-none absolute top-3 left-3 text-[20px] text-on-surface-variant"
+              />
+              <label htmlFor="photo-search" className="sr-only">
+                Buscar investigador por nombre
+              </label>
+              <input
+                id="photo-search"
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por nombre…"
+                autoComplete="off"
+                className="h-11 w-full rounded-xl bg-surface-container-lowest pr-3 pl-10 text-body-sm shadow-sm ring-1 ring-border-subtle focus:ring-2 focus:ring-secondary focus:outline-none"
+              />
+            </div>
+            <span aria-live="polite" className="text-body-sm text-neutral-muted">
+              {!list.data
+                ? 'Cargando…'
+                : q
+                  ? `${visible!.length} de ${list.data.length} investigadores seleccionados en el ranking`
+                  : `${list.data.length} investigadores seleccionados en el ranking`}
             </span>
             <button
               type="button"
@@ -58,14 +86,13 @@ export function AdminPhotosPage() {
             </button>
           </div>
           <ul className="mt-4 grid gap-gutter sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {list.data?.items.map((a) => (
+            {visible?.map((a) => (
               <PhotoRow key={a.id} author={a} token={token} onChanged={onChanged} onUnauthorized={rejected} />
             ))}
           </ul>
-          {list.data && list.data.total > list.data.items.length ? (
-            <p className="mt-4 text-body-sm text-neutral-muted">
-              Se muestran los primeros {list.data.items.length}; la vista está pensada para los investigadores
-              seleccionados.
+          {visible && !visible.length ? (
+            <p className="mt-6 text-body-md text-neutral-muted">
+              Ningún investigador coincide con «{search.trim()}».
             </p>
           ) : null}
         </>
