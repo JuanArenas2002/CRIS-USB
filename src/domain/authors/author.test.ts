@@ -3,6 +3,7 @@ import {
   authorStats,
   displayName,
   externalProfiles,
+  featuredAuthors,
   initials,
   mergeProducts,
   parseAuthorId,
@@ -214,4 +215,17 @@ test('consulta: con ranking, siempre de mayor a menor índice (puesto 1 primero)
     makeAuthor({ id: 4, category: 'junior', ranking: ranking(2) }),
   ];
   expect(queryAuthors(all, { page: 1, pageSize: 10 }).items.map((a) => a.id)).toEqual([2, 4, 1, 3]);
+});
+
+test('destacados: mismo orden que el directorio (ranking USB); sin ranking, mayor índice H', () => {
+  const metrics = (hIndex: number) => ({ hIndex, scopusPublications: 10, products: 10 });
+  const ranking = (rank: number) => ({ index: 100 - rank, rank, centerRank: null, center: null });
+  const all = [
+    makeAuthor({ id: 1, metrics: metrics(30), ranking: ranking(1) }),
+    makeAuthor({ id: 2, metrics: metrics(24), ranking: ranking(4) }),
+    makeAuthor({ id: 3, metrics: metrics(10), ranking: ranking(2) }),
+    makeAuthor({ id: 4, metrics: metrics(50), ranking: null }),
+    makeAuthor({ id: 5, metrics: null, ranking: ranking(3) }),
+  ];
+  expect(featuredAuthors(all).map((a) => a.id)).toEqual([1, 3, 2, 4]);
 });

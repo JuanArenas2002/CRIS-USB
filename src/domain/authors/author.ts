@@ -247,12 +247,16 @@ export function queryAuthors(all: Author[], q: AuthorListQuery): AuthorListPage 
   return { items: items.slice(start, start + q.pageSize), total: items.length, page: q.page, pages };
 }
 
-/** Destacados: mayor índice H primero, luego más publicaciones. */
+/**
+ * Destacados (con métricas de Metri-K): como el directorio, de mayor a menor índice USB; sin
+ * ranking, mayor índice H y luego más publicaciones.
+ */
 export function featuredAuthors(all: Author[]): Author[] {
   return all
     .filter((a) => a.metrics)
     .sort(
       (a, b) =>
+        (a.ranking?.rank ?? Infinity) - (b.ranking?.rank ?? Infinity) ||
         (b.metrics!.hIndex ?? -1) - (a.metrics!.hIndex ?? -1) ||
         b.metrics!.scopusPublications - a.metrics!.scopusPublications,
     );
