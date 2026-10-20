@@ -1,8 +1,8 @@
-// Vercel Blob: fotos y ODS cuando el portal corre en Vercel (las funciones no tienen disco persistente).
+// Vercel Blob: fotos, logos, páginas oficiales y ranking cuando el portal corre en Vercel (las funciones no tienen disco persistente).
 // - Fotos: `cris/photos/{id}.webp`. El navegador no las pide a Blob: las sirve el BFF, así el store
 //   puede ser privado y la URL del portal no cambia.
 // - Logos de centros: `cris/logos/{id}.webp`, igual que las fotos.
-// - ODS: un solo `cris/ods.json` con { idGrupo: [ods] }; páginas oficiales: `cris/center-sites.json`.
+// - Páginas oficiales de centros: un solo `cris/center-sites.json` con { idCentro: url }.
 // Lecturas con `useCache: false` (sin la caché del CDN de Blob) y una caché corta en memoria por
 // instancia, para no gastar operaciones de Blob en cada visita.
 // Credenciales, según cómo Vercel conectó el store al proyecto:

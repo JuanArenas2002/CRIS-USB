@@ -18,7 +18,6 @@ export function SiteFooter() {
               loading="lazy"
               className="h-7 w-auto self-start brightness-0 invert"
             />
-            <span className="mt-1 text-headline-sm font-semibold tracking-tight">UNISIMÓN RESEARCH</span>
             <p className="text-body-sm text-primary-fixed-dim">{t('footer.tagline')}</p>
           </div>
           <nav aria-label={t('footer.nav')} className="flex flex-col gap-2">

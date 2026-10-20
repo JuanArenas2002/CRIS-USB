@@ -1,1 +1,1 @@
-export const CONTACT_EMAIL = 'investigacion@unisimon.edu.co';
+export const CONTACT_EMAIL = 'viceinvestigacion@unisimon.edu.co';

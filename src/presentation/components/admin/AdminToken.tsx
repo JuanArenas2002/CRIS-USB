@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-// Token compartido por las vistas ocultas de administración (/admin/fotos, /admin/ods).
+// Token compartido por las vistas ocultas de administración (/admin/fotos, /admin/centros, /admin/ranking).
 const TOKEN_KEY = 'cris-admin-token';
 
 /** Tolera pegar la línea completa del .env (`CRIS_ADMIN_TOKEN=…`), comillas o espacios. */

@@ -1,7 +1,7 @@
 // Servidor de producción propio (sin Vercel ni nginx obligatorio): `npm run build && npm start`.
 // Sirve las páginas prerenderizadas de dist/ y el BFF (/api) en un solo proceso Node.
 // Todo se configura con variables de entorno (.env, ver .env.example):
-//   HOST, PORT, CRIS_STATIC_DIR, CRIS_METRIK_URL, CRIS_ADMIN_TOKEN, CRIS_PHOTOS_DIR, CRIS_ODS_FILE,
+//   HOST, PORT, CRIS_STATIC_DIR, CRIS_METRIK_URL, CRIS_ADMIN_TOKEN, CRIS_PHOTOS_DIR,
 //   BLOB_* (opcional, Vercel Blob en vez de disco).
 // Detrás de nginx/IIS/Apache también funciona: basta con hacer proxy de todo al PORT.
 import fs from 'node:fs';
@@ -118,7 +118,7 @@ if (import.meta.main) {
     console.log(`CRIS Unisimón en http://${host === '0.0.0.0' ? 'localhost' : host}:${port}`);
     console.log(`  Datos: ${env.CRIS_METRIK_URL || 'Metri-K (por defecto)'}`);
     console.log(
-      `  Fotos/ODS: ${env.BLOB_READ_WRITE_TOKEN || env.BLOB_STORE_ID ? 'Vercel Blob' : `${env.CRIS_PHOTOS_DIR || 'data/photos'} · ${env.CRIS_ODS_FILE || 'data/ods.json'}`}`,
+      `  Fotos: ${env.BLOB_READ_WRITE_TOKEN || env.BLOB_STORE_ID ? 'Vercel Blob' : env.CRIS_PHOTOS_DIR || 'data/photos'}`,
     );
     if (!env.CRIS_ADMIN_TOKEN) console.log('  Aviso: sin CRIS_ADMIN_TOKEN, /admin no puede guardar.');
   });

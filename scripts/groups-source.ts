@@ -3,6 +3,7 @@
 // de campos públicos; nada más sale de este módulo.
 
 import type { CategoryRecord, GroupDetail, GroupInfo, GroupLine } from '../src/domain/groups/group.ts';
+import { normalizeOds } from '../src/domain/ods/ods.ts';
 
 export type Raw = Record<string, unknown>;
 export const obj = (v: unknown): Raw | null => (v && typeof v === 'object' ? (v as Raw) : null);
@@ -58,7 +59,7 @@ export function toPublicGroup(raw: Raw): GroupInfo | null {
           scopusId: str(leader?.id_scopus)?.match(/^\d{6,15}$/)?.[0] ?? null,
         }
       : null,
-    ods: [], // Metri-K no los tiene: los asigna el portal (ods-store.ts)
+    ods: [], // se completan en fetchPublicGroups (Metri-K `/ods/group/{id}`)
     // De cada centro solo el id (y solo activos): el objeto trae los datos personales del director.
     centerIds: [
       ...new Set(
@@ -154,12 +155,15 @@ export async function fetchPublicGroups(groupsUrl: string): Promise<GroupDetail[
       return p ? [p] : [];
     });
   return mapLimit(groups, 6, async (g) => {
-    const [lines, history] = await Promise.all([
+    const [lines, history, ods] = await Promise.all([
       getData(`${base}/lineGroup/group/${g.id}`),
       getData(`${base}/group/categories/${g.id}`),
+      getData(`${base}/ods/group/${g.id}`),
     ]);
     return {
       ...g,
+      // De cada ODS solo el número (título y descripción ya están en el catálogo del portal).
+      ods: normalizeOds(project(ods, (o) => Number(str(o.number)))),
       lines: project(lines, toPublicLine),
       categoryHistory: project(history, toCategoryRecord)
         .sort((a, b) => a.date.localeCompare(b.date))

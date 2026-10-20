@@ -222,7 +222,6 @@ const en: typeof es = {
       noCategory: 'No category',
       groups: 'Affiliated research groups:',
       centers: 'Research centers they contribute to:',
-      groupCategory: 'Minciencias Cat. {{category}}',
       academicProfiles: 'Academic profiles:',
       odsLinked: 'Linked SDGs:',
       odsVia: 'Via {{groups}}',

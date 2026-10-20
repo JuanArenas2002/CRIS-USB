@@ -1,20 +1,17 @@
-// Elige dónde viven fotos, ODS, logos y páginas oficiales de centros: Vercel Blob si el store está conectado (token o BLOB_STORE_ID, que
+// Elige dónde viven fotos, logos, páginas oficiales de centros y ranking: Vercel Blob si el store está conectado (token o BLOB_STORE_ID, que
 // Vercel inyecta al conectarlo); si no, disco (local o servidor propio). En Vercel no hay disco.
 import { createBlobMapStore, createBlobPhotoStore, type BlobAccess } from './blob-store.ts';
 import {
   createDiskMapStore,
-  normalizeOdsEntry,
   normalizeFlag,
   normalizeRanking,
   normalizeWebsite,
   type MapStore,
-  type OdsStore,
 } from './ods-store.ts';
 import { createDiskPhotoStore, type PhotoStore } from './photo-store.ts';
 import type { AuthorRanking } from '../src/domain/authors/author.ts';
 
 export const DEFAULT_PHOTOS_DIR = 'data/photos';
-export const DEFAULT_ODS_FILE = 'data/ods.json';
 export const DEFAULT_LOGOS_DIR = 'data/logos';
 export const DEFAULT_SITES_FILE = 'data/center-sites.json';
 export const DEFAULT_RANKING_FILE = 'data/ranking.json';
@@ -22,7 +19,6 @@ export const DEFAULT_RANKING_HIDDEN_FILE = 'data/ranking-hidden.json';
 
 export interface StoreOptions {
   photosDir?: string;
-  odsFile?: string;
   logosDir?: string;
   sitesFile?: string;
   rankingFile?: string;
@@ -39,10 +35,9 @@ export interface StoreOptions {
 /** En Vercel sin Blob: se leen vacíos y guardar explica qué falta (no hay disco donde escribir). */
 const NO_BLOB =
   'Falta conectar Vercel Blob al proyecto (Storage → Blob → Connect) y volver a desplegar: ' +
-  'en Vercel no hay disco donde guardar fotos ni ODS.';
+  'en Vercel no hay disco donde guardar fotos, logos ni el ranking.';
 const unconfigured = (): {
   photos: PhotoStore;
-  ods: OdsStore;
   logos: PhotoStore;
   sites: MapStore<string>;
   ranking: MapStore<AuthorRanking>;
@@ -60,7 +55,6 @@ const unconfigured = (): {
   return {
     photos: images,
     logos: images,
-    ods: { all: async () => ({}), set: fail, replace: fail },
     sites: { all: async () => ({}), set: fail, replace: fail },
     ranking: { all: async () => ({}), set: fail, replace: fail },
     rankingHidden: { all: async () => ({}), set: fail, replace: fail },
@@ -69,7 +63,6 @@ const unconfigured = (): {
 
 export function createStores({
   photosDir,
-  odsFile,
   logosDir,
   sitesFile,
   rankingFile,
@@ -88,7 +81,6 @@ export function createStores({
     return {
       kind: 'blob' as const,
       photos: createBlobPhotoStore(cfg),
-      ods: createBlobMapStore(cfg, 'cris/ods.json', normalizeOdsEntry),
       logos: createBlobPhotoStore(cfg, 'cris/logos/'),
       sites: createBlobMapStore(cfg, 'cris/center-sites.json', normalizeWebsite),
       ranking: createBlobMapStore(cfg, 'cris/ranking.json', normalizeRanking),
@@ -99,7 +91,6 @@ export function createStores({
   return {
     kind: 'disk' as const,
     photos: createDiskPhotoStore(photosDir || DEFAULT_PHOTOS_DIR),
-    ods: createDiskMapStore(odsFile || DEFAULT_ODS_FILE, normalizeOdsEntry),
     logos: createDiskPhotoStore(logosDir || DEFAULT_LOGOS_DIR),
     sites: createDiskMapStore(sitesFile || DEFAULT_SITES_FILE, normalizeWebsite),
     ranking: createDiskMapStore(rankingFile || DEFAULT_RANKING_FILE, normalizeRanking),
@@ -117,7 +108,6 @@ const byPrefix = (env: Record<string, string | undefined>, suffix: string, value
 /** Lee la configuración de almacenamiento de un objeto de entorno (process.env o loadEnv). */
 export const storeOptionsFromEnv = (env: Record<string, string | undefined>): StoreOptions => ({
   photosDir: env.CRIS_PHOTOS_DIR,
-  odsFile: env.CRIS_ODS_FILE,
   logosDir: env.CRIS_LOGOS_DIR,
   sitesFile: env.CRIS_CENTER_SITES_FILE,
   rankingFile: env.CRIS_RANKING_FILE,

@@ -44,7 +44,7 @@ test('páginas prerenderizadas con o sin "/" final, /api al BFF', async () => {
 });
 
 test('/admin lo resuelve la app; lo demás es 404 con su página', async () => {
-  expect((await get('/admin/ods')).text).toBe('<h1>inicio</h1>');
+  expect((await get('/admin/ranking')).text).toBe('<h1>inicio</h1>');
   const nf = await get('/no-existe');
   expect(nf.status).toBe(404);
   expect(nf.text).toBe('<h1>no encontrado</h1>');

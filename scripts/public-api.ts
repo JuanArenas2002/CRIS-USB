@@ -2,13 +2,14 @@
 // - Metri-K expone datos personales (cédulas, correos, teléfonos, hashes de contraseña); aquí se
 //   proyectan a campos públicos (groups-source.ts / investigators-source.ts) y nada más sale.
 // - Búsqueda, filtros y paginación se resuelven en memoria: Metri-K no los ofrece.
-// - Solo lectura, salvo las fotos de investigadores y los logos de centros (PUT/DELETE), los ODS de
-//   los grupos, la página oficial de los centros (PUT) y el ranking USB (PUT/DELETE), todo con token
-//   de administración.
+// - Solo lectura, salvo las fotos de investigadores y los logos de centros (PUT/DELETE), la página
+//   oficial de los centros (PUT) y el ranking USB (PUT/DELETE), todo con token de administración.
+//   Los ODS de grupos y centros vienen de Metri-K.
 // Dev/preview: montado como middleware en vite.config.ts.
 // Producción: `node scripts/public-api.ts` detrás de nginx (ver README).
 import { createHash, timingSafeEqual } from 'node:crypto';
 import http, { type IncomingMessage, type ServerResponse } from 'node:http';
+import { gzipSync } from 'node:zlib';
 import { pathToFileURL } from 'node:url';
 import { fetchInvestigatorCenters, fetchPublicCenters, fetchResolutionPdf } from './centers-source.ts';
 import { fetchPublicGroups, mapLimit } from './groups-source.ts';
@@ -24,7 +25,6 @@ import { normalizeRanking, normalizeWebsite } from './ods-store.ts';
 import { createStores, storeOptionsFromEnv, type StoreOptions } from './stores.ts';
 import { summarizeCenter, type CenterDetail, type CenterRef } from '../src/domain/centers/center.ts';
 import { hasPublicDetail, summarizeGroup, type GroupDetail } from '../src/domain/groups/group.ts';
-import { isOdsId } from '../src/domain/ods/ods.ts';
 import {
   AUTHOR_CATEGORIES,
   authorStats,
@@ -37,9 +37,9 @@ import {
 } from '../src/domain/authors/author.ts';
 
 export const DEFAULT_METRIK_URL = 'https://metrik.unisimon.edu.co/back/api';
-export { DEFAULT_ODS_FILE, DEFAULT_PHOTOS_DIR } from './stores.ts';
+export { DEFAULT_PHOTOS_DIR } from './stores.ts';
 const TTL_MS = 10 * 60 * 1000;
-const MAX_ODS_BYTES = 1024;
+const MAX_JSON_BYTES = 1024;
 // ~300 filas × ~100 bytes; holgura para miles.
 const MAX_RANKING_BYTES = 1024 * 1024;
 const MAX_PAGE_SIZE = 100;
@@ -82,7 +82,7 @@ export function createPublicApi({
   ...storage
 }: { metrikUrl?: string; adminToken?: string; onVercel?: boolean } & StoreOptions = {}) {
   const base = metrikUrl.replace(/\/+$/, '');
-  const { photos, ods: odsStore, logos, sites, ranking: rankingStore, rankingHidden } = createStores(storage);
+  const { photos, logos, sites, ranking: rankingStore, rankingHidden } = createStores(storage);
   const metrikGroups = cached<GroupDetail[]>(() => fetchPublicGroups(`${base}/group`));
   const metrikCenters = cached<CenterDetail[]>(() => fetchPublicCenters(base));
   const centers = async () => {
@@ -96,11 +96,9 @@ export function createPublicApi({
       };
     });
   };
-  // Fotos, logos y ODS no pasan por la caché de Metri-K: un cambio del admin se ve al instante.
-  const groups = async () => {
-    const ods = await odsStore.all();
-    return (await metrikGroups()).map((g) => ({ ...g, ods: ods[g.id] ?? [] }));
-  };
+  // Grupos con sus ODS, ambos de Metri-K (caché). Fotos y logos no pasan por la caché: un cambio del
+  // admin se ve al instante.
+  const groups = metrikGroups;
   const directory = cached(() => fetchInvestigators(base));
   const photoUrls = async () => {
     const v = await photos.versions();
@@ -188,7 +186,14 @@ export function createPublicApi({
           ? 'public, max-age=0, s-maxage=30, stale-while-revalidate=60'
           : 'no-store',
       );
-      res.end(JSON.stringify(body));
+      const json = JSON.stringify(body);
+      // JSON comprimido (los listados pesan decenas de KB); los pequeños no compensan.
+      if (json.length > 1024 && /\bgzip\b/.test(String(req.headers['accept-encoding'] ?? ''))) {
+        res.setHeader('Content-Encoding', 'gzip');
+        res.setHeader('Vary', 'Accept-Encoding');
+        return void res.end(gzipSync(json));
+      }
+      res.end(json);
     }
 
     try {
@@ -196,7 +201,6 @@ export function createPublicApi({
       const sp = url.searchParams;
       const photo = /^\/api\/investigators\/(\d{1,12})\/photo$/.exec(p);
       const logo = /^\/api\/centers\/(\d{1,12})\/logo$/.exec(p);
-      const groupOds = /^\/api\/groups\/(\d{1,12})\/ods$/.exec(p);
       const site = /^\/api\/centers\/(\d{1,12})\/website$/.exec(p);
       // Fotos y logos: misma validación (WebP ≤ 1 MB) y mismo tipo de almacenamiento.
       const image = photo
@@ -230,7 +234,7 @@ export function createPublicApi({
           !adminRead &&
           !image &&
           !rankingUpload &&
-          !((groupOds || site || rankingEntry || rankingBulk) && req.method === 'PUT')
+          !((site || rankingEntry || rankingBulk) && req.method === 'PUT')
         )
           return send(405, { detail: 'Método no permitido' });
         if (!adminToken)
@@ -238,26 +242,6 @@ export function createPublicApi({
         const token = req.headers['x-admin-token'];
         if (typeof token !== 'string' || !sameSecret(token, adminToken))
           return send(401, { detail: 'Token de administración inválido' });
-        if (groupOds) {
-          const id = Number(groupOds[1]);
-          if (!(await metrikGroups()).some((g) => g.id === id && g.active))
-            return send(404, { detail: 'No encontrado' });
-          const body = await readBody(req, MAX_ODS_BYTES);
-          let parsed: unknown;
-          try {
-            parsed = body && JSON.parse(body.toString('utf8'));
-          } catch {
-            parsed = null;
-          }
-          const list = (parsed as { ods?: unknown } | null)?.ods;
-          if (!Array.isArray(list) || list.length > 17 || !list.every(isOdsId))
-            return send(400, { detail: 'Se espera { "ods": [números del 1 al 17] }' });
-          try {
-            return send(200, { ods: (await odsStore.set(id, list)) ?? [] });
-          } catch (err) {
-            return send(500, { detail: `No se pudieron guardar los ODS: ${(err as Error).message}` });
-          }
-        }
         if (adminRead) {
           const [ranking, hidden, dir] = await Promise.all([
             rankingStore.all(),
@@ -311,7 +295,7 @@ export function createPublicApi({
         if (rankingEntry) {
           const id = Number(rankingEntry[1]);
           if (!(id in (await rankingStore.all()))) return send(404, { detail: 'No está en el ranking' });
-          const body = await readBody(req, MAX_ODS_BYTES);
+          const body = await readBody(req, MAX_JSON_BYTES);
           let visible: unknown;
           try {
             visible = body && (JSON.parse(body.toString('utf8')) as { visible?: unknown }).visible;
@@ -374,7 +358,7 @@ export function createPublicApi({
           const id = Number(site[1]);
           if (!(await metrikCenters()).some((c) => c.id === id && c.active))
             return send(404, { detail: 'No encontrado' });
-          const body = await readBody(req, MAX_ODS_BYTES);
+          const body = await readBody(req, MAX_JSON_BYTES);
           let website: unknown;
           try {
             website = body && (JSON.parse(body.toString('utf8')) as { website?: unknown }).website;
@@ -447,14 +431,13 @@ export function createPublicApi({
         return a
           ? send(200, {
               ...a,
-              // Cada grupo lleva sus ODS: el perfil muestra los que el investigador hereda de sus grupos.
+              // Cada grupo lleva sus ODS (Metri-K): el perfil muestra los que el investigador hereda.
               groups: await (async () => {
-                const ods = await odsStore.all();
-                const type = new Map((await metrikGroups()).map((x) => [x.id, x.type]));
+                const byId = new Map((await metrikGroups()).map((x) => [x.id, x]));
                 return (await groupsOf(a.id)).map((g) => ({
                   ...g,
-                  ods: ods[g.id] ?? [],
-                  type: type.get(g.id) ?? null,
+                  ods: byId.get(g.id)?.ods ?? [],
+                  type: byId.get(g.id)?.type ?? null,
                 }));
               })(),
               production: production.get(a.id) ?? null,

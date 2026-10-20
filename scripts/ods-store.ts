@@ -1,5 +1,4 @@
 // Datos que el portal guarda por id en un solo JSON (Metri-K aún no los tiene):
-// - ODS de cada grupo (vista oculta /admin/ods).
 // - Página oficial de cada centro (vista oculta /admin/centros).
 // - Ranking de productividad USB de cada investigador y quiénes se ocultan (vista oculta /admin/ranking).
 // Dos almacenamientos con la misma interfaz (ver stores.ts): un JSON en disco en local / servidor
@@ -7,7 +6,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import type { AuthorRanking } from '../src/domain/authors/author.ts';
-import { normalizeOds, type OdsId } from '../src/domain/ods/ods.ts';
 
 /** Limpia un valor; null = sin valor (se quita la entrada). */
 export type Normalize<T> = (v: unknown) => T | null;
@@ -19,15 +17,6 @@ export interface MapStore<T> {
   /** Reemplaza el mapa completo (lo inválido se descarta); devuelve lo guardado. */
   replace(all: Record<string, unknown>): Promise<Record<string, T>>;
 }
-
-export type OdsMap = Record<string, OdsId[]>;
-export type OdsStore = MapStore<OdsId[]>;
-
-/** ODS válidos; lista vacía = el grupo queda sin ODS. */
-export const normalizeOdsEntry: Normalize<OdsId[]> = (v) => {
-  const ods = normalizeOds(v);
-  return ods.length ? ods : null;
-};
 
 /** URL http(s) absoluta; acepta "www.ejemplo.co" (se asume https). */
 export const normalizeWebsite: Normalize<string> = (v) => {

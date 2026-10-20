@@ -25,18 +25,15 @@ const ssr = await import(pathToFileURL(path.resolve('dist-ssr/entry-server.js'))
 const template = await fs.readFile(path.join(dist, 'index.html'), 'utf8');
 
 // 1. Datos (si Metri-K falla, el build falla: no se publica un sitio vacío).
-// Fotos y ODS del mismo almacenamiento que el BFF (disco en local, Vercel Blob en Vercel).
+// Fotos, logos y ranking del mismo almacenamiento que el BFF (disco en local, Vercel Blob en Vercel).
 const stores = createStores({
   ...storeOptionsFromEnv({ ...env, ...process.env }),
   onVercel: !!process.env.VERCEL,
 });
-const odsByGroup = await stores.ods.all();
 const photoVersions = await stores.photos.versions();
 const photoOf = (id) => (photoVersions.has(id) ? photoUrl(id, photoVersions.get(id)) : null);
-const groups = (await fetchPublicGroups(`${metrik}/group`)).map((g) => ({
-  ...g,
-  ods: odsByGroup[g.id] ?? [],
-}));
+// Grupos con sus ODS (Metri-K `/ods/group/{id}`).
+const groups = await fetchPublicGroups(`${metrik}/group`);
 const logoVersions = await stores.logos.versions();
 const logoOf = (id) => (logoVersions.has(id) ? logoUrl(id, logoVersions.get(id)) : null);
 const metrikCenters = await fetchPublicCenters(metrik);
@@ -53,7 +50,7 @@ const authors = (await withProfiles(metrik, { authors: ranked, production: direc
       ...a,
       groups: a.groups.map((g) => ({
         ...g,
-        ods: odsByGroup[g.id] ?? [],
+        ods: groups.find((x) => x.id === g.id)?.ods ?? [],
         type: groups.find((x) => x.id === g.id)?.type ?? null,
       })),
       centers: a.centers.map((c) => ({ ...c, logoUrl: logoOf(c.id) })),

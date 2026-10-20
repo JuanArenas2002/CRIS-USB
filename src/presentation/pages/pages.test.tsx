@@ -241,21 +241,6 @@ test('admin fotos: el token pegado se limpia (línea del .env, comillas, espacio
   expect(cleanToken("'abc123'")).toBe('abc123');
 });
 
-test('admin ODS: con token lista los grupos activos con sus ODS marcados', async () => {
-  sessionStorage.setItem('cris-admin-token', 't');
-  renderApp('/admin/ods');
-  expect(
-    await screen.findByRole('heading', { level: 2, name: 'Bioinformática y Salud' }),
-  ).toBeInTheDocument();
-  expect(screen.getByRole('checkbox', { name: 'ODS 3: Salud y bienestar' })).toBeChecked();
-  expect(screen.getByRole('checkbox', { name: 'ODS 13: Acción por el clima' })).not.toBeChecked();
-  expect(screen.getByRole('button', { name: 'Guardar' })).toBeDisabled();
-  await userEvent.click(screen.getByRole('checkbox', { name: 'ODS 13: Acción por el clima' }));
-  expect(screen.getByRole('button', { name: 'Guardar' })).toBeEnabled();
-  expect(screen.getByText('Cambios sin guardar')).toBeInTheDocument();
-  sessionStorage.clear();
-});
-
 test('centros: solo activos, lista por defecto (estándar de grupos), estado como icono y cambio a tarjetas', async () => {
   renderApp(
     '/centros',

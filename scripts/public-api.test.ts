@@ -114,7 +114,17 @@ const metrik = vi.fn(async (url: string) => {
             ? [groupRaw, interRaw]
             : p.startsWith('/api/lineGroup/') || p.startsWith('/api/group/categories/')
               ? []
-              : (centersMock[p] ?? null);
+              : p.startsWith('/api/ods/group/')
+                ? // Forma real: { id, number (texto), title, description }; repetidos y desordenados.
+                  p.endsWith('/14')
+                  ? [
+                      { id: 17, number: '17', title: 'Alianzas', description: 'x' },
+                      { id: 3, number: '3', title: 'Salud', description: 'x' },
+                      { id: 3, number: '3', title: 'Salud', description: 'x' },
+                      { id: 5, number: '5', title: 'Género', description: 'x' },
+                    ]
+                  : []
+                : (centersMock[p] ?? null);
   return data ? Response.json({ data, message: 'ok' }) : Response.json({ message: 'x' }, { status: 404 });
 });
 
@@ -130,7 +140,6 @@ beforeAll(async () => {
   const handler = createPublicApi({
     metrikUrl: 'http://metrik/api',
     photosDir,
-    odsFile: path.join(odsDir, 'ods.json'),
     logosDir: path.join(odsDir, 'logos'),
     sitesFile: path.join(odsDir, 'center-sites.json'),
     rankingFile: path.join(odsDir, 'ranking.json'),
@@ -173,7 +182,7 @@ test('investigadores: solo los seleccionados y activos en GrupLAC, sin datos per
 test('detalle con grupos proyectados; inexistente o retirado → 404', async () => {
   const { body, text } = await get('/api/investigators/1');
   expect(body.groups).toEqual([
-    { id: 14, code: 'COL1', name: 'Grupo Uno', category: 'A1', ods: [], type: null },
+    { id: 14, code: 'COL1', name: 'Grupo Uno', category: 'A1', ods: [3, 5, 17], type: null },
   ]);
   for (const s of SECRETS) expect(text).not.toContain(s);
   expect(body.centers).toEqual([{ id: 1, code: 'CI-1', acronym: 'CU', name: 'Centro Uno', logoUrl: null }]);
@@ -261,37 +270,19 @@ test('fotos: otra instancia del BFF (otro proceso o reinicio) ve la foto guardad
   expect(body.photoUrl).toBe(photoUrl);
 });
 
-const putOds = (id: number, body: unknown, token?: string) =>
-  fetch(`${base}/api/groups/${id}/ods`, {
-    method: 'PUT',
-    body: typeof body === 'string' ? body : JSON.stringify(body),
-    headers: { 'Content-Type': 'application/json', ...(token ? { 'X-Admin-Token': token } : {}) },
-  });
-
-test('ODS: escritura solo con token, solo grupos activos y solo números del 1 al 17', async () => {
-  expect((await putOds(14, { ods: [3] })).status).toBe(401);
-  expect((await putOds(14, { ods: [3] }, 'otro')).status).toBe(401);
-  expect((await putOds(99, { ods: [3] }, TOKEN)).status).toBe(404);
-  expect((await putOds(14, { ods: [0, 18] }, TOKEN)).status).toBe(400);
-  expect((await putOds(14, { ods: ['3'] }, TOKEN)).status).toBe(400);
-  expect((await putOds(14, 'no es json', TOKEN)).status).toBe(400);
-  const del = await fetch(`${base}/api/groups/14/ods`, {
-    method: 'DELETE',
-    headers: { 'X-Admin-Token': TOKEN },
-  });
-  expect(del.status).toBe(405);
-  expect((await get('/api/groups/14')).body.ods).toEqual([]);
-});
-
-test('ODS: se guardan normalizados y salen en el detalle y en el listado', async () => {
-  const res = await putOds(14, { ods: [17, 3, 3, 5] }, TOKEN);
-  expect(await res.json()).toEqual({ ods: [3, 5, 17] });
+test('ODS de los grupos: de Metri-K (solo el número), normalizados, en listado, detalle y perfil', async () => {
   expect((await get('/api/groups/14')).body.ods).toEqual([3, 5, 17]);
   expect((await get('/api/groups')).body[0].ods).toEqual([3, 5, 17]);
   // El investigador hereda los ODS de sus grupos (el 1 pertenece al grupo 14).
   expect((await get('/api/investigators/1')).body.groups[0].ods).toEqual([3, 5, 17]);
-  expect(await (await putOds(14, { ods: [] }, TOKEN)).json()).toEqual({ ods: [] });
-  expect((await get('/api/groups/14')).body.ods).toEqual([]);
+  expect((await get('/api/groups/14')).text).not.toContain('Alianzas'); // ni título ni descripción
+  // Ya no se asignan en el portal: el endpoint de escritura no existe.
+  const put = await fetch(`${base}/api/groups/14/ods`, {
+    method: 'PUT',
+    body: JSON.stringify({ ods: [1] }),
+    headers: { 'Content-Type': 'application/json', 'X-Admin-Token': TOKEN },
+  });
+  expect(put.ok).toBe(false);
 });
 
 test('centros: listado y detalle sin datos personales ni PDF; el registro "N/A" no sale', async () => {
@@ -443,4 +434,11 @@ test('ranking USB: decide quién se publica, por cédula; la cédula no sale ni 
   // Sin ranking, vuelven los seleccionados de Metri-K.
   expect((await send('DELETE')).status).toBe(200);
   expect((await get('/api/investigators?size=50')).body.items.map((a: { id: number }) => a.id)).toEqual([1]);
+});
+
+test('JSON pequeño sin comprimir aunque se acepte gzip (no compensa)', async () => {
+  // Los grandes (>1 KB) salen con gzip: se verifica contra el servidor real con datos de Metri-K.
+  const res = await fetch(`${base}/api/groups/14`, { headers: { 'Accept-Encoding': 'gzip' } });
+  expect(res.headers.get('content-encoding')).toBeNull();
+  expect((await res.json()).id).toBe(14);
 });

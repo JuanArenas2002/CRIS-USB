@@ -15,7 +15,6 @@ import { CentersPage } from '@/presentation/pages/CentersPage';
 import { GroupsPage } from '@/presentation/pages/GroupsPage';
 import { GroupPage } from '@/presentation/pages/GroupPage';
 import { AdminCentersPage } from '@/presentation/pages/AdminCentersPage';
-import { AdminOdsPage } from '@/presentation/pages/AdminOdsPage';
 import { AdminPhotosPage } from '@/presentation/pages/AdminPhotosPage';
 import { AdminRankingPage } from '@/presentation/pages/AdminRankingPage';
 import { HeadCollectorContext } from '@/presentation/hooks/use-document-metadata';
@@ -88,7 +87,6 @@ export function AppRoutes() {
           <Route path="centros/:slug" element={<CenterPage />} />
           {/* Vista oculta: fuera del menú, noindex y bloqueada en robots.txt. */}
           <Route path="admin/fotos" element={<AdminPhotosPage />} />
-          <Route path="admin/ods" element={<AdminOdsPage />} />
           <Route path="admin/centros" element={<AdminCentersPage />} />
           <Route path="admin/ranking" element={<AdminRankingPage />} />
           {NAV_ITEMS.filter((i) => !i.ready).map((i) => (

@@ -56,7 +56,7 @@ const es = {
       tagline:
         'Portal institucional de divulgación científica y producción académica de la Universidad Simón Bolívar.',
       contactTitle: 'Contacto institucional',
-      location: 'Barranquilla & Cúcuta, Colombia',
+      location: 'Barranquilla y Cúcuta, Colombia',
       office: 'Vicerrectoría de Investigación, Extensión e Innovación',
       rights: '© Universidad Simón Bolívar. Todos los derechos reservados.',
     },
@@ -227,7 +227,6 @@ const es = {
       noCategory: 'Sin categoría',
       groups: 'Grupos de investigación adscritos:',
       centers: 'Centros de investigación a los que aporta:',
-      groupCategory: 'Cat. {{category}} Minciencias',
       academicProfiles: 'Perfiles académicos:',
       odsLinked: 'ODS vinculados:',
       odsVia: 'Vía {{groups}}',

@@ -31,10 +31,10 @@ beforeEach(() => blobs.clear());
 test('Blob con token o con store por OIDC; sin Blob: disco en local, error claro en Vercel', async () => {
   expect(createStores({ blobToken: 't' }).kind).toBe('blob');
   expect(createStores({ blobStoreId: 'store_abc' }).kind).toBe('blob');
-  expect(createStores({ photosDir: 'data/photos', odsFile: 'data/ods.json' }).kind).toBe('disk');
+  expect(createStores({ photosDir: 'data/photos' }).kind).toBe('disk');
   const none = createStores({ onVercel: true });
   expect(none.kind).toBe('none');
-  expect(await none.ods.all()).toEqual({});
+  expect(await none.sites.all()).toEqual({});
   await expect(none.photos.save(1, WEBP)).rejects.toThrow('Falta conectar Vercel Blob');
 });
 
@@ -42,7 +42,7 @@ test('Blob por OIDC: cada llamada lleva el store y el token que Vercel manda en 
   const { put } = await import('@vercel/blob');
   const { setOidcToken } = await import('./blob-store');
   setOidcToken('oidc-123');
-  await createStores({ blobStoreId: 'store_abc' }).ods.set(3, [1]);
+  await createStores({ blobStoreId: 'store_abc' }).sites.set(3, 'https://ejemplo.co');
   expect(vi.mocked(put).mock.lastCall?.[2]).toMatchObject({ storeId: 'store_abc', oidcToken: 'oidc-123' });
   expect(vi.mocked(put).mock.lastCall?.[2]).not.toHaveProperty('token');
 });
@@ -59,15 +59,15 @@ test('Blob: fotos se guardan, se versionan, se leen y se quitan', async () => {
   expect(await photos.read(1)).toBeNull();
 });
 
-test('Blob: ODS en un solo JSON, normalizados; lista vacía quita el grupo', async () => {
-  const { ods } = createStores({ blobToken: 't', blobAccess: 'public' });
-  expect(await ods.all()).toEqual({});
-  expect(await ods.set(14, [17, 3, 3])).toEqual([3, 17]);
-  expect(await ods.set(2, [5])).toEqual([5]);
-  expect(await ods.all()).toEqual({ 14: [3, 17], 2: [5] });
-  expect(blobs.get('cris/ods.json')?.access).toBe('public');
-  await ods.set(14, []);
-  expect(await ods.all()).toEqual({ 2: [5] });
+test('Blob: mapa en un solo JSON, normalizado; valor vacío quita la entrada', async () => {
+  const { sites } = createStores({ blobToken: 't', blobAccess: 'public' });
+  expect(await sites.all()).toEqual({});
+  expect(await sites.set(14, 'www.ejemplo.co')).toBe('https://www.ejemplo.co/');
+  expect(await sites.set(2, 'https://otro.co')).toBe('https://otro.co/');
+  expect(await sites.all()).toEqual({ 14: 'https://www.ejemplo.co/', 2: 'https://otro.co/' });
+  expect(blobs.get('cris/center-sites.json')?.access).toBe('public');
+  await sites.set(14, '');
+  expect(await sites.all()).toEqual({ 2: 'https://otro.co/' });
 });
 
 test('variables del store con prefijo propio (Vercel deja elegirlo al conectar)', () => {

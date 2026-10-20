@@ -14,6 +14,7 @@ import {
   featuredAuthors,
   withRankingCenter,
   queryAuthors,
+  type Author,
   type AuthorProfile,
 } from '@/domain/authors/author';
 import { centerQueries, type CenterQueries } from '@/application/centers/center-queries';
@@ -25,11 +26,14 @@ import { headTags, titleTag, safeJson, type PageMeta } from '@/shared/seo';
 
 /** Investigadores ya proyectados por scripts/investigators-source.ts (sin datos personales). */
 export function createServerAuthorQueries(authors: AuthorProfile[]): AuthorQueries {
+  // Listado y destacados: solo lo de la tarjeta, como la API. Con la producción completa, la
+  // portada embebía ~900 KB de datos que la tarjeta no usa (solo el perfil los necesita).
+  const cards: Author[] = authors.map(({ production: _p, groups: _g, ...card }) => card);
   return authorQueries({
-    list: async (q) => queryAuthors(authors, q),
+    list: async (q) => queryAuthors(cards, q),
     getById: async (id) => authors.find((a) => a.id === id) ?? null,
-    stats: async () => authorStats(authors),
-    featured: async () => featuredAuthors(authors),
+    stats: async () => authorStats(cards),
+    featured: async () => featuredAuthors(cards),
   });
 }
 

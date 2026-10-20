@@ -4,7 +4,7 @@ import { createQueryClient } from '@/app/App';
 import { fakeCenterRepo, fakeGroupRepo, fakeRepo, makeAuthor } from '@/test-utils';
 import { centerQueries } from '@/application/centers/center-queries';
 import { groupQueries } from '@/application/groups/group-queries';
-import { render } from './entry-server';
+import { createServerAuthorQueries, render } from './entry-server';
 
 test('prerender de perfil: HTML con contenido, metadatos únicos y JSON-LD verificable', () => {
   const queries = authorQueries(fakeRepo());
@@ -37,4 +37,39 @@ test('prerender de perfil: HTML con contenido, metadatos únicos y JSON-LD verif
     sameAs: ['https://orcid.org/0000-0002-1825-0097', expect.stringContaining('scopus.com')],
   });
   expect(jsonLd[0].mainEntity).not.toHaveProperty('email');
+});
+
+test('prerender: listado y destacados llevan solo la tarjeta, sin la producción del perfil', async () => {
+  const author = makeAuthor({
+    metrics: { hIndex: 5, scopusPublications: 1, products: 1 },
+    production: {
+      publications: [
+        {
+          id: 1,
+          title: 'TITULO-DE-PRODUCCION',
+          year: 2020,
+          journal: null,
+          type: 'Article',
+          citedBy: 0,
+          doi: null,
+          url: null,
+          authors: null,
+        },
+      ],
+      theses: [],
+      developments: [],
+    },
+  });
+  const q = createServerAuthorQueries([author]);
+  const qc = createQueryClient();
+  const [page, featured, profile] = await Promise.all([
+    qc.fetchQuery(q.directory({ search: '', page: 1 })),
+    qc.fetchQuery(q.featured()),
+    qc.fetchQuery(q.profile(author.id)),
+  ]);
+  expect(page.items[0]).not.toHaveProperty('production');
+  expect(featured[0]).not.toHaveProperty('production');
+  expect(JSON.stringify([page, featured])).not.toContain('TITULO-DE-PRODUCCION');
+  // El perfil sí la conserva.
+  expect(profile.kind === 'found' && profile.author.production?.publications).toHaveLength(1);
 });
