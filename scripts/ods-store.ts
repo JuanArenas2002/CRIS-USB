@@ -1,10 +1,12 @@
 // Datos que el portal guarda por id en un solo JSON (Metri-K aún no los tiene):
 // - ODS de cada grupo (vista oculta /admin/ods).
 // - Página oficial de cada centro (vista oculta /admin/centros).
+// - Ranking de productividad USB de cada investigador (vista oculta /admin/ranking).
 // Dos almacenamientos con la misma interfaz (ver stores.ts): un JSON en disco en local / servidor
 // propio y Vercel Blob en Vercel. Migrar a Metri-K cuando el backend los soporte.
 import fs from 'node:fs';
 import path from 'node:path';
+import type { AuthorRanking } from '../src/domain/authors/author.ts';
 import { normalizeOds, type OdsId } from '../src/domain/ods/ods.ts';
 
 /** Limpia un valor; null = sin valor (se quita la entrada). */
@@ -14,6 +16,8 @@ export interface MapStore<T> {
   all(): Promise<Record<string, T>>;
   /** Devuelve lo guardado (normalizado); null = la entrada quedó vacía. */
   set(id: number, value: unknown): Promise<T | null>;
+  /** Reemplaza el mapa completo (lo inválido se descarta); devuelve lo guardado. */
+  replace(all: Record<string, unknown>): Promise<Record<string, T>>;
 }
 
 export type OdsMap = Record<string, OdsId[]>;
@@ -35,6 +39,20 @@ export const normalizeWebsite: Normalize<string> = (v) => {
   } catch {
     return null;
   }
+};
+
+const rank = (v: unknown) => (Number.isInteger(v) && (v as number) > 0 ? (v as number) : null);
+
+/** Ranking USB: índice 0–100 (un decimal) y puestos enteros positivos. */
+export const normalizeRanking: Normalize<AuthorRanking> = (v) => {
+  const r = v as Partial<Record<keyof AuthorRanking, unknown>> | null;
+  if (!r || typeof r !== 'object') return null;
+  const index =
+    typeof r.index === 'number' && r.index >= 0 && r.index <= 100 ? Math.round(r.index * 10) / 10 : null;
+  const position = rank(r.rank);
+  if (index === null || position === null) return null;
+  const center = typeof r.center === 'string' && r.center.trim() ? r.center.trim().slice(0, 40) : null;
+  return { index, rank: position, centerRank: center ? rank(r.centerRank) : null, center };
 };
 
 /** Limpia lo leído (archivo editado a mano, versión vieja…): solo entradas válidas. */
@@ -71,15 +89,23 @@ export function createDiskMapStore<T>(file: string, normalize: Normalize<T>): Ma
       return {};
     }
   };
+  const write = (next: Record<string, T>) => {
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    const tmp = `${file}.${process.pid}.tmp`;
+    fs.writeFileSync(tmp, JSON.stringify(next, null, 2));
+    fs.renameSync(tmp, file); // reemplazo atómico
+  };
   return {
     all: async () => readAll(),
     async set(id, value) {
       const [next, clean] = withEntry(readAll(), id, value, normalize);
-      fs.mkdirSync(path.dirname(file), { recursive: true });
-      const tmp = `${file}.${process.pid}.tmp`;
-      fs.writeFileSync(tmp, JSON.stringify(next, null, 2));
-      fs.renameSync(tmp, file); // reemplazo atómico
+      write(next);
       return clean;
+    },
+    async replace(all) {
+      const next = parseMap(all, normalize);
+      write(next);
+      return next;
     },
   };
 }

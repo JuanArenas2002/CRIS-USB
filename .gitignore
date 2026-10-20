@@ -6,3 +6,6 @@ dist-ssr
 data/
 tsconfig.tsbuildinfo
 .vercel
+
+# Excels de trabajo (el ranking trae cédulas): no van a git.
+*.xlsx

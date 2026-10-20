@@ -91,7 +91,7 @@ server {
 
 ## Fotos y ODS (temporal, hasta que Metri-K los tenga)
 
-Se asignan en las vistas ocultas **`/admin/fotos`**, **`/admin/ods`** y **`/admin/centros`** (logo y página oficial de cada centro: `CRIS_LOGOS_DIR`, `CRIS_CENTER_SITES_FILE`; por defecto `data/logos` y `data/center-sites.json`) con `CRIS_ADMIN_TOKEN`. Se guardan en disco (`CRIS_PHOTOS_DIR`, `CRIS_ODS_FILE`) o, en Vercel, en Vercel Blob. Las sirve la API (`/api/investigators/{id}/photo`, `ods` en cada grupo) y aparecen al instante.
+Se asignan en las vistas ocultas **`/admin/fotos`**, **`/admin/ods`** y **`/admin/centros`** (logo y página oficial de cada centro: `CRIS_LOGOS_DIR`, `CRIS_CENTER_SITES_FILE`; por defecto `data/logos` y `data/center-sites.json`), **`/admin/ranking`** (Excel del ranking de productividad USB, hoja `Ranking_Completo`: decide quién sale en el directorio y muestra su índice y puesto por centro; `CRIS_RANKING_FILE`, por defecto `data/ranking.json`. Las cédulas solo se usan para cruzar con Metri-K y no se guardan) con `CRIS_ADMIN_TOKEN`. Se guardan en disco (`CRIS_PHOTOS_DIR`, `CRIS_ODS_FILE`) o, en Vercel, en Vercel Blob. Las sirve la API (`/api/investigators/{id}/photo`, `ods` en cada grupo) y aparecen al instante.
 
 ## SEO
 

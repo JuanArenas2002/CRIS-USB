@@ -100,8 +100,11 @@ const metrik = vi.fn(async (url: string) => {
       : p === '/api/investigator'
         ? [
             inv(1, 'PEREZ, ANA', { lastCategory: 'Sénior (IS)' }),
-            inv(2, 'GOMEZ, LUIS'),
-            inv(3, 'RETIRADO, JUAN', { state_gruplac: false }),
+            inv(2, 'GOMEZ, LUIS', { person: { ...person, documentNumber: '22.222.222' } }),
+            inv(3, 'RETIRADO, JUAN', {
+              state_gruplac: false,
+              person: { ...person, documentNumber: '33333333' },
+            }),
           ]
         : p.startsWith('/api/group/investigator/')
           ? p.endsWith('/1')
@@ -130,6 +133,7 @@ beforeAll(async () => {
     odsFile: path.join(odsDir, 'ods.json'),
     logosDir: path.join(odsDir, 'logos'),
     sitesFile: path.join(odsDir, 'center-sites.json'),
+    rankingFile: path.join(odsDir, 'ranking.json'),
     adminToken: TOKEN,
   });
   vi.stubGlobal('fetch', (input: string, init?: RequestInit) =>
@@ -340,4 +344,54 @@ test('grupos interinstitucionales: en el listado, pero sin detalle ni integrante
   expect((await get('/api/groups/15')).status).toBe(404);
   expect((await get('/api/groups/15/members')).status).toBe(404);
   expect((await get('/api/groups/14')).status).toBe(200);
+});
+
+test('ranking USB: decide quién se publica, por cédula; la cédula no sale ni se guarda', async () => {
+  const send = (method: string, body?: unknown, token = TOKEN) =>
+    fetch(`${base}/api/ranking`, {
+      method,
+      body: body === undefined ? undefined : JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Token': token },
+    });
+  const row = (cc: string, name: string, rank: number, index: number, center: string | null = null) => ({
+    cc,
+    name,
+    rank,
+    index,
+    center,
+    centerRank: center ? 1 : null,
+  });
+  expect((await send('PUT', { rows: [row('11111111', 'Ana', 1, 90)] }, 'otro')).status).toBe(401);
+  expect((await send('PUT', { rows: [] })).status).toBe(400);
+
+  const res = await send('PUT', {
+    rows: [
+      row('11111111', 'Ana', 3, 88.25, 'CU'),
+      row('22222222', 'Luis', 1, 90), // en Metri-K con puntos: se compara solo por dígitos
+      row('33333333', 'Juan', 2, 80), // inactivo en GrupLAC
+      row('999', 'Nadie', 4, 70),
+      row('22222222', 'Mal', 0, 50), // sin puesto
+    ],
+  });
+  expect(await res.json()).toEqual({
+    published: 2,
+    notFound: ['Nadie'],
+    inactive: ['Juan'],
+    invalid: ['Mal'],
+  });
+
+  const list = await get('/api/investigators?size=50');
+  expect(list.body.items.map((a: { id: number }) => a.id).sort()).toEqual([1, 2]); // 2 no era seleccionado
+  expect(list.body.items.find((a: { id: number }) => a.id === 1).ranking).toEqual({
+    index: 88.3,
+    rank: 3,
+    centerRank: 1,
+    center: 'CU',
+  });
+  expect(list.text).not.toContain('22222222');
+  expect(fs.readFileSync(path.join(odsDir, 'ranking.json'), 'utf8')).not.toContain('22222222');
+
+  // Sin ranking, vuelven los seleccionados de Metri-K.
+  expect((await send('DELETE')).status).toBe(200);
+  expect((await get('/api/investigators?size=50')).body.items.map((a: { id: number }) => a.id)).toEqual([1]);
 });

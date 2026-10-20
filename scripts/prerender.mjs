@@ -6,7 +6,12 @@ import { pathToFileURL } from 'node:url';
 import { loadEnv } from 'vite';
 import { fetchPublicCenters } from './centers-source.ts';
 import { fetchPublicGroups, mapLimit } from './groups-source.ts';
-import { fetchGroupMembers, fetchInvestigators, withProfiles } from './investigators-source.ts';
+import {
+  fetchGroupMembers,
+  fetchInvestigators,
+  publishAuthors,
+  withProfiles,
+} from './investigators-source.ts';
 import { DEFAULT_METRIK_URL } from './public-api.ts';
 import { logoUrl, photoUrl } from './photo-store.ts';
 import { createStores, storeOptionsFromEnv } from './stores.ts';
@@ -34,16 +39,21 @@ const groups = (await fetchPublicGroups(`${metrik}/group`)).map((g) => ({
 }));
 const logoVersions = await stores.logos.versions();
 const logoOf = (id) => (logoVersions.has(id) ? logoUrl(id, logoVersions.get(id)) : null);
-const authors = (await withProfiles(metrik, await fetchInvestigators(metrik))).map((a) => ({
-  ...a,
-  groups: a.groups.map((g) => ({
-    ...g,
-    ods: odsByGroup[g.id] ?? [],
-    type: groups.find((x) => x.id === g.id)?.type ?? null,
-  })),
-  centers: a.centers.map((c) => ({ ...c, logoUrl: logoOf(c.id) })),
-  photoUrl: photoOf(a.id),
-}));
+// Publicados: los del ranking USB (/admin/ranking) o, sin ranking, los seleccionados en Metri-K.
+const directory = await fetchInvestigators(metrik);
+const ranked = publishAuthors(directory, await stores.ranking.all());
+const authors = (await withProfiles(metrik, { authors: ranked, production: directory.production })).map(
+  (a) => ({
+    ...a,
+    groups: a.groups.map((g) => ({
+      ...g,
+      ods: odsByGroup[g.id] ?? [],
+      type: groups.find((x) => x.id === g.id)?.type ?? null,
+    })),
+    centers: a.centers.map((c) => ({ ...c, logoUrl: logoOf(c.id) })),
+    photoUrl: photoOf(a.id),
+  }),
+);
 const authorsQ = ssr.createServerAuthorQueries(authors);
 const published = new Map(authors.map((a) => [a.id, a]));
 // Interinstitucionales: solo en el listado (sin ficha ni integrantes).

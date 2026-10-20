@@ -40,6 +40,20 @@ export interface Author {
   photoUrl: string | null;
   /** Centros de investigación activos a los que aporta (Metri-K `/center/investigator/{id}`). */
   centers?: CenterRef[];
+  /** Ranking de productividad USB (Excel cargado en /admin/ranking); null si no figura. */
+  ranking?: AuthorRanking | null;
+}
+
+/** Fila del ranking de productividad USB de un investigador. */
+export interface AuthorRanking {
+  /** Índice de productividad USB, 0–100. */
+  index: number;
+  /** Puesto general en la universidad. */
+  rank: number;
+  /** Puesto dentro de su centro (`center`). */
+  centerRank: number | null;
+  /** Sigla del centro con el que figura en el ranking, p. ej. "CICV". */
+  center: string | null;
 }
 
 export interface AuthorMetrics {

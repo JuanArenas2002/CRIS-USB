@@ -89,6 +89,21 @@ export function AuthorCard({ author }: { author: Author }) {
               ))}
             </ul>
           ) : null}
+          {/* Ranking de productividad USB (/admin/ranking). */}
+          {author.ranking ? (
+            <p className="mt-2 flex flex-wrap gap-1.5 text-[12px]">
+              <span className="inline-flex items-center gap-1 rounded-md bg-primary-container px-2 py-0.5 font-semibold text-on-primary">
+                <Icon name="trending_up" className="text-[14px]" />
+                {t('card.usbIndex')} <strong>{labels.number(author.ranking.index)}</strong>
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-md bg-badge-sage-bg px-2 py-0.5 font-semibold text-badge-sage-text">
+                <Icon name="military_tech" className="text-[14px]" />
+                {author.ranking.center && author.ranking.centerRank
+                  ? t('card.centerRank', { rank: author.ranking.centerRank, center: author.ranking.center })
+                  : t('card.generalRank', { rank: author.ranking.rank })}
+              </span>
+            </p>
+          ) : null}
         </div>
 
         <div className="relative my-2 py-1">

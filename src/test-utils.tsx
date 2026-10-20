@@ -32,6 +32,7 @@ export function makeAuthor(over: Partial<AuthorProfile> = {}): AuthorProfile {
     ],
     metrics: null,
     photoUrl: null,
+    ranking: { index: 92.5, rank: 4, centerRank: 1, center: 'MACONDOLAB' },
     production: null,
     ...over,
   };

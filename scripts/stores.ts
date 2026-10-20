@@ -4,22 +4,26 @@ import { createBlobMapStore, createBlobPhotoStore, type BlobAccess } from './blo
 import {
   createDiskMapStore,
   normalizeOdsEntry,
+  normalizeRanking,
   normalizeWebsite,
   type MapStore,
   type OdsStore,
 } from './ods-store.ts';
 import { createDiskPhotoStore, type PhotoStore } from './photo-store.ts';
+import type { AuthorRanking } from '../src/domain/authors/author.ts';
 
 export const DEFAULT_PHOTOS_DIR = 'data/photos';
 export const DEFAULT_ODS_FILE = 'data/ods.json';
 export const DEFAULT_LOGOS_DIR = 'data/logos';
 export const DEFAULT_SITES_FILE = 'data/center-sites.json';
+export const DEFAULT_RANKING_FILE = 'data/ranking.json';
 
 export interface StoreOptions {
   photosDir?: string;
   odsFile?: string;
   logosDir?: string;
   sitesFile?: string;
+  rankingFile?: string;
   /** BLOB_READ_WRITE_TOKEN. */
   blobToken?: string;
   /** BLOB_STORE_ID (store conectado por OIDC). */
@@ -37,6 +41,7 @@ const unconfigured = (): {
   ods: OdsStore;
   logos: PhotoStore;
   sites: MapStore<string>;
+  ranking: MapStore<AuthorRanking>;
 } => {
   const fail = async (): Promise<never> => {
     throw new Error(NO_BLOB);
@@ -50,8 +55,9 @@ const unconfigured = (): {
   return {
     photos: images,
     logos: images,
-    ods: { all: async () => ({}), set: fail },
-    sites: { all: async () => ({}), set: fail },
+    ods: { all: async () => ({}), set: fail, replace: fail },
+    sites: { all: async () => ({}), set: fail, replace: fail },
+    ranking: { all: async () => ({}), set: fail, replace: fail },
   };
 };
 
@@ -60,6 +66,7 @@ export function createStores({
   odsFile,
   logosDir,
   sitesFile,
+  rankingFile,
   blobToken,
   blobStoreId,
   blobAccess,
@@ -77,6 +84,7 @@ export function createStores({
       ods: createBlobMapStore(cfg, 'cris/ods.json', normalizeOdsEntry),
       logos: createBlobPhotoStore(cfg, 'cris/logos/'),
       sites: createBlobMapStore(cfg, 'cris/center-sites.json', normalizeWebsite),
+      ranking: createBlobMapStore(cfg, 'cris/ranking.json', normalizeRanking),
     };
   }
   if (onVercel) return { kind: 'none' as const, ...unconfigured() };
@@ -86,6 +94,7 @@ export function createStores({
     ods: createDiskMapStore(odsFile || DEFAULT_ODS_FILE, normalizeOdsEntry),
     logos: createDiskPhotoStore(logosDir || DEFAULT_LOGOS_DIR),
     sites: createDiskMapStore(sitesFile || DEFAULT_SITES_FILE, normalizeWebsite),
+    ranking: createDiskMapStore(rankingFile || DEFAULT_RANKING_FILE, normalizeRanking),
   };
 }
 
@@ -102,6 +111,7 @@ export const storeOptionsFromEnv = (env: Record<string, string | undefined>): St
   odsFile: env.CRIS_ODS_FILE,
   logosDir: env.CRIS_LOGOS_DIR,
   sitesFile: env.CRIS_CENTER_SITES_FILE,
+  rankingFile: env.CRIS_RANKING_FILE,
   blobToken: env.BLOB_READ_WRITE_TOKEN || byPrefix(env, '_READ_WRITE_TOKEN', 'vercel_blob_rw_'),
   blobStoreId: env.BLOB_STORE_ID || byPrefix(env, '_STORE_ID', 'store_'),
   blobAccess: env.CRIS_BLOB_ACCESS,

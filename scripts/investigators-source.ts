@@ -7,6 +7,7 @@ import type {
   AuthorMetrics,
   AuthorProduction,
   AuthorProfile,
+  AuthorRanking,
   GroupRef,
   ScopusPublication,
   TechDevelopment,
@@ -29,8 +30,8 @@ const MINCIENCIAS = /(^|\.)minciencias\.gov\.co$/;
 const SCHOLAR = /(^|\.)scholar\.google\.[a-z.]+$/;
 const SCOPUS = /(^|\.)scopus\.com$/;
 /**
- * ponytail: por ahora el portal publica solo los investigadores seleccionados en Metri-K.
- * Para publicar a todos los activos en GrupLAC, poner en false (el resto del sistema ya lo soporta).
+ * Sin ranking cargado (/admin/ranking), el portal publica solo los investigadores seleccionados en
+ * Metri-K. Para publicar a todos los activos en GrupLAC, poner en false (ver publishAuthors).
  */
 export const ONLY_SELECTED = true;
 
@@ -149,25 +150,64 @@ export function toSelected(
   };
 }
 
+/** Cédula normalizada (solo dígitos). */
+export const normalizeDocument = (v: unknown) =>
+  typeof v === 'string' || typeof v === 'number' ? String(v).replace(/\D/g, '') : '';
+
+export interface InvestigatorDirectory {
+  /** Todos los activos en GrupLAC, ya proyectados (métricas solo para los seleccionados). */
+  authors: Author[];
+  /** Seleccionados en Metri-K (destacados). */
+  selected: Set<number>;
+  production: Map<number, AuthorProduction>;
+  /**
+   * Cédula → id del investigador, para cruzar el ranking USB. SOLO servidor: nunca se envía al
+   * navegador ni se guarda (el ranking se guarda por id).
+   */
+  byDocument: Map<string, number>;
+}
+
 /**
- * Lista pública + métricas de los destacados. `base` es `.../api` de Metri-K.
- * Devuelve también la producción de los destacados, para su perfil.
+ * Directorio de Metri-K + métricas de los destacados. `base` es `.../api` de Metri-K.
+ * Quién se publica lo decide publishAuthors.
  */
-export async function fetchInvestigators(
-  base: string,
-): Promise<{ authors: Author[]; production: Map<number, AuthorProduction> }> {
+export async function fetchInvestigators(base: string): Promise<InvestigatorDirectory> {
   const [rows, selected] = await Promise.all([
     getData(`${base}/investigator`),
     getData(`${base}/investigator/seleccionados`),
   ]);
   const extra = new Map(list(selected, toSelected).map((s) => [s.id, s]));
-  const authors = list(rows, toPublicInvestigator)
-    .filter((a) => !ONLY_SELECTED || extra.has(a.id))
-    .map((a) => ({
-      ...a,
-      metrics: extra.get(a.id)?.metrics ?? null,
-    }));
-  return { authors, production: new Map([...extra].map(([id, s]) => [id, s.production])) };
+  const authors = list(rows, toPublicInvestigator).map((a) => ({
+    ...a,
+    metrics: extra.get(a.id)?.metrics ?? null,
+  }));
+  const byDocument = new Map<string, number>();
+  for (const r of rows.map(obj)) {
+    const person = obj(r?.person);
+    if (typeof r?.id !== 'number') continue;
+    for (const doc of [person?.documentNumber, person?.documentNumber2].map(normalizeDocument))
+      if (doc) byDocument.set(doc, r.id);
+  }
+  return {
+    authors,
+    selected: new Set(extra.keys()),
+    production: new Map([...extra].map(([id, s]) => [id, s.production])),
+    byDocument,
+  };
+}
+
+/**
+ * Política de publicación: con ranking USB cargado, se publican los que figuran en él (y siguen
+ * activos en GrupLAC), cada uno con su índice y puestos; sin ranking, los seleccionados en Metri-K.
+ */
+export function publishAuthors(
+  { authors, selected }: Pick<InvestigatorDirectory, 'authors' | 'selected'>,
+  ranking: Record<string, AuthorRanking>,
+): Author[] {
+  const ranked = Object.keys(ranking).length > 0;
+  return authors
+    .filter((a) => (ranked ? a.id in ranking : !ONLY_SELECTED || selected.has(a.id)))
+    .map((a) => ({ ...a, ranking: ranking[a.id] ?? null }));
 }
 
 export async function fetchInvestigatorGroups(base: string, id: number): Promise<GroupRef[]> {
@@ -180,7 +220,7 @@ export async function fetchInvestigatorGroups(base: string, id: number): Promise
 /** Perfiles completos para el prerender (grupos y centros de cada investigador, 6 a la vez). */
 export async function withProfiles(
   base: string,
-  { authors, production }: Awaited<ReturnType<typeof fetchInvestigators>>,
+  { authors, production }: { authors: Author[]; production: InvestigatorDirectory['production'] },
 ): Promise<AuthorProfile[]> {
   return mapLimit(authors, 6, async (a) => ({
     ...a,

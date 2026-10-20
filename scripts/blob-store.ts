@@ -105,19 +105,27 @@ export function createBlobMapStore<T>(
     }
   };
   const cache = memo(load);
+  const write = async (next: Record<string, T>) => {
+    await put(pathname, JSON.stringify(next, null, 2), {
+      access: cfg.access,
+      ...auth(cfg),
+      contentType: 'application/json',
+      addRandomSuffix: false,
+      allowOverwrite: true,
+    });
+    cache.reset();
+  };
   return {
     all: () => cache.get(),
     async set(id, value) {
       const [next, clean] = withEntry(await load(), id, value, normalize); // sin caché: parte de lo último guardado
-      await put(pathname, JSON.stringify(next, null, 2), {
-        access: cfg.access,
-        ...auth(cfg),
-        contentType: 'application/json',
-        addRandomSuffix: false,
-        allowOverwrite: true,
-      });
-      cache.reset();
+      await write(next);
       return clean;
+    },
+    async replace(all) {
+      const next = parseMap(all, normalize);
+      await write(next);
+      return next;
     },
   };
 }

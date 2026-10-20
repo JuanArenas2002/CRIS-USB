@@ -31,6 +31,15 @@ const author = {
   scholarUrl: httpsUrl,
   mainGroup: groupRef.nullable(),
   photoUrl: z.string().startsWith('/api/investigators/').nullable(),
+  ranking: z
+    .object({
+      index: z.number().min(0).max(100),
+      rank: z.number().int().positive(),
+      centerRank: z.number().int().positive().nullable(),
+      center: z.string().nullable(),
+    })
+    .nullable()
+    .default(null),
   centers: z
     .array(
       z.object({

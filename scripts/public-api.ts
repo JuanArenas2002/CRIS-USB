@@ -3,17 +3,24 @@
 //   proyectan a campos públicos (groups-source.ts / investigators-source.ts) y nada más sale.
 // - Búsqueda, filtros y paginación se resuelven en memoria: Metri-K no los ofrece.
 // - Solo lectura, salvo las fotos de investigadores y los logos de centros (PUT/DELETE), los ODS de
-//   los grupos y la página oficial de los centros (PUT), todo con token de administración.
+//   los grupos, la página oficial de los centros (PUT) y el ranking USB (PUT/DELETE), todo con token
+//   de administración.
 // Dev/preview: montado como middleware en vite.config.ts.
 // Producción: `node scripts/public-api.ts` detrás de nginx (ver README).
 import { createHash, timingSafeEqual } from 'node:crypto';
 import http, { type IncomingMessage, type ServerResponse } from 'node:http';
 import { pathToFileURL } from 'node:url';
 import { fetchInvestigatorCenters, fetchPublicCenters, fetchResolutionPdf } from './centers-source.ts';
-import { fetchPublicGroups } from './groups-source.ts';
-import { fetchGroupMembers, fetchInvestigatorGroups, fetchInvestigators } from './investigators-source.ts';
+import { fetchPublicGroups, mapLimit } from './groups-source.ts';
+import {
+  fetchGroupMembers,
+  fetchInvestigatorGroups,
+  fetchInvestigators,
+  normalizeDocument,
+  publishAuthors,
+} from './investigators-source.ts';
 import { MAX_PHOTO_BYTES, logoUrl, photoUrl } from './photo-store.ts';
-import { normalizeWebsite } from './ods-store.ts';
+import { normalizeRanking, normalizeWebsite } from './ods-store.ts';
 import { createStores, storeOptionsFromEnv, type StoreOptions } from './stores.ts';
 import { summarizeCenter, type CenterDetail, type CenterRef } from '../src/domain/centers/center.ts';
 import { hasPublicDetail, summarizeGroup, type GroupDetail } from '../src/domain/groups/group.ts';
@@ -32,6 +39,8 @@ export const DEFAULT_METRIK_URL = 'https://metrik.unisimon.edu.co/back/api';
 export { DEFAULT_ODS_FILE, DEFAULT_PHOTOS_DIR } from './stores.ts';
 const TTL_MS = 10 * 60 * 1000;
 const MAX_ODS_BYTES = 1024;
+// ~300 filas × ~100 bytes; holgura para miles.
+const MAX_RANKING_BYTES = 1024 * 1024;
 const MAX_PAGE_SIZE = 100;
 
 /**
@@ -72,7 +81,7 @@ export function createPublicApi({
   ...storage
 }: { metrikUrl?: string; adminToken?: string; onVercel?: boolean } & StoreOptions = {}) {
   const base = metrikUrl.replace(/\/+$/, '');
-  const { photos, ods: odsStore, logos, sites } = createStores(storage);
+  const { photos, ods: odsStore, logos, sites, ranking: rankingStore } = createStores(storage);
   const metrikGroups = cached<GroupDetail[]>(() => fetchPublicGroups(`${base}/group`));
   const metrikCenters = cached<CenterDetail[]>(() => fetchPublicCenters(base));
   const centers = async () => {
@@ -99,20 +108,21 @@ export function createPublicApi({
       return { ...a, photoUrl: version === undefined ? null : photoUrl(a.id, version) };
     };
   };
-  // Cada investigador publicado lleva sus centros (tarjeta y perfil), con el logo del portal.
-  // ponytail: una consulta a Metri-K por investigador (cacheada); bien para los ~10 publicados,
-  // pedir a Metri-K un endpoint masivo si se publican cientos.
+  // Publicados según el ranking USB (o los seleccionados, sin ranking); cada uno con sus centros
+  // (tarjeta y perfil) y el logo del portal. El ranking no pasa por la caché: un Excel nuevo se ve
+  // al instante.
+  // ponytail: una consulta a Metri-K por investigador (cacheada 10 min, 8 a la vez); con cientos de
+  // publicados, la primera visita tras vencer la caché tarda unos segundos. Pedir a Metri-K un
+  // endpoint masivo de centros si molesta.
   const investigators = async () => {
-    const [withPhoto, v] = await Promise.all([photoUrls(), logos.versions()]);
-    return Promise.all(
-      (await directory()).authors.map(async (a) => ({
-        ...withPhoto(a),
-        centers: (await centersOf(a.id).catch(() => [])).map((c) => {
-          const version = v.get(c.id);
-          return { ...c, logoUrl: version === undefined ? null : logoUrl(c.id, version) };
-        }),
-      })),
-    );
+    const [withPhoto, v, ranking] = await Promise.all([photoUrls(), logos.versions(), rankingStore.all()]);
+    return mapLimit(publishAuthors(await directory(), ranking), 8, async (a) => ({
+      ...withPhoto(a),
+      centers: (await centersOf(a.id).catch(() => [])).map((c) => {
+        const version = v.get(c.id);
+        return { ...c, logoUrl: version === undefined ? null : logoUrl(c.id, version) };
+      }),
+    }));
   };
   const memberships = new Map<number, () => Promise<GroupRef[]>>();
   const groupsOf = (id: number) => {
@@ -192,9 +202,11 @@ export function createPublicApi({
             }
           : null;
 
-      // ── Escritura: fotos, logos, ODS y páginas oficiales, con token ───────────────────
+      const rankingUpload = p === '/api/ranking';
+
+      // ── Escritura: fotos, logos, ODS, páginas oficiales y ranking, con token ───────────
       if (req.method === 'PUT' || req.method === 'DELETE') {
-        if (!image && !((groupOds || site) && req.method === 'PUT'))
+        if (!image && !rankingUpload && !((groupOds || site) && req.method === 'PUT'))
           return send(405, { detail: 'Método no permitido' });
         if (!adminToken)
           return send(503, { detail: 'Administración deshabilitada (falta CRIS_ADMIN_TOKEN)' });
@@ -219,6 +231,49 @@ export function createPublicApi({
             return send(200, { ods: (await odsStore.set(id, list)) ?? [] });
           } catch (err) {
             return send(500, { detail: `No se pudieron guardar los ODS: ${(err as Error).message}` });
+          }
+        }
+        if (rankingUpload) {
+          // DELETE: sin ranking, se vuelve a publicar a los seleccionados de Metri-K.
+          if (req.method === 'DELETE') {
+            await rankingStore.replace({});
+            return send(200, { published: 0, notFound: [], inactive: [], invalid: [] });
+          }
+          const body = await readBody(req, MAX_RANKING_BYTES);
+          if (!body) return send(413, { detail: 'El ranking supera 1 MB' });
+          let rows: unknown;
+          try {
+            rows = (JSON.parse(body.toString('utf8')) as { rows?: unknown }).rows;
+          } catch {
+            rows = null;
+          }
+          if (!Array.isArray(rows) || !rows.length || rows.length > 10_000)
+            return send(400, {
+              detail: 'Se espera { "rows": [{ cc, name, rank, centerRank, center, index }] }',
+            });
+          // La cédula solo sirve para encontrar al investigador en Metri-K: se guarda por id.
+          const { byDocument, authors } = await directory();
+          const active = new Set(authors.map((a) => a.id));
+          const byId: Record<string, unknown> = {};
+          const notFound: string[] = [];
+          const inactive: string[] = [];
+          const invalid: string[] = [];
+          for (const raw of rows as Record<string, unknown>[]) {
+            const label =
+              typeof raw?.name === 'string' && raw.name.trim() ? raw.name.trim().slice(0, 120) : '—';
+            const entry = normalizeRanking(raw);
+            const id = byDocument.get(normalizeDocument(raw?.cc));
+            if (!entry) invalid.push(label);
+            else if (id === undefined) notFound.push(label);
+            else if (!active.has(id)) inactive.push(label);
+            // Repetido: queda el mejor puesto.
+            else if (!byId[id] || entry.rank < (byId[id] as { rank: number }).rank) byId[id] = entry;
+          }
+          try {
+            const saved = await rankingStore.replace(byId);
+            return send(200, { published: Object.keys(saved).length, notFound, inactive, invalid });
+          } catch (err) {
+            return send(500, { detail: `No se pudo guardar el ranking: ${(err as Error).message}` });
           }
         }
         if (site) {

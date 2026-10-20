@@ -17,6 +17,7 @@ import { GroupPage } from '@/presentation/pages/GroupPage';
 import { AdminCentersPage } from '@/presentation/pages/AdminCentersPage';
 import { AdminOdsPage } from '@/presentation/pages/AdminOdsPage';
 import { AdminPhotosPage } from '@/presentation/pages/AdminPhotosPage';
+import { AdminRankingPage } from '@/presentation/pages/AdminRankingPage';
 import { HeadCollectorContext } from '@/presentation/hooks/use-document-metadata';
 import { AuthorPage } from '@/presentation/pages/AuthorPage';
 import { DirectoryPage } from '@/presentation/pages/DirectoryPage';
@@ -89,6 +90,7 @@ export function AppRoutes() {
           <Route path="admin/fotos" element={<AdminPhotosPage />} />
           <Route path="admin/ods" element={<AdminOdsPage />} />
           <Route path="admin/centros" element={<AdminCentersPage />} />
+          <Route path="admin/ranking" element={<AdminRankingPage />} />
           {NAV_ITEMS.filter((i) => !i.ready).map((i) => (
             <Route key={i.to} path={i.to} element={<ComingSoonPage item={i} />} />
           ))}

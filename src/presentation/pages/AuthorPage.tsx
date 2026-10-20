@@ -247,6 +247,26 @@ function Profile({ author }: { author: AuthorProfile }) {
                   label={t('mincienciasCategory')}
                   value={cat ? `${labels.category(cat.id)} (${cat.code})` : t('profile.noCategory')}
                 />
+                {author.ranking ? (
+                  <>
+                    <Fact
+                      icon="trending_up"
+                      label={t('profile.usbIndex')}
+                      value={labels.number(author.ranking.index)}
+                      hint={t('profile.generalRank', { rank: author.ranking.rank })}
+                    />
+                    {author.ranking.center && author.ranking.centerRank ? (
+                      <Fact
+                        icon="military_tech"
+                        label={t('profile.centerRank')}
+                        value={t('profile.centerRankValue', {
+                          rank: author.ranking.centerRank,
+                          center: author.ranking.center,
+                        })}
+                      />
+                    ) : null}
+                  </>
+                ) : null}
               </dl>
 
               {groups.length ? (
