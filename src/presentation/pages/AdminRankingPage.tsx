@@ -257,14 +257,21 @@ function RankingList({ token, onUnauthorized }: { token: string; onUnauthorized:
           </p>
         </div>
         <div className="grid gap-2 sm:grid-cols-2 md:w-[28rem]">
-          <input
-            type="search"
-            aria-label="Buscar investigador"
-            value={term}
-            onChange={(e) => setTerm(e.target.value)}
-            placeholder="Buscar por nombre…"
-            className="h-10 rounded-lg bg-surface-container-lowest px-3 text-body-sm shadow-sm focus:ring-2 focus:ring-secondary focus:outline-none"
-          />
+          <div className="relative">
+            <Icon
+              name="search"
+              className="pointer-events-none absolute top-2.5 left-3 text-[20px] text-on-surface-variant"
+            />
+            <input
+              type="search"
+              aria-label="Buscar investigador"
+              value={term}
+              onChange={(e) => setTerm(e.target.value)}
+              placeholder="Buscar por nombre…"
+              autoComplete="off"
+              className="h-10 w-full rounded-lg bg-surface-container-lowest pr-3 pl-10 text-body-sm shadow-sm ring-1 ring-border-subtle focus:ring-2 focus:ring-secondary focus:outline-none"
+            />
+          </div>
           <select
             aria-label="Centro"
             value={center}
@@ -301,6 +308,11 @@ function RankingList({ token, onUnauthorized }: { token: string; onUnauthorized:
             {filtered ? 'Desactivar filtrados' : 'Desactivar todos'}
           </button>
           {saving === 0 ? <span className="text-label-sm text-neutral-muted">Guardando…</span> : null}
+          {filtered ? (
+            <span aria-live="polite" className="ml-auto text-label-md text-neutral-muted">
+              {`${shown.length} de ${rows.length} investigadores`}
+            </span>
+          ) : null}
         </div>
       ) : null}
       {error ? (
@@ -309,6 +321,13 @@ function RankingList({ token, onUnauthorized }: { token: string; onUnauthorized:
         </p>
       ) : null}
 
+      {list.data && filtered && !shown.length ? (
+        <p className="mt-6 text-body-md text-neutral-muted">
+          {term.trim()
+            ? `Ningún investigador coincide con «${term.trim()}».`
+            : 'Ningún investigador en ese centro.'}
+        </p>
+      ) : null}
       <ul className="mt-4 divide-y divide-border-subtle overflow-hidden rounded-xl bg-surface-container-lowest shadow-sm">
         {shown.map((r) => (
           <li

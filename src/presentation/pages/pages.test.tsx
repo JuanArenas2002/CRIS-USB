@@ -375,3 +375,35 @@ test('admin fotos: buscador por nombre, sin importar tildes ni mayúsculas', asy
   await userEvent.type(screen.getByLabelText('Buscar investigador por nombre'), 'zzz');
   expect(screen.getByText('Ningún investigador coincide con «zzz».')).toBeInTheDocument();
 });
+
+test('admin ranking: buscador por nombre sin tildes, con contador y aviso sin resultados', async () => {
+  sessionStorage.setItem('cris-admin-token', 't');
+  const row = (id: number, name: string, center: string) => ({
+    id,
+    name,
+    index: 90 - id,
+    rank: id,
+    centerRank: 1,
+    center,
+    hidden: false,
+    shown: { rank: id, centerRank: 1 },
+  });
+  const rows = [row(1, 'JOSÉ PÉREZ LARA', 'CICV'), row(2, 'ANA MARÍA GÓMEZ', 'CIISO')];
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async (url: string) =>
+      url === '/api/ranking' ? new Response(JSON.stringify({ rows })) : new Response('{}', { status: 404 }),
+    ),
+  );
+  renderApp('/admin/ranking');
+  const search = await screen.findByLabelText('Buscar investigador');
+  await screen.findByText('José Pérez Lara');
+  await userEvent.type(search, 'jose perez');
+  expect(screen.getByText('José Pérez Lara')).toBeInTheDocument();
+  expect(screen.queryByText('Ana María Gómez')).not.toBeInTheDocument();
+  expect(screen.getByText('1 de 2 investigadores')).toBeInTheDocument();
+  await userEvent.clear(search);
+  await userEvent.type(search, 'zzz');
+  expect(screen.getByText('Ningún investigador coincide con «zzz».')).toBeInTheDocument();
+  vi.unstubAllGlobals();
+});
