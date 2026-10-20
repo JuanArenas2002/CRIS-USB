@@ -41,7 +41,7 @@ const logoVersions = await stores.logos.versions();
 const logoOf = (id) => (logoVersions.has(id) ? logoUrl(id, logoVersions.get(id)) : null);
 // Publicados: los del ranking USB (/admin/ranking) o, sin ranking, los seleccionados en Metri-K.
 const directory = await fetchInvestigators(metrik);
-const ranked = publishAuthors(directory, await stores.ranking.all());
+const ranked = publishAuthors(directory, await stores.ranking.all(), await stores.rankingHidden.all());
 const authors = (await withProfiles(metrik, { authors: ranked, production: directory.production })).map(
   (a) => ({
     ...a,

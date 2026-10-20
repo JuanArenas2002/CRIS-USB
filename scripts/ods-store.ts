@@ -1,7 +1,7 @@
 // Datos que el portal guarda por id en un solo JSON (Metri-K aún no los tiene):
 // - ODS de cada grupo (vista oculta /admin/ods).
 // - Página oficial de cada centro (vista oculta /admin/centros).
-// - Ranking de productividad USB de cada investigador (vista oculta /admin/ranking).
+// - Ranking de productividad USB de cada investigador y quiénes se ocultan (vista oculta /admin/ranking).
 // Dos almacenamientos con la misma interfaz (ver stores.ts): un JSON en disco en local / servidor
 // propio y Vercel Blob en Vercel. Migrar a Metri-K cuando el backend los soporte.
 import fs from 'node:fs';
@@ -40,6 +40,9 @@ export const normalizeWebsite: Normalize<string> = (v) => {
     return null;
   }
 };
+
+/** Marca sí/no (p. ej. investigador oculto); false o vacío quitan la entrada. */
+export const normalizeFlag: Normalize<true> = (v) => (v === true ? true : null);
 
 const rank = (v: unknown) => (Number.isInteger(v) && (v as number) > 0 ? (v as number) : null);
 

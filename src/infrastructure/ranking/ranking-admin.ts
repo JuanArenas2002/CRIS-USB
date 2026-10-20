@@ -93,3 +93,44 @@ async function call(method: 'PUT' | 'DELETE', token: string, rows?: RankingRow[]
 
 export const uploadRanking = (rows: RankingRow[], token: string) => call('PUT', token, rows);
 export const clearRanking = (token: string) => call('DELETE', token);
+
+/** Fila del ranking en el admin: puestos del Excel y los que se muestran (renumerados). */
+export interface RankingAdminRow {
+  id: number;
+  name: string;
+  index: number;
+  rank: number;
+  centerRank: number | null;
+  center: string | null;
+  hidden: boolean;
+  /** Puestos visibles en el portal; null si está oculto. */
+  shown: { rank: number; centerRank: number | null } | null;
+}
+
+async function admin<T>(path: string, token: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(path, {
+    ...init,
+    headers: { 'X-Admin-Token': token, 'Content-Type': 'application/json' },
+    cache: 'no-store',
+  });
+  const data = (await res.json().catch(() => ({}))) as T & { detail?: string };
+  if (!res.ok) throw new ApiError(res.status, data.detail ?? `Error ${res.status}`);
+  return data;
+}
+
+export const listRanking = async (token: string) =>
+  (await admin<{ rows: RankingAdminRow[] }>('/api/ranking', token)).rows;
+
+/** Muestra u oculta a un investigador del ranking; se recuerda aunque se cargue otro Excel. */
+export const setRankingVisible = (id: number, visible: boolean, token: string) =>
+  admin<{ visible: boolean }>(`/api/ranking/${id}`, token, {
+    method: 'PUT',
+    body: JSON.stringify({ visible }),
+  });
+
+/** Muestra u oculta a varios a la vez (p. ej. todos los filtrados) en una sola escritura. */
+export const setRankingVisibleMany = (ids: number[], visible: boolean, token: string) =>
+  admin<{ visible: boolean; hidden: number }>('/api/ranking/visibility', token, {
+    method: 'PUT',
+    body: JSON.stringify({ ids, visible }),
+  });

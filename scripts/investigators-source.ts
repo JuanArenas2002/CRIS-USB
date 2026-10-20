@@ -197,17 +197,45 @@ export async function fetchInvestigators(base: string): Promise<InvestigatorDire
 }
 
 /**
- * Política de publicación: con ranking USB cargado, se publican los que figuran en él (y siguen
- * activos en GrupLAC), cada uno con su índice y puestos; sin ranking, los seleccionados en Metri-K.
+ * Puestos visibles: se renumeran solo entre los publicados (1, 2, 3… sin huecos), en general y
+ * dentro de cada centro. Si se oculta al 4.º, el 5.º pasa a mostrarse como 4.º.
+ */
+export function renumber<T extends { ranking: AuthorRanking }>(items: T[]): T[] {
+  const byRank = [...items].sort((a, b) => a.ranking.rank - b.ranking.rank);
+  const general = new Map(byRank.map((a, i) => [a, i + 1]));
+  const inCenter = new Map<T, number>();
+  const centers = new Map<string, T[]>();
+  for (const a of byRank)
+    if (a.ranking.center) centers.set(a.ranking.center, [...(centers.get(a.ranking.center) ?? []), a]);
+  for (const list of centers.values())
+    list
+      .sort(
+        (a, b) =>
+          (a.ranking.centerRank ?? Infinity) - (b.ranking.centerRank ?? Infinity) ||
+          a.ranking.rank - b.ranking.rank,
+      )
+      .forEach((a, i) => inCenter.set(a, i + 1));
+  return items.map((a) => ({
+    ...a,
+    ranking: { ...a.ranking, rank: general.get(a)!, centerRank: inCenter.get(a) ?? null },
+  }));
+}
+
+/**
+ * Política de publicación: con ranking USB cargado, se publican los que figuran en él, siguen
+ * activos en GrupLAC y no están ocultos en /admin/ranking, con los puestos renumerados entre ellos;
+ * sin ranking, los seleccionados en Metri-K.
  */
 export function publishAuthors(
   { authors, selected }: Pick<InvestigatorDirectory, 'authors' | 'selected'>,
   ranking: Record<string, AuthorRanking>,
+  hidden: Record<string, true> = {},
 ): Author[] {
-  const ranked = Object.keys(ranking).length > 0;
-  return authors
-    .filter((a) => (ranked ? a.id in ranking : !ONLY_SELECTED || selected.has(a.id)))
-    .map((a) => ({ ...a, ranking: ranking[a.id] ?? null }));
+  if (!Object.keys(ranking).length)
+    return authors.filter((a) => !ONLY_SELECTED || selected.has(a.id)).map((a) => ({ ...a, ranking: null }));
+  return renumber(
+    authors.filter((a) => a.id in ranking && !hidden[a.id]).map((a) => ({ ...a, ranking: ranking[a.id]! })),
+  );
 }
 
 export async function fetchInvestigatorGroups(base: string, id: number): Promise<GroupRef[]> {

@@ -81,7 +81,7 @@ export function createPublicApi({
   ...storage
 }: { metrikUrl?: string; adminToken?: string; onVercel?: boolean } & StoreOptions = {}) {
   const base = metrikUrl.replace(/\/+$/, '');
-  const { photos, ods: odsStore, logos, sites, ranking: rankingStore } = createStores(storage);
+  const { photos, ods: odsStore, logos, sites, ranking: rankingStore, rankingHidden } = createStores(storage);
   const metrikGroups = cached<GroupDetail[]>(() => fetchPublicGroups(`${base}/group`));
   const metrikCenters = cached<CenterDetail[]>(() => fetchPublicCenters(base));
   const centers = async () => {
@@ -115,8 +115,13 @@ export function createPublicApi({
   // publicados, la primera visita tras vencer la caché tarda unos segundos. Pedir a Metri-K un
   // endpoint masivo de centros si molesta.
   const investigators = async () => {
-    const [withPhoto, v, ranking] = await Promise.all([photoUrls(), logos.versions(), rankingStore.all()]);
-    return mapLimit(publishAuthors(await directory(), ranking), 8, async (a) => ({
+    const [withPhoto, v, ranking, hidden] = await Promise.all([
+      photoUrls(),
+      logos.versions(),
+      rankingStore.all(),
+      rankingHidden.all(),
+    ]);
+    return mapLimit(publishAuthors(await directory(), ranking, hidden), 8, async (a) => ({
       ...withPhoto(a),
       centers: (await centersOf(a.id).catch(() => [])).map((c) => {
         const version = v.get(c.id);
@@ -164,14 +169,17 @@ export function createPublicApi({
     const url = new URL(req.url ?? '/', 'http://localhost');
     if (!url.pathname.startsWith('/api/')) return next ? next() : send(404, { detail: 'No encontrado' });
 
-    function send(status: number, body: unknown) {
+    /** `privateBody`: respuesta del admin (con token) que ningún CDN ni navegador debe guardar. */
+    function send(status: number, body: unknown, privateBody = false) {
       res.statusCode = status;
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       // El navegador siempre revalida; el CDN (Vercel) guarda 30 s. Así lo que cambie el admin
       // (fotos, ODS) se ve en menos de un minuto sin consultar Metri-K en cada visita.
       res.setHeader(
         'Cache-Control',
-        status === 200 ? 'public, max-age=0, s-maxage=30, stale-while-revalidate=60' : 'no-store',
+        status === 200 && !privateBody
+          ? 'public, max-age=0, s-maxage=30, stale-while-revalidate=60'
+          : 'no-store',
       );
       res.end(JSON.stringify(body));
     }
@@ -203,10 +211,20 @@ export function createPublicApi({
           : null;
 
       const rankingUpload = p === '/api/ranking';
+      const rankingEntry = /^\/api\/ranking\/(\d{1,12})$/.exec(p);
+      // Varios a la vez («Activar / Desactivar todos» en el admin): una sola escritura.
+      const rankingBulk = p === '/api/ranking/visibility';
+      // Lista del ranking para el admin: nombres y puestos de todos (incluidos los ocultos).
+      const adminRead = rankingUpload && req.method === 'GET';
 
-      // ── Escritura: fotos, logos, ODS, páginas oficiales y ranking, con token ───────────
-      if (req.method === 'PUT' || req.method === 'DELETE') {
-        if (!image && !rankingUpload && !((groupOds || site) && req.method === 'PUT'))
+      // ── Escritura (y lectura del admin): fotos, logos, ODS, páginas y ranking, con token ──
+      if (req.method === 'PUT' || req.method === 'DELETE' || adminRead) {
+        if (
+          !adminRead &&
+          !image &&
+          !rankingUpload &&
+          !((groupOds || site || rankingEntry || rankingBulk) && req.method === 'PUT')
+        )
           return send(405, { detail: 'Método no permitido' });
         if (!adminToken)
           return send(503, { detail: 'Administración deshabilitada (falta CRIS_ADMIN_TOKEN)' });
@@ -231,6 +249,75 @@ export function createPublicApi({
             return send(200, { ods: (await odsStore.set(id, list)) ?? [] });
           } catch (err) {
             return send(500, { detail: `No se pudieron guardar los ODS: ${(err as Error).message}` });
+          }
+        }
+        if (adminRead) {
+          const [ranking, hidden, dir] = await Promise.all([
+            rankingStore.all(),
+            rankingHidden.all(),
+            directory(),
+          ]);
+          const names = new Map(dir.authors.map((a) => [a.id, a.name]));
+          const shown = new Map(publishAuthors(dir, ranking, hidden).map((a) => [a.id, a.ranking]));
+          const rows = Object.entries(ranking)
+            .map(([id, r]) => ({
+              id: Number(id),
+              name: names.get(Number(id)) ?? '—',
+              ...r,
+              hidden: !!hidden[id],
+              shown: shown.get(Number(id)) ?? null,
+            }))
+            .sort((a, b) => a.rank - b.rank);
+          return send(200, { rows }, true);
+        }
+        if (rankingBulk) {
+          const body = await readBody(req, MAX_RANKING_BYTES);
+          let parsed: { ids?: unknown; visible?: unknown } | null;
+          try {
+            parsed = body && JSON.parse(body.toString('utf8'));
+          } catch {
+            parsed = null;
+          }
+          const ids = parsed?.ids;
+          const visible = parsed?.visible;
+          if (
+            typeof visible !== 'boolean' ||
+            !Array.isArray(ids) ||
+            ids.length > 10_000 ||
+            !ids.every((x) => Number.isInteger(x) && x > 0)
+          )
+            return send(400, { detail: 'Se espera { "ids": [números], "visible": true | false }' });
+          const [ranking, hidden] = await Promise.all([rankingStore.all(), rankingHidden.all()]);
+          const next: Record<string, true> = { ...hidden };
+          for (const id of ids as number[]) {
+            if (!(id in ranking)) continue;
+            if (visible) delete next[id];
+            else next[id] = true;
+          }
+          try {
+            await rankingHidden.replace(next);
+            return send(200, { visible, hidden: Object.keys(next).length }, true);
+          } catch (err) {
+            return send(500, { detail: `No se pudo guardar: ${(err as Error).message}` });
+          }
+        }
+        if (rankingEntry) {
+          const id = Number(rankingEntry[1]);
+          if (!(id in (await rankingStore.all()))) return send(404, { detail: 'No está en el ranking' });
+          const body = await readBody(req, MAX_ODS_BYTES);
+          let visible: unknown;
+          try {
+            visible = body && (JSON.parse(body.toString('utf8')) as { visible?: unknown }).visible;
+          } catch {
+            visible = undefined;
+          }
+          if (typeof visible !== 'boolean')
+            return send(400, { detail: 'Se espera { "visible": true | false }' });
+          try {
+            await rankingHidden.set(id, !visible);
+            return send(200, { visible }, true);
+          } catch (err) {
+            return send(500, { detail: `No se pudo guardar: ${(err as Error).message}` });
           }
         }
         if (rankingUpload) {

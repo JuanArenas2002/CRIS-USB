@@ -134,6 +134,7 @@ beforeAll(async () => {
     logosDir: path.join(odsDir, 'logos'),
     sitesFile: path.join(odsDir, 'center-sites.json'),
     rankingFile: path.join(odsDir, 'ranking.json'),
+    rankingHiddenFile: path.join(odsDir, 'ranking-hidden.json'),
     adminToken: TOKEN,
   });
   vi.stubGlobal('fetch', (input: string, init?: RequestInit) =>
@@ -249,6 +250,7 @@ test('fotos: otra instancia del BFF (otro proceso o reinicio) ve la foto guardad
     metrikUrl: 'http://metrik/api',
     photosDir,
     rankingFile: path.join(odsDir, 'ranking.json'),
+    rankingHiddenFile: path.join(odsDir, 'ranking-hidden.json'),
     adminToken: TOKEN,
   });
   const srv = http.createServer((req, r) => void other(req, r));
@@ -388,14 +390,55 @@ test('ranking USB: decide quién se publica, por cédula; la cédula no sale ni 
 
   const list = await get('/api/investigators?size=50');
   expect(list.body.items.map((a: { id: number }) => a.id).sort()).toEqual([1, 2]); // 2 no era seleccionado
+  // Puestos renumerados entre los publicados: el #2 del Excel (Juan) está inactivo, Ana sube al #2.
   expect(list.body.items.find((a: { id: number }) => a.id === 1).ranking).toEqual({
     index: 88.3,
-    rank: 3,
+    rank: 2,
     centerRank: 1,
     center: 'CU',
   });
   expect(list.text).not.toContain('22222222');
   expect(fs.readFileSync(path.join(odsDir, 'ranking.json'), 'utf8')).not.toContain('22222222');
+
+  // Admin: la lista exige token y no se guarda en caché.
+  expect((await fetch(`${base}/api/ranking`)).status).toBe(401);
+  const adminList = await send('GET');
+  expect(adminList.headers.get('cache-control')).toBe('no-store');
+  expect((await adminList.json()).rows.map((r: { id: number; rank: number }) => [r.id, r.rank])).toEqual([
+    [2, 1],
+    [1, 3],
+  ]);
+
+  // Ocultar al #1: Ana pasa a mostrarse como #1; ocultos se recuerdan al cargar otro Excel.
+  const hide = (id: number, visible: boolean) =>
+    fetch(`${base}/api/ranking/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ visible }),
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Token': TOKEN },
+    });
+  expect((await hide(2, false)).status).toBe(200);
+  expect((await hide(999, false)).status).toBe(404);
+  const afterHide = (await get('/api/investigators?size=50')).body.items;
+  expect(afterHide.map((a: { id: number; ranking: { rank: number } }) => [a.id, a.ranking.rank])).toEqual([
+    [1, 1],
+  ]);
+  await send('PUT', { rows: [row('11111111', 'Ana', 3, 88, 'CU'), row('22222222', 'Luis', 1, 90)] });
+  expect((await get('/api/investigators?size=50')).body.items.map((a: { id: number }) => a.id)).toEqual([1]);
+  expect((await hide(2, true)).status).toBe(200);
+  expect((await get('/api/investigators?size=50')).body.total).toBe(2);
+
+  // Desactivar / activar varios en una sola llamada (ids fuera del ranking se ignoran).
+  const many = (ids: unknown, visible: unknown) =>
+    fetch(`${base}/api/ranking/visibility`, {
+      method: 'PUT',
+      body: JSON.stringify({ ids, visible }),
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Token': TOKEN },
+    });
+  expect((await many(['x'], false)).status).toBe(400);
+  expect((await many([1, 2, 999], false)).status).toBe(200);
+  expect((await get('/api/investigators?size=50')).body.total).toBe(0);
+  expect((await many([1, 2], true)).status).toBe(200);
+  expect((await get('/api/investigators?size=50')).body.total).toBe(2);
 
   // Sin ranking, vuelven los seleccionados de Metri-K.
   expect((await send('DELETE')).status).toBe(200);
