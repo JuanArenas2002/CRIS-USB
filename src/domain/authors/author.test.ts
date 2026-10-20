@@ -4,6 +4,7 @@ import {
   displayName,
   externalProfiles,
   featuredAuthors,
+  withRankingCenter,
   initials,
   mergeProducts,
   parseAuthorId,
@@ -228,4 +229,16 @@ test('destacados: mismo orden que el directorio (ranking USB); sin ranking, mayo
     makeAuthor({ id: 5, metrics: null, ranking: ranking(3) }),
   ];
   expect(featuredAuthors(all).map((a) => a.id)).toEqual([1, 3, 2, 4]);
+});
+
+test('centro del ranking: se suma si Metri-K no lo vincula (sin importar mayúsculas) y ordena el filtro', () => {
+  const aud = { id: 4, code: 'CI-4', acronym: 'AudacIA', name: 'AudacIA', logoUrl: null };
+  const ranking = (centerRank: number) => ({ index: 90, rank: centerRank, centerRank, center: 'AUDACIA' });
+  const all = [
+    makeAuthor({ id: 1, centers: [], ranking: ranking(1) }), // sin vínculo en Metri-K
+    makeAuthor({ id: 2, centers: [aud], ranking: ranking(2) }),
+    makeAuthor({ id: 3, centers: [], ranking: null }),
+  ].map((a) => withRankingCenter(a, [aud]));
+  expect(all.map((a) => a.centers?.map((c) => c.id))).toEqual([[4], [4], []]);
+  expect(queryAuthors(all, { centerId: 4, page: 1, pageSize: 10 }).items.map((a) => a.id)).toEqual([1, 2]);
 });

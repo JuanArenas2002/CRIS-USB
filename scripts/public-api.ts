@@ -33,6 +33,7 @@ import {
   type Author,
   type AuthorCategoryId,
   type GroupRef,
+  withRankingCenter,
 } from '../src/domain/authors/author.ts';
 
 export const DEFAULT_METRIK_URL = 'https://metrik.unisimon.edu.co/back/api';
@@ -121,13 +122,19 @@ export function createPublicApi({
       rankingStore.all(),
       rankingHidden.all(),
     ]);
-    return mapLimit(publishAuthors(await directory(), ranking, hidden), 8, async (a) => ({
-      ...withPhoto(a),
-      centers: (await centersOf(a.id).catch(() => [])).map((c) => {
-        const version = v.get(c.id);
-        return { ...c, logoUrl: version === undefined ? null : logoUrl(c.id, version) };
-      }),
-    }));
+    const withLogo = <C extends { id: number }>(c: C) => {
+      const version = v.get(c.id);
+      return { ...c, logoUrl: version === undefined ? null : logoUrl(c.id, version) };
+    };
+    const known: CenterRef[] = (await metrikCenters().catch(() => []))
+      .filter((c) => c.active)
+      .map(({ id, code, acronym, name }) => withLogo({ id, code, acronym, name }));
+    return mapLimit(publishAuthors(await directory(), ranking, hidden), 8, async (a) =>
+      withRankingCenter(
+        { ...withPhoto(a), centers: (await centersOf(a.id).catch((): CenterRef[] => [])).map(withLogo) },
+        known,
+      ),
+    );
   };
   const memberships = new Map<number, () => Promise<GroupRef[]>>();
   const groupsOf = (id: number) => {

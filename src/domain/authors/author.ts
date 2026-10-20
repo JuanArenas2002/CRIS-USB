@@ -218,9 +218,30 @@ const rank = (c: AuthorCategoryId | null) => {
 /** Puesto del investigador dentro de un centro según el ranking USB (∞ si no figura en ese centro). */
 export function centerRankIn(a: Author, centerId: number): number {
   const center = a.centers?.find((c) => c.id === centerId);
-  return a.ranking?.centerRank && center && a.ranking.center === (center.acronym ?? center.code)
+  return a.ranking?.centerRank && center && sameCenter(a.ranking.center, center.acronym ?? center.code)
     ? a.ranking.centerRank
     : Infinity;
+}
+
+const centerKey = (s: string) =>
+  s
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+
+/** Misma sigla sin importar mayúsculas, tildes ni signos: "AUDACIA" (Excel) = "AudacIA" (Metri-K). */
+export const sameCenter = (a: string | null | undefined, b: string | null | undefined) =>
+  !!a && !!b && centerKey(a) === centerKey(b);
+
+/**
+ * Suma a los centros de Metri-K el del ranking USB cuando Metri-K no vincula al investigador con
+ * él: así el filtro por centro, el puesto en el centro y el logo cuentan a las mismas personas.
+ */
+export function withRankingCenter<T extends Author>(a: T, known: CenterRef[]): T {
+  const center = a.ranking?.center;
+  const c = center ? known.find((k) => sameCenter(k.acronym ?? k.code, center)) : undefined;
+  return c && !a.centers?.some((x) => x.id === c.id) ? { ...a, centers: [c, ...(a.centers ?? [])] } : a;
 }
 
 export function queryAuthors(all: Author[], q: AuthorListQuery): AuthorListPage {

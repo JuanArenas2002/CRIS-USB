@@ -12,6 +12,7 @@ import {
   authorSlug,
   authorStats,
   featuredAuthors,
+  withRankingCenter,
   queryAuthors,
   type AuthorProfile,
 } from '@/domain/authors/author';
@@ -83,4 +84,12 @@ export function render(
   };
 }
 
-export { NAV_ITEMS, authorSlug, createQueryClient, hasPublicDetail, isIndexable, toPublicProfile };
+export {
+  NAV_ITEMS,
+  authorSlug,
+  createQueryClient,
+  hasPublicDetail,
+  isIndexable,
+  toPublicProfile,
+  withRankingCenter,
+};

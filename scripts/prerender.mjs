@@ -39,20 +39,28 @@ const groups = (await fetchPublicGroups(`${metrik}/group`)).map((g) => ({
 }));
 const logoVersions = await stores.logos.versions();
 const logoOf = (id) => (logoVersions.has(id) ? logoUrl(id, logoVersions.get(id)) : null);
+const metrikCenters = await fetchPublicCenters(metrik);
+// Centros activos con logo: el del ranking USB se suma al investigador si Metri-K no lo vincula.
+const centerRefs = metrikCenters
+  .filter((c) => c.active)
+  .map(({ id, code, acronym, name }) => ({ id, code, acronym, name, logoUrl: logoOf(id) }));
 // Publicados: los del ranking USB (/admin/ranking) o, sin ranking, los seleccionados en Metri-K.
 const directory = await fetchInvestigators(metrik);
 const ranked = publishAuthors(directory, await stores.ranking.all(), await stores.rankingHidden.all());
-const authors = (await withProfiles(metrik, { authors: ranked, production: directory.production })).map(
-  (a) => ({
-    ...a,
-    groups: a.groups.map((g) => ({
-      ...g,
-      ods: odsByGroup[g.id] ?? [],
-      type: groups.find((x) => x.id === g.id)?.type ?? null,
-    })),
-    centers: a.centers.map((c) => ({ ...c, logoUrl: logoOf(c.id) })),
-    photoUrl: photoOf(a.id),
-  }),
+const authors = (await withProfiles(metrik, { authors: ranked, production: directory.production })).map((a) =>
+  ssr.withRankingCenter(
+    {
+      ...a,
+      groups: a.groups.map((g) => ({
+        ...g,
+        ods: odsByGroup[g.id] ?? [],
+        type: groups.find((x) => x.id === g.id)?.type ?? null,
+      })),
+      centers: a.centers.map((c) => ({ ...c, logoUrl: logoOf(c.id) })),
+      photoUrl: photoOf(a.id),
+    },
+    centerRefs,
+  ),
 );
 const authorsQ = ssr.createServerAuthorQueries(authors);
 const published = new Map(authors.map((a) => [a.id, a]));
@@ -71,7 +79,7 @@ const members = new Map(
 );
 const groupsQ = ssr.createServerGroupQueries(groups, members);
 const sites = await stores.sites.all();
-const centers = (await fetchPublicCenters(metrik)).map((c) => ({
+const centers = metrikCenters.map((c) => ({
   ...c,
   logoUrl: logoOf(c.id),
   website: sites[c.id] ?? null,
