@@ -110,7 +110,10 @@ for (const a of authors) {
   if (ssr.isIndexable(a)) profilePaths.push(url);
   await writePage(url, path.join(dist, url, 'index.html'), (qc) => qc.fetchQuery(authorsQ.profile(a.id)));
 }
-await writePage('/grupos', path.join(dist, 'grupos', 'index.html'), (qc) => qc.fetchQuery(groupsQ.list()));
+// Con la lista de centros: logo y sigla del centro de cada grupo salen en el HTML.
+await writePage('/grupos', path.join(dist, 'grupos', 'index.html'), (qc) =>
+  Promise.all([qc.fetchQuery(groupsQ.list()), qc.fetchQuery(centersQ.list())]),
+);
 const groupPaths = [];
 for (const g of activeGroups) {
   const url = `/grupos/${ssr.authorSlug(g)}`;
@@ -119,6 +122,7 @@ for (const g of activeGroups) {
     Promise.all([
       qc.fetchQuery(groupsQ.detail(g.id)),
       qc.fetchQuery(groupsQ.members(g.id)),
+      qc.fetchQuery(centersQ.list()),
       // Producción del grupo = la de sus integrantes con perfil publicado.
       ...(members.get(g.id) ?? [])
         .filter((m) => m.profilePublished)
@@ -132,7 +136,10 @@ const centerPaths = [];
 for (const c of centers.filter((x) => x.active)) {
   const url = `/centros/${ssr.authorSlug(c)}`;
   centerPaths.push(url);
-  await writePage(url, path.join(dist, url, 'index.html'), (qc) => qc.fetchQuery(centersQ.detail(c.id)));
+  // Con la lista de grupos: la sección «Grupos de investigación» del centro sale en el HTML.
+  await writePage(url, path.join(dist, url, 'index.html'), (qc) =>
+    Promise.all([qc.fetchQuery(centersQ.detail(c.id)), qc.fetchQuery(groupsQ.list())]),
+  );
 }
 for (const section of ssr.NAV_ITEMS.filter((i) => !i.ready).map((i) => i.to)) {
   await writePage(section, path.join(dist, section, 'index.html'));

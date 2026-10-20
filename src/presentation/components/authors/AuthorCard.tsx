@@ -8,7 +8,6 @@ import {
   initials,
   type Author,
 } from '@/domain/authors/author';
-import { UsbIndexMeter } from './UsbIndexMeter';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { IdLogo } from '@/presentation/components/ui/IdLogo';
 import { useLabels } from '@/presentation/hooks/use-labels';
@@ -26,7 +25,16 @@ export const medalFor = (centerRank: number | null | undefined) =>
 /** "Maestría/Magister" → "Maestría". */
 export const shortDegree = (d: string | null) => (d ? d.split('/')[0]!.trim() : null);
 
-/** Tarjeta con la misma anatomía que la plantilla; cada dato sale de Metri-K. */
+const card =
+  'group relative flex flex-col rounded-[24px] bg-surface-container-lowest p-5 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)]';
+
+/**
+ * Tarjeta en tres niveles de lectura:
+ * 1. Quién es: retrato, categoría, nombre y grupo principal.
+ * 2. Cuánto produce: índice USB destacado, con su puesto en el centro y el general.
+ * 3. Detalle: cifras clave y, al pie, centros e identificadores (logos enlazados).
+ * Toda la tarjeta enlaza al perfil (pseudo-elemento del nombre); los identificadores van por encima.
+ */
 export function AuthorCard({ author }: { author: Author }) {
   const href = `/investigadores/${authorSlug(author)}`;
   const name = displayName(author.name);
@@ -37,244 +45,213 @@ export function AuthorCard({ author }: { author: Author }) {
   const r = author.ranking;
   const centerRank = r?.center && r.centerRank ? r.centerRank : null;
   const medal = medalFor(centerRank);
+  const degree = shortDegree(author.degree && labels.domain(author.degree));
+  const stats = author.metrics
+    ? [
+        {
+          icon: 'article',
+          label: t('card.publications'),
+          value: labels.number(author.metrics.scopusPublications),
+        },
+        { icon: 'show_chart', label: t('card.hIndexShort'), value: author.metrics.hIndex ?? '—' },
+        { icon: 'menu_book', label: t('card.products'), value: labels.number(author.metrics.products) },
+      ]
+    : [
+        { icon: 'workspace_premium', label: t('mincienciasCategory'), value: cat?.code ?? '—' },
+        { icon: 'school', label: t('card.degree'), value: degree ?? '—' },
+      ];
 
   return (
-    <article className="group relative flex flex-col justify-between rounded-[24px] bg-surface-container-lowest p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
-      <div className="flex flex-col">
-        {/* Retrato: foto asignada en /admin/fotos; si no hay, monograma sobre el mismo marco de la plantilla. */}
-        <div
-          aria-hidden="true"
-          className="relative h-72 w-full overflow-hidden rounded-[20px] bg-gradient-to-br from-badge-sage-bg via-[#d5e4d8] to-[#b9d1c2]"
-        >
-          {author.photoUrl ? (
-            <img
-              src={author.photoUrl}
-              alt=""
-              width={512}
-              height={512}
-              loading="lazy"
-              decoding="async"
-              className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
-            />
-          ) : (
-            <Monogram name={name} />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
-          {/* Top 3 de su centro: cinta sobre la foto (el dato también va en texto, abajo). */}
+    <article
+      className={`${card} transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_32px_-6px_rgba(21,71,52,0.16)] motion-reduce:transition-none motion-reduce:hover:translate-y-0`}
+    >
+      {/* Nivel 1: identidad */}
+      <div className="flex items-start gap-4">
+        <div aria-hidden="true" className="relative shrink-0">
+          <div className="h-24 w-24 overflow-hidden rounded-2xl bg-gradient-to-br from-badge-sage-bg via-[#d5e4d8] to-[#b9d1c2] shadow-sm ring-1 ring-border-subtle">
+            {author.photoUrl ? (
+              <img
+                src={author.photoUrl}
+                alt=""
+                width={192}
+                height={192}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
+              />
+            ) : (
+              <span className="flex h-full w-full items-center justify-center bg-surface-dark-forest text-[28px] font-bold tracking-tight text-secondary-fixed">
+                {initials(name)}
+              </span>
+            )}
+          </div>
           {medal ? (
             <span
-              className={`absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-label-md font-bold tracking-wide shadow-lg ring-2 ${medal}`}
+              className={`absolute -right-2 -bottom-2 flex h-8 w-8 items-center justify-center rounded-full shadow-md ring-[3px] ring-surface-container-lowest ${medal}`}
             >
-              <Icon name="emoji_events" className="text-[20px]" />
-              {t('card.topCenter', { rank: centerRank, center: r!.center })}
+              <Icon name="emoji_events" className="text-[17px]" />
             </span>
           ) : null}
-          <span className="absolute bottom-3 left-3 max-w-[calc(100%-1.5rem)] truncate rounded-full bg-[#0E382B]/90 px-3 py-1 text-label-sm font-semibold tracking-wide text-surface-container-lowest shadow-sm backdrop-blur-md">
-            {author.mainGroup?.name ?? 'Universidad Simón Bolívar'}
-          </span>
         </div>
-
-        <div className="pt-4 pb-2">
-          <h3 className="text-headline-sm font-bold tracking-tight text-[#0F241A] transition-colors group-hover:text-primary">
-            {/* El enlace del título cubre toda la tarjeta (pseudo-elemento) sin anidar controles. */}
+        <div className="min-w-0 flex-1 pt-0.5">
+          <span className="inline-flex rounded-full bg-badge-sage-bg px-2.5 py-0.5 text-[11px] font-bold tracking-wide text-badge-sage-text">
+            {labels.researcher(author.category)}
+          </span>
+          <h3 className="mt-1.5 text-[18px] leading-snug font-bold tracking-tight text-[#0F241A] transition-colors group-hover:text-primary">
+            {/* El enlace del nombre cubre toda la tarjeta sin anidar controles. */}
             <Link
               to={href}
-              className="after:absolute after:inset-0 after:rounded-[24px] focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-secondary"
+              className="line-clamp-2 after:absolute after:inset-0 after:rounded-[24px] focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-secondary"
             >
               {name}
             </Link>
           </h3>
-          <p className="mt-1 flex items-center gap-1.5 text-body-sm text-neutral-muted">
-            <Icon name="person" className="text-[18px] text-primary" />
-            {labels.researcher(author.category)}
+          <p
+            className="mt-1 flex items-center gap-1.5 text-label-md text-neutral-muted"
+            title={author.mainGroup?.name}
+          >
+            <Icon name="groups" className="text-[16px] text-secondary" />
+            <span className="truncate">{author.mainGroup?.name ?? 'Universidad Simón Bolívar'}</span>
           </p>
-          {/* Centros a los que aporta: logo y sigla (el nombre, para lectores de pantalla). */}
-          {author.centers?.length ? (
-            <ul className="mt-2 flex flex-wrap gap-1.5" aria-label={t('card.centers')}>
-              {author.centers.map((c) => (
-                <li
-                  key={c.id}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border-subtle bg-white px-2 text-[12px] font-semibold text-on-surface-variant"
-                >
-                  {c.logoUrl ? (
-                    <img
-                      src={c.logoUrl}
-                      alt=""
-                      loading="lazy"
-                      className="h-6 w-auto max-w-14 object-contain"
-                    />
-                  ) : (
-                    <Icon name="domain" className="text-[16px] text-secondary" />
-                  )}
-                  {c.acronym ?? c.code}
-                  <span className="sr-only">{c.name}</span>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          {/* Ranking de productividad USB (/admin/ranking). */}
-          {r ? (
-            <div className="mt-3 flex flex-col gap-2 rounded-[14px] bg-metric-bg p-3">
-              <UsbIndexMeter label={t('card.usbIndex')} value={r.index} />
-              <span
-                className={`inline-flex w-fit items-center gap-1 rounded-md px-2 py-0.5 text-[12px] font-semibold ${
-                  medal ? `ring-1 ${medal}` : 'bg-badge-sage-bg text-badge-sage-text'
-                }`}
-              >
-                <Icon name={medal ? 'emoji_events' : 'military_tech'} className="text-[14px]" />
-                {centerRank
-                  ? t('card.centerRank', { rank: centerRank, center: r.center })
-                  : t('card.generalRank', { rank: r.rank })}
-              </span>
-            </div>
-          ) : null}
-        </div>
-
-        <div className="relative my-2 py-1">
-          <Icon
-            name="school"
-            className="pointer-events-none absolute top-1/2 right-0 -translate-y-1/2 text-[64px] text-primary opacity-10"
-          />
-          <p className="mb-2 inline-flex items-center gap-1 rounded-md bg-badge-sage-bg px-2.5 py-0.5 text-label-sm font-semibold text-badge-sage-text">
-            <Icon name="link" className="text-[15px]" /> {t('card.scientificIds')}
-          </p>
-          {ids.length ? (
-            <ul className="flex flex-wrap gap-1.5 pr-8" aria-label={t('card.idsAvailable')}>
-              {ids.map((p) => (
-                <li key={p.label}>
-                  {/* Por encima del enlace que cubre la tarjeta (z-10): abre el perfil externo, no el del portal. */}
-                  <a
-                    href={p.url}
-                    target="_blank"
-                    rel="noopener"
-                    title={`${p.label}: ${labels.domain(p.value)}`}
-                    className="relative z-10 inline-flex items-center gap-1.5 rounded-md bg-surface-cream-alt py-0.5 pr-2.5 pl-1 text-[12px] text-on-surface-variant transition-colors hover:bg-badge-sage-bg hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-secondary"
-                  >
-                    <IdLogo label={p.label} size={16} />
-                    {p.label}
-                    <span className="sr-only">{t('card.externalProfile', { name })}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="pr-8 text-[12px] text-neutral-muted">{t('card.noIds')}</p>
-          )}
         </div>
       </div>
 
-      <div className="mt-4 flex flex-col gap-3">
-        {/* Destacados: mismas métricas que la plantilla (publicaciones + índice H). Resto: categoría. */}
-        <MetricBox
-          headline={
-            author.metrics
-              ? { icon: 'feed', label: t('card.publications'), value: author.metrics.scopusPublications }
-              : { icon: 'workspace_premium', label: t('mincienciasCategory'), value: cat?.code ?? '—' }
-          }
-          left={
-            author.metrics
-              ? { label: t('card.hIndex'), value: author.metrics.hIndex ?? '—' }
-              : {
-                  label: t('card.degree'),
-                  value: shortDegree(author.degree && labels.domain(author.degree)) ?? '—',
-                }
-          }
-          right={
-            author.metrics
-              ? { label: t('card.products'), value: author.metrics.products }
-              : { label: t('card.ids'), value: ids.length }
-          }
-        />
-        <span
-          aria-hidden="true"
-          className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-primary text-label-md font-semibold text-surface-container-lowest transition-colors group-hover:bg-secondary"
-        >
-          {t('card.viewProfile')} <Icon name="arrow_forward" className="text-[16px]" />
-        </span>
+      {/* Nivel 2: indicador principal (ranking USB) */}
+      {r ? (
+        <div className="mt-5 rounded-2xl bg-metric-bg p-4">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-semibold tracking-wider text-neutral-muted uppercase">
+                {t('card.usbIndex')}
+              </p>
+              <p className="mt-1 leading-none text-primary">
+                <span className="text-[32px] font-bold tracking-tight tabular-nums">
+                  {labels.number(r.index)}
+                </span>
+                <span className="text-label-md font-semibold text-neutral-muted"> / 100</span>
+              </p>
+            </div>
+            <div className="flex flex-col items-end gap-1.5 text-right">
+              {centerRank ? (
+                <span
+                  className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-label-sm font-bold ${
+                    medal ? `shadow-sm ring-1 ${medal}` : 'bg-badge-sage-bg text-badge-sage-text'
+                  }`}
+                >
+                  <Icon name={medal ? 'emoji_events' : 'military_tech'} className="text-[15px]" />
+                  {t('card.centerRank', { rank: centerRank, center: r.center })}
+                </span>
+              ) : null}
+              <span className="text-label-sm font-semibold text-neutral-muted">
+                {t('card.generalRank', { rank: r.rank })}
+              </span>
+            </div>
+          </div>
+          <div
+            role="meter"
+            aria-label={t('card.usbIndex')}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={r.index}
+            className="mt-3 h-2 overflow-hidden rounded-full bg-secondary/15"
+          >
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-secondary to-primary"
+              style={{ width: `${Math.min(100, Math.max(0, r.index))}%` }}
+            />
+          </div>
+        </div>
+      ) : null}
+
+      {/* Nivel 3: cifras clave */}
+      <dl
+        className={`mt-4 grid divide-x divide-surface-container rounded-2xl border border-surface-container ${
+          stats.length === 3 ? 'grid-cols-3' : 'grid-cols-2'
+        }`}
+      >
+        {stats.map((s) => (
+          // Cifra primero (lo que se escanea) y rótulo debajo, sin cortar: con guiones si no cabe.
+          <div key={s.label} className="flex min-w-0 flex-col-reverse gap-0.5 px-3 py-3">
+            <dt className="flex items-center gap-1 text-[11px] leading-tight font-medium hyphens-auto text-neutral-muted">
+              <Icon name={s.icon} className="text-[13px] text-secondary" />
+              <span className="min-w-0">{s.label}</span>
+            </dt>
+            <dd className="truncate text-[20px] leading-tight font-bold text-on-surface tabular-nums">
+              {s.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      {/* Pie: centros e identificadores (logos; el nombre va en texto accesible y tooltip) */}
+      {/* Espaciador: el pie queda alineado entre tarjetas de la misma fila. */}
+      <div className="min-h-4 flex-1" />
+      <div className="flex items-center justify-between gap-3 border-t border-surface-container pt-4">
+        {author.centers?.length ? (
+          <ul className="flex min-w-0 flex-wrap gap-1.5" aria-label={t('card.centers')}>
+            {author.centers.map((c) => (
+              <li
+                key={c.id}
+                title={c.name}
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border-subtle bg-white px-2 text-label-sm font-semibold text-on-surface-variant"
+              >
+                {c.logoUrl ? (
+                  <img src={c.logoUrl} alt="" loading="lazy" className="h-6 w-auto max-w-16 object-contain" />
+                ) : (
+                  <Icon name="domain" className="text-[16px] text-secondary" />
+                )}
+                {c.logoUrl ? <span className="sr-only">{c.acronym ?? c.code}</span> : (c.acronym ?? c.code)}
+                <span className="sr-only">{c.name}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <span />
+        )}
+        {ids.length ? (
+          <ul className="flex shrink-0 gap-1.5" aria-label={t('card.idsAvailable')}>
+            {ids.map((p) => (
+              <li key={p.label}>
+                {/* Por encima del enlace que cubre la tarjeta (z-10): abre el perfil externo. */}
+                <a
+                  href={p.url}
+                  target="_blank"
+                  rel="noopener"
+                  title={`${p.label}: ${labels.domain(p.value)}`}
+                  className="relative z-10 flex h-9 w-9 items-center justify-center rounded-lg border border-border-subtle bg-white transition-colors hover:border-secondary hover:bg-badge-sage-bg focus-visible:outline-2 focus-visible:outline-secondary"
+                >
+                  <IdLogo label={p.label} size={20} />
+                  <span className="sr-only">
+                    {p.label}
+                    {t('card.externalProfile', { name })}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <span className="text-label-sm text-neutral-muted">{t('card.noIds')}</span>
+        )}
       </div>
     </article>
   );
 }
 
 export function AuthorCardSkeleton() {
+  const bar = 'animate-pulse rounded bg-surface-cream-alt motion-reduce:animate-none';
   return (
-    <div className="flex flex-col gap-4 rounded-[24px] bg-surface-container-lowest p-4">
-      <div className="h-72 animate-pulse rounded-[20px] bg-surface-cream-alt motion-reduce:animate-none" />
-      <div className="h-5 w-2/3 animate-pulse rounded bg-surface-cream-alt motion-reduce:animate-none" />
-      <div className="h-4 w-1/3 animate-pulse rounded bg-surface-cream-alt motion-reduce:animate-none" />
-      <div className="h-24 animate-pulse rounded-[14px] bg-surface-cream-alt motion-reduce:animate-none" />
-      <div className="h-10 animate-pulse rounded-xl bg-surface-cream-alt motion-reduce:animate-none" />
-    </div>
-  );
-}
-
-interface Metric {
-  label: string;
-  value: string | number;
-}
-
-function MetricBox({
-  headline,
-  left,
-  right,
-}: {
-  headline: Metric & { icon: string };
-  left: Metric;
-  right: Metric;
-}) {
-  const small = 'text-[10px] font-semibold tracking-wider text-neutral-muted uppercase';
-  return (
-    <div className="flex flex-col gap-2.5 rounded-[14px] bg-metric-bg p-3">
-      <div className="flex items-center justify-between border-b border-surface-container pb-2">
-        <span className="flex items-center gap-2 text-label-md font-semibold text-primary-container">
-          <Icon name={headline.icon} className="text-[20px] text-primary" /> {headline.label}
-        </span>
-        <span className="text-[26px] leading-none font-bold text-primary">{headline.value}</span>
-      </div>
-      <dl className="grid grid-cols-2 gap-2 pt-0.5">
-        <div className="flex min-w-0 items-center gap-2">
-          <Icon name="trending_up" className="text-[20px] text-secondary" />
-          <div className="flex min-w-0 flex-col">
-            <dt className={small}>{left.label}</dt>
-            <dd className="truncate text-[15px] leading-tight font-bold text-on-surface">{left.value}</dd>
-          </div>
+    <div className={card}>
+      <div className="flex items-start gap-4">
+        <div className={`h-24 w-24 shrink-0 rounded-2xl ${bar}`} />
+        <div className="flex flex-1 flex-col gap-2.5 pt-1">
+          <div className={`h-4 w-1/3 rounded-full ${bar}`} />
+          <div className={`h-5 w-4/5 ${bar}`} />
+          <div className={`h-3.5 w-2/3 ${bar}`} />
         </div>
-        <div className="flex flex-col border-l border-surface-container pl-3">
-          <dt className={small}>{right.label}</dt>
-          <dd className="text-[15px] leading-tight font-bold text-on-surface">{right.value}</dd>
-        </div>
-      </dl>
-    </div>
-  );
-}
-
-function Monogram({ name }: { name: string }) {
-  return (
-    <>
-      <svg
-        className="absolute inset-0 h-full w-full text-primary-container/40"
-        fill="none"
-        viewBox="0 0 400 300"
-      >
-        <path
-          d="M-20 210C80 150 170 260 260 190C350 120 380 200 440 160"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          className="wave-drift"
-        />
-        <path
-          d="M-20 90C90 150 200 40 300 110C360 150 400 90 440 70"
-          stroke="currentColor"
-          strokeDasharray="6 6"
-          strokeWidth="2"
-          className="wave-dash"
-        />
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center pb-6">
-        <span className="flex h-28 w-28 items-center justify-center rounded-full bg-surface-dark-forest text-[38px] font-bold tracking-tight text-secondary-fixed shadow-[0_10px_30px_-8px_rgba(14,56,43,0.55)] ring-8 ring-white/55 transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none">
-          {initials(name)}
-        </span>
       </div>
-    </>
+      <div className={`mt-5 h-[92px] rounded-2xl ${bar}`} />
+      <div className={`mt-4 h-[68px] rounded-2xl ${bar}`} />
+      <div className={`mt-4 h-9 ${bar}`} />
+    </div>
   );
 }

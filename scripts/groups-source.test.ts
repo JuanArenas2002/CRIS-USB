@@ -24,6 +24,17 @@ const raw = {
     orcid: 'https://orcid.org/0000-0002-1825-0097',
   },
   municipality: { name: 'BARRANQUILLA', department: { name: 'ATLÁNTICO' } },
+  // Cada centro llega completo, con el director y sus datos personales; del grupo solo sale el id.
+  centers: [
+    {
+      id: 3,
+      acronym: 'CIISO',
+      state: true,
+      director: { person: { documentNumber: '22222222', email: 'd@x.co', phone: '3111111111' } },
+    },
+    { id: 9, acronym: 'CERRADO', state: false },
+    { id: 3, acronym: 'CIISO', state: true },
+  ],
 };
 
 test('proyección pública: lista blanca de campos, sin datos personales ni URLs peligrosas', () => {
@@ -35,6 +46,7 @@ test('proyección pública: lista blanca de campos, sin datos personales ni URLs
     active: true,
     type: 'Institucional',
     ods: [],
+    centerIds: [3], // solo activos, sin repetir
     category: 'A1',
     gruplacUrl: raw.url,
     city: 'BARRANQUILLA',
@@ -49,7 +61,18 @@ test('proyección pública: lista blanca de campos, sin datos personales ni URLs
     },
   });
   const json = JSON.stringify(g);
-  for (const secret of ['99999999', '11111111', '3000000000', '$2b$', 'm@x.co', 'l@x.co', 'mentor'])
+  for (const secret of [
+    '99999999',
+    '11111111',
+    '3000000000',
+    '$2b$',
+    'm@x.co',
+    'l@x.co',
+    'mentor',
+    '22222222',
+    'd@x.co',
+    'CIISO',
+  ])
     expect(json).not.toContain(secret);
 });
 

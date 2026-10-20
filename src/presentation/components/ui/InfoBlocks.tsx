@@ -2,13 +2,15 @@ import type { ReactNode } from 'react';
 import { Icon } from './Icon';
 
 /** Bloques de "Información institucional" de las fichas de grupo y de centro. */
-export function SectionHead({ icon, children }: { icon: string; children: ReactNode }) {
+export function SectionHead({ icon, id, children }: { icon: string; id?: string; children: ReactNode }) {
   return (
     <div className="mb-4 flex items-center gap-3 rounded-lg bg-surface-cream-alt/40 p-2.5">
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-badge-sage-bg text-badge-sage-text">
         <Icon name={icon} className="text-[20px]" />
       </span>
-      <h2 className="text-headline-md font-semibold text-primary">{children}</h2>
+      <h2 id={id} className="text-headline-md font-semibold text-primary">
+        {children}
+      </h2>
     </div>
   );
 }

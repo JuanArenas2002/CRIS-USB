@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { authorSlug, displayName } from '@/domain/authors/author';
 import { hasPublicDetail, type Group } from '@/domain/groups/group';
 import { categoryTone } from './category-tone';
+import { GroupCenters } from './GroupCenters';
 import { GroupTypeIcon } from './GroupTypeIcon';
 import { Icon } from '@/presentation/components/ui/Icon';
 
@@ -88,6 +89,7 @@ export function GroupCard({ group }: { group: Group }) {
               </span>
             </p>
           ) : null}
+          <GroupCenters ids={group.centerIds} className="mt-3" />
         </div>
       </div>
 

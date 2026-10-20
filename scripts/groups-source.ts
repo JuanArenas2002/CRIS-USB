@@ -59,6 +59,15 @@ export function toPublicGroup(raw: Raw): GroupInfo | null {
         }
       : null,
     ods: [], // Metri-K no los tiene: los asigna el portal (ods-store.ts)
+    // De cada centro solo el id (y solo activos): el objeto trae los datos personales del director.
+    centerIds: [
+      ...new Set(
+        (Array.isArray(raw.centers) ? raw.centers : [])
+          .map(obj)
+          .filter((c) => c?.state === true && typeof c.id === 'number' && c.id > 0)
+          .map((c) => c!.id as number),
+      ),
+    ].sort((a, b) => a - b),
   };
 }
 

@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { authorSlug, displayName, externalProfiles, parseAuthorId } from '@/domain/authors/author';
 import { resolutionFileUrl, type CenterDetail } from '@/domain/centers/center';
+import { sortGroups } from '@/domain/groups/group';
+import { GroupRow, GroupRowHeader } from '@/presentation/components/groups/GroupRow';
 import { CenterStatus } from '@/presentation/components/centers/CenterCard';
 import { ErrorState } from '@/presentation/components/feedback/Feedback';
 import { OdsLinked } from '@/presentation/components/groups/OdsIcons';
@@ -11,6 +13,9 @@ import { IdLogo } from '@/presentation/components/ui/IdLogo';
 import { Field, InfoColumn, SectionHead } from '@/presentation/components/ui/InfoBlocks';
 import { useCenterQueries } from '@/presentation/hooks/use-centers';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
+import { useGroups } from '@/presentation/hooks/use-groups';
+import { useAutoTranslate } from '@/presentation/hooks/use-auto-translate';
+import { AutoTranslateNote, TextSkeleton, sourceLang } from '@/presentation/components/ui/AutoTranslate';
 import { useLabels } from '@/presentation/hooks/use-labels';
 import { ORGANIZATION, absoluteUrl, safeJson } from '@/shared/seo';
 import { NotFoundPage } from './NotFoundPage';
@@ -55,6 +60,9 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
   const profiles = director ? externalProfiles(director) : [];
   const years = c.foundedYear ? new Date().getFullYear() - c.foundedYear : null;
   const lineNames = c.lines.map((l) => l.name);
+  // Textos libres de Metri-K: nombres de líneas y descripciones de resoluciones (no son nombres propios).
+  const linesTr = useAutoTranslate(lineNames);
+  const descTr = useAutoTranslate(c.resolutions.map((r) => r.description ?? ''));
 
   useDocumentMetadata({
     title: c.acronym ? `${c.acronym} · ${c.name}` : c.name,
@@ -257,15 +265,28 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
               </span>
               {t('detail.lines')}
             </h2>
+            {c.lines.length ? <AutoTranslateNote status={linesTr.status} onRetry={linesTr.retry} /> : null}
             {c.lines.length ? (
-              <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                {c.lines.map((l) => (
+              <ul
+                lang={sourceLang(linesTr.status)}
+                aria-busy={linesTr.status === 'pending'}
+                className="grid grid-cols-1 gap-2.5 sm:grid-cols-2"
+              >
+                {c.lines.map((l, i) => (
                   <li
                     key={l.id}
                     className="flex items-center gap-2.5 rounded-xl border border-border-subtle/80 bg-canvas-cream p-3"
                   >
                     <Icon name="check_circle" className="text-[18px] text-secondary" />
-                    <span className="text-body-sm leading-tight font-medium text-on-surface">{l.name}</span>
+                    {linesTr.status === 'pending' ? (
+                      <span className="flex-1">
+                        <TextSkeleton lines={1} />
+                      </span>
+                    ) : (
+                      <span className="text-body-sm leading-tight font-medium text-on-surface">
+                        {linesTr.texts[i]}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -286,13 +307,18 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
           </div>
         </section>
 
+        <CenterGroups centerId={c.id} />
+
         {/* Resoluciones */}
         <section className={`${card} p-5 md:p-6`}>
           <SectionHead icon="gavel">{t('detail.resolutions')}</SectionHead>
           <p className="-mt-2 mb-4 text-body-sm text-on-surface-variant">{t('detail.resolutionsLead')}</p>
+          {c.resolutions.some((r) => r.description) ? (
+            <AutoTranslateNote status={descTr.status} onRetry={descTr.retry} />
+          ) : null}
           {c.resolutions.length ? (
             <ul className="flex flex-col gap-3">
-              {c.resolutions.map((r) => (
+              {c.resolutions.map((r, i) => (
                 <li
                   key={r.id}
                   className="flex flex-col items-start justify-between gap-4 rounded-xl bg-canvas-cream p-4 sm:flex-row sm:items-center"
@@ -314,7 +340,16 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
                       </p>
                       <h3 className="text-headline-sm font-semibold text-primary">{r.number ?? '—'}</h3>
                       {r.description ? (
-                        <p className="text-body-sm text-on-surface-variant">{r.description}</p>
+                        descTr.status === 'pending' ? (
+                          <TextSkeleton lines={3} />
+                        ) : (
+                          <p
+                            lang={sourceLang(descTr.status)}
+                            className="text-body-sm text-on-surface-variant"
+                          >
+                            {descTr.texts[i]}
+                          </p>
+                        )
                       ) : null}
                     </div>
                   </div>
@@ -345,5 +380,44 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
         </Link>
       </div>
     </article>
+  );
+}
+
+/** Grupos de investigación del centro: cruce `group.centerIds` (Metri-K) con el id del centro. */
+function CenterGroups({ centerId }: { centerId: number }) {
+  const { t } = useTranslation('centers');
+  const { data, isError, refetch, error } = useGroups();
+  const groups = data ? sortGroups(data.filter((g) => g.centerIds?.includes(centerId))) : null;
+  return (
+    <section aria-labelledby="center-groups-title" className={`${card} p-5 md:p-6`}>
+      <SectionHead icon="hub" id="center-groups-title">
+        {t('detail.groups')}
+      </SectionHead>
+      {isError ? (
+        <ErrorState error={error} onRetry={() => refetch()} />
+      ) : !groups ? (
+        <div
+          aria-busy="true"
+          aria-label={t('detail.groupsLoading')}
+          className="h-40 animate-pulse rounded-2xl bg-surface-cream-alt motion-reduce:animate-none"
+        />
+      ) : groups.length ? (
+        <>
+          <p className="-mt-2 mb-4 text-body-sm text-on-surface-variant">
+            {t('detail.groupsLead', { count: groups.length })}
+          </p>
+          <div className="overflow-hidden rounded-2xl ring-1 ring-border-subtle">
+            <GroupRowHeader />
+            <ul className="divide-y divide-border-subtle">
+              {groups.map((g) => (
+                <GroupRow key={g.id} group={g} exceptCenter={centerId} />
+              ))}
+            </ul>
+          </div>
+        </>
+      ) : (
+        <p className="text-body-sm text-neutral-muted">{t('detail.noGroups')}</p>
+      )}
+    </section>
   );
 }

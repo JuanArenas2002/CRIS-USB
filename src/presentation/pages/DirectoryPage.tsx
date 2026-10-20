@@ -89,7 +89,7 @@ export function DirectoryPage() {
             <p className="mt-1 mb-10 max-w-2xl text-body-md text-neutral-muted">
               {t('directory.featuredLead')}
             </p>
-            <div className="grid grid-cols-1 gap-gutter md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            <div className="grid grid-cols-1 gap-gutter md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
               {featured.data.map((a) => (
                 <AuthorCard key={a.id} author={a} />
               ))}
@@ -129,7 +129,7 @@ export function DirectoryPage() {
               <>
                 <div
                   aria-busy={list.isPlaceholderData}
-                  className={`grid grid-cols-1 gap-gutter md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-[2200px]:grid-cols-6 ${list.isPlaceholderData ? 'opacity-60' : ''}`}
+                  className={`grid grid-cols-1 gap-gutter md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 min-[2200px]:grid-cols-5 ${list.isPlaceholderData ? 'opacity-60' : ''}`}
                 >
                   {data.items.map((a) => (
                     <AuthorCard key={a.id} author={a} />
@@ -155,7 +155,7 @@ export function DirectoryPage() {
             <div
               aria-busy="true"
               aria-label={t('directory.loading')}
-              className="grid grid-cols-1 gap-gutter md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-[2200px]:grid-cols-6"
+              className="grid grid-cols-1 gap-gutter md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 min-[2200px]:grid-cols-5"
             >
               {Array.from({ length: 6 }, (_, i) => (
                 <AuthorCardSkeleton key={i} />

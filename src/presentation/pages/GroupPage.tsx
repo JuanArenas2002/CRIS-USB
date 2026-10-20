@@ -18,6 +18,7 @@ import {
 } from '@/domain/authors/author';
 import type { GroupDetail, GroupLine, GroupMember } from '@/domain/groups/group';
 import { CategoryTimeline } from '@/presentation/components/groups/CategoryTimeline';
+import { GroupCenters } from '@/presentation/components/groups/GroupCenters';
 import { OdsLinked } from '@/presentation/components/groups/OdsIcons';
 import { ErrorState } from '@/presentation/components/feedback/Feedback';
 import { categoryTone } from '@/presentation/components/groups/category-tone';
@@ -28,7 +29,8 @@ import { TypologyCard, TYPOLOGY_STYLE } from '@/presentation/components/ui/Typol
 import { useAuthorProfiles } from '@/presentation/hooks/use-authors';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
 import { useLabels } from '@/presentation/hooks/use-labels';
-import { useAutoTranslate, type AutoTranslateStatus } from '@/presentation/hooks/use-auto-translate';
+import { useAutoTranslate } from '@/presentation/hooks/use-auto-translate';
+import { AutoTranslateNote, sourceLang } from '@/presentation/components/ui/AutoTranslate';
 import { GroupQueriesContext } from '@/presentation/hooks/use-groups';
 import { ORGANIZATION, absoluteUrl, safeJson } from '@/shared/seo';
 import { NotFoundPage } from './NotFoundPage';
@@ -204,6 +206,7 @@ function GroupProfile({ group }: { group: GroupDetail }) {
                 {leader ? <span className="text-neutral-muted">·</span> : null}
                 <span>Universidad Simón Bolívar{city ? ` (${city})` : ''}</span>
               </p>
+              <GroupCenters ids={group.centerIds} className="mt-1" />
             </div>
           </div>
           <div className="z-10 flex w-full shrink-0 flex-col items-center gap-2.5 sm:w-auto sm:flex-row lg:flex-col xl:flex-row print:hidden">
@@ -444,7 +447,7 @@ function ResearchLines({ lines }: { lines: GroupLine[] }) {
   const tr = useAutoTranslate(lines.flatMap((l) => [l.name, ...LINE_FIELDS.map((f) => l[f.key] ?? '')]));
   const text = (line: number, field: number) => tr.texts[line * stride + field];
   // Sin traducir en una interfaz en otro idioma, el texto se marca como español (lectores de pantalla).
-  const lang = tr.status === 'original' || tr.status === 'translated' ? undefined : 'es';
+  const lang = sourceLang(tr.status);
   return (
     <div className="flex-1 border-border-subtle/60 pb-6 lg:border-r lg:pr-6 lg:pb-0 max-lg:border-b">
       <h3 className="mb-3.5 flex items-center gap-2 text-headline-sm font-bold tracking-tight text-primary">
@@ -524,29 +527,6 @@ function ResearchLines({ lines }: { lines: GroupLine[] }) {
         <p className="text-body-sm text-neutral-muted">{t('detail.noLines')}</p>
       )}
     </div>
-  );
-}
-
-function AutoTranslateNote({ status, onRetry }: { status: AutoTranslateStatus; onRetry: () => void }) {
-  const { t } = useTranslation();
-  if (status === 'original') return null;
-  return (
-    <p
-      aria-live="polite"
-      className="mb-3 flex flex-wrap items-center gap-1.5 text-label-sm text-neutral-muted"
-    >
-      <Icon name="translate" className="text-[16px] text-secondary" />
-      {t(`autoTranslate.${status}`)}
-      {status === 'needs-gesture' ? (
-        <button
-          type="button"
-          onClick={onRetry}
-          className="ml-1 rounded-md bg-badge-sage-bg px-2 py-0.5 font-semibold text-badge-sage-text transition-colors hover:bg-secondary hover:text-on-primary focus-visible:ring-2 focus-visible:ring-secondary focus-visible:outline-none"
-        >
-          {t('autoTranslate.action')}
-        </button>
-      ) : null}
-    </p>
   );
 }
 

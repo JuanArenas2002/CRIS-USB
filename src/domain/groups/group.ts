@@ -23,6 +23,8 @@ export interface GroupInfo {
   } | null;
   /** ODS asignados en el portal (Metri-K aún no los tiene); ascendentes, sin repetir. */
   ods: OdsId[];
+  /** Ids de los centros activos a los que pertenece (Metri-K `group.centers`; solo el id). */
+  centerIds?: number[];
 }
 
 /** Metri-K: `type` = "Institucional" | "Interinstitucional" (o vacío). */

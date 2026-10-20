@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import { ApiError } from '@/infrastructure/http/api-client';
@@ -311,4 +311,39 @@ test('centro: ficha con dirección, líneas, ODS oficiales y resolución en PDF'
       /\/centros\/1-centro-de-crecimiento-empresarial-macondolab$/,
     ),
   );
+});
+
+test('centro: lista solo sus grupos (cruce group.centerIds)', async () => {
+  const groups = [
+    makeGroupDetail({ id: 1, name: 'Bioinformática y Salud', centerIds: [1] }),
+    makeGroupDetail({ id: 2, code: 'COL0000002', name: 'Otro centro', centerIds: [5] }),
+    makeGroupDetail({ id: 3, code: 'COL0000003', name: 'Sin centro' }),
+  ];
+  renderApp('/centros/1-centro-de-crecimiento-empresarial-macondolab', fakeRepo(), fakeGroupRepo(groups));
+  const section = (await screen.findByRole('heading', { name: 'Grupos de investigación' })).closest(
+    'section',
+  )!;
+  expect(await within(section).findByText('Bioinformática y Salud')).toBeInTheDocument();
+  expect(within(section).queryByText('Otro centro')).not.toBeInTheDocument();
+  expect(within(section).queryByText('Sin centro')).not.toBeInTheDocument();
+  expect(within(section).getByText(/^1 grupo de investigación adscrito/)).toBeInTheDocument();
+});
+
+test('grupos: cada grupo muestra logo y sigla de su centro, enlazados a la ficha del centro', async () => {
+  const groups = [makeGroupDetail({ id: 1, name: 'Bioinformática y Salud', centerIds: [1] })];
+  renderApp('/grupos', fakeRepo(), fakeGroupRepo(groups));
+  const centers = await screen.findByRole('list', { name: 'Centros de investigación' });
+  expect(within(centers).getByRole('link', { name: /MACONDOLAB/ })).toHaveAttribute(
+    'href',
+    '/centros/1-centro-de-crecimiento-empresarial-macondolab',
+  );
+
+  // En la ficha de ese mismo centro, la fila del grupo no repite su logo.
+  cleanup();
+  renderApp('/centros/1-centro-de-crecimiento-empresarial-macondolab', fakeRepo(), fakeGroupRepo(groups));
+  const section = (await screen.findByRole('heading', { name: 'Grupos de investigación' })).closest(
+    'section',
+  )!;
+  await within(section).findByText('Bioinformática y Salud');
+  expect(within(section).queryByRole('list', { name: 'Centros de investigación' })).not.toBeInTheDocument();
 });

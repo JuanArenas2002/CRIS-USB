@@ -27,6 +27,7 @@ const info = {
     })
     .nullable(),
   ods: z.array(z.number().int().min(1).max(17)) as unknown as z.ZodType<OdsId[]>,
+  centerIds: z.array(z.number().int().positive()).optional(),
 };
 
 const groupSchema: z.ZodType<Group> = z.object({

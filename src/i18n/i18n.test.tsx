@@ -133,3 +133,20 @@ test('líneas de investigación: skeleton mientras traduce; con tope, vuelve al 
   vi.useRealTimers();
   vi.unstubAllGlobals();
 });
+
+test('centro: líneas y descripciones de resoluciones traducidas en el navegador; nombre intacto', async () => {
+  vi.stubGlobal('Translator', {
+    availability: async () => 'available',
+    create: async () => ({ translate: async (s: string) => `[en] ${s}` }),
+  });
+  await i18n.changeLanguage('en');
+  renderApp('/centros/1-centro-de-crecimiento-empresarial-macondolab');
+  expect(await screen.findByText('[en] Emprendimiento Tecnológico')).toBeInTheDocument();
+  expect(await screen.findByText('[en] Reconocimiento oficial del centro.')).toBeInTheDocument();
+  expect(screen.getByText('Recognition')).toBeInTheDocument(); // tipo: vocabulario del catálogo
+  expect(screen.getAllByText('Automatically translated from Spanish in your browser')).toHaveLength(2);
+  expect(
+    screen.getByRole('heading', { level: 1, name: 'Centro de Crecimiento Empresarial MACONDOLAB' }),
+  ).toBeInTheDocument();
+  vi.unstubAllGlobals();
+});
