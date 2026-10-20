@@ -168,8 +168,8 @@ const en: typeof es = {
       center: 'Research center',
       allCenters: 'All centers',
       categoryOption: '{{category}} Researcher ({{code}})',
-      sortTitle: 'Sorted by Minciencias category (highest first)',
-      sort: 'Highest category',
+      sortTitle: 'Sorted by USB productivity index (highest first)',
+      sort: 'Highest USB index',
     },
     directory: {
       metaTitle: 'Researcher directory',

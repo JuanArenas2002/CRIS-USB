@@ -18,6 +18,7 @@ import { hasPublicDetail } from '@/domain/groups/group';
 import { inheritOds } from '@/domain/ods/ods';
 import { medalFor } from '@/presentation/components/authors/AuthorCard';
 import { ProductionByYear } from '@/presentation/components/authors/ProductionByYear';
+import { UsbIndexMeter } from '@/presentation/components/authors/UsbIndexMeter';
 import { centerPath } from '@/presentation/components/centers/CenterCard';
 import {
   EMPTY_FILTERS,
@@ -262,12 +263,21 @@ function Profile({ author }: { author: AuthorProfile }) {
                 />
                 {author.ranking ? (
                   <>
-                    <Fact
-                      icon="trending_up"
-                      label={t('profile.usbIndex')}
-                      value={labels.number(author.ranking.index)}
-                      hint={t('profile.generalRank', { rank: author.ranking.rank })}
-                    />
+                    <div className="flex flex-col gap-1">
+                      <dt className={`flex items-center gap-1.5 ${eyebrow}`}>
+                        <Icon name="trending_up" className="text-[16px] text-primary-container" />{' '}
+                        {t('profile.usbIndex')}
+                      </dt>
+                      <dd>
+                        <UsbIndexMeter
+                          label={t('profile.usbIndex')}
+                          showLabel={false}
+                          value={author.ranking.index}
+                          caption={t('profile.generalRank', { rank: author.ranking.rank })}
+                          size="md"
+                        />
+                      </dd>
+                    </div>
                     {author.ranking.center && author.ranking.centerRank ? (
                       <Fact
                         icon="military_tech"

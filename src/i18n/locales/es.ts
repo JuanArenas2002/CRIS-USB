@@ -173,8 +173,8 @@ const es = {
       center: 'Centro de investigación',
       allCenters: 'Todos los centros',
       categoryOption: 'Investigador {{category}} ({{code}})',
-      sortTitle: 'Ordenados por categoría Minciencias (mayor primero)',
-      sort: 'Mayor categoría',
+      sortTitle: 'Ordenados por índice de productividad USB (mayor primero)',
+      sort: 'Mayor índice USB',
     },
     directory: {
       metaTitle: 'Directorio de investigadores',

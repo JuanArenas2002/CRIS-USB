@@ -204,3 +204,14 @@ test('consulta por centro: solo sus investigadores, ordenados por puesto en ese 
   const ids = queryAuthors(all, { centerId: 5, page: 1, pageSize: 10 }).items.map((a) => a.id);
   expect(ids).toEqual([2, 1, 3]);
 });
+
+test('consulta: con ranking, siempre de mayor a menor índice (puesto 1 primero); sin ranking, al final', () => {
+  const ranking = (rank: number) => ({ index: 100 - rank, rank, centerRank: null, center: null });
+  const all = [
+    makeAuthor({ id: 1, category: 'emerito', ranking: ranking(3) }),
+    makeAuthor({ id: 2, category: 'junior', ranking: ranking(1) }),
+    makeAuthor({ id: 3, category: 'senior', ranking: null }),
+    makeAuthor({ id: 4, category: 'junior', ranking: ranking(2) }),
+  ];
+  expect(queryAuthors(all, { page: 1, pageSize: 10 }).items.map((a) => a.id)).toEqual([2, 4, 1, 3]);
+});

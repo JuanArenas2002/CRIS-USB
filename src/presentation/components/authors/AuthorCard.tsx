@@ -8,6 +8,7 @@ import {
   initials,
   type Author,
 } from '@/domain/authors/author';
+import { UsbIndexMeter } from './UsbIndexMeter';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { IdLogo } from '@/presentation/components/ui/IdLogo';
 import { useLabels } from '@/presentation/hooks/use-labels';
@@ -113,13 +114,10 @@ export function AuthorCard({ author }: { author: Author }) {
           ) : null}
           {/* Ranking de productividad USB (/admin/ranking). */}
           {r ? (
-            <p className="mt-2 flex flex-wrap gap-1.5 text-[12px]">
-              <span className="inline-flex items-center gap-1 rounded-md bg-primary-container px-2 py-0.5 font-semibold text-on-primary">
-                <Icon name="trending_up" className="text-[14px]" />
-                {t('card.usbIndex')} <strong>{labels.number(r.index)}</strong>
-              </span>
+            <div className="mt-3 flex flex-col gap-2 rounded-[14px] bg-metric-bg p-3">
+              <UsbIndexMeter label={t('card.usbIndex')} value={r.index} />
               <span
-                className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-semibold ${
+                className={`inline-flex w-fit items-center gap-1 rounded-md px-2 py-0.5 text-[12px] font-semibold ${
                   medal ? `ring-1 ${medal}` : 'bg-badge-sage-bg text-badge-sage-text'
                 }`}
               >
@@ -128,7 +126,7 @@ export function AuthorCard({ author }: { author: Author }) {
                   ? t('card.centerRank', { rank: centerRank, center: r.center })
                   : t('card.generalRank', { rank: r.rank })}
               </span>
-            </p>
+            </div>
           ) : null}
         </div>
 

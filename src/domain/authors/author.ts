@@ -233,9 +233,12 @@ export function queryAuthors(all: Author[], q: AuthorListQuery): AuthorListPage 
         (!q.centerId || !!a.centers?.some((c) => c.id === q.centerId)) &&
         (!term || norm(a.name).includes(term) || (a.orcid ?? '').includes(term)),
     )
+    // Siempre de mayor a menor índice USB (puesto visible, ya renumerado entre los publicados);
+    // con centro, por puesto en ese centro. Sin ranking: mayor categoría y nombre.
     .sort(
       (a, b) =>
         (q.centerId ? centerRankIn(a, q.centerId) - centerRankIn(b, q.centerId) : 0) ||
+        (a.ranking?.rank ?? Infinity) - (b.ranking?.rank ?? Infinity) ||
         rank(a.category) - rank(b.category) ||
         a.name.localeCompare(b.name, 'es'),
     );

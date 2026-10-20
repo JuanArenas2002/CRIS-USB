@@ -168,8 +168,8 @@ const pt: typeof es = {
       center: 'Centro de pesquisa',
       allCenters: 'Todos os centros',
       categoryOption: 'Pesquisador {{category}} ({{code}})',
-      sortTitle: 'Ordenados por categoria Minciencias (maior primeiro)',
-      sort: 'Maior categoria',
+      sortTitle: 'Ordenados por índice de produtividade USB (maior primeiro)',
+      sort: 'Maior índice USB',
     },
     directory: {
       metaTitle: 'Diretório de pesquisadores',
