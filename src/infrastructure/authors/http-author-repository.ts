@@ -124,6 +124,7 @@ export function httpAuthorRepository(get: ApiGet): AuthorRepository {
       if (q.search) params.set('q', q.search);
       if (q.category) params.set('cat', q.category);
       if (q.groupId) params.set('group', String(q.groupId));
+      if (q.centerId) params.set('center', String(q.centerId));
       return get(`/api/investigators?${params}`, pageSchema, signal);
     },
     async getById(id, signal) {

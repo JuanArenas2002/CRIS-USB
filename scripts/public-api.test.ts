@@ -244,7 +244,13 @@ test('fotos: guardar, aparecer en el listado, servir y quitar', async () => {
 test('fotos: otra instancia del BFF (otro proceso o reinicio) ve la foto guardada', async () => {
   const res = await put(1, WEBP, TOKEN);
   const { photoUrl } = await res.json();
-  const other = createPublicApi({ metrikUrl: 'http://metrik/api', photosDir, adminToken: TOKEN });
+  // Mismos archivos que la instancia principal (nunca los de data/ del equipo).
+  const other = createPublicApi({
+    metrikUrl: 'http://metrik/api',
+    photosDir,
+    rankingFile: path.join(odsDir, 'ranking.json'),
+    adminToken: TOKEN,
+  });
   const srv = http.createServer((req, r) => void other(req, r));
   await new Promise<void>((r) => srv.listen(0, '127.0.0.1', r));
   const port = (srv.address() as AddressInfo).port;

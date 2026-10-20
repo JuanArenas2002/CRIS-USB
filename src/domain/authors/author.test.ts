@@ -189,3 +189,18 @@ test('ODS heredados: unión de los grupos, sin repetir, con los grupos que aport
   ]);
   expect(inheritOds([])).toEqual([]);
 });
+
+test('consulta por centro: solo sus investigadores, ordenados por puesto en ese centro', () => {
+  const cicv = { id: 5, code: 'CI-5', acronym: 'CICV', name: 'Ciencias de la Vida', logoUrl: null };
+  const cief = { id: 6, code: 'CI-6', acronym: 'CIEF', name: 'Estudios Fronterizos', logoUrl: null };
+  const ranking = (centerRank: number, center: string) => ({ index: 80, rank: 10, centerRank, center });
+  const all = [
+    makeAuthor({ id: 1, category: 'emerito', centers: [cicv], ranking: ranking(3, 'CICV') }),
+    makeAuthor({ id: 2, category: 'junior', centers: [cicv], ranking: ranking(1, 'CICV') }),
+    // Aporta a CICV, pero su puesto es en CIEF: va después de los rankeados en CICV.
+    makeAuthor({ id: 3, category: 'senior', centers: [cicv, cief], ranking: ranking(1, 'CIEF') }),
+    makeAuthor({ id: 4, centers: [cief], ranking: ranking(2, 'CIEF') }),
+  ];
+  const ids = queryAuthors(all, { centerId: 5, page: 1, pageSize: 10 }).items.map((a) => a.id);
+  expect(ids).toEqual([2, 1, 3]);
+});

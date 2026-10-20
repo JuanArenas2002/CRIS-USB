@@ -13,6 +13,7 @@ export interface DirectoryFilters {
   search: string;
   category?: AuthorCategoryId;
   groupId?: number;
+  centerId?: number;
   page: number;
 }
 
@@ -37,6 +38,7 @@ export function authorQueries(repo: AuthorRepository) {
               search: f.search.trim() || undefined,
               category: f.category,
               groupId: f.groupId,
+              centerId: f.centerId,
               page: f.page,
               pageSize: DIRECTORY_PAGE_SIZE,
             },

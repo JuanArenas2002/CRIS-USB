@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { AUTHOR_CATEGORIES, type AuthorCategoryId } from '@/domain/authors/author';
 import { useLabels } from '@/presentation/hooks/use-labels';
+import type { Center } from '@/domain/centers/center';
 import type { Group } from '@/domain/groups/group';
 import { Icon } from '@/presentation/components/ui/Icon';
 
@@ -12,6 +13,9 @@ interface Props {
   groupId?: number;
   onGroupChange: (v: number | undefined) => void;
   groups: Group[];
+  centerId?: number;
+  onCenterChange: (v: number | undefined) => void;
+  centers: Center[];
 }
 
 const fieldClass =
@@ -55,8 +59,28 @@ export function DirectoryFilters(p: Props) {
             className={`${fieldClass} w-full pr-4 pl-10 text-body-sm`}
           />
         </div>
-        <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
-          <div className="relative w-full sm:w-72">
+        {/* Móvil: uno por fila; tableta: los tres selectores en fila; escritorio: junto al buscador. */}
+        <div className="grid w-full grid-cols-1 items-center gap-2 sm:grid-cols-[1fr_1fr_1fr_auto] lg:flex lg:w-auto">
+          <div className="relative w-full lg:w-52">
+            <label htmlFor="center-filter" className="sr-only">
+              {t('filters.center')}
+            </label>
+            <select
+              id="center-filter"
+              value={p.centerId ?? ''}
+              onChange={(e) => p.onCenterChange(Number(e.target.value) || undefined)}
+              className={selectClass}
+            >
+              <option value="">{t('filters.allCenters')}</option>
+              {p.centers.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.acronym ? `${c.acronym} · ${c.name}` : c.name}
+                </option>
+              ))}
+            </select>
+            <SelectChevron />
+          </div>
+          <div className="relative w-full lg:w-60">
             <label htmlFor="group-filter" className="sr-only">
               {t('filters.group')}
             </label>
@@ -77,7 +101,7 @@ export function DirectoryFilters(p: Props) {
             </select>
             <SelectChevron />
           </div>
-          <div className="relative w-full sm:w-56">
+          <div className="relative w-full lg:w-52">
             <label htmlFor="category-filter" className="sr-only">
               {t('mincienciasCategory')}
             </label>

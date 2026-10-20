@@ -195,6 +195,8 @@ export interface AuthorListQuery {
   search?: string;
   category?: AuthorCategoryId;
   groupId?: number;
+  /** Centro de investigación (id de Metri-K); ordena por puesto en ese centro. */
+  centerId?: number;
   page: number;
   pageSize: number;
 }
@@ -213,6 +215,14 @@ const rank = (c: AuthorCategoryId | null) => {
 };
 
 /** Filtra, ordena (mayor categoría primero, luego alfabético) y pagina. */
+/** Puesto del investigador dentro de un centro según el ranking USB (∞ si no figura en ese centro). */
+export function centerRankIn(a: Author, centerId: number): number {
+  const center = a.centers?.find((c) => c.id === centerId);
+  return a.ranking?.centerRank && center && a.ranking.center === (center.acronym ?? center.code)
+    ? a.ranking.centerRank
+    : Infinity;
+}
+
 export function queryAuthors(all: Author[], q: AuthorListQuery): AuthorListPage {
   const term = norm(q.search?.trim() ?? '');
   const items = all
@@ -220,9 +230,15 @@ export function queryAuthors(all: Author[], q: AuthorListQuery): AuthorListPage 
       (a) =>
         (!q.category || a.category === q.category) &&
         (!q.groupId || a.mainGroup?.id === q.groupId) &&
+        (!q.centerId || !!a.centers?.some((c) => c.id === q.centerId)) &&
         (!term || norm(a.name).includes(term) || (a.orcid ?? '').includes(term)),
     )
-    .sort((a, b) => rank(a.category) - rank(b.category) || a.name.localeCompare(b.name, 'es'));
+    .sort(
+      (a, b) =>
+        (q.centerId ? centerRankIn(a, q.centerId) - centerRankIn(b, q.centerId) : 0) ||
+        rank(a.category) - rank(b.category) ||
+        a.name.localeCompare(b.name, 'es'),
+    );
   const pages = Math.ceil(items.length / q.pageSize);
   const start = (q.page - 1) * q.pageSize;
   return { items: items.slice(start, start + q.pageSize), total: items.length, page: q.page, pages };

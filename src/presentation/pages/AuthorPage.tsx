@@ -16,6 +16,7 @@ import {
 import { isIndexable } from '@/application/authors/author-queries';
 import { hasPublicDetail } from '@/domain/groups/group';
 import { inheritOds } from '@/domain/ods/ods';
+import { medalFor } from '@/presentation/components/authors/AuthorCard';
 import { ProductionByYear } from '@/presentation/components/authors/ProductionByYear';
 import { centerPath } from '@/presentation/components/centers/CenterCard';
 import {
@@ -228,6 +229,18 @@ function Profile({ author }: { author: AuthorProfile }) {
                 <h1 className="text-headline-lg-mobile font-bold tracking-tight text-primary-container md:text-headline-lg">
                   {name}
                 </h1>
+                {/* Top 3 de su centro en el ranking USB. */}
+                {medalFor(author.ranking?.center ? author.ranking.centerRank : null) ? (
+                  <p
+                    className={`inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-label-md font-bold shadow-sm ring-2 ${medalFor(author.ranking!.centerRank)}`}
+                  >
+                    <Icon name="emoji_events" className="text-[20px]" />
+                    {t('card.topCenter', {
+                      rank: author.ranking!.centerRank,
+                      center: author.ranking!.center,
+                    })}
+                  </p>
+                ) : null}
               </div>
 
               <dl className="grid grid-cols-1 gap-3 rounded-xl bg-surface-cream-alt/60 p-4 sm:grid-cols-2 md:grid-cols-3">

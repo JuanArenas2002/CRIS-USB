@@ -8,6 +8,7 @@ import { Icon } from '@/presentation/components/ui/Icon';
 import { Pagination } from '@/presentation/components/ui/Pagination';
 import { useAuthorSearch } from '@/presentation/hooks/use-author-search';
 import { useAuthors, useAuthorStats, useFeaturedAuthors } from '@/presentation/hooks/use-authors';
+import { useCenters } from '@/presentation/hooks/use-centers';
 import { useGroups } from '@/presentation/hooks/use-groups';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
 import { useLabels } from '@/presentation/hooks/use-labels';
@@ -41,6 +42,7 @@ export function DirectoryPage() {
   const stats = useAuthorStats();
   const featured = useFeaturedAuthors();
   const groups = useGroups();
+  const centers = useCenters();
 
   useDocumentMetadata({
     title: t('directory.metaTitle'),
@@ -65,6 +67,9 @@ export function DirectoryPage() {
         groupId={search.groupId}
         onGroupChange={search.setGroupId}
         groups={groups.data ?? []}
+        centerId={search.centerId}
+        onCenterChange={search.setCenterId}
+        centers={centers.data ?? []}
       />
 
       {/* Destacados: solo en la vista sin filtros, para no duplicar resultados de una búsqueda. */}

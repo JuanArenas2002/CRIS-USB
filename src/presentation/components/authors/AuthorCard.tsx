@@ -12,6 +12,16 @@ import { Icon } from '@/presentation/components/ui/Icon';
 import { IdLogo } from '@/presentation/components/ui/IdLogo';
 import { useLabels } from '@/presentation/hooks/use-labels';
 
+/** Top 3 de cada centro en el ranking USB: oro, plata y bronce. */
+const MEDAL = [
+  'bg-gradient-to-r from-[#F7D774] to-[#E0AC1F] text-[#3D2C00] ring-[#B8860B]/40',
+  'bg-gradient-to-r from-[#EEF1F4] to-[#C3CBD3] text-[#27313B] ring-[#8A96A3]/40',
+  'bg-gradient-to-r from-[#F2C29A] to-[#C97B3D] text-[#3A1C04] ring-[#9C5A24]/40',
+];
+/** Clase de medalla para un puesto en el centro (undefined fuera del top 3). */
+export const medalFor = (centerRank: number | null | undefined) =>
+  centerRank && centerRank <= 3 ? MEDAL[centerRank - 1] : undefined;
+
 /** "Maestría/Magister" → "Maestría". */
 export const shortDegree = (d: string | null) => (d ? d.split('/')[0]!.trim() : null);
 
@@ -23,6 +33,9 @@ export function AuthorCard({ author }: { author: Author }) {
   const cat = categoryOf(author.category);
   const { t } = useTranslation('authors');
   const labels = useLabels();
+  const r = author.ranking;
+  const centerRank = r?.center && r.centerRank ? r.centerRank : null;
+  const medal = medalFor(centerRank);
 
   return (
     <article className="group relative flex flex-col justify-between rounded-[24px] bg-surface-container-lowest p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
@@ -46,6 +59,15 @@ export function AuthorCard({ author }: { author: Author }) {
             <Monogram name={name} />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+          {/* Top 3 de su centro: cinta sobre la foto (el dato también va en texto, abajo). */}
+          {medal ? (
+            <span
+              className={`absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-label-md font-bold tracking-wide shadow-lg ring-2 ${medal}`}
+            >
+              <Icon name="emoji_events" className="text-[20px]" />
+              {t('card.topCenter', { rank: centerRank, center: r!.center })}
+            </span>
+          ) : null}
           <span className="absolute bottom-3 left-3 max-w-[calc(100%-1.5rem)] truncate rounded-full bg-[#0E382B]/90 px-3 py-1 text-label-sm font-semibold tracking-wide text-surface-container-lowest shadow-sm backdrop-blur-md">
             {author.mainGroup?.name ?? 'Universidad Simón Bolívar'}
           </span>
@@ -90,17 +112,21 @@ export function AuthorCard({ author }: { author: Author }) {
             </ul>
           ) : null}
           {/* Ranking de productividad USB (/admin/ranking). */}
-          {author.ranking ? (
+          {r ? (
             <p className="mt-2 flex flex-wrap gap-1.5 text-[12px]">
               <span className="inline-flex items-center gap-1 rounded-md bg-primary-container px-2 py-0.5 font-semibold text-on-primary">
                 <Icon name="trending_up" className="text-[14px]" />
-                {t('card.usbIndex')} <strong>{labels.number(author.ranking.index)}</strong>
+                {t('card.usbIndex')} <strong>{labels.number(r.index)}</strong>
               </span>
-              <span className="inline-flex items-center gap-1 rounded-md bg-badge-sage-bg px-2 py-0.5 font-semibold text-badge-sage-text">
-                <Icon name="military_tech" className="text-[14px]" />
-                {author.ranking.center && author.ranking.centerRank
-                  ? t('card.centerRank', { rank: author.ranking.centerRank, center: author.ranking.center })
-                  : t('card.generalRank', { rank: author.ranking.rank })}
+              <span
+                className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-semibold ${
+                  medal ? `ring-1 ${medal}` : 'bg-badge-sage-bg text-badge-sage-text'
+                }`}
+              >
+                <Icon name={medal ? 'emoji_events' : 'military_tech'} className="text-[14px]" />
+                {centerRank
+                  ? t('card.centerRank', { rank: centerRank, center: r.center })
+                  : t('card.generalRank', { rank: r.rank })}
               </span>
             </p>
           ) : null}

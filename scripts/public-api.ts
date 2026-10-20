@@ -338,6 +338,7 @@ export function createPublicApi({
             search: sp.get('q') ?? undefined,
             category: AUTHOR_CATEGORIES.some((c) => c.id === cat) ? (cat as AuthorCategoryId) : undefined,
             groupId: Number(sp.get('group')) || undefined,
+            centerId: Number(sp.get('center')) || undefined,
             page: Math.max(1, Math.floor(page)),
             pageSize: Math.min(Math.max(1, Math.floor(size)), MAX_PAGE_SIZE),
           }),
