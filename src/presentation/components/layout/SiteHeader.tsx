@@ -1,3 +1,4 @@
+import { withBase } from '@/shared/base';
 import { useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +27,13 @@ export function SiteHeader() {
     <header className="fixed top-0 z-50 w-full bg-canvas-cream/90 shadow-[0_1px_8px_rgba(0,0,0,0.04)] backdrop-blur-md">
       <div className="container-page flex h-20 items-center justify-between gap-4">
         <Link to="/" className="flex shrink-0 items-center gap-3" aria-label={t('homeLink')}>
-          <img src="/assets/unisimon-logo.png" alt="" width={197} height={32} className="h-8 w-auto" />
+          <img
+            src={withBase('/assets/unisimon-logo.png')}
+            alt=""
+            width={197}
+            height={32}
+            className="h-8 w-auto"
+          />
           <span className="hidden flex-col sm:flex">
             <span className="text-headline-sm leading-none font-semibold tracking-tight text-primary">
               UNISIMÓN RESEARCH

@@ -1,3 +1,4 @@
+import { withBase, withBaseUrl } from '@/shared/base';
 import { useMemo, useState, type ReactNode } from 'react';
 import { Link, Navigate, useParams, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -179,7 +180,7 @@ function Profile({ author }: { author: AuthorProfile }) {
               <Icon name="chevron_right" className="text-[16px]" />
             </li>
             <li>
-              <a href="/#directorio" className="hover:text-primary">
+              <a href={withBase('/#directorio')} className="hover:text-primary">
                 {t('profile.breadcrumbDirectory')}
               </a>
             </li>
@@ -207,7 +208,7 @@ function Profile({ author }: { author: AuthorProfile }) {
               >
                 {author.photoUrl ? (
                   <img
-                    src={author.photoUrl}
+                    src={withBaseUrl(author.photoUrl)}
                     alt=""
                     width={512}
                     height={512}
@@ -347,7 +348,7 @@ function Profile({ author }: { author: AuthorProfile }) {
                       >
                         {c.logoUrl ? (
                           <img
-                            src={c.logoUrl}
+                            src={withBaseUrl(c.logoUrl)}
                             alt=""
                             loading="lazy"
                             className="h-7 w-auto max-w-16 object-contain"

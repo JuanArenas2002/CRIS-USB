@@ -392,3 +392,18 @@ test('admin ranking: buscador por nombre sin tildes, con contador y aviso sin re
   expect(screen.getByText('Ningún investigador coincide con «zzz».')).toBeInTheDocument();
   vi.unstubAllGlobals();
 });
+
+test('admin ranking: respuesta ilegible → mensaje claro, sin mostrar el token', async () => {
+  sessionStorage.setItem('cris-admin-token', 'TOKEN-SECRETO-123');
+  // Como en Vercel con gzip doble: 200, pero el cuerpo no es JSON.
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => new Response('\x1f\x8b basura comprimida', { status: 200 })),
+  );
+  renderApp('/admin/ranking');
+  expect(
+    await screen.findByText(/No se pudo cargar el ranking: El servidor respondió con un formato inesperado/),
+  ).toBeInTheDocument();
+  expect(document.body.textContent).not.toContain('TOKEN-SECRETO-123');
+  vi.unstubAllGlobals();
+});

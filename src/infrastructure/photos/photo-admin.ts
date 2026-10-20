@@ -1,3 +1,4 @@
+import { withBase } from '@/shared/base';
 // Administración de fotos y logos (vistas ocultas /admin/fotos y /admin/centros). El navegador
 // recorta y convierte la imagen con canvas (sin dependencias); el BFF valida y la guarda.
 import { ApiError } from '@/infrastructure/http/api-client';
@@ -61,8 +62,8 @@ async function call(
   return data.photoUrl ?? data.logoUrl ?? null;
 }
 
-const photoPath = (id: number) => `/api/investigators/${id}/photo`;
-const logoPath = (id: number) => `/api/centers/${id}/logo`;
+const photoPath = (id: number) => withBase(`/api/investigators/${id}/photo`);
+const logoPath = (id: number) => withBase(`/api/centers/${id}/logo`);
 export const uploadPhoto = (id: number, photo: Blob, token: string) =>
   call('PUT', photoPath(id), token, photo);
 export const deletePhoto = (id: number, token: string) => call('DELETE', photoPath(id), token);
@@ -71,7 +72,7 @@ export const deleteLogo = (id: number, token: string) => call('DELETE', logoPath
 
 /** Página oficial del centro; null o "" la quitan. Devuelve la URL normalizada por el BFF. */
 export async function saveCenterWebsite(id: number, website: string | null, token: string) {
-  const res = await fetch(`/api/centers/${id}/website`, {
+  const res = await fetch(withBase(`/api/centers/${id}/website`), {
     method: 'PUT',
     headers: { 'X-Admin-Token': token, 'Content-Type': 'application/json' },
     body: JSON.stringify({ website }),

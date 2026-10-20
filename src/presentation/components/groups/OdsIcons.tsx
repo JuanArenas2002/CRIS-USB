@@ -1,3 +1,4 @@
+import { withBase } from '@/shared/base';
 import { useTranslation } from 'react-i18next';
 import { odsIcon, type OdsId } from '@/domain/ods/ods';
 
@@ -12,7 +13,7 @@ export function OdsIcon({ id, size = 64, note }: { id: OdsId; size?: number; not
   return (
     <span className="group/ods relative inline-flex shrink-0">
       <img
-        src={odsIcon(id)}
+        src={withBase(odsIcon(id))}
         alt={`${prefix} ${id}: ${name}${note ? ` (${note})` : ''}`}
         width={size}
         height={size}

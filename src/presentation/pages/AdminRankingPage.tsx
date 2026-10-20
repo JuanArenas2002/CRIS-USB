@@ -195,9 +195,12 @@ const fold = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCas
 function RankingList({ token, onUnauthorized }: { token: string; onUnauthorized: () => void }) {
   const qc = useQueryClient();
   const list = useQuery({
-    queryKey: ['ranking-admin', token],
+    // Sin el token en la clave: la clave aparece en mensajes de error y herramientas de depuración.
+    // gcTime 0: al cambiar de token la lista se monta de nuevo y se pide otra vez.
+    queryKey: ['ranking-admin'],
     queryFn: () => listRanking(token),
     retry: false,
+    gcTime: 0,
   });
   const [term, setTerm] = useState('');
   const [center, setCenter] = useState('');

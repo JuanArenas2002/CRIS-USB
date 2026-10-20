@@ -1,3 +1,4 @@
+import { withBaseUrl } from '@/shared/base';
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Center } from '@/domain/centers/center';
@@ -89,7 +90,7 @@ function CenterRow({
   const [preview, setPreview] = useState<{ blob: Blob; url: string } | null>(null);
   const [website, setWebsite] = useState(c.website ?? '');
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
-  const shown = preview?.url ?? c.logoUrl;
+  const shown = preview?.url ?? withBaseUrl(c.logoUrl);
   const siteDirty = website.trim() !== (c.website ?? '');
 
   const pick = async (file: File | undefined) => {

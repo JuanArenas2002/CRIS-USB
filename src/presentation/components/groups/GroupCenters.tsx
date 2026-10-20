@@ -1,3 +1,4 @@
+import { withBaseUrl } from '@/shared/base';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { authorSlug } from '@/domain/authors/author';
@@ -32,7 +33,12 @@ export function GroupCenters({
             className="relative z-10 inline-flex h-8 items-center gap-1.5 rounded-lg border border-border-subtle bg-white px-2 text-label-sm font-semibold text-on-surface-variant transition-colors hover:border-secondary hover:text-primary focus-visible:outline-2 focus-visible:outline-secondary"
           >
             {c.logoUrl ? (
-              <img src={c.logoUrl} alt="" loading="lazy" className="h-5 w-auto max-w-14 object-contain" />
+              <img
+                src={withBaseUrl(c.logoUrl)}
+                alt=""
+                loading="lazy"
+                className="h-5 w-auto max-w-14 object-contain"
+              />
             ) : (
               <Icon name="domain" className="text-[15px] text-secondary" />
             )}

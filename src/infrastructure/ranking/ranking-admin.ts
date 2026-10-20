@@ -1,3 +1,4 @@
+import { withBase } from '@/shared/base';
 // Ranking de productividad USB (vista oculta /admin/ranking). El navegador lee el Excel y envía solo
 // lo que el portal usa (cédula, nombre, puestos, centro e índice); horas y demás columnas no salen
 // del equipo. El BFF cruza la cédula con Metri-K y guarda el ranking por id de investigador.
@@ -76,7 +77,7 @@ export function rankingRows(table: string[][]): RankingRow[] {
 }
 
 async function call(method: 'PUT' | 'DELETE', token: string, rows?: RankingRow[]): Promise<RankingResult> {
-  const res = await fetch('/api/ranking', {
+  const res = await fetch(withBase('/api/ranking'), {
     method,
     headers: { 'X-Admin-Token': token, ...(rows ? { 'Content-Type': 'application/json' } : {}) },
     body: rows ? JSON.stringify({ rows }) : undefined,
@@ -108,13 +109,15 @@ export interface RankingAdminRow {
 }
 
 async function admin<T>(path: string, token: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, {
+  const res = await fetch(withBase(path), {
     ...init,
     headers: { 'X-Admin-Token': token, 'Content-Type': 'application/json' },
     cache: 'no-store',
   });
-  const data = (await res.json().catch(() => ({}))) as T & { detail?: string };
-  if (!res.ok) throw new ApiError(res.status, data.detail ?? `Error ${res.status}`);
+  const data = (await res.json().catch(() => null)) as (T & { detail?: string }) | null;
+  if (!res.ok) throw new ApiError(res.status, data?.detail ?? `Error ${res.status}`);
+  // Un 200 que no es JSON (proxy, compresión mal aplicada…) es un error, no una lista vacía.
+  if (!data) throw new ApiError(res.status, 'El servidor respondió con un formato inesperado.');
   return data;
 }
 

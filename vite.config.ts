@@ -30,7 +30,10 @@ function publicApi(env: Record<string, string>): Plugin {
 export default defineConfig(({ mode }) => {
   // CRIS_* y BLOB_* (no VITE_*) → solo en Node, nunca llegan al bundle del navegador.
   const env = loadEnv(mode, process.cwd(), ['CRIS_', 'BLOB_']);
+  // Subruta de publicación (p. ej. /investigacion detrás del proxy de metrik.unisimon.edu.co).
+  const basePath = (env.CRIS_BASE_PATH ?? '').replace(/^\/*/, '/').replace(/\/+$/, '');
   return {
+    base: `${basePath}/`,
     plugins: [react(), tailwindcss(), publicApi(env)],
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
     test: {

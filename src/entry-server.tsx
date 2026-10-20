@@ -1,3 +1,4 @@
+import { BASE, withBase } from '@/shared/base';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
 import { dehydrate, type QueryClient } from '@tanstack/react-query';
@@ -73,7 +74,7 @@ export function render(
       centers={centers}
       onHead={(m) => (head.meta = m)}
     >
-      <StaticRouter location={url}>
+      <StaticRouter location={withBase(url)} basename={BASE || undefined}>
         <AppRoutes />
       </StaticRouter>
     </AppProviders>,

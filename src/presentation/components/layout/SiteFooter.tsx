@@ -1,3 +1,4 @@
+import { withBase } from '@/shared/base';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { CONTACT_EMAIL } from '@/shared/contact';
@@ -11,7 +12,7 @@ export function SiteFooter() {
         <div className="mb-10 grid grid-cols-1 gap-gutter md:grid-cols-3">
           <div className="flex flex-col gap-2">
             <img
-              src="/assets/unisimon-logo.png"
+              src={withBase('/assets/unisimon-logo.png')}
               alt="Universidad Simón Bolívar"
               width={172}
               height={28}

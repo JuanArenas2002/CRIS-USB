@@ -11,16 +11,17 @@ Migración de `plantilla.html` a React 19 + Vite + Tailwind CSS v4. Los datos vi
 
 Todo se configura con variables de entorno. Copia `.env.example` a `.env` y completa los valores (cada variable está explicada ahí). `.env` no se sube a git.
 
-| Variable                                                      | Para qué                                                                                 | Pública         |
-| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | --------------- |
-| `VITE_SITE_URL`                                               | URL pública del portal: canónicas, Open Graph, sitemap, robots. **Se fija al compilar.** | sí              |
-| `VITE_API_BASE_URL`                                           | origen de la API para el navegador (vacío = mismo dominio)                               | sí              |
-| `CRIS_METRIK_URL`                                             | API de Metri-K (fuente de los datos)                                                     | no              |
-| `HOST`, `PORT`                                                | dirección y puerto de `npm start` (servidor propio)                                      | no              |
-| `CRIS_STATIC_DIR`                                             | carpeta del sitio compilado (`dist`)                                                     | no              |
-| `CRIS_PHOTOS_DIR`                                             | carpeta de fotos (`data/photos`)                                                         | no              |
-| `BLOB_READ_WRITE_TOKEN` / `BLOB_STORE_ID`, `CRIS_BLOB_ACCESS` | solo Vercel: fotos, logos y ranking en Vercel Blob                                       | no, secreto     |
-| `CRIS_ADMIN_TOKEN`                                            | token de `/admin/fotos`, `/admin/centros` y `/admin/ranking`                             | **no, secreto** |
+| Variable                                                      | Para qué                                                                                    | Pública         |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | --------------- |
+| `VITE_SITE_URL`                                               | URL pública del portal: canónicas, Open Graph, sitemap, robots. **Se fija al compilar.**    | sí              |
+| `VITE_API_BASE_URL`                                           | origen de la API para el navegador (vacío = el mismo portal, con su subruta)                | sí              |
+| `CRIS_BASE_PATH`                                              | subruta si el portal no está en la raíz (p. ej. `/investigacion`). **Se fija al compilar.** | no              |
+| `CRIS_METRIK_URL`                                             | API de Metri-K (fuente de los datos)                                                        | no              |
+| `HOST`, `PORT`                                                | dirección y puerto de `npm start` (servidor propio)                                         | no              |
+| `CRIS_STATIC_DIR`                                             | carpeta del sitio compilado (`dist`)                                                        | no              |
+| `CRIS_PHOTOS_DIR`                                             | carpeta de fotos (`data/photos`)                                                            | no              |
+| `BLOB_READ_WRITE_TOKEN` / `BLOB_STORE_ID`, `CRIS_BLOB_ACCESS` | solo Vercel: fotos, logos y ranking en Vercel Blob                                          | no, secreto     |
+| `CRIS_ADMIN_TOKEN`                                            | token de `/admin/fotos`, `/admin/centros` y `/admin/ranking`                                | **no, secreto** |
 
 `VITE_*` termina en el JavaScript del navegador: nunca pongas secretos ahí.
 

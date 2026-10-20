@@ -1,3 +1,4 @@
+import { withBaseUrl } from '@/shared/base';
 import { useContext, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { displayName, initials, type Author } from '@/domain/authors/author';
@@ -117,7 +118,7 @@ function PhotoRow({
   const [status, setStatus] = useState<{ kind: 'idle' | 'busy' | 'ok' | 'error'; text?: string }>({
     kind: 'idle',
   });
-  const shown = preview?.url ?? author.photoUrl;
+  const shown = preview?.url ?? withBaseUrl(author.photoUrl);
 
   const pick = async (file: File | undefined) => {
     if (!file) return;

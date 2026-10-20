@@ -1,3 +1,4 @@
+import { withBaseUrl } from '@/shared/base';
 import { useContext, useMemo, useState, type ReactNode } from 'react';
 import { Link, Navigate, useLocation, useParams, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
@@ -611,7 +612,7 @@ function MemberCard({ member: m, leader }: { member: GroupMember; leader: boolea
           <span className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-surface-dark-forest text-headline-sm font-bold text-secondary-fixed shadow-sm">
             {m.photoUrl ? (
               <img
-                src={m.photoUrl}
+                src={withBaseUrl(m.photoUrl)}
                 alt=""
                 width={64}
                 height={64}

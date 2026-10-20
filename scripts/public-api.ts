@@ -79,8 +79,15 @@ async function readBody(req: IncomingMessage, max: number): Promise<Buffer | nul
 export function createPublicApi({
   metrikUrl = DEFAULT_METRIK_URL,
   adminToken,
+  compress = false,
   ...storage
-}: { metrikUrl?: string; adminToken?: string; onVercel?: boolean } & StoreOptions = {}) {
+}: {
+  metrikUrl?: string;
+  adminToken?: string;
+  onVercel?: boolean;
+  /** gzip propio del JSON: solo en el servidor propio (Vercel y Vite ya tienen su capa delante). */
+  compress?: boolean;
+} & StoreOptions = {}) {
   const base = metrikUrl.replace(/\/+$/, '');
   const { photos, logos, sites, ranking: rankingStore, rankingHidden } = createStores(storage);
   const metrikGroups = cached<GroupDetail[]>(() => fetchPublicGroups(`${base}/group`));
@@ -188,7 +195,7 @@ export function createPublicApi({
       );
       const json = JSON.stringify(body);
       // JSON comprimido (los listados pesan decenas de KB); los pequeños no compensan.
-      if (json.length > 1024 && /\bgzip\b/.test(String(req.headers['accept-encoding'] ?? ''))) {
+      if (compress && json.length > 1024 && /\bgzip\b/.test(String(req.headers['accept-encoding'] ?? ''))) {
         res.setHeader('Content-Encoding', 'gzip');
         res.setHeader('Vary', 'Accept-Encoding');
         return void res.end(gzipSync(json));

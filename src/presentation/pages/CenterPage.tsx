@@ -1,3 +1,4 @@
+import { withBase, withBaseUrl } from '@/shared/base';
 import { Link, Navigate, useLocation, useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -143,7 +144,7 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
           <div className="relative flex flex-col items-start gap-4 sm:flex-row sm:items-center">
             {c.logoUrl ? (
               <img
-                src={c.logoUrl}
+                src={withBaseUrl(c.logoUrl)}
                 alt={t('detail.logoAlt', { name: c.acronym ?? c.name })}
                 className="h-20 w-20 shrink-0 rounded-xl border border-border-subtle bg-white object-contain p-2 md:h-24 md:w-24"
               />
@@ -355,7 +356,7 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
                   </div>
                   {r.hasFile ? (
                     <a
-                      href={resolutionFileUrl(c.id, r.id)}
+                      href={withBase(resolutionFileUrl(c.id, r.id))}
                       target="_blank"
                       rel="noopener"
                       className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 text-label-md font-semibold text-on-primary transition-colors hover:bg-secondary"

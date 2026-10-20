@@ -1,3 +1,4 @@
+import { withBaseUrl } from '@/shared/base';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { authorSlug, displayName } from '@/domain/authors/author';
@@ -107,7 +108,7 @@ export function CenterCard({ center: c }: { center: Center }) {
               {/* Con logo, el logo ocupa el lugar de la sigla. */}
               {c.logoUrl ? (
                 <img
-                  src={c.logoUrl}
+                  src={withBaseUrl(c.logoUrl)}
                   alt={t('detail.logoAlt', { name: c.acronym ?? c.name })}
                   loading="lazy"
                   className="mt-2 h-16 w-auto max-w-full self-start rounded-xl bg-white object-contain p-1.5"
@@ -194,7 +195,7 @@ export function CenterRow({ center: c }: { center: Center }) {
     >
       {c.logoUrl ? (
         <img
-          src={c.logoUrl}
+          src={withBaseUrl(c.logoUrl)}
           alt={t('detail.logoAlt', { name: c.acronym ?? c.name })}
           title={c.acronym ?? c.code}
           loading="lazy"

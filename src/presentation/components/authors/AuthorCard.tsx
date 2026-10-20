@@ -1,3 +1,4 @@
+import { withBaseUrl } from '@/shared/base';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
@@ -71,7 +72,7 @@ export function AuthorCard({ author }: { author: Author }) {
           <div className="h-24 w-24 overflow-hidden rounded-2xl bg-gradient-to-br from-badge-sage-bg via-[#d5e4d8] to-[#b9d1c2] shadow-sm ring-1 ring-border-subtle">
             {author.photoUrl ? (
               <img
-                src={author.photoUrl}
+                src={withBaseUrl(author.photoUrl)}
                 alt=""
                 width={192}
                 height={192}
@@ -196,7 +197,12 @@ export function AuthorCard({ author }: { author: Author }) {
                 className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border-subtle bg-white px-2 text-label-sm font-semibold text-on-surface-variant"
               >
                 {c.logoUrl ? (
-                  <img src={c.logoUrl} alt="" loading="lazy" className="h-6 w-auto max-w-16 object-contain" />
+                  <img
+                    src={withBaseUrl(c.logoUrl)}
+                    alt=""
+                    loading="lazy"
+                    className="h-6 w-auto max-w-16 object-contain"
+                  />
                 ) : (
                   <Icon name="domain" className="text-[16px] text-secondary" />
                 )}

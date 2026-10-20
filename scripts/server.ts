@@ -61,10 +61,14 @@ function resolveStatic(root: string, urlPath: string): string | null {
 export function createSiteServer({
   staticDir,
   api,
+  basePath = '',
 }: {
   staticDir: string;
   api: (req: IncomingMessage, res: ServerResponse, next?: () => void) => unknown;
+  /** Subruta (CRIS_BASE_PATH, p. ej. /investigacion): se acepta con o sin ella, quite o no el proxy el prefijo. */
+  basePath?: string;
 }) {
+  const base = basePath.replace(/^\/*/, '/').replace(/\/+$/, '');
   const root = path.resolve(staticDir);
   if (!fs.existsSync(path.join(root, 'index.html')))
     throw new Error(`No existe ${root}/index.html: ejecuta primero "npm run build".`);
@@ -89,6 +93,12 @@ export function createSiteServer({
   }
 
   return http.createServer((req, res) => {
+    if (
+      base &&
+      req.url &&
+      (req.url === base || req.url.startsWith(`${base}/`) || req.url.startsWith(`${base}?`))
+    )
+      req.url = req.url.slice(base.length) || '/';
     const pathname = new URL(req.url ?? '/', 'http://localhost').pathname;
     if (pathname.startsWith('/api/')) return void api(req, res);
     if (req.method !== 'GET' && req.method !== 'HEAD') {
@@ -110,16 +120,21 @@ if (import.meta.main) {
   const host = env.HOST || '0.0.0.0';
   const port = Number(env.PORT) || 8080;
   const api = createPublicApi({
+    compress: true,
     metrikUrl: env.CRIS_METRIK_URL || undefined,
     adminToken: env.CRIS_ADMIN_TOKEN || undefined,
     ...storeOptionsFromEnv(env),
   });
-  createSiteServer({ staticDir: env.CRIS_STATIC_DIR || 'dist', api }).listen(port, host, () => {
-    console.log(`CRIS Unisimón en http://${host === '0.0.0.0' ? 'localhost' : host}:${port}`);
-    console.log(`  Datos: ${env.CRIS_METRIK_URL || 'Metri-K (por defecto)'}`);
-    console.log(
-      `  Fotos: ${env.BLOB_READ_WRITE_TOKEN || env.BLOB_STORE_ID ? 'Vercel Blob' : env.CRIS_PHOTOS_DIR || 'data/photos'}`,
-    );
-    if (!env.CRIS_ADMIN_TOKEN) console.log('  Aviso: sin CRIS_ADMIN_TOKEN, /admin no puede guardar.');
-  });
+  createSiteServer({ staticDir: env.CRIS_STATIC_DIR || 'dist', api, basePath: env.CRIS_BASE_PATH }).listen(
+    port,
+    host,
+    () => {
+      console.log(`CRIS Unisimón en http://${host === '0.0.0.0' ? 'localhost' : host}:${port}`);
+      console.log(`  Datos: ${env.CRIS_METRIK_URL || 'Metri-K (por defecto)'}`);
+      console.log(
+        `  Fotos: ${env.BLOB_READ_WRITE_TOKEN || env.BLOB_STORE_ID ? 'Vercel Blob' : env.CRIS_PHOTOS_DIR || 'data/photos'}`,
+      );
+      if (!env.CRIS_ADMIN_TOKEN) console.log('  Aviso: sin CRIS_ADMIN_TOKEN, /admin no puede guardar.');
+    },
+  );
 }

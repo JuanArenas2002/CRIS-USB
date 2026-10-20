@@ -1,9 +1,10 @@
+import { withBase } from '@/shared/base';
 /** Logos oficiales de identificadores científicos (public/assets/ids, WebP de 96 px). */
 const LOGOS: Record<string, string> = {
-  ORCID: '/assets/ids/orcid.webp',
-  CvLAC: '/assets/ids/cvlac.webp',
-  Scopus: '/assets/ids/scopus.webp',
-  'Google Scholar': '/assets/ids/scholar.webp',
+  ORCID: withBase('/assets/ids/orcid.webp'),
+  CvLAC: withBase('/assets/ids/cvlac.webp'),
+  Scopus: withBase('/assets/ids/scopus.webp'),
+  'Google Scholar': withBase('/assets/ids/scholar.webp'),
 };
 
 /** Decorativo: el nombre del identificador siempre va en texto al lado. */

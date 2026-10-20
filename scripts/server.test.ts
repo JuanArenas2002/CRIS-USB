@@ -62,3 +62,22 @@ test('assets con hash inmutables y comprimidos; HTML se revalida', async () => {
   expect(js.headers.get('content-encoding')).toBe('gzip');
   expect((await get('/')).headers.get('cache-control')).toBe('no-cache');
 });
+
+test('subruta (CRIS_BASE_PATH): acepta /investigacion/... y también sin el prefijo (si el proxy lo quita)', async () => {
+  const sub = createSiteServer({
+    staticDir: dir,
+    api: (req, res) => res.end(JSON.stringify({ url: req.url })),
+    basePath: '/investigacion',
+  });
+  await new Promise<void>((r) => sub.listen(0, '127.0.0.1', r));
+  const at = `http://127.0.0.1:${(sub.address() as AddressInfo).port}`;
+  const text = async (p: string) => (await fetch(at + p)).text();
+  expect(await text('/investigacion')).toBe('<h1>inicio</h1>');
+  expect(await text('/investigacion/grupos/1-uno')).toBe('<h1>grupo</h1>');
+  expect(await text('/grupos/1-uno')).toBe('<h1>grupo</h1>');
+  // La API recibe la ruta sin el prefijo, con la consulta intacta.
+  expect(JSON.parse(await text('/investigacion/api/ranking?x=1')).url).toBe('/api/ranking?x=1');
+  // Un prefijo parecido no se confunde con la subruta.
+  expect((await fetch(`${at}/investigacionx/grupos/1-uno`)).status).toBe(404);
+  sub.close();
+});
