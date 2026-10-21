@@ -70,13 +70,11 @@ export function authorQueries(repo: AuthorRepository) {
       queryOptions({
         queryKey: ['authors', 'featured'],
         queryFn: ({ signal }) => repo.featured(signal),
-        staleTime: 10 * 60 * 1000,
       }),
     stats: () =>
       queryOptions({
         queryKey: ['authors', 'stats'],
         queryFn: ({ signal }) => repo.stats(signal),
-        staleTime: 10 * 60 * 1000,
       }),
   };
 }

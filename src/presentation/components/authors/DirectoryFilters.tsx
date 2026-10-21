@@ -4,6 +4,7 @@ import { useLabels } from '@/presentation/hooks/use-labels';
 import type { Center } from '@/domain/centers/center';
 import type { Group } from '@/domain/groups/group';
 import { Icon } from '@/presentation/components/ui/Icon';
+import { ClearFilters, FilterSelect } from '@/presentation/components/ui/FilterSelect';
 
 interface Props {
   term: string;
@@ -16,23 +17,14 @@ interface Props {
   centerId?: number;
   onCenterChange: (v: number | undefined) => void;
   centers: Center[];
+  hasActiveFilters: boolean;
+  onReset: () => void;
 }
 
 const fieldClass =
   'h-11 rounded-xl bg-canvas-cream text-on-surface transition-all focus:bg-surface-container-lowest focus:ring-2 focus:ring-secondary focus:outline-none';
-const selectClass = `${fieldClass} w-full cursor-pointer appearance-none px-3 pr-8 text-label-md font-semibold`;
-
-function SelectChevron() {
-  return (
-    <Icon
-      name="expand_more"
-      className="pointer-events-none absolute top-3 right-2.5 text-[18px] text-on-surface-variant"
-    />
-  );
-}
-
 export function DirectoryFilters(p: Props) {
-  const { t, i18n } = useTranslation('authors');
+  const { t, i18n } = useTranslation(['authors', 'common']);
   const labels = useLabels();
   return (
     <div className="relative z-30 container-page -mt-7">
@@ -60,68 +52,47 @@ export function DirectoryFilters(p: Props) {
           />
         </div>
         {/* Móvil: uno por fila; tableta: los tres selectores en fila; escritorio: junto al buscador. */}
-        <div className="grid w-full grid-cols-1 items-center gap-2 sm:grid-cols-[1fr_1fr_1fr_auto] lg:flex lg:w-auto">
-          <div className="relative w-full lg:w-52">
-            <label htmlFor="center-filter" className="sr-only">
-              {t('filters.center')}
-            </label>
-            <select
-              id="center-filter"
-              value={p.centerId ?? ''}
-              onChange={(e) => p.onCenterChange(Number(e.target.value) || undefined)}
-              className={selectClass}
-            >
-              <option value="">{t('filters.allCenters')}</option>
-              {p.centers.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.acronym ? `${c.acronym} · ${c.name}` : c.name}
-                </option>
-              ))}
-            </select>
-            <SelectChevron />
-          </div>
-          <div className="relative w-full lg:w-60">
-            <label htmlFor="group-filter" className="sr-only">
-              {t('filters.group')}
-            </label>
-            <select
-              id="group-filter"
-              value={p.groupId ?? ''}
-              onChange={(e) => p.onGroupChange(Number(e.target.value) || undefined)}
-              className={selectClass}
-            >
-              <option value="">{t('filters.allGroups')}</option>
-              {[...p.groups]
+        <div className="grid w-full grid-cols-1 items-center gap-2 sm:grid-cols-[1fr_1fr_1fr_auto_auto] lg:flex lg:w-auto">
+          <FilterSelect
+            label={t('filters.center')}
+            value={p.centerId ? String(p.centerId) : ''}
+            onChange={(v) => p.onCenterChange(Number(v) || undefined)}
+            className="lg:w-52"
+            options={[
+              ['', t('filters.allCenters')],
+              ...p.centers.map(
+                (c) => [String(c.id), c.acronym ? `${c.acronym} · ${c.name}` : c.name] as [string, string],
+              ),
+            ]}
+          />
+          <FilterSelect
+            label={t('filters.group')}
+            value={p.groupId ? String(p.groupId) : ''}
+            onChange={(v) => p.onGroupChange(Number(v) || undefined)}
+            className="lg:w-60"
+            options={[
+              ['', t('filters.allGroups')],
+              ...[...p.groups]
                 .sort((a, b) => a.name.localeCompare(b.name, i18n.resolvedLanguage))
-                .map((g) => (
-                  <option key={g.id} value={g.id}>
-                    {g.name}
-                  </option>
-                ))}
-            </select>
-            <SelectChevron />
-          </div>
-          <div className="relative w-full lg:w-52">
-            <label htmlFor="category-filter" className="sr-only">
-              {t('mincienciasCategory')}
-            </label>
-            <select
-              id="category-filter"
-              value={p.category ?? ''}
-              onChange={(e) =>
-                p.onCategoryChange((e.target.value || undefined) as AuthorCategoryId | undefined)
-              }
-              className={selectClass}
-            >
-              <option value="">{t('mincienciasCategory')}</option>
-              {AUTHOR_CATEGORIES.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {t('filters.categoryOption', { category: labels.category(c.id), code: c.code })}
-                </option>
-              ))}
-            </select>
-            <SelectChevron />
-          </div>
+                .map((g) => [String(g.id), g.name] as [string, string]),
+            ]}
+          />
+          <FilterSelect
+            label={t('mincienciasCategory')}
+            value={p.category ?? ''}
+            onChange={(v) => p.onCategoryChange((v || undefined) as AuthorCategoryId | undefined)}
+            className="lg:w-52"
+            options={[
+              ['', t('mincienciasCategory')],
+              ...AUTHOR_CATEGORIES.map(
+                (c) =>
+                  [c.id, t('filters.categoryOption', { category: labels.category(c.id), code: c.code })] as [
+                    string,
+                    string,
+                  ],
+              ),
+            ]}
+          />
           {/* Orden fijo del directorio: se informa, no se finge un control. */}
           <p
             title={t('filters.sortTitle')}
@@ -130,6 +101,11 @@ export function DirectoryFilters(p: Props) {
             <Icon name="sort" className="text-[18px]" />
             <span className="sr-only md:not-sr-only">{t('filters.sort')}</span>
           </p>
+          <ClearFilters
+            show={p.hasActiveFilters}
+            label={t('common:feedback.resetFilters')}
+            onClick={p.onReset}
+          />
         </div>
       </form>
     </div>

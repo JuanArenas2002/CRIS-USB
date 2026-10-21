@@ -70,6 +70,8 @@ export function DirectoryPage() {
         centerId={search.centerId}
         onCenterChange={search.setCenterId}
         centers={centers.data ?? []}
+        hasActiveFilters={search.hasActiveFilters || search.term.trim() !== ''}
+        onReset={search.reset}
       />
 
       {/* Destacados: solo en la vista sin filtros, para no duplicar resultados de una búsqueda. */}

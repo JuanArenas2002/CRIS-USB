@@ -13,13 +13,11 @@ export function centerQueries(repo: CenterRepository) {
       queryOptions({
         queryKey: ['centers', 'list'],
         queryFn: async ({ signal }) => sortCenters((await repo.list(signal)).filter((c) => c.active)),
-        staleTime: 10 * 60 * 1000,
       }),
     detail: (id: number) =>
       queryOptions({
         queryKey: ['centers', 'detail', id],
         queryFn: async ({ signal }) => toPublicCenterDetail(await repo.getById(id, signal)),
-        staleTime: 10 * 60 * 1000,
       }),
   };
 }

@@ -14,19 +14,16 @@ export function groupQueries(repo: GroupRepository) {
       queryOptions({
         queryKey: ['groups', 'list'],
         queryFn: async ({ signal }) => sortGroups((await repo.list(signal)).filter((g) => g.active)),
-        staleTime: 10 * 60 * 1000,
       }),
     members: (id: number) =>
       queryOptions({
         queryKey: ['groups', 'members', id],
         queryFn: ({ signal }) => repo.members(id, signal),
-        staleTime: 10 * 60 * 1000,
       }),
     detail: (id: number) =>
       queryOptions({
         queryKey: ['groups', 'detail', id],
         queryFn: async ({ signal }) => toPublicGroupDetail(await repo.getById(id, signal)),
-        staleTime: 10 * 60 * 1000,
       }),
   };
 }

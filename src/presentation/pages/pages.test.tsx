@@ -43,7 +43,8 @@ test('directorio: la búsqueda va al backend (debounce) y una búsqueda filtrada
 test('directorio: vacío ofrece restablecer filtros', async () => {
   renderApp('/?q=zzz', fakeRepo({ list: async () => ({ items: [], total: 0, page: 1, pages: 0 }) }));
   expect(await screen.findByText('No se encontraron investigadores')).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Restablecer filtros' })).toBeInTheDocument();
+  // Uno en la barra de filtros y otro en el estado vacío.
+  expect(screen.getAllByRole('button', { name: 'Restablecer filtros' })).toHaveLength(2);
 });
 
 test('directorio: error recuperable con reintento', async () => {
@@ -119,7 +120,8 @@ test('menú: las 6 secciones en orden; las pendientes llevan a "en construcción
 test('directorio: filtro por categoría Minciencias va a la consulta', async () => {
   const list = vi.fn(fakeRepo().list);
   renderApp('/', fakeRepo({ list }));
-  await userEvent.selectOptions(await screen.findByLabelText('Categoría Minciencias'), 'junior');
+  await userEvent.click(await screen.findByLabelText('Categoría Minciencias'));
+  await userEvent.click(screen.getByRole('option', { name: /Junior/ }));
   await waitFor(() =>
     expect(list).toHaveBeenCalledWith(
       expect.objectContaining({ category: 'junior', page: 1 }),
@@ -140,9 +142,11 @@ test('grupos: solo activos, mejor categoría primero, filtro por categoría y b�
   expect(await titles()).toEqual(['Óptica', 'Zoología']);
   expect(screen.getAllByText('Ana María Pérez')).toHaveLength(2);
 
-  await userEvent.selectOptions(screen.getByLabelText('Categoría Minciencias'), 'B');
+  await userEvent.click(screen.getByRole('combobox', { name: 'Categoría Minciencias' }));
+  await userEvent.click(screen.getByRole('option', { name: 'Categoría B' }));
   expect(await titles()).toEqual(['Zoología']);
-  await userEvent.selectOptions(screen.getByLabelText('Categoría Minciencias'), '');
+  await userEvent.click(screen.getByRole('button', { name: 'Restablecer filtros' }));
+  expect(await titles()).toEqual(['Óptica', 'Zoología']);
   await userEvent.type(screen.getByLabelText('Buscar grupos'), 'optica');
   expect(await titles()).toEqual(['Óptica']);
 });

@@ -7,6 +7,7 @@ import { GroupRow, GroupRowHeader } from '@/presentation/components/groups/Group
 import { ContactCta } from '@/presentation/components/layout/ContactCta';
 import { EmptyState, ErrorState, feedbackButtonClass } from '@/presentation/components/feedback/Feedback';
 import { Icon } from '@/presentation/components/ui/Icon';
+import { ClearFilters, FilterSelect } from '@/presentation/components/ui/FilterSelect';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
 import { useGroups } from '@/presentation/hooks/use-groups';
 import { useLabels } from '@/presentation/hooks/use-labels';
@@ -37,6 +38,9 @@ export function GroupsPage() {
       },
       { replace: true },
     );
+
+  // Conserva la vista elegida (lista/tarjetas): no es un filtro.
+  const clearFilters = () => setParams(view === 'tarjetas' ? { vista: 'tarjetas' } : {}, { replace: true });
 
   useDocumentMetadata({
     title: t('metaTitle'),
@@ -160,57 +164,49 @@ export function GroupsPage() {
               className={`${fieldClass} w-full pr-4 pl-10 text-body-sm`}
             />
           </div>
-          <div className="relative w-full lg:w-60">
-            <label htmlFor="group-category" className="sr-only">
-              {t('authors:mincienciasCategory')}
-            </label>
-            <select
-              id="group-category"
-              value={category ?? ''}
-              onChange={(e) => setParam('cat', e.target.value)}
-              className={`${fieldClass} w-full cursor-pointer appearance-none px-3 pr-8 text-label-md font-semibold`}
-            >
-              <option value="">{t('allCategories')}</option>
-              {CATEGORY_ORDER.map((c) => (
-                <option key={c} value={c}>
-                  {t('statCategory', { category: c })}
-                </option>
-              ))}
-            </select>
-            <Icon
-              name="expand_more"
-              className="pointer-events-none absolute top-3 right-2.5 text-[18px] text-on-surface-variant"
-            />
-          </div>
-          <div className="relative w-full lg:w-60">
-            <label htmlFor="group-type" className="sr-only">
-              {t('typeLabel')}
-            </label>
-            <select
-              id="group-type"
-              value={type ?? ''}
-              onChange={(e) => setParam('tipo', e.target.value)}
-              className={`${fieldClass} w-full cursor-pointer appearance-none px-3 pr-8 text-label-md font-semibold`}
-            >
-              <option value="">{t('allTypes')}</option>
-              <option value="institucional">{domain('Institucional')}</option>
-              <option value="interinstitucional">{domain('Interinstitucional')}</option>
-            </select>
-            <Icon
-              name="expand_more"
-              className="pointer-events-none absolute top-3 right-2.5 text-[18px] text-on-surface-variant"
-            />
-          </div>
+          <FilterSelect
+            label={t('authors:mincienciasCategory')}
+            value={category ?? ''}
+            onChange={(v) => setParam('cat', v)}
+            options={[
+              ['', t('allCategories')],
+              ...CATEGORY_ORDER.map((c) => [c, t('statCategory', { category: c })] as [string, string]),
+            ]}
+          />
+          <FilterSelect
+            label={t('typeLabel')}
+            value={type ?? ''}
+            onChange={(v) => setParam('tipo', v)}
+            options={[
+              ['', t('allTypes')],
+              ['institucional', domain('Institucional')],
+              ['interinstitucional', domain('Interinstitucional')],
+            ]}
+          />
+          <ClearFilters
+            show={Boolean(search || category || type)}
+            label={t('common:feedback.resetFilters')}
+            onClick={clearFilters}
+          />
         </form>
       </div>
 
       <section aria-labelledby="groups-list-title" className="w-full py-16">
         <div className="container-page">
-          <div className="mb-10 flex flex-col justify-between gap-2 md:flex-row md:items-end">
+          <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
             <div className="flex flex-col">
-              <p className="text-label-md font-bold tracking-widest text-secondary uppercase">
-                {t('eyebrow')}
-              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="text-label-md font-bold tracking-widest text-secondary uppercase">
+                  {t('eyebrow')}
+                </p>
+                <p
+                  aria-live="polite"
+                  className="inline-flex items-center gap-2 rounded-full bg-badge-sage-bg px-3 py-1 text-label-md font-semibold text-badge-sage-text"
+                >
+                  <Icon name="groups" className="text-[16px]" />
+                  {data ? t('count', { count: visible.length }) : t('loadingGroups')}
+                </p>
+              </div>
               <h2
                 id="groups-list-title"
                 className="mt-1 text-headline-lg-mobile font-bold tracking-tight text-primary md:text-headline-lg"
@@ -219,41 +215,35 @@ export function GroupsPage() {
               </h2>
               <p className="mt-1 max-w-2xl text-body-md text-neutral-muted">{t('listLead')}</p>
             </div>
-            <p
-              aria-live="polite"
-              className="inline-flex items-center gap-2 self-start rounded-full bg-badge-sage-bg px-3.5 py-1.5 text-label-md font-semibold text-badge-sage-text md:self-end"
-            >
-              <Icon name="groups" className="text-[16px]" />
-              {data ? t('count', { count: visible.length }) : t('loadingGroups')}
-            </p>
-          </div>
-
-          <div className="mb-4 flex justify-end">
-            <div
-              role="group"
-              aria-label={t('viewLabel')}
-              className="inline-flex rounded-lg bg-surface-container-lowest p-1 ring-1 ring-border-subtle"
-            >
-              {(
-                [
-                  { id: 'lista', label: t('viewList'), icon: 'view_list' },
-                  { id: 'tarjetas', label: t('viewCards'), icon: 'grid_view' },
-                ] as const
-              ).map((v) => (
-                <button
-                  key={v.id}
-                  type="button"
-                  aria-pressed={view === v.id}
-                  onClick={() => setParam('vista', v.id === 'lista' ? '' : v.id)}
-                  className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-label-md font-semibold transition-colors ${
-                    view === v.id
-                      ? 'bg-primary text-on-primary'
-                      : 'text-on-surface-variant hover:text-primary'
-                  }`}
-                >
-                  <Icon name={v.icon} className="text-[18px]" /> {v.label}
-                </button>
-              ))}
+            <div className="flex shrink-0 items-center gap-3">
+              <div
+                role="group"
+                aria-label={t('viewLabel')}
+                className="inline-flex rounded-lg bg-surface-container-lowest p-1 ring-1 ring-border-subtle"
+              >
+                {(
+                  [
+                    { id: 'lista', label: t('viewList'), icon: 'view_list' },
+                    { id: 'tarjetas', label: t('viewCards'), icon: 'grid_view' },
+                  ] as const
+                ).map((v) => (
+                  <button
+                    key={v.id}
+                    type="button"
+                    aria-pressed={view === v.id}
+                    onClick={() => setParam('vista', v.id === 'lista' ? '' : v.id)}
+                    aria-label={v.label}
+                    title={v.label}
+                    className={`inline-flex items-center rounded-md p-1.5 text-label-md font-semibold transition-colors ${
+                      view === v.id
+                        ? 'bg-primary text-on-primary'
+                        : 'text-on-surface-variant hover:text-primary'
+                    }`}
+                  >
+                    <Icon name={v.icon} className="text-[20px]" />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -279,11 +269,7 @@ export function GroupsPage() {
               <EmptyState
                 title={t('emptyTitle')}
                 action={
-                  <button
-                    type="button"
-                    onClick={() => setParams({}, { replace: true })}
-                    className={feedbackButtonClass}
-                  >
+                  <button type="button" onClick={clearFilters} className={feedbackButtonClass}>
                     {t('common:feedback.resetFilters')}
                   </button>
                 }

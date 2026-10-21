@@ -168,7 +168,12 @@ export function CenterCard({ center: c }: { center: Center }) {
               <dt className="flex items-center gap-1 text-[10px] font-semibold tracking-wider text-neutral-muted uppercase">
                 <Icon name={m.icon} className="text-[14px] text-secondary" /> {m.label}
               </dt>
-              <dd className="mt-0.5 text-[15px] leading-tight font-bold text-on-surface">{m.value}</dd>
+              <dd
+                className="mt-0.5 line-clamp-1 text-[15px] leading-tight font-bold text-on-surface"
+                title={String(m.value)}
+              >
+                {m.value}
+              </dd>
             </div>
           ))}
         </dl>

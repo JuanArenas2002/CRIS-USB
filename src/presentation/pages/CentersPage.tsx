@@ -13,6 +13,7 @@ import { EmptyState, ErrorState, feedbackButtonClass } from '@/presentation/comp
 import { ContactCta } from '@/presentation/components/layout/ContactCta';
 import { HeroWaves } from '@/presentation/components/layout/HeroWaves';
 import { Icon } from '@/presentation/components/ui/Icon';
+import { ClearFilters, FilterSelect } from '@/presentation/components/ui/FilterSelect';
 import { useCenters } from '@/presentation/hooks/use-centers';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
 import { useLabels } from '@/presentation/hooks/use-labels';
@@ -51,6 +52,9 @@ export function CentersPage() {
       },
       { replace: true },
     );
+
+  // Conserva la vista elegida (lista/tarjetas): no es un filtro.
+  const clearFilters = () => setParams(view === 'tarjetas' ? { vista: 'tarjetas' } : {}, { replace: true });
 
   useDocumentMetadata({
     title: t('metaTitle'),
@@ -211,15 +215,13 @@ export function CentersPage() {
               className={`${fieldClass} w-full pr-4 pl-10 text-body-sm`}
             />
           </div>
-          <Select
-            id="center-campus"
+          <FilterSelect
             label={t('filterCampus')}
             value={filters.campus ?? ''}
             onChange={(v) => setParam('sede', v)}
             options={[['', t('allCampuses')], ...campuses]}
           />
-          <Select
-            id="center-ods"
+          <FilterSelect
             label={t('filterOds')}
             value={filters.ods ? String(filters.ods) : ''}
             onChange={(v) => setParam('ods', v)}
@@ -234,16 +236,30 @@ export function CentersPage() {
               ),
             ]}
           />
+          <ClearFilters
+            show={Boolean(filters.search || filters.campus || filters.ods)}
+            label={t('common:feedback.resetFilters')}
+            onClick={clearFilters}
+          />
         </form>
       </div>
 
       <section aria-labelledby="centers-list-title" className="w-full py-16">
         <div className="container-page">
-          <div className="mb-10 flex flex-col justify-between gap-2 md:flex-row md:items-end">
+          <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
             <div className="flex flex-col">
-              <p className="text-label-md font-bold tracking-widest text-secondary uppercase">
-                {t('eyebrow')}
-              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="text-label-md font-bold tracking-widest text-secondary uppercase">
+                  {t('eyebrow')}
+                </p>
+                <p
+                  aria-live="polite"
+                  className="inline-flex items-center gap-2 rounded-full bg-badge-sage-bg px-3 py-1 text-label-md font-semibold text-badge-sage-text"
+                >
+                  <Icon name="domain" className="text-[16px]" />
+                  {data ? t('count', { count: visible.length }) : t('loadingCenters')}
+                </p>
+              </div>
               <h2
                 id="centers-list-title"
                 className="mt-1 text-headline-lg-mobile font-bold tracking-tight text-primary md:text-headline-lg"
@@ -252,49 +268,43 @@ export function CentersPage() {
               </h2>
               <p className="mt-1 max-w-2xl text-body-md text-neutral-muted">{t('listLead')}</p>
             </div>
-            <p
-              aria-live="polite"
-              className="inline-flex items-center gap-2 self-start rounded-full bg-badge-sage-bg px-3.5 py-1.5 text-label-md font-semibold text-badge-sage-text md:self-end"
-            >
-              <Icon name="domain" className="text-[16px]" />
-              {data ? t('count', { count: visible.length }) : t('loadingCenters')}
-            </p>
-          </div>
-
-          <div className="mb-4 flex flex-wrap items-center justify-end gap-3">
-            <button
-              type="button"
-              onClick={downloadCsv}
-              disabled={!visible.length}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-surface-container-lowest px-3 py-1.5 text-label-md font-semibold text-primary ring-1 ring-border-subtle transition-colors hover:bg-surface-cream-alt disabled:opacity-50"
-            >
-              <Icon name="download" className="text-[18px] text-secondary" /> {t('downloadCsv')}
-            </button>
-            <div
-              role="group"
-              aria-label={t('viewLabel')}
-              className="inline-flex rounded-lg bg-surface-container-lowest p-1 ring-1 ring-border-subtle"
-            >
-              {(
-                [
-                  { id: 'lista', label: t('viewList'), icon: 'view_list' },
-                  { id: 'tarjetas', label: t('viewCards'), icon: 'grid_view' },
-                ] as const
-              ).map((v) => (
-                <button
-                  key={v.id}
-                  type="button"
-                  aria-pressed={view === v.id}
-                  onClick={() => setParam('vista', v.id === 'lista' ? '' : v.id)}
-                  className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-label-md font-semibold transition-colors ${
-                    view === v.id
-                      ? 'bg-primary text-on-primary'
-                      : 'text-on-surface-variant hover:text-primary'
-                  }`}
-                >
-                  <Icon name={v.icon} className="text-[18px]" /> {v.label}
-                </button>
-              ))}
+            <div className="flex shrink-0 items-center gap-3">
+              <button
+                type="button"
+                onClick={downloadCsv}
+                disabled={!visible.length}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-surface-container-lowest px-3 py-1.5 text-label-md font-semibold text-primary ring-1 ring-border-subtle transition-colors hover:bg-surface-cream-alt disabled:opacity-50"
+              >
+                <Icon name="download" className="text-[18px] text-secondary" /> {t('downloadCsv')}
+              </button>
+              <div
+                role="group"
+                aria-label={t('viewLabel')}
+                className="inline-flex rounded-lg bg-surface-container-lowest p-1 ring-1 ring-border-subtle"
+              >
+                {(
+                  [
+                    { id: 'lista', label: t('viewList'), icon: 'view_list' },
+                    { id: 'tarjetas', label: t('viewCards'), icon: 'grid_view' },
+                  ] as const
+                ).map((v) => (
+                  <button
+                    key={v.id}
+                    type="button"
+                    aria-pressed={view === v.id}
+                    onClick={() => setParam('vista', v.id === 'lista' ? '' : v.id)}
+                    aria-label={v.label}
+                    title={v.label}
+                    className={`inline-flex items-center rounded-md p-1.5 text-label-md font-semibold transition-colors ${
+                      view === v.id
+                        ? 'bg-primary text-on-primary'
+                        : 'text-on-surface-variant hover:text-primary'
+                    }`}
+                  >
+                    <Icon name={v.icon} className="text-[20px]" />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -320,13 +330,7 @@ export function CentersPage() {
               <EmptyState
                 title={t('emptyTitle')}
                 action={
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setParams(view === 'tarjetas' ? { vista: 'tarjetas' } : {}, { replace: true })
-                    }
-                    className={feedbackButtonClass}
-                  >
+                  <button type="button" onClick={clearFilters} className={feedbackButtonClass}>
                     {t('common:feedback.resetFilters')}
                   </button>
                 }
@@ -354,44 +358,5 @@ export function CentersPage() {
       </section>
       <ContactCta />
     </>
-  );
-}
-
-/** Desplegable del buscador flotante, con el mismo estilo que el filtro de categoría de grupos. */
-function Select({
-  id,
-  label,
-  value,
-  onChange,
-  options,
-}: {
-  id: string;
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  options: [string, string][];
-}) {
-  return (
-    <div className="relative w-full lg:w-52">
-      <label htmlFor={id} className="sr-only">
-        {label}
-      </label>
-      <select
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={`${fieldClass} w-full cursor-pointer appearance-none px-3 pr-8 text-label-md font-semibold`}
-      >
-        {options.map(([v, l]) => (
-          <option key={v} value={v}>
-            {l}
-          </option>
-        ))}
-      </select>
-      <Icon
-        name="expand_more"
-        className="pointer-events-none absolute top-3 right-2.5 text-[18px] text-on-surface-variant"
-      />
-    </div>
   );
 }

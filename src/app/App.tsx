@@ -29,8 +29,9 @@ export function createQueryClient(): QueryClient {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        // Datos frescos al volver a la pestaña (p. ej. tras subir una foto en el backend).
-        staleTime: 30 * 1000,
+        // ponytail: una petición por consulta; el admin invalida al cambiar datos y la hidratación refresca.
+        staleTime: 10 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
         // 4xx no se arregla reintentando; red/5xx sí, hasta 2 veces.
         retry: (count, err) =>
           !(err instanceof ApiError && err.status >= 400 && err.status < 500) && count < 2,
