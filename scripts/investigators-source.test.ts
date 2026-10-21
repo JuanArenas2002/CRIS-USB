@@ -45,6 +45,14 @@ test('proyección pública: lista blanca, sin datos personales ni URLs no segura
     expect(json).not.toContain(secret);
 });
 
+test('nombre: nombres + apellidos de person; name_standard solo si faltan', () => {
+  const person = { ...raw.person, name: 'ANA MARÍA', lastname: 'PÉREZ LARA' };
+  expect(toPublicInvestigator({ ...raw, name_standard: 'PEREZ, A., PEREZ LARA, ANA', person })!.name).toBe(
+    'ANA MARÍA PÉREZ LARA',
+  );
+  expect(toPublicInvestigator(raw)!.name).toBe('ANA MARIA PEREZ LARA');
+});
+
 test('solo investigadores activos en GrupLAC', () => {
   expect(toPublicInvestigator({ ...raw, state_gruplac: false })).toBeNull();
   expect(toPublicInvestigator({ ...raw, name_standard: null, person: {} })).toBeNull();

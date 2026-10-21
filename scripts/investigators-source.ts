@@ -17,6 +17,7 @@ import { parseCategory } from '../src/domain/authors/author.ts';
 import { fetchInvestigatorCenters } from './centers-source.ts';
 import {
   cleanText,
+  fullName,
   getData,
   httpsUrl,
   mapLimit,
@@ -36,17 +37,6 @@ const SCOPUS = /(^|\.)scopus\.com$/;
 export const ONLY_SELECTED = true;
 
 const HANDLE = /(^|\.)(handle\.net|unisimon\.edu\.co)$/;
-
-/** "RODRIGUEZ LARA, INES EMILIA" → "INES EMILIA RODRIGUEZ LARA" (el front le da formato). */
-function fullName(raw: Raw): string | null {
-  const std = str(raw.name_standard);
-  if (std) {
-    const [last, first] = std.split(',').map((s) => s.trim());
-    return first ? `${first} ${last}` : (last ?? null);
-  }
-  const person = obj(raw.person);
-  return [str(person?.name), str(person?.lastname)].filter(Boolean).join(' ') || null;
-}
 
 const year = (v: unknown): number | null => {
   const y = Number(typeof v === 'string' ? v.slice(0, 4) : v);

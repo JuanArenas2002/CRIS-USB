@@ -20,10 +20,16 @@ export const httpsUrl = (v: unknown, host: RegExp): string | null => {
 };
 
 /** "RODRIGUEZ LARA, INES EMILIA" → "INES EMILIA RODRIGUEZ LARA" (el front le da formato). */
-function leaderName(nameStandard: string | null): string | null {
-  if (!nameStandard) return null;
-  const [last, first] = nameStandard.split(',').map((s) => s.trim());
-  return first ? `${first} ${last}` : (last ?? null);
+/**
+ * Nombres + apellidos de `person`. `name_standard` (forma de citación, a veces con variantes:
+ * "RODRIGUEZ LARA, INES EMILIA, RODRIGUEZ, I.") solo si faltan: se toma la primera variante.
+ */
+export function fullName(raw: Raw): string | null {
+  const person = obj(raw.person);
+  const own = [str(person?.name), str(person?.lastname)].filter(Boolean).join(' ');
+  if (own) return own;
+  const [last, first] = (str(raw.name_standard) ?? '').split(',').map((s) => s.trim());
+  return (first ? `${first} ${last}` : last) || null;
 }
 
 export function toPublicGroup(raw: Raw): GroupInfo | null {
@@ -33,7 +39,7 @@ export function toPublicGroup(raw: Raw): GroupInfo | null {
   if (typeof id !== 'number' || !name || !code) return null;
 
   const leader = obj(raw.leader);
-  const lName = leaderName(str(leader?.name_standard));
+  const lName = leader ? fullName(leader) : null;
   const municipality = obj(raw.municipality);
   const city = str(municipality?.name);
   const orcid = str(leader?.orcid)?.match(/\d{4}-\d{4}-\d{4}-\d{3}[\dX]/)?.[0] ?? null;
