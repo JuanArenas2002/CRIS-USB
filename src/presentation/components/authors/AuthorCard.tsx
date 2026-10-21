@@ -13,11 +13,11 @@ import { Icon } from '@/presentation/components/ui/Icon';
 import { IdLogo } from '@/presentation/components/ui/IdLogo';
 import { useLabels } from '@/presentation/hooks/use-labels';
 
-/** Top 3 de cada centro en el ranking USB: oro, plata y bronce. */
+/** Top 3 de cada centro en el ranking USB: mismo estilo sobrio; el puesto lo dice el número. */
 const MEDAL = [
-  'bg-gradient-to-r from-[#F7D774] to-[#E0AC1F] text-[#3D2C00] ring-[#B8860B]/40',
-  'bg-gradient-to-r from-[#EEF1F4] to-[#C3CBD3] text-[#27313B] ring-[#8A96A3]/40',
-  'bg-gradient-to-r from-[#F2C29A] to-[#C97B3D] text-[#3A1C04] ring-[#9C5A24]/40',
+  'bg-white text-primary-container ring-primary-container/50',
+  'bg-white text-primary-container ring-primary-container/50',
+  'bg-white text-primary-container ring-primary-container/50',
 ];
 /** Clase de medalla para un puesto en el centro (undefined fuera del top 3). */
 export const medalFor = (centerRank: number | null | undefined) =>
@@ -69,7 +69,7 @@ export function AuthorCard({ author }: { author: Author }) {
       {/* Nivel 1: identidad */}
       <div className="flex items-start gap-4">
         <div aria-hidden="true" className="relative shrink-0">
-          <div className="h-24 w-24 overflow-hidden rounded-2xl bg-gradient-to-br from-badge-sage-bg via-[#d5e4d8] to-[#b9d1c2] shadow-sm ring-1 ring-border-subtle">
+          <div className="h-24 w-24 overflow-hidden rounded-2xl bg-badge-sage-bg shadow-sm ring-1 ring-border-subtle">
             {author.photoUrl ? (
               <img
                 src={withBaseUrl(author.photoUrl)}
@@ -95,9 +95,9 @@ export function AuthorCard({ author }: { author: Author }) {
           ) : null}
         </div>
         <div className="min-w-0 flex-1 pt-0.5">
-          <span className="inline-flex rounded-full bg-badge-sage-bg px-2.5 py-0.5 text-[11px] font-bold tracking-wide text-badge-sage-text">
+          <p className="text-[11px] font-semibold tracking-wider text-secondary uppercase">
             {labels.researcher(author.category)}
-          </span>
+          </p>
           <h3 className="mt-1.5 text-[18px] leading-snug font-bold tracking-tight text-[#0F241A] transition-colors group-hover:text-primary">
             {/* El enlace del nombre cubre toda la tarjeta sin anidar controles. */}
             <Link
@@ -157,7 +157,7 @@ export function AuthorCard({ author }: { author: Author }) {
             className="mt-3 h-2 overflow-hidden rounded-full bg-secondary/15"
           >
             <div
-              className="h-full rounded-full bg-gradient-to-r from-secondary to-primary"
+              className="h-full rounded-full bg-primary"
               style={{ width: `${Math.min(100, Math.max(0, r.index))}%` }}
             />
           </div>

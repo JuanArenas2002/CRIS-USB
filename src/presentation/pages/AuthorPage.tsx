@@ -204,7 +204,7 @@ function Profile({ author }: { author: AuthorProfile }) {
               {/* Foto asignada en /admin/fotos; si no hay, monograma en el mismo marco de la plantilla. */}
               <div
                 aria-hidden="true"
-                className="relative flex h-52 w-44 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-badge-sage-bg via-[#d5e4d8] to-[#b9d1c2] shadow-md sm:h-64 sm:w-52"
+                className="relative flex h-52 w-44 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-badge-sage-bg shadow-md sm:h-64 sm:w-52"
               >
                 {author.photoUrl ? (
                   <img
