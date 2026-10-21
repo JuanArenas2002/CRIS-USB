@@ -78,17 +78,22 @@ export function toPublicInvestigator(raw: Raw): Author | null {
 }
 
 /** Un elemento de `/investigator/seleccionados` → métricas + producción (ordenada, más reciente primero). */
-export function toSelected(
-  raw: Raw,
-): { id: number; metrics: AuthorMetrics; production: AuthorProduction } | null {
+export function toSelected(raw: Raw): {
+  id: number;
+  metrics: AuthorMetrics;
+  production: AuthorProduction;
+  scopusId: string | null;
+  englishLevel: string | null;
+} | null {
   if (typeof raw.id !== 'number') return null;
   const prod = obj(raw.produccion);
   const totals = obj(prod?.totales);
-  // Un investigador puede tener varios perfiles de Scopus; se toma el mayor índice H.
-  const hs = list(raw.authorsIds, (a) => {
+  // Un investigador puede tener varios perfiles de Scopus; se muestra el de mayor índice H.
+  const best = list(raw.authorsIds, (a) => {
     const h = Number.parseInt(str(a.indice_h) ?? '', 10);
-    return Number.isFinite(h) ? { h } : null;
-  }).map((x) => x.h);
+    const id = str(a.authorId)?.match(/^\d{6,15}$/)?.[0];
+    return Number.isFinite(h) && id ? { h, id } : null;
+  }).sort((a, b) => b.h - a.h)[0];
 
   const publications = list<ScopusPublication>(prod?.publicacionesScopus, (p) => {
     const title = cleanText(p.title);
@@ -132,11 +137,16 @@ export function toSelected(
   return {
     id: raw.id,
     metrics: {
-      hIndex: hs.length ? Math.max(...hs) : null,
+      hIndex: best?.h ?? null,
       scopusPublications: count(totals?.publicacionesScopus) || publications.length,
       products: count(totals?.total),
     },
     production: { publications, theses, developments },
+    scopusId: best?.id ?? null,
+    englishLevel:
+      str(raw.nivel_ingles ?? obj(raw.persona)?.nivel_ingles)
+        ?.match(/^[ABC][12]$/i)?.[0]
+        .toUpperCase() ?? null,
   };
 }
 
@@ -167,10 +177,15 @@ export async function fetchInvestigators(base: string): Promise<InvestigatorDire
     getData(`${base}/investigator/seleccionados`),
   ]);
   const extra = new Map(list(selected, toSelected).map((s) => [s.id, s]));
-  const authors = list(rows, toPublicInvestigator).map((a) => ({
-    ...a,
-    metrics: extra.get(a.id)?.metrics ?? null,
-  }));
+  const authors = list(rows, toPublicInvestigator).map((a) => {
+    const s = extra.get(a.id);
+    return {
+      ...a,
+      metrics: s?.metrics ?? null,
+      scopusId: s?.scopusId ?? a.scopusId,
+      englishLevel: s?.englishLevel ?? null,
+    };
+  });
   const byDocument = new Map<string, number>();
   for (const r of rows.map(obj)) {
     const person = obj(r?.person);

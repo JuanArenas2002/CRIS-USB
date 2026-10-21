@@ -98,6 +98,16 @@ export function AuthorCard({ author }: { author: Author }) {
           <span className="inline-flex rounded-full bg-badge-sage-bg px-2.5 py-0.5 text-[11px] font-bold tracking-wide text-badge-sage-text">
             {labels.researcher(author.category)}
           </span>
+          {author.englishLevel ? (
+            <span
+              title={t('card.englishLevel')}
+              className="ml-1.5 inline-flex items-center gap-1 rounded-full border border-border-subtle px-2 py-0.5 text-[11px] font-bold text-on-surface-variant"
+            >
+              <Icon name="translate" className="text-[13px] text-secondary" />
+              <span className="sr-only">{t('card.englishLevel')}: </span>
+              {author.englishLevel}
+            </span>
+          ) : null}
           <h3 className="mt-1.5 text-[18px] leading-snug font-bold tracking-tight text-[#0F241A] transition-colors group-hover:text-primary">
             {/* El enlace del nombre cubre toda la tarjeta sin anidar controles. */}
             <Link

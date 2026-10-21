@@ -250,6 +250,9 @@ function Profile({ author }: { author: AuthorProfile }) {
                   label={t('profile.degree')}
                   value={author.degree ? labels.domain(author.degree) : '—'}
                 />
+                {author.englishLevel ? (
+                  <Fact icon="translate" label={t('profile.englishLevel')} value={author.englishLevel} />
+                ) : null}
                 <Fact
                   icon="apartment"
                   label={t('profile.mainGroup')}

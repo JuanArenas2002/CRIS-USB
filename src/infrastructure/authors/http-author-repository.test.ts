@@ -16,9 +16,16 @@ const { groups: _groups, production: _production, ...author } = makeAuthor();
 
 test('list: arma los parámetros del BFF y valida la respuesta', async () => {
   const fetch = mockFetch(200, { items: [author], total: 1, page: 2, pages: 1 });
-  const page = await repo().list({ search: 'ana', category: 'senior', groupId: 9, page: 2, pageSize: 12 });
+  const page = await repo().list({
+    search: 'ana',
+    category: 'senior',
+    englishLevel: 'B2',
+    groupId: 9,
+    page: 2,
+    pageSize: 12,
+  });
   const [url] = fetch.mock.calls[0] as unknown as [string];
-  expect(url).toBe('http://bff/api/investigators?page=2&size=12&q=ana&cat=senior&group=9');
+  expect(url).toBe('http://bff/api/investigators?page=2&size=12&q=ana&cat=senior&en=B2&group=9');
   expect(page.items[0]).toEqual(author);
 });
 

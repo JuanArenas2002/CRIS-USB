@@ -4,6 +4,7 @@ import {
   displayName,
   externalProfiles,
   featuredAuthors,
+  groupByCenter,
   withRankingCenter,
   initials,
   mergeProducts,
@@ -241,4 +242,20 @@ test('centro del ranking: se suma si Metri-K no lo vincula (sin importar mayúsc
   ].map((a) => withRankingCenter(a, [aud]));
   expect(all.map((a) => a.centers?.map((c) => c.id))).toEqual([[4], [4], []]);
   expect(queryAuthors(all, { centerId: 4, page: 1, pageSize: 10 }).items.map((a) => a.id)).toEqual([1, 2]);
+});
+
+test('secciones por centro: una vez cada uno, en su centro del ranking, por puesto; sin centro al final', () => {
+  const a = { id: 1, code: 'CI-1', acronym: 'AUDACIA', name: 'A', logoUrl: null };
+  const b = { id: 2, code: 'CI-2', acronym: 'BIO', name: 'B', logoUrl: null };
+  const rk = (centerRank: number, center: string) => ({ index: 50, rank: 1, centerRank, center });
+  const sections = groupByCenter([
+    makeAuthor({ id: 10, centers: [a, b], ranking: rk(2, 'BIO') }),
+    makeAuthor({ id: 11, centers: [] }),
+    makeAuthor({ id: 12, centers: [b], ranking: rk(1, 'BIO') }),
+    makeAuthor({ id: 13, centers: [b, a] }),
+  ]);
+  expect(sections.map((s) => [s.center?.id ?? null, s.authors.map((x) => x.id)])).toEqual([
+    [2, [12, 10, 13]],
+    [null, [11]],
+  ]);
 });

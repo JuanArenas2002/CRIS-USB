@@ -10,6 +10,9 @@ export const AUTHOR_CATEGORIES = [
 ] as const;
 export type AuthorCategoryId = (typeof AUTHOR_CATEGORIES)[number]['id'];
 
+/** Niveles de inglés MCER, de menor a mayor. */
+export const ENGLISH_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
+
 export interface GroupRef {
   id: number;
   code: string;
@@ -29,6 +32,8 @@ export interface Author {
   category: AuthorCategoryId | null;
   /** Máximo nivel de formación (p. ej. "Doctorado"). */
   degree: string | null;
+  /** Nivel de inglés MCER (A1–C2); solo para los seleccionados en Metri-K. */
+  englishLevel?: string | null;
   orcid: string | null;
   scopusId: string | null;
   cvlacUrl: string | null;
@@ -194,6 +199,8 @@ export function externalProfiles(
 export interface AuthorListQuery {
   search?: string;
   category?: AuthorCategoryId;
+  /** Nivel de inglés exacto (A1–C2). */
+  englishLevel?: string;
   groupId?: number;
   /** Centro de investigación (id de Metri-K); ordena por puesto en ese centro. */
   centerId?: number;
@@ -244,12 +251,41 @@ export function withRankingCenter<T extends Author>(a: T, known: CenterRef[]): T
   return c && !a.centers?.some((x) => x.id === c.id) ? { ...a, centers: [c, ...(a.centers ?? [])] } : a;
 }
 
+export interface CenterSection {
+  /** null: investigadores sin centro. */
+  center: CenterRef | null;
+  authors: Author[];
+}
+
+/**
+ * Secciones del directorio, una por centro. Cada investigador sale una sola vez: en el centro con el
+ * que figura en el ranking USB o, si no, en el primero de Metri-K. Dentro, por puesto en el centro
+ * (luego el orden recibido); centros por sigla y "sin centro" al final.
+ */
+export function groupByCenter(all: Author[]): CenterSection[] {
+  const sections = new Map<number | null, CenterSection>();
+  for (const a of all) {
+    const c =
+      a.centers?.find((x) => sameCenter(a.ranking?.center, x.acronym ?? x.code)) ?? a.centers?.[0] ?? null;
+    const s = sections.get(c?.id ?? null) ?? { center: c, authors: [] };
+    s.authors.push(a);
+    sections.set(c?.id ?? null, s);
+  }
+  const pos = (a: Author, c: CenterRef | null) =>
+    c ? Math.min(centerRankIn(a, c.id), Number.MAX_SAFE_INTEGER) : 0;
+  const label = (c: CenterRef | null) => c?.acronym ?? c?.name ?? '￿';
+  return [...sections.values()]
+    .map((s) => ({ ...s, authors: [...s.authors].sort((a, b) => pos(a, s.center) - pos(b, s.center)) }))
+    .sort((a, b) => label(a.center).localeCompare(label(b.center), 'es'));
+}
+
 export function queryAuthors(all: Author[], q: AuthorListQuery): AuthorListPage {
   const term = norm(q.search?.trim() ?? '');
   const items = all
     .filter(
       (a) =>
         (!q.category || a.category === q.category) &&
+        (!q.englishLevel || a.englishLevel === q.englishLevel) &&
         (!q.groupId || a.mainGroup?.id === q.groupId) &&
         (!q.centerId || !!a.centers?.some((c) => c.id === q.centerId)) &&
         (!term || norm(a.name).includes(term) || (a.orcid ?? '').includes(term)),

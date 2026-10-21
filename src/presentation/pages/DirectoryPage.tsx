@@ -5,7 +5,8 @@ import { DirectoryHero } from '@/presentation/components/authors/DirectoryHero';
 import { ContactCta } from '@/presentation/components/layout/ContactCta';
 import { EmptyState, ErrorState, feedbackButtonClass } from '@/presentation/components/feedback/Feedback';
 import { Icon } from '@/presentation/components/ui/Icon';
-import { Pagination } from '@/presentation/components/ui/Pagination';
+import { groupByCenter } from '@/domain/authors/author';
+import { withBaseUrl } from '@/shared/base';
 import { useAuthorSearch } from '@/presentation/hooks/use-author-search';
 import { useAuthors, useAuthorStats, useFeaturedAuthors } from '@/presentation/hooks/use-authors';
 import { useCenters } from '@/presentation/hooks/use-centers';
@@ -13,7 +14,6 @@ import { useGroups } from '@/presentation/hooks/use-groups';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
 import { useLabels } from '@/presentation/hooks/use-labels';
 import { ORGANIZATION, SITE_NAME, SITE_URL, safeJson } from '@/shared/seo';
-import { DIRECTORY_PAGE_SIZE } from '@/application/authors/author-queries';
 
 // WebSite + la universidad como Organization (tipo que Google reconoce en resultados enriquecidos).
 // ponytail: sin `logo` hasta tener una versión cuadrada ≥ 112 px (el logo actual es 400×65).
@@ -53,7 +53,6 @@ export function DirectoryPage() {
   });
 
   const data = list.data;
-  const pageCount = data ? Math.max(1, Math.ceil(data.total / DIRECTORY_PAGE_SIZE)) : 1;
 
   return (
     <>
@@ -64,6 +63,8 @@ export function DirectoryPage() {
         onTermChange={search.setTerm}
         category={search.category}
         onCategoryChange={search.setCategory}
+        englishLevel={search.englishLevel}
+        onEnglishLevelChange={search.setEnglishLevel}
         groupId={search.groupId}
         onGroupChange={search.setGroupId}
         groups={groups.data ?? []}
@@ -128,17 +129,47 @@ export function DirectoryPage() {
 
           {data ? (
             data.items.length ? (
-              <>
-                <div
-                  aria-busy={list.isPlaceholderData}
-                  className={`grid grid-cols-1 gap-gutter md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 min-[2200px]:grid-cols-5 ${list.isPlaceholderData ? 'opacity-60' : ''}`}
-                >
-                  {data.items.map((a) => (
-                    <AuthorCard key={a.id} author={a} />
-                  ))}
-                </div>
-                <Pagination page={search.filters.page} pages={pageCount} />
-              </>
+              <div
+                aria-busy={list.isPlaceholderData}
+                className={`flex flex-col gap-14 ${list.isPlaceholderData ? 'opacity-60' : ''}`}
+              >
+                {groupByCenter(data.items).map(({ center, authors }) => {
+                  const id = `centro-${center?.id ?? 'ninguno'}`;
+                  return (
+                    <section key={id} aria-labelledby={id}>
+                      <h3
+                        id={id}
+                        className="mb-6 flex items-center gap-3 border-b border-surface-container pb-3 text-headline-sm font-bold text-primary"
+                      >
+                        {center?.logoUrl ? (
+                          <img
+                            src={withBaseUrl(center.logoUrl)}
+                            alt=""
+                            className="h-9 w-auto max-w-24 object-contain"
+                          />
+                        ) : (
+                          <Icon name="domain" className="text-[24px] text-secondary" />
+                        )}
+                        <span className="min-w-0">
+                          {center
+                            ? center.acronym
+                              ? `${center.acronym} · ${center.name}`
+                              : center.name
+                            : t('directory.noCenter')}
+                        </span>
+                        <span className="ml-auto shrink-0 rounded-full bg-badge-sage-bg px-2.5 py-0.5 text-label-sm font-semibold text-badge-sage-text">
+                          {number(authors.length)}
+                        </span>
+                      </h3>
+                      <div className="grid grid-cols-1 gap-gutter md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 min-[2200px]:grid-cols-5">
+                        {authors.map((a) => (
+                          <AuthorCard key={a.id} author={a} />
+                        ))}
+                      </div>
+                    </section>
+                  );
+                })}
+              </div>
             ) : (
               <EmptyState
                 title={t('directory.emptyTitle')}

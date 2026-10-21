@@ -422,6 +422,7 @@ export function createPublicApi({
           queryAuthors(await investigators(), {
             search: sp.get('q') ?? undefined,
             category: AUTHOR_CATEGORIES.some((c) => c.id === cat) ? (cat as AuthorCategoryId) : undefined,
+            englishLevel: sp.get('en') ?? undefined,
             groupId: Number(sp.get('group')) || undefined,
             centerId: Number(sp.get('center')) || undefined,
             page: Math.max(1, Math.floor(page)),
