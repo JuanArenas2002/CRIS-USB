@@ -8,7 +8,7 @@ import { Icon } from '@/presentation/components/ui/Icon';
 import { groupByCenter } from '@/domain/authors/author';
 import { withBaseUrl } from '@/shared/base';
 import { useAuthorSearch } from '@/presentation/hooks/use-author-search';
-import { useAuthors, useAuthorStats, useFeaturedAuthors } from '@/presentation/hooks/use-authors';
+import { useAuthors, useAuthorStats } from '@/presentation/hooks/use-authors';
 import { useCenters } from '@/presentation/hooks/use-centers';
 import { useGroups } from '@/presentation/hooks/use-groups';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
@@ -40,7 +40,6 @@ export function DirectoryPage() {
   const search = useAuthorSearch();
   const list = useAuthors(search.filters);
   const stats = useAuthorStats();
-  const featured = useFeaturedAuthors();
   const groups = useGroups();
   const centers = useCenters();
 
@@ -74,32 +73,6 @@ export function DirectoryPage() {
         hasActiveFilters={search.hasActiveFilters || search.term.trim() !== ''}
         onReset={search.reset}
       />
-
-      {/* Destacados: solo en la vista sin filtros, para no duplicar resultados de una búsqueda. */}
-      {/* Si el directorio ya es solo de destacados (ONLY_SELECTED), la sección sobra. */}
-      {!search.isFiltered && featured.data?.length && (stats.data?.total ?? 0) > featured.data.length ? (
-        <section aria-labelledby="featured-title" className="w-full pt-16">
-          <div className="container-page">
-            <p className="text-label-md font-bold tracking-widest text-secondary uppercase">
-              {t('directory.featuredEyebrow')}
-            </p>
-            <h2
-              id="featured-title"
-              className="mt-1 text-headline-lg-mobile font-bold tracking-tight text-primary md:text-headline-lg"
-            >
-              {t('directory.featuredTitle')}
-            </h2>
-            <p className="mt-1 mb-10 max-w-2xl text-body-md text-neutral-muted">
-              {t('directory.featuredLead')}
-            </p>
-            <div className="grid grid-cols-1 gap-gutter md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-              {featured.data.map((a) => (
-                <AuthorCard key={a.id} author={a} />
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : null}
 
       <section id="directorio" aria-labelledby="directory-title" className="w-full scroll-mt-24 py-16">
         <div className="container-page">
