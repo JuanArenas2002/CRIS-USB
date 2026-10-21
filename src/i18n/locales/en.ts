@@ -165,7 +165,6 @@ const en: typeof es = {
       searchPlaceholder: 'Search by name or ORCID…',
       group: 'Research group',
       allGroups: 'All groups',
-      englishLevel: 'English level',
       center: 'Research center',
       allCenters: 'All centers',
       categoryOption: '{{category}} Researcher ({{code}})',
@@ -193,7 +192,6 @@ const en: typeof es = {
       noCenter: 'No research center',
     },
     card: {
-      englishLevel: 'English level',
       scientificIds: 'Scientific identifiers',
       usbIndex: 'USB index',
       centerRank: '#{{rank}} in {{center}}',

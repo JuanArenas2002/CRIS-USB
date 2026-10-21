@@ -15,7 +15,6 @@ const ALL_PAGE_SIZE = 100;
 export interface DirectoryFilters {
   search: string;
   category?: AuthorCategoryId;
-  englishLevel?: string;
   groupId?: number;
   centerId?: number;
   page: number;
@@ -54,7 +53,6 @@ export function authorQueries(repo: AuthorRepository) {
             {
               search: f.search.trim() || undefined,
               category: f.category,
-              englishLevel: f.englishLevel,
               groupId: f.groupId,
               centerId: f.centerId,
             },

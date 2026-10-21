@@ -170,7 +170,6 @@ const es = {
       searchPlaceholder: 'Buscar por nombre u ORCID…',
       group: 'Grupo de investigación',
       allGroups: 'Todos los grupos',
-      englishLevel: 'Nivel de inglés',
       center: 'Centro de investigación',
       allCenters: 'Todos los centros',
       categoryOption: 'Investigador {{category}} ({{code}})',
@@ -198,7 +197,6 @@ const es = {
       noCenter: 'Sin centro asignado',
     },
     card: {
-      englishLevel: 'Nivel de inglés',
       scientificIds: 'Identificadores científicos',
       usbIndex: 'Índice USB',
       centerRank: '#{{rank}} en {{center}}',

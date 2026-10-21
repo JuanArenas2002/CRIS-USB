@@ -259,3 +259,17 @@ test('secciones por centro: una vez cada uno, en su centro del ranking, por pues
     [null, [11]],
   ]);
 });
+
+test('secciones con filtro por centro: todos en la sección del centro elegido, por puesto en él', () => {
+  const a = { id: 1, code: 'CI-1', acronym: 'AUDACIA', name: 'A', logoUrl: null };
+  const m = { id: 2, code: 'CI-2', acronym: 'MACONDOLAB', name: 'M', logoUrl: null };
+  const rk = (centerRank: number, center: string) => ({ index: 50, rank: 1, centerRank, center });
+  const sections = groupByCenter(
+    [
+      makeAuthor({ id: 10, centers: [a, m], ranking: rk(1, 'AUDACIA') }), // rankeado en otro centro
+      makeAuthor({ id: 11, centers: [m], ranking: rk(1, 'MACONDOLAB') }),
+    ],
+    2,
+  );
+  expect(sections.map((s) => [s.center?.id, s.authors.map((x) => x.id)])).toEqual([[2, [11, 10]]]);
+});

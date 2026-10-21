@@ -10,9 +10,6 @@ export const AUTHOR_CATEGORIES = [
 ] as const;
 export type AuthorCategoryId = (typeof AUTHOR_CATEGORIES)[number]['id'];
 
-/** Niveles de inglés MCER, de menor a mayor. */
-export const ENGLISH_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
-
 export interface GroupRef {
   id: number;
   code: string;
@@ -199,8 +196,6 @@ export function externalProfiles(
 export interface AuthorListQuery {
   search?: string;
   category?: AuthorCategoryId;
-  /** Nivel de inglés exacto (A1–C2). */
-  englishLevel?: string;
   groupId?: number;
   /** Centro de investigación (id de Metri-K); ordena por puesto en ese centro. */
   centerId?: number;
@@ -260,13 +255,17 @@ export interface CenterSection {
 /**
  * Secciones del directorio, una por centro. Cada investigador sale una sola vez: en el centro con el
  * que figura en el ranking USB o, si no, en el primero de Metri-K. Dentro, por puesto en el centro
- * (luego el orden recibido); centros por sigla y "sin centro" al final.
+ * (luego el orden recibido); centros por sigla y "sin centro" al final. Con `centerId` (filtro por
+ * centro), todos van a la sección de ese centro.
  */
-export function groupByCenter(all: Author[]): CenterSection[] {
+export function groupByCenter(all: Author[], centerId?: number): CenterSection[] {
   const sections = new Map<number | null, CenterSection>();
   for (const a of all) {
     const c =
-      a.centers?.find((x) => sameCenter(a.ranking?.center, x.acronym ?? x.code)) ?? a.centers?.[0] ?? null;
+      (centerId ? a.centers?.find((x) => x.id === centerId) : undefined) ??
+      a.centers?.find((x) => sameCenter(a.ranking?.center, x.acronym ?? x.code)) ??
+      a.centers?.[0] ??
+      null;
     const s = sections.get(c?.id ?? null) ?? { center: c, authors: [] };
     s.authors.push(a);
     sections.set(c?.id ?? null, s);
@@ -285,7 +284,6 @@ export function queryAuthors(all: Author[], q: AuthorListQuery): AuthorListPage 
     .filter(
       (a) =>
         (!q.category || a.category === q.category) &&
-        (!q.englishLevel || a.englishLevel === q.englishLevel) &&
         (!q.groupId || a.mainGroup?.id === q.groupId) &&
         (!q.centerId || !!a.centers?.some((c) => c.id === q.centerId)) &&
         (!term || norm(a.name).includes(term) || (a.orcid ?? '').includes(term)),

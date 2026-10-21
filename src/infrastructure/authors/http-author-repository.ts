@@ -124,7 +124,6 @@ export function httpAuthorRepository(get: ApiGet): AuthorRepository {
       const params = new URLSearchParams({ page: String(q.page), size: String(q.pageSize) });
       if (q.search) params.set('q', q.search);
       if (q.category) params.set('cat', q.category);
-      if (q.englishLevel) params.set('en', q.englishLevel);
       if (q.groupId) params.set('group', String(q.groupId));
       if (q.centerId) params.set('center', String(q.centerId));
       return get(`/api/investigators?${params}`, pageSchema, signal);

@@ -165,7 +165,6 @@ const pt: typeof es = {
       searchPlaceholder: 'Buscar por nome ou ORCID…',
       group: 'Grupo de pesquisa',
       allGroups: 'Todos os grupos',
-      englishLevel: 'Nível de inglês',
       center: 'Centro de pesquisa',
       allCenters: 'Todos os centros',
       categoryOption: 'Pesquisador {{category}} ({{code}})',
@@ -193,7 +192,6 @@ const pt: typeof es = {
       noCenter: 'Sem centro atribuído',
     },
     card: {
-      englishLevel: 'Nível de inglês',
       scientificIds: 'Identificadores científicos',
       usbIndex: 'Índice USB',
       centerRank: '#{{rank}} em {{center}}',

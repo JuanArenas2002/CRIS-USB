@@ -62,8 +62,6 @@ export function DirectoryPage() {
         onTermChange={search.setTerm}
         category={search.category}
         onCategoryChange={search.setCategory}
-        englishLevel={search.englishLevel}
-        onEnglishLevelChange={search.setEnglishLevel}
         groupId={search.groupId}
         onGroupChange={search.setGroupId}
         groups={groups.data ?? []}
@@ -106,7 +104,7 @@ export function DirectoryPage() {
                 aria-busy={list.isPlaceholderData}
                 className={`flex flex-col gap-14 ${list.isPlaceholderData ? 'opacity-60' : ''}`}
               >
-                {groupByCenter(data.items).map(({ center, authors }) => {
+                {groupByCenter(data.items, search.centerId).map(({ center, authors }) => {
                   const id = `centro-${center?.id ?? 'ninguno'}`;
                   return (
                     <section key={id} aria-labelledby={id}>

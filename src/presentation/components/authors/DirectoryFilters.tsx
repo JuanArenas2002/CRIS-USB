@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { AUTHOR_CATEGORIES, ENGLISH_LEVELS, type AuthorCategoryId } from '@/domain/authors/author';
+import { AUTHOR_CATEGORIES, type AuthorCategoryId } from '@/domain/authors/author';
 import { useLabels } from '@/presentation/hooks/use-labels';
 import type { Center } from '@/domain/centers/center';
 import type { Group } from '@/domain/groups/group';
@@ -11,8 +11,6 @@ interface Props {
   onTermChange: (v: string) => void;
   category?: AuthorCategoryId;
   onCategoryChange: (v: AuthorCategoryId | undefined) => void;
-  englishLevel?: string;
-  onEnglishLevelChange: (v: string | undefined) => void;
   groupId?: number;
   onGroupChange: (v: number | undefined) => void;
   groups: Group[];
@@ -53,8 +51,8 @@ export function DirectoryFilters(p: Props) {
             className={`${fieldClass} w-full pr-4 pl-10 text-body-sm`}
           />
         </div>
-        {/* Móvil: uno por fila; tableta: los cuatro selectores en fila; escritorio: junto al buscador. */}
-        <div className="grid w-full grid-cols-1 items-center gap-2 sm:grid-cols-[1fr_1fr_1fr_1fr_auto_auto] lg:flex lg:w-auto">
+        {/* Móvil: uno por fila; tableta: los tres selectores en fila; escritorio: junto al buscador. */}
+        <div className="grid w-full grid-cols-1 items-center gap-2 sm:grid-cols-[1fr_1fr_1fr_auto_auto] lg:flex lg:w-auto">
           <FilterSelect
             label={t('filters.center')}
             value={p.centerId ? String(p.centerId) : ''}
@@ -93,16 +91,6 @@ export function DirectoryFilters(p: Props) {
                     string,
                   ],
               ),
-            ]}
-          />
-          <FilterSelect
-            label={t('filters.englishLevel')}
-            value={p.englishLevel ?? ''}
-            onChange={(v) => p.onEnglishLevelChange(v || undefined)}
-            className="lg:w-40"
-            options={[
-              ['', t('filters.englishLevel')],
-              ...ENGLISH_LEVELS.map((l) => [l, l] as [string, string]),
             ]}
           />
           {/* Orden fijo del directorio: se informa, no se finge un control. */}
