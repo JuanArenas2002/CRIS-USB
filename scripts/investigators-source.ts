@@ -83,7 +83,6 @@ export function toSelected(raw: Raw): {
   metrics: AuthorMetrics;
   production: AuthorProduction;
   scopusId: string | null;
-  englishLevel: string | null;
 } | null {
   if (typeof raw.id !== 'number') return null;
   const prod = obj(raw.produccion);
@@ -143,10 +142,6 @@ export function toSelected(raw: Raw): {
     },
     production: { publications, theses, developments },
     scopusId: best?.id ?? null,
-    englishLevel:
-      str(raw.nivel_ingles ?? obj(raw.persona)?.nivel_ingles)
-        ?.match(/^[ABC][12]$/i)?.[0]
-        .toUpperCase() ?? null,
   };
 }
 
@@ -183,7 +178,6 @@ export async function fetchInvestigators(base: string): Promise<InvestigatorDire
       ...a,
       metrics: s?.metrics ?? null,
       scopusId: s?.scopusId ?? a.scopusId,
-      englishLevel: s?.englishLevel ?? null,
     };
   });
   const byDocument = new Map<string, number>();

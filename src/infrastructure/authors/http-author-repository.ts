@@ -25,7 +25,6 @@ const author = {
   name: z.string(),
   category: categoryId.nullable(),
   degree: z.string().nullable(),
-  englishLevel: z.string().nullable().optional(),
   orcid: z.string().nullable(),
   scopusId: z.string().nullable(),
   cvlacUrl: httpsUrl,

@@ -77,7 +77,6 @@ const metrik = vi.fn(async (url: string) => {
       ? [
           {
             id: 1,
-            nivel_ingles: 'b2',
             authorsIds: [
               { authorId: '57000000007', indice_h: '7' },
               { authorId: '57000000012', indice_h: '12' },
@@ -212,7 +211,7 @@ test('destacados: métricas (mayor índice H) y producción en el detalle', asyn
   const featured = (await get('/api/investigators/featured')).body;
   expect(featured.map((a: { id: number }) => a.id)).toEqual([1]);
   expect(featured[0].metrics).toEqual({ hIndex: 12, scopusPublications: 1, products: 2 });
-  expect(featured[0]).toMatchObject({ scopusId: '57000000012', englishLevel: 'B2' }); // perfil de mayor H
+  expect(featured[0]).toMatchObject({ scopusId: '57000000012' }); // perfil de mayor H
   const { body } = await get('/api/investigators/1');
   expect(body.production.publications[0]).toMatchObject({ title: 'Paper', citedBy: 3, doi: '10.1000/xyz' });
   expect(body.production.theses[0].url).toBeNull(); // URL no segura descartada

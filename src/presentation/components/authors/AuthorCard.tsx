@@ -31,7 +31,7 @@ const card =
 
 /**
  * Tarjeta en tres niveles de lectura:
- * 1. Quién es: retrato, categoría, nombre y grupo principal.
+ * 1. Quién es: foto grande arriba; nombre, categoría y grupo principal.
  * 2. Cuánto produce: índice USB destacado, con su puesto en el centro y el general.
  * 3. Detalle: cifras clave y, al pie, centros e identificadores (logos enlazados).
  * Toda la tarjeta enlaza al perfil (pseudo-elemento del nombre); los identificadores van por encima.
@@ -67,38 +67,36 @@ export function AuthorCard({ author }: { author: Author }) {
       className={`${card} transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_32px_-6px_rgba(21,71,52,0.16)] motion-reduce:transition-none motion-reduce:hover:translate-y-0`}
     >
       {/* Nivel 1: identidad */}
-      <div className="flex items-start gap-4">
-        <div aria-hidden="true" className="relative shrink-0">
-          <div className="h-24 w-24 overflow-hidden rounded-2xl bg-badge-sage-bg shadow-sm ring-1 ring-border-subtle">
-            {author.photoUrl ? (
-              <img
-                src={withBaseUrl(author.photoUrl)}
-                alt=""
-                width={192}
-                height={192}
-                loading="lazy"
-                decoding="async"
-                className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
-              />
-            ) : (
-              <span className="flex h-full w-full items-center justify-center bg-surface-dark-forest text-[28px] font-bold tracking-tight text-secondary-fixed">
-                {initials(name)}
-              </span>
-            )}
-          </div>
-          {medal ? (
-            <span
-              className={`absolute -right-2 -bottom-2 flex h-8 w-8 items-center justify-center rounded-full shadow-md ring-[3px] ring-surface-container-lowest ${medal}`}
-            >
-              <Icon name="emoji_events" className="text-[17px]" />
+      {/* La foto manda: a todo el ancho, encuadrada desde arriba (rostro). */}
+      <div aria-hidden="true" className="relative -mx-5 -mt-5">
+        <div className="aspect-[4/3] overflow-hidden rounded-t-[24px] bg-badge-sage-bg">
+          {author.photoUrl ? (
+            <img
+              src={withBaseUrl(author.photoUrl)}
+              alt=""
+              width={480}
+              height={360}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
+            />
+          ) : (
+            <span className="flex h-full w-full items-center justify-center bg-surface-dark-forest text-[56px] font-bold tracking-tight text-secondary-fixed">
+              {initials(name)}
             </span>
-          ) : null}
+          )}
         </div>
-        <div className="min-w-0 flex-1 pt-0.5">
-          <p className="text-[11px] font-semibold tracking-wider text-secondary uppercase">
-            {labels.researcher(author.category)}
-          </p>
-          <h3 className="mt-1.5 text-[18px] leading-snug font-bold tracking-tight text-[#0F241A] transition-colors group-hover:text-primary">
+        {medal ? (
+          <span
+            className={`absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full shadow-md ring-1 ${medal}`}
+          >
+            <Icon name="emoji_events" className="text-[18px]" />
+          </span>
+        ) : null}
+      </div>
+      <div className="mt-4 flex items-start gap-4">
+        <div className="min-w-0 flex-1">
+          <h3 className="text-[18px] leading-snug font-bold tracking-tight text-[#0F241A] transition-colors group-hover:text-primary">
             {/* El enlace del nombre cubre toda la tarjeta sin anidar controles. */}
             <Link
               to={href}
@@ -107,8 +105,11 @@ export function AuthorCard({ author }: { author: Author }) {
               {name}
             </Link>
           </h3>
+          <p className="mt-1 text-[11px] font-semibold tracking-wider text-secondary uppercase">
+            {labels.researcher(author.category)}
+          </p>
           <p
-            className="mt-1 flex items-center gap-1.5 text-label-md text-neutral-muted"
+            className="mt-1.5 flex items-center gap-1.5 text-label-md text-neutral-muted"
             title={author.mainGroup?.name}
           >
             <Icon name="groups" className="text-[16px] text-secondary" />
@@ -247,13 +248,11 @@ export function AuthorCardSkeleton() {
   const bar = 'animate-pulse rounded bg-surface-cream-alt motion-reduce:animate-none';
   return (
     <div className={card}>
-      <div className="flex items-start gap-4">
-        <div className={`h-24 w-24 shrink-0 rounded-2xl ${bar}`} />
-        <div className="flex flex-1 flex-col gap-2.5 pt-1">
-          <div className={`h-4 w-1/3 rounded-full ${bar}`} />
-          <div className={`h-5 w-4/5 ${bar}`} />
-          <div className={`h-3.5 w-2/3 ${bar}`} />
-        </div>
+      <div className={`-mx-5 -mt-5 aspect-[4/3] rounded-t-[24px] ${bar}`} />
+      <div className="mt-4 flex flex-col gap-2.5">
+        <div className={`h-5 w-4/5 ${bar}`} />
+        <div className={`h-3.5 w-1/3 ${bar}`} />
+        <div className={`h-3.5 w-2/3 ${bar}`} />
       </div>
       <div className={`mt-5 h-[92px] rounded-2xl ${bar}`} />
       <div className={`mt-4 h-[68px] rounded-2xl ${bar}`} />

@@ -29,8 +29,6 @@ export interface Author {
   category: AuthorCategoryId | null;
   /** Máximo nivel de formación (p. ej. "Doctorado"). */
   degree: string | null;
-  /** Nivel de inglés MCER (A1–C2); solo para los seleccionados en Metri-K. */
-  englishLevel?: string | null;
   orcid: string | null;
   scopusId: string | null;
   cvlacUrl: string | null;

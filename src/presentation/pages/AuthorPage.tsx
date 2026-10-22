@@ -19,7 +19,6 @@ import { hasPublicDetail } from '@/domain/groups/group';
 import { inheritOds } from '@/domain/ods/ods';
 import { medalFor } from '@/presentation/components/authors/AuthorCard';
 import { ProductionByYear } from '@/presentation/components/authors/ProductionByYear';
-import { UsbIndexMeter } from '@/presentation/components/authors/UsbIndexMeter';
 import { centerPath } from '@/presentation/components/centers/CenterCard';
 import {
   EMPTY_FILTERS,
@@ -195,222 +194,259 @@ function Profile({ author }: { author: AuthorProfile }) {
       </div>
 
       <div className="container-page mt-gutter flex flex-col gap-gutter">
-        {/* 1. Tarjeta principal del perfil */}
-        <section className={`${card} relative overflow-hidden p-4 md:p-6`}>
-          <div className="pointer-events-none absolute -top-24 -right-24 h-80 w-80 rounded-full bg-secondary-fixed/30 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-primary-fixed/20 blur-3xl" />
-          <div className="relative z-10 grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
-            <div className="flex flex-col items-center sm:items-start lg:col-span-3">
-              {/* Foto asignada en /admin/fotos; si no hay, monograma en el mismo marco de la plantilla. */}
-              <div
-                aria-hidden="true"
-                className="relative flex h-52 w-44 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-badge-sage-bg shadow-md sm:h-64 sm:w-52"
-              >
-                {author.photoUrl ? (
-                  <img
-                    src={withBaseUrl(author.photoUrl)}
-                    alt=""
-                    width={512}
-                    height={512}
-                    className="absolute inset-0 h-full w-full rounded-xl object-cover object-top"
-                  />
-                ) : (
-                  <span className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-surface-dark-forest text-[34px] font-bold text-secondary-fixed ring-8 ring-white/55">
-                    {initials(name)}
+        {/* 1. Tarjeta principal del perfil y, a la derecha, perfiles académicos y ODS */}
+        <div className="grid grid-cols-1 gap-gutter xl:grid-cols-12">
+          <section
+            className={`${card} relative overflow-hidden p-4 md:p-6 ${
+              profiles.length || ods.length ? 'xl:col-span-9' : 'xl:col-span-12'
+            }`}
+          >
+            <div className="pointer-events-none absolute -top-24 -right-24 h-80 w-80 rounded-full bg-secondary-fixed/30 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-primary-fixed/20 blur-3xl" />
+            <div className="relative z-10 grid grid-cols-1 items-start gap-6 md:grid-cols-[auto_1fr]">
+              <div className="flex flex-col items-center sm:items-start">
+                {/* Foto asignada en /admin/fotos; si no hay, monograma en el mismo marco de la plantilla. */}
+                <div
+                  aria-hidden="true"
+                  className="relative flex h-52 w-44 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-badge-sage-bg shadow-md sm:h-64 sm:w-52"
+                >
+                  {author.photoUrl ? (
+                    <img
+                      src={withBaseUrl(author.photoUrl)}
+                      alt=""
+                      width={512}
+                      height={512}
+                      className="absolute inset-0 h-full w-full rounded-xl object-cover object-top"
+                    />
+                  ) : (
+                    <span className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-surface-dark-forest text-[34px] font-bold text-secondary-fixed ring-8 ring-white/55">
+                      {initials(name)}
+                    </span>
+                  )}
+                  <span className="absolute right-2 bottom-2 left-2 truncate rounded bg-primary-container/85 px-2.5 py-1 text-center text-label-sm text-on-primary backdrop-blur-md">
+                    {t('profile.badge')}
                   </span>
-                )}
-                <span className="absolute right-2 bottom-2 left-2 truncate rounded bg-primary-container/85 px-2.5 py-1 text-center text-label-sm text-on-primary backdrop-blur-md">
-                  {t('profile.badge')}
-                </span>
+                </div>
+              </div>
+
+              <div className="flex h-full min-w-0 flex-col justify-between gap-4">
+                <div className="flex flex-col gap-1">
+                  <h1 className="text-headline-lg-mobile font-bold tracking-tight text-primary-container md:text-headline-lg">
+                    {name}
+                  </h1>
+                  {/* Top 3 de su centro en el ranking USB. */}
+                  {medalFor(author.ranking?.center ? author.ranking.centerRank : null) ? (
+                    <p
+                      className={`inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-label-md font-bold shadow-sm ring-2 ${medalFor(author.ranking!.centerRank)}`}
+                    >
+                      <Icon name="emoji_events" className="text-[20px]" />
+                      {t('card.topCenter', {
+                        rank: author.ranking!.centerRank,
+                        center: author.ranking!.center,
+                      })}
+                    </p>
+                  ) : null}
+                </div>
+
+                <dl className="grid grid-cols-1 gap-4 rounded-xl bg-surface-cream-alt/60 p-4 sm:grid-cols-3">
+                  <Fact
+                    icon="school"
+                    label={t('profile.degree')}
+                    value={author.degree ? labels.domain(author.degree) : '—'}
+                  />
+                  <Fact
+                    icon="apartment"
+                    label={t('profile.mainGroup')}
+                    value={author.mainGroup?.name ?? '—'}
+                    hint={author.mainGroup?.code}
+                  />
+                  <Fact
+                    icon="workspace_premium"
+                    label={t('mincienciasCategory')}
+                    value={cat ? `${labels.category(cat.id)} (${cat.code})` : t('profile.noCategory')}
+                  />
+                </dl>
+
+                {/* Índice de productividad USB: valor y barra en una línea; los puestos, como texto. */}
+                {author.ranking ? (
+                  <div className="rounded-xl border border-border-subtle bg-surface-container-lowest px-4 py-3">
+                    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                      <p className={`flex items-center gap-1.5 ${eyebrow}`}>
+                        <Icon name="trending_up" className="text-[16px] text-primary-container" />
+                        {t('profile.usbIndex')}
+                      </p>
+                      <p className="text-label-md text-neutral-muted">
+                        {t('profile.generalRank', { rank: author.ranking.rank })}
+                        {author.ranking.center && author.ranking.centerRank ? (
+                          <>
+                            {' · '}
+                            <span className="font-semibold text-primary-container">
+                              {t('profile.centerRank', {
+                                rank: author.ranking.centerRank,
+                                center: author.ranking.center,
+                              })}
+                            </span>
+                          </>
+                        ) : null}
+                      </p>
+                    </div>
+                    <div className="mt-2 flex items-center gap-4">
+                      <p className="shrink-0 leading-none text-primary-container">
+                        <span className="text-headline-sm font-bold tabular-nums">
+                          {labels.number(author.ranking.index)}
+                        </span>
+                        <span className="text-label-sm text-neutral-muted"> / 100</span>
+                      </p>
+                      <div
+                        role="meter"
+                        aria-label={t('profile.usbIndex')}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-valuenow={author.ranking.index}
+                        className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary/15"
+                      >
+                        <div
+                          className="h-full rounded-full bg-secondary"
+                          style={{ width: `${Math.min(100, Math.max(0, author.ranking.index))}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+
+                {groups.length ? (
+                  <div className="flex flex-col gap-2">
+                    <span className="flex items-center gap-1.5 text-label-md font-semibold text-on-surface-variant">
+                      <Icon name="groups" className="text-[18px] text-primary-container" />{' '}
+                      {t('profile.groups')}
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {groups.map((g) => {
+                        const chip = (
+                          <>
+                            <Icon name="science" className="text-[16px] text-secondary" />
+                            <span className="font-semibold">{g.name}</span>
+                          </>
+                        );
+                        const box =
+                          'inline-flex items-center gap-2 rounded-lg border border-border-subtle bg-surface-container-lowest px-3 py-1.5 text-body-sm text-on-surface';
+                        // Interinstitucionales: sin ficha pública, el grupo se nombra sin enlace.
+                        return hasPublicDetail(g) ? (
+                          <Link
+                            key={g.id}
+                            to={`/grupos/${authorSlug(g)}`}
+                            className={`group ${box} transition-colors hover:border-primary-container hover:text-primary-container`}
+                          >
+                            {chip}
+                            <Icon
+                              name="arrow_forward"
+                              className="text-[14px] text-neutral-muted transition-transform group-hover:translate-x-0.5"
+                            />
+                          </Link>
+                        ) : (
+                          <span key={g.id} className={box}>
+                            {chip}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
+
+                {centers.length ? (
+                  <div className="flex flex-col gap-2">
+                    <span className="flex items-center gap-1.5 text-label-md font-semibold text-on-surface-variant">
+                      <Icon name="domain" className="text-[18px] text-primary-container" />{' '}
+                      {t('profile.centers')}
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {centers.map((c) => (
+                        // Solo logo y sigla; el nombre completo va en el tooltip y para lectores de pantalla.
+                        <Link
+                          key={c.id}
+                          to={centerPath(c)}
+                          title={c.name}
+                          className="group inline-flex items-center gap-2 rounded-lg border border-border-subtle bg-surface-container-lowest px-2.5 py-1.5 text-body-sm text-on-surface transition-colors hover:border-primary-container hover:text-primary-container"
+                        >
+                          {c.logoUrl ? (
+                            <img
+                              src={withBaseUrl(c.logoUrl)}
+                              alt=""
+                              loading="lazy"
+                              className="h-7 w-auto max-w-16 object-contain"
+                            />
+                          ) : (
+                            <Icon name="domain" className="text-[18px] text-secondary" />
+                          )}
+                          <span className="font-semibold">{c.acronym ?? c.code}</span>
+                          <span className="sr-only">{c.name}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </div>
+          </section>
 
-            <div className="flex h-full flex-col justify-between gap-4 lg:col-span-9">
-              <div className="flex flex-col gap-1">
-                <h1 className="text-headline-lg-mobile font-bold tracking-tight text-primary-container md:text-headline-lg">
-                  {name}
-                </h1>
-                {/* Top 3 de su centro en el ranking USB. */}
-                {medalFor(author.ranking?.center ? author.ranking.centerRank : null) ? (
-                  <p
-                    className={`inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-label-md font-bold shadow-sm ring-2 ${medalFor(author.ranking!.centerRank)}`}
-                  >
-                    <Icon name="emoji_events" className="text-[20px]" />
-                    {t('card.topCenter', {
-                      rank: author.ranking!.centerRank,
-                      center: author.ranking!.center,
-                    })}
-                  </p>
-                ) : null}
-              </div>
-
-              <dl className="grid grid-cols-1 gap-3 rounded-xl bg-surface-cream-alt/60 p-4 sm:grid-cols-2 md:grid-cols-3">
-                <Fact
-                  icon="school"
-                  label={t('profile.degree')}
-                  value={author.degree ? labels.domain(author.degree) : '—'}
-                />
-                {author.englishLevel ? (
-                  <Fact icon="translate" label={t('profile.englishLevel')} value={author.englishLevel} />
-                ) : null}
-                <Fact
-                  icon="apartment"
-                  label={t('profile.mainGroup')}
-                  value={author.mainGroup?.name ?? '—'}
-                  hint={author.mainGroup?.code}
-                />
-                <Fact
-                  icon="workspace_premium"
-                  label={t('mincienciasCategory')}
-                  value={cat ? `${labels.category(cat.id)} (${cat.code})` : t('profile.noCategory')}
-                />
-                {author.ranking ? (
-                  <>
-                    <div className="flex flex-col gap-1">
-                      <dt className={`flex items-center gap-1.5 ${eyebrow}`}>
-                        <Icon name="trending_up" className="text-[16px] text-primary-container" />{' '}
-                        {t('profile.usbIndex')}
-                      </dt>
-                      <dd>
-                        <UsbIndexMeter
-                          label={t('profile.usbIndex')}
-                          showLabel={false}
-                          value={author.ranking.index}
-                          caption={t('profile.generalRank', { rank: author.ranking.rank })}
-                          size="md"
-                        />
-                      </dd>
-                    </div>
-                    {author.ranking.center && author.ranking.centerRank ? (
-                      <Fact
-                        icon="military_tech"
-                        label={t('profile.centerRank')}
-                        value={t('profile.centerRankValue', {
-                          rank: author.ranking.centerRank,
-                          center: author.ranking.center,
-                        })}
-                      />
-                    ) : null}
-                  </>
-                ) : null}
-              </dl>
-
-              {groups.length ? (
-                <div className="flex flex-col gap-2">
-                  <span className="flex items-center gap-1.5 text-label-md font-semibold text-on-surface-variant">
-                    <Icon name="groups" className="text-[18px] text-primary-container" />{' '}
-                    {t('profile.groups')}
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    {groups.map((g) => {
-                      const chip = (
-                        <>
-                          <Icon name="science" className="text-[16px] text-secondary" />
-                          <span className="font-semibold">{g.name}</span>
-                        </>
-                      );
-                      const box =
-                        'inline-flex items-center gap-2 rounded-lg border border-border-subtle bg-surface-container-lowest px-3 py-1.5 text-body-sm text-on-surface';
-                      // Interinstitucionales: sin ficha pública, el grupo se nombra sin enlace.
-                      return hasPublicDetail(g) ? (
-                        <Link
-                          key={g.id}
-                          to={`/grupos/${authorSlug(g)}`}
-                          className={`group ${box} transition-colors hover:border-primary-container hover:text-primary-container`}
-                        >
-                          {chip}
-                          <Icon
-                            name="arrow_forward"
-                            className="text-[14px] text-neutral-muted transition-transform group-hover:translate-x-0.5"
-                          />
-                        </Link>
-                      ) : (
-                        <span key={g.id} className={box}>
-                          {chip}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : null}
-
-              {centers.length ? (
-                <div className="flex flex-col gap-2">
-                  <span className="flex items-center gap-1.5 text-label-md font-semibold text-on-surface-variant">
-                    <Icon name="domain" className="text-[18px] text-primary-container" />{' '}
-                    {t('profile.centers')}
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    {centers.map((c) => (
-                      // Solo logo y sigla; el nombre completo va en el tooltip y para lectores de pantalla.
-                      <Link
-                        key={c.id}
-                        to={centerPath(c)}
-                        title={c.name}
-                        className="group inline-flex items-center gap-2 rounded-lg border border-border-subtle bg-surface-container-lowest px-2.5 py-1.5 text-body-sm text-on-surface transition-colors hover:border-primary-container hover:text-primary-container"
-                      >
-                        {c.logoUrl ? (
-                          <img
-                            src={withBaseUrl(c.logoUrl)}
-                            alt=""
-                            loading="lazy"
-                            className="h-7 w-auto max-w-16 object-contain"
-                          />
-                        ) : (
-                          <Icon name="domain" className="text-[18px] text-secondary" />
-                        )}
-                        <span className="font-semibold">{c.acronym ?? c.code}</span>
-                        <span className="sr-only">{c.name}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
+          {profiles.length || ods.length ? (
+            <aside
+              className={`grid content-start gap-gutter xl:col-span-3 xl:flex xl:flex-col ${
+                profiles.length && ods.length ? 'md:grid-cols-2' : ''
+              }`}
+            >
               {profiles.length ? (
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="flex items-center gap-1.5 text-label-md font-semibold text-on-surface-variant">
-                    <Icon name="fingerprint" className="text-[18px] text-primary-container" />{' '}
+                <section aria-labelledby="perfiles-academicos" className={`${card} p-5`}>
+                  <h2
+                    id="perfiles-academicos"
+                    className="flex items-center gap-1.5 text-label-md font-semibold text-on-surface-variant"
+                  >
+                    <Icon name="fingerprint" className="text-[18px] text-primary-container" />
                     {t('profile.academicProfiles')}
-                  </span>
-                  {/* Solo el logo; el nombre y el identificador van en un tooltip (hover y foco). */}
-                  <ul className="flex flex-wrap gap-2">
+                  </h2>
+                  <ul className="mt-2 divide-y divide-surface-container">
                     {profiles.map((p) => (
-                      <li key={p.label} className="relative">
+                      <li key={p.label}>
                         <a
                           href={p.url}
                           target="_blank"
                           rel="noopener"
-                          className="peer flex h-10 w-10 items-center justify-center rounded-lg border border-border-subtle bg-surface-container-lowest transition-colors hover:border-primary-container focus-visible:outline-2 focus-visible:outline-primary-container"
+                          className="group -mx-2 flex items-center gap-3 rounded-lg px-2 py-2.5 transition-colors hover:bg-surface-cream-alt/60 focus-visible:outline-2 focus-visible:outline-primary-container"
                         >
-                          <IdLogo label={p.label} size={24} />
-                          <span className="sr-only">
-                            {p.label}: {labels.domain(p.value)} {t('common:newTab')}
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border-subtle bg-white">
+                            <IdLogo label={p.label} size={20} />
                           </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-body-sm font-semibold text-on-surface group-hover:text-primary-container">
+                              {p.label}
+                            </span>
+                            <span className="block truncate text-label-sm text-neutral-muted">
+                              {labels.domain(p.value)}
+                            </span>
+                          </span>
+                          <Icon
+                            name="open_in_new"
+                            className="text-[16px] text-neutral-muted group-hover:text-primary-container"
+                          />
+                          <span className="sr-only">{t('common:newTab')}</span>
                         </a>
-                        <span
-                          aria-hidden="true"
-                          className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 rounded-md bg-surface-dark-forest px-2.5 py-1.5 text-center whitespace-nowrap opacity-0 shadow-md transition-opacity peer-hover:opacity-100 peer-focus-visible:opacity-100"
-                        >
-                          <span className="block text-label-sm font-semibold text-on-primary">{p.label}</span>
-                          <span className="block font-mono text-[10px] text-secondary-fixed">
-                            {labels.domain(p.value)}
-                          </span>
-                        </span>
                       </li>
                     ))}
                   </ul>
-                </div>
+                </section>
               ) : null}
 
               {ods.length ? (
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="flex items-center gap-1.5 text-label-md font-semibold text-on-surface-variant">
-                    <Icon name="public" className="text-[18px] text-primary-container" />{' '}
+                <section aria-labelledby="ods-vinculados" className={`${card} p-5 xl:flex-1`}>
+                  <h2
+                    id="ods-vinculados"
+                    className="flex items-center gap-1.5 text-label-md font-semibold text-on-surface-variant"
+                  >
+                    <Icon name="public" className="text-[18px] text-primary-container" />
                     {t('profile.odsLinked')}
-                  </span>
+                  </h2>
                   {/* Heredados de los grupos del investigador; el tooltip dice de cuál viene cada uno. */}
-                  <ul className="flex flex-wrap gap-2">
+                  <ul className="mt-3 flex flex-wrap gap-2">
                     {ods.map((o) => (
                       <li key={o.id}>
                         <OdsIcon
@@ -421,11 +457,11 @@ function Profile({ author }: { author: AuthorProfile }) {
                       </li>
                     ))}
                   </ul>
-                </div>
+                </section>
               ) : null}
-            </div>
-          </div>
-        </section>
+            </aside>
+          ) : null}
+        </div>
 
         {/* 2. Pestañas */}
         <TabBar
