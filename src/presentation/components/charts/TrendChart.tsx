@@ -32,7 +32,7 @@ const BOTTOM = H - 46;
 const MIN_PILL_GAP = 58; // px entre puntos para rotular todos sin que las píldoras choquen
 
 /** Ancho real del contenedor: el SVG se dibuja en píxeles (texto siempre de 11 px, sin escalar). */
-function useWidth(fallback = 720) {
+export function useWidth(fallback = 720) {
   const ref = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(fallback);
   useEffect(() => {

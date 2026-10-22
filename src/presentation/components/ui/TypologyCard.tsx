@@ -4,7 +4,7 @@ import { useLabels } from '@/presentation/hooks/use-labels';
 import { Icon } from './Icon';
 
 /**
- * Color por tipología Minciencias (plantilla de grupo): verde institucional, verde bosque, cielo y
+ * Color por tipología Minciencias (plantilla de grupo): verde institucional, índigo, cielo y
  * ámbar. El color sigue a la tipología en todo el portal (tarjetas, insignias, iconos), nunca al orden.
  */
 export const TYPOLOGY_STYLE: Record<
@@ -20,8 +20,8 @@ export const TYPOLOGY_STYLE: Record<
     link: 'text-secondary',
   },
   DTI: {
-    bar: 'bg-[#154734]',
-    hover: 'hover:border-[#154734]',
+    bar: 'bg-[#4F46E5]',
+    hover: 'hover:border-[#4F46E5]',
     iconBox: 'bg-surface-cream-alt text-primary-container',
     value: 'text-primary',
     chip: 'bg-surface-cream-alt text-primary',

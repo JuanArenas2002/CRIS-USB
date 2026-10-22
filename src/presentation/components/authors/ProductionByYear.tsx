@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TYPOLOGIES, type Product, type TypologyId } from '@/domain/authors/author';
-import { TrendChart } from '@/presentation/components/charts/TrendChart';
+import { useWidth } from '@/presentation/components/charts/TrendChart';
 import { useLabels } from '@/presentation/hooks/use-labels';
 
 interface YearRow {
@@ -43,8 +43,106 @@ export function yTicks(max: number): number[] {
 }
 
 /**
- * Una sola serie (sin leyenda: el título dice qué se grafica), con el estilo único de gráficos
- * del portal (TrendChart). Tooltip por punto con el desglose por tipología y vista en tabla.
+ * Color de cada tipología en el gráfico (mismo que la barra de TypologyCard). Validado con el
+ * validador de dataviz en este orden: pasa las 6 pruebas (contraste, CVD, banda, croma).
+ */
+const SERIES_COLOR: Record<TypologyId, string> = {
+  GNC: '#16834B',
+  DTI: '#4F46E5',
+  ASC: '#0284C7',
+  FRH: '#D97706',
+};
+const GRID = '#e7e2d6';
+const H = 240;
+const TOP = 12;
+const BOTTOM = H - 28;
+const BAR_GAP = 2; // px de superficie entre barras vecinas del mismo año
+
+/** Barras agrupadas: por año, una barra por tipología presente. Tooltip por año (desglose). */
+function GroupedBars({
+  rows,
+  series,
+  ticks,
+  ariaLabel,
+  title,
+}: {
+  rows: YearRow[];
+  series: TypologyId[];
+  ticks: number[];
+  ariaLabel: string;
+  title: (r: YearRow) => string;
+}) {
+  const [ref, width] = useWidth();
+  const left = Math.max(32, String(ticks[ticks.length - 1]).length * 6.2 + 16);
+  const right = width - 8;
+  const yMax = ticks[ticks.length - 1]!;
+  const y = (v: number) => BOTTOM - (v / yMax) * (BOTTOM - TOP);
+  const slot = (right - left) / rows.length;
+  const k = series.length;
+  // Barra ≤ 18 px; el resto del espacio del año queda como aire entre grupos.
+  const barW = Math.max(2, Math.min(18, (slot * 0.72 - BAR_GAP * (k - 1)) / k));
+  const groupW = barW * k + BAR_GAP * (k - 1);
+  const xStep = Math.max(1, Math.ceil(40 / slot));
+  const r = Math.min(4, barW / 2);
+  // Extremo de datos redondeado (4 px), base recta sobre la línea base.
+  const bar = (x: number, v: number) => {
+    const top = y(v);
+    const rr = Math.min(r, BOTTOM - top);
+    return `M${x},${BOTTOM}V${top + rr}Q${x},${top} ${x + rr},${top}H${x + barW - rr}Q${x + barW},${top} ${x + barW},${top + rr}V${BOTTOM}Z`;
+  };
+
+  return (
+    <div ref={ref} className="w-full rounded-lg border border-border-subtle bg-surface-container-lowest">
+      <svg width={width} height={H} className="block" role="img" aria-label={ariaLabel}>
+        {ticks.map((v) => (
+          <g key={v} aria-hidden="true">
+            <line x1={left - 6} x2={right} y1={y(v)} y2={y(v)} stroke={GRID} />
+            <text x={left - 10} y={y(v) + 4} textAnchor="end" fontSize="11" fill="#6B7280">
+              {v}
+            </text>
+          </g>
+        ))}
+        {rows.map((row, i) => {
+          const x0 = left + i * slot + (slot - groupW) / 2;
+          return (
+            <g key={row.year} tabIndex={0} role="img" aria-label={title(row)} className="group outline-none">
+              <title>{title(row)}</title>
+              {/* Zona sensible: toda la columna del año, más grande que las barras. */}
+              <rect
+                x={left + i * slot}
+                y={TOP}
+                width={slot}
+                height={BOTTOM - TOP}
+                className="fill-transparent group-hover:fill-[#0E382B]/[0.04] group-focus-visible:fill-[#0E382B]/[0.06]"
+              />
+              {series.map((s, j) =>
+                row.by[s] ? (
+                  <path key={s} d={bar(x0 + j * (barW + BAR_GAP), row.by[s])} fill={SERIES_COLOR[s]} />
+                ) : null,
+              )}
+              {i % xStep === 0 || i === rows.length - 1 ? (
+                <text
+                  x={left + i * slot + slot / 2}
+                  y={BOTTOM + 18}
+                  textAnchor="middle"
+                  fontSize="11"
+                  fill="#414944"
+                  aria-hidden="true"
+                >
+                  {rows.length > 12 ? `'${String(row.year).slice(2)}` : row.year}
+                </text>
+              ) : null}
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+/**
+ * Producción por año en barras agrupadas por tipología Minciencias (una barra por tipología con
+ * productos), con leyenda, tooltip por año y vista en tabla.
  */
 export function ProductionByYear({ products }: { products: Product[] }) {
   const { t } = useTranslation('authors');
@@ -52,7 +150,8 @@ export function ProductionByYear({ products }: { products: Product[] }) {
   const rows = useMemo(() => productionByYear(products), [products]);
   if (!rows.length) return null;
 
-  const ticks = yTicks(Math.max(...rows.map((r) => r.total)));
+  const series = TYPOLOGIES.map((x) => x.id).filter((id) => rows.some((r) => r.by[id]));
+  const ticks = yTicks(Math.max(...rows.flatMap((r) => series.map((s) => r.by[s]))));
   const peak = rows.reduce((a, b) => (b.total > a.total ? b : a));
   const last = rows[rows.length - 1]!;
   const undated = products.filter((p) => p.year === null).length;
@@ -72,22 +171,34 @@ export function ProductionByYear({ products }: { products: Product[] }) {
         {undated ? t('byYear.subtitleUndated', { count: undated }) : t('byYear.subtitle')}
       </p>
 
-      <div className="mt-4">
-        <TrendChart
+      {series.length > 1 ? (
+        <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 text-label-md text-on-surface-variant">
+          {series.map((s) => (
+            <li key={s} className="flex items-center gap-2">
+              <span
+                aria-hidden="true"
+                className="h-3 w-3 rounded-sm"
+                style={{ background: SERIES_COLOR[s] }}
+              />
+              {labels.typologyShort(s)}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      <div className="mt-3">
+        <GroupedBars
+          rows={rows}
+          series={series}
+          ticks={ticks}
           ariaLabel={summary}
-          labels={rows.length > 8 ? 'peak-last' : 'all'}
-          yTicks={ticks.map((t) => ({ value: t, label: String(t) }))}
-          points={rows.map((r) => ({
-            key: r.year,
-            value: r.total,
-            xLabel: rows.length > 12 ? `'${String(r.year).slice(2)}` : String(r.year),
-            pill: String(r.total),
-            title:
-              t('byYear.point', { year: r.year, count: r.total }) +
-              TYPOLOGIES.filter((x) => r.by[x.id])
-                .map((x) => ` · ${labels.typologyShort(x.id)} ${r.by[x.id]}`)
-                .join(''),
-          }))}
+          title={(r) =>
+            t('byYear.point', { year: r.year, count: r.total }) +
+            series
+              .filter((s) => r.by[s])
+              .map((s) => ` · ${labels.typologyShort(s)} ${r.by[s]}`)
+              .join('')
+          }
         />
       </div>
 
