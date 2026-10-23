@@ -47,10 +47,12 @@ Las dependencias apuntan hacia el dominio. El dominio no importa React ni infrae
 | `GET /api/investigators/{id}` | `AuthorProfile` (con `groups`) o 404 |
 | `GET /api/groups` | `Group[]` (líneas solo con nombre) |
 | `GET /api/groups/{id}` | `GroupDetail` (líneas completas + historial) o 404 |
+| `GET /api/publications?q&from&to&quartile&type&area&oa&sort&page&size` | `{ items: (RankedPublication & { position })[], total, page, pages }`: `rank` es el puesto general; `position`, el puesto recalculado dentro del filtro |
+| `GET /api/publications/stats` | `{ total, byQuartile, openAccess, international, citations, years, types, areas }` |
 
 ## Limitaciones
 
 1. **Fotos:** Metri-K aún no tiene foto de investigadores; se muestra un monograma con iniciales.
 2. **Publicaciones:** Metri-K no tiene conteo de publicaciones por investigador.
 3. **Exposición de datos en Metri-K:** pendiente de corregir en origen (ver arriba).
-4. Proyectos, Productos y Relacionamiento muestran una página "en construcción" (`noindex`) hasta tener fuente de datos.
+4. Proyectos y Relacionamiento muestran una página "en construcción" (`noindex`) hasta tener fuente de datos. Productos muestra el ranking de publicaciones Scopus cargado en `/admin/produccion`.

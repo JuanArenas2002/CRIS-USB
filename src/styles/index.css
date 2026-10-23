@@ -122,11 +122,49 @@ span.material-symbols-outlined {
   transform-origin: bottom;
   animation: bar-grow 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
+/* Carga de listas: barra indeterminada, brillo de los esqueletos y entrada de los resultados. */
+@keyframes loading-bar {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+.loading-bar {
+  animation: loading-bar 1.1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+.shimmer {
+  background: linear-gradient(
+      90deg,
+      var(--color-surface-cream-alt) 25%,
+      var(--color-surface-container-lowest) 50%,
+      var(--color-surface-cream-alt) 75%
+    )
+    0 0 / 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+.fade-up {
+  animation: fade-up 0.35s ease-out both;
+}
 @media (prefers-reduced-motion: reduce) {
   .bar-grow,
   .wave-dash,
-  .wave-drift {
+  .wave-drift,
+  .loading-bar,
+  .shimmer,
+  .fade-up {
     animation: none;
   }
 }
-

@@ -15,6 +15,7 @@ import {
 import { DEFAULT_METRIK_URL } from './public-api.ts';
 import { logoUrl, photoUrl } from './photo-store.ts';
 import { createStores, storeOptionsFromEnv } from './stores.ts';
+import { withAuthors } from '../src/domain/publications/publication.ts';
 
 const env = loadEnv('production', process.cwd(), ['CRIS_', 'VITE_', 'BLOB_']);
 const metrik = (env.CRIS_METRIK_URL || DEFAULT_METRIK_URL).replace(/\/+$/, '');
@@ -82,11 +83,19 @@ const centers = metrikCenters.map((c) => ({
   website: sites[c.id] ?? null,
 }));
 const centersQ = ssr.createServerCenterQueries(centers);
+// Ranking de publicaciones (/admin/produccion) con sus autores de Metri-K.
+const publications = withAuthors(
+  Object.values(await stores.publications.all()),
+  directory.byEid,
+  new Map(directory.authors.map((a) => [a.id, a.name])),
+  new Set(published.keys()),
+);
+const publicationsQ = ssr.createServerPublicationQueries(publications);
 
 async function writePage(url, file, prefetch = async () => {}) {
   const qc = ssr.createQueryClient();
   await prefetch(qc);
-  const { html, head } = ssr.render(url, qc, authorsQ, groupsQ, centersQ);
+  const { html, head } = ssr.render(url, qc, authorsQ, groupsQ, centersQ, publicationsQ);
   const out = template.replace('<!--app-head-->', () => head).replace('<!--app-html-->', () => html);
   await fs.mkdir(path.dirname(file), { recursive: true });
   await fs.writeFile(file, out);
@@ -138,6 +147,13 @@ for (const c of centers.filter((x) => x.active)) {
     Promise.all([qc.fetchQuery(centersQ.detail(c.id)), qc.fetchQuery(groupsQ.list())]),
   );
 }
+// Producción: primera página del ranking (mismos filtros que la página sin parámetros).
+await writePage('/productos', path.join(dist, 'productos', 'index.html'), (qc) =>
+  Promise.all([
+    qc.fetchQuery(publicationsQ.list({ search: '', sort: 'rank', page: 1 })),
+    qc.fetchQuery(publicationsQ.stats()),
+  ]),
+);
 for (const section of ssr.NAV_ITEMS.filter((i) => !i.ready).map((i) => i.to)) {
   await writePage(section, path.join(dist, section, 'index.html'));
 }
@@ -147,7 +163,7 @@ await writePage('/404', path.join(dist, '404.html'));
 const xmlEsc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${['/', '/grupos', ...groupPaths, '/centros', ...centerPaths, ...profilePaths].map((p) => `  <url><loc>${xmlEsc(siteUrl + p)}</loc></url>`).join('\n')}
+${['/', '/grupos', ...groupPaths, '/centros', ...centerPaths, ...(publications.length ? ['/productos'] : []), ...profilePaths].map((p) => `  <url><loc>${xmlEsc(siteUrl + p)}</loc></url>`).join('\n')}
 </urlset>
 `;
 await fs.writeFile(path.join(dist, 'sitemap.xml'), sitemap);
@@ -163,6 +179,7 @@ await fs.writeFile(
 
 - [Directorio de investigadores](${siteUrl}/)
 - [Grupos de investigación](${siteUrl}/grupos)
+- [Producción científica destacada (publicaciones Scopus)](${siteUrl}/productos)
 - [Sitemap con todas las páginas](${siteUrl}/sitemap.xml)
 `,
 );
@@ -181,5 +198,5 @@ for (const raw of (env.CRIS_GOOGLE_VERIFICATION || '').split(',')) {
 }
 
 console.log(
-  `Prerender: ${authors.length} investigadores (${profilePaths.length} indexables), ${groupPaths.length} grupos, ${centerPaths.length} centros. Sitemap en ${siteUrl}/sitemap.xml`,
+  `Prerender: ${authors.length} investigadores (${profilePaths.length} indexables), ${groupPaths.length} grupos, ${centerPaths.length} centros, ${publications.length} publicaciones. Sitemap en ${siteUrl}/sitemap.xml`,
 );

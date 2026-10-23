@@ -3,7 +3,8 @@
 //   proyectan a campos públicos (groups-source.ts / investigators-source.ts) y nada más sale.
 // - Búsqueda, filtros y paginación se resuelven en memoria: Metri-K no los ofrece.
 // - Solo lectura, salvo las fotos de investigadores y los logos de centros (PUT/DELETE), la página
-//   oficial de los centros (PUT) y el ranking USB (PUT/DELETE), todo con token de administración.
+//   oficial de los centros (PUT), el ranking USB y el de publicaciones (PUT/DELETE), todo con token
+//   de administración.
 //   Los ODS de grupos y centros vienen de Metri-K.
 // Dev/preview: montado como middleware en vite.config.ts.
 // Producción: `node scripts/public-api.ts` detrás de nginx (ver README).
@@ -21,7 +22,7 @@ import {
   publishAuthors,
 } from './investigators-source.ts';
 import { MAX_PHOTO_BYTES, logoUrl, photoUrl } from './photo-store.ts';
-import { normalizeRanking, normalizeWebsite } from './ods-store.ts';
+import { normalizePublication, normalizeRanking, normalizeWebsite } from './ods-store.ts';
 import { createStores, storeOptionsFromEnv, type StoreOptions } from './stores.ts';
 import { summarizeCenter, type CenterDetail, type CenterRef } from '../src/domain/centers/center.ts';
 import { hasPublicDetail, summarizeGroup, type GroupDetail } from '../src/domain/groups/group.ts';
@@ -35,6 +36,15 @@ import {
   type GroupRef,
   withRankingCenter,
 } from '../src/domain/authors/author.ts';
+import {
+  PUBLICATION_SORTS,
+  QUARTILES,
+  publicationStats,
+  queryPublications,
+  withAuthors,
+  type PublicationSort,
+  type Quartile,
+} from '../src/domain/publications/publication.ts';
 
 export const DEFAULT_METRIK_URL = 'https://metrik.unisimon.edu.co/back/api';
 export { DEFAULT_PHOTOS_DIR } from './stores.ts';
@@ -43,6 +53,8 @@ const MAX_JSON_BYTES = 1024;
 // ~300 filas × ~100 bytes; holgura para miles.
 const MAX_RANKING_BYTES = 1024 * 1024;
 const MAX_PAGE_SIZE = 100;
+// ~1200 publicaciones con resumen ≈ 2,5 MB. Vercel no acepta cuerpos de más de 4,5 MB.
+const MAX_PUBLICATIONS_BYTES = 4 * 1024 * 1024;
 
 /**
  * Caché con respaldo: si la fuente falla, se sirve la última copia buena.
@@ -89,7 +101,14 @@ export function createPublicApi({
   compress?: boolean;
 } & StoreOptions = {}) {
   const base = metrikUrl.replace(/\/+$/, '');
-  const { photos, logos, sites, ranking: rankingStore, rankingHidden } = createStores(storage);
+  const {
+    photos,
+    logos,
+    sites,
+    ranking: rankingStore,
+    rankingHidden,
+    publications: publicationStore,
+  } = createStores(storage);
   const metrikGroups = cached<GroupDetail[]>(() => fetchPublicGroups(`${base}/group`));
   const metrikCenters = cached<CenterDetail[]>(() => fetchPublicCenters(base));
   const centers = async () => {
@@ -139,6 +158,21 @@ export function createPublicApi({
         { ...withPhoto(a), centers: (await centersOf(a.id).catch((): CenterRef[] => [])).map(withLogo) },
         known,
       ),
+    );
+  };
+  // Ranking de publicaciones con sus autores de Metri-K; como el ranking USB, sin caché propia.
+  const publications = async () => {
+    const [stored, dir, ranking, hidden] = await Promise.all([
+      publicationStore.all(),
+      directory(),
+      rankingStore.all(),
+      rankingHidden.all(),
+    ]);
+    return withAuthors(
+      Object.values(stored),
+      dir.byEid,
+      new Map(dir.authors.map((a) => [a.id, a.name])),
+      new Set(publishAuthors(dir, ranking, hidden).map((a) => a.id)),
     );
   };
   const memberships = new Map<number, () => Promise<GroupRef[]>>();
@@ -234,6 +268,7 @@ export function createPublicApi({
       const rankingBulk = p === '/api/ranking/visibility';
       // Lista del ranking para el admin: nombres y puestos de todos (incluidos los ocultos).
       const adminRead = rankingUpload && req.method === 'GET';
+      const publicationsUpload = p === '/api/publications';
 
       // ── Escritura (y lectura del admin): fotos, logos, ODS, páginas y ranking, con token ──
       if (req.method === 'PUT' || req.method === 'DELETE' || adminRead) {
@@ -241,6 +276,7 @@ export function createPublicApi({
           !adminRead &&
           !image &&
           !rankingUpload &&
+          !publicationsUpload &&
           !((site || rankingEntry || rankingBulk) && req.method === 'PUT')
         )
           return send(405, { detail: 'Método no permitido' });
@@ -316,6 +352,49 @@ export function createPublicApi({
             return send(200, { visible }, true);
           } catch (err) {
             return send(500, { detail: `No se pudo guardar: ${(err as Error).message}` });
+          }
+        }
+        if (publicationsUpload) {
+          if (req.method === 'DELETE') {
+            await publicationStore.replace({});
+            return send(200, { published: 0, invalid: [], unlinked: 0 });
+          }
+          const body = await readBody(req, MAX_PUBLICATIONS_BYTES);
+          if (!body) return send(413, { detail: 'Las publicaciones superan 4 MB' });
+          let rows: unknown;
+          try {
+            rows = (JSON.parse(body.toString('utf8')) as { rows?: unknown }).rows;
+          } catch {
+            rows = null;
+          }
+          if (!Array.isArray(rows) || !rows.length || rows.length > 10_000)
+            return send(400, { detail: 'Se espera { "rows": [{ rank, eid, title, … }] }' });
+          // Por puesto; un EID repetido queda con su mejor puesto.
+          const byEid = new Map<string, NonNullable<ReturnType<typeof normalizePublication>>>();
+          const invalid: string[] = [];
+          for (const raw of rows as Record<string, unknown>[]) {
+            const entry = normalizePublication(raw);
+            if (!entry) {
+              const r = raw as { rank?: unknown; eid?: unknown };
+              invalid.push(`#${String(r?.rank ?? '?')} ${String(r?.eid ?? '').slice(0, 30)}`.trim());
+            } else if (!byEid.has(entry.eid) || entry.rank < byEid.get(entry.eid)!.rank)
+              byEid.set(entry.eid, entry);
+          }
+          const { byEid: authorsOf } = await directory();
+          try {
+            const saved = await publicationStore.replace(
+              Object.fromEntries([...byEid.values()].map((e) => [e.rank, e])),
+            );
+            const all = Object.values(saved);
+            return send(200, {
+              published: all.length,
+              invalid,
+              unlinked: all.filter((e) => !authorsOf.get(e.eid)?.length).length,
+            });
+          } catch (err) {
+            return send(500, {
+              detail: `No se pudieron guardar las publicaciones: ${(err as Error).message}`,
+            });
           }
         }
         if (rankingUpload) {
@@ -451,6 +530,30 @@ export function createPublicApi({
             })
           : send(404, { detail: 'No encontrado' });
       }
+
+      if (p === '/api/publications') {
+        const quartile = sp.get('quartile');
+        const sort = sp.get('sort');
+        const page = Number(sp.get('page')) || 1;
+        const size = Number(sp.get('size')) || 20;
+        return send(
+          200,
+          queryPublications(await publications(), {
+            search: sp.get('q') ?? undefined,
+            yearFrom: Number(sp.get('from')) || undefined,
+            yearTo: Number(sp.get('to')) || undefined,
+            quartile: QUARTILES.includes(quartile as Quartile) ? (quartile as Quartile) : undefined,
+            type: sp.get('type') || undefined,
+            area: sp.get('area') || undefined,
+            openAccess: sp.get('oa') === '1' || undefined,
+            sort: PUBLICATION_SORTS.includes(sort as PublicationSort) ? (sort as PublicationSort) : undefined,
+            page: Math.max(1, Math.floor(page)),
+            pageSize: Math.min(Math.max(1, Math.floor(size)), MAX_PAGE_SIZE),
+          }),
+        );
+      }
+      if (p === '/api/publications/stats')
+        return send(200, publicationStats(Object.values(await publicationStore.all())));
 
       if (p === '/api/groups') return send(200, (await groups()).map(summarizeGroup));
       const members = /^\/api\/groups\/(\d{1,12})\/members$/.exec(p);

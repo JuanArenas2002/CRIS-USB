@@ -92,6 +92,7 @@ const metrik = vi.fn(async (url: string) => {
                   citedBy: 3,
                   link: 'https://www.scopus.com/x',
                   doi: '10.1000/xyz',
+                  eid: '2-s2.0-85000000005',
                 },
               ],
               trabajosDeFormacion: [
@@ -148,6 +149,7 @@ beforeAll(async () => {
     sitesFile: path.join(odsDir, 'center-sites.json'),
     rankingFile: path.join(odsDir, 'ranking.json'),
     rankingHiddenFile: path.join(odsDir, 'ranking-hidden.json'),
+    publicationsFile: path.join(odsDir, 'publications.json'),
     adminToken: TOKEN,
   });
   vi.stubGlobal('fetch', (input: string, init?: RequestInit) =>
@@ -439,6 +441,71 @@ test('ranking USB: decide quién se publica, por cédula; la cédula no sale ni 
   // Sin ranking, vuelven los seleccionados de Metri-K.
   expect((await send('DELETE')).status).toBe(200);
   expect((await get('/api/investigators?size=50')).body.items.map((a: { id: number }) => a.id)).toEqual([1]);
+});
+
+test('ranking de publicaciones: carga con token, autores por EID y consulta pública filtrable', async () => {
+  const send = (method: string, body?: unknown, token = TOKEN) =>
+    fetch(`${base}/api/publications`, {
+      method,
+      body: body === undefined ? undefined : JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Token': token },
+    });
+  const row = (rank: number, eid: string, over = {}) => ({
+    rank,
+    score: 90 - rank,
+    eid,
+    doi: null,
+    title: `Paper ${rank}`,
+    abstract: null,
+    year: 2024,
+    type: 'Article',
+    journal: 'Journal',
+    quartile: 'Q2',
+    areas: ['Natural Sciences'],
+    citations: 3,
+    openAccess: false,
+    international: false,
+    countries: ['Colombia'],
+    correspondence: false,
+    authorsCount: 2,
+    ...over,
+  });
+  expect((await send('PUT', { rows: [row(1, '2-s2.0-1000001')] }, 'otro')).status).toBe(401);
+  expect((await send('PUT', { rows: [] })).status).toBe(400);
+  expect((await fetch(`${base}/api/publications`, { method: 'DELETE' })).status).toBe(401);
+
+  const res = await send('PUT', {
+    rows: [
+      row(1, '2-s2.0-1000001', { quartile: 'Q1', openAccess: true }), // sin autor seleccionado
+      row(2, '2-s2.0-85000000005', { doi: '10.1000/xyz' }), // de Ana (id 1) en Metri-K
+      row(5, '2-s2.0-85000000005'), // repetido: queda el mejor puesto
+      row(9, 'no-es-eid'),
+    ],
+  });
+  expect(await res.json()).toEqual({ published: 2, invalid: ['#9 no-es-eid'], unlinked: 1 });
+
+  const list = await get('/api/publications');
+  expect(list.body).toMatchObject({ total: 2, page: 1, pages: 1 });
+  expect(list.body.items.map((p: { rank: number }) => p.rank)).toEqual([1, 2]);
+  expect(list.body.items[0].authors).toEqual([]);
+  expect(list.body.items[1].authors).toEqual([{ id: 1, name: expect.any(String), published: true }]);
+  expect((await get('/api/publications?quartile=Q1')).body.total).toBe(1);
+  // Con filtro, el puesto se recalcula dentro del resultado; `rank` sigue siendo el general.
+  expect((await get('/api/publications?quartile=Q2&from=2020&to=2024')).body.items).toMatchObject([
+    { rank: 2, position: 1 },
+  ]);
+  expect((await get('/api/publications?from=2025')).body.total).toBe(0);
+  expect((await get('/api/publications?oa=1&q=paper%202')).body.total).toBe(0);
+  expect((await get('/api/publications?sort=cited&size=1&page=2')).body.items[0].rank).toBe(2);
+  expect((await get('/api/publications/stats')).body).toMatchObject({
+    total: 2,
+    byQuartile: { Q1: 1, Q2: 1, Q3: 0, Q4: 0 },
+    openAccess: 1,
+    years: [2024],
+  });
+
+  expect((await send('DELETE')).status).toBe(200);
+  expect((await get('/api/publications')).body.total).toBe(0);
 });
 
 test('JSON pequeño sin comprimir aunque se acepte gzip (no compensa)', async () => {

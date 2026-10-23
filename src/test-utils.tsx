@@ -1,6 +1,13 @@
 import { summarizeGroup, type GroupDetail, type GroupRepository } from '@/domain/groups/group';
 import { groupQueries } from '@/application/groups/group-queries';
 import { centerQueries } from '@/application/centers/center-queries';
+import { publicationQueries } from '@/application/publications/publication-queries';
+import {
+  publicationStats,
+  queryPublications,
+  type PublicationRepository,
+  type RankedPublication,
+} from '@/domain/publications/publication';
 import { summarizeCenter, type CenterDetail, type CenterRepository } from '@/domain/centers/center';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
@@ -139,11 +146,46 @@ export const fakeCenterRepo = (centers: CenterDetail[] = [makeCenterDetail()]): 
   getById: async (id) => centers.find((c) => c.id === id) ?? null,
 });
 
+export function makePublication(over: Partial<RankedPublication> = {}): RankedPublication {
+  return {
+    rank: 1,
+    score: 89.9,
+    eid: '2-s2.0-85132899267',
+    doi: '10.3390/pharmaceutics14061303',
+    title: 'Metabolic Reprogramming in Cancer Cells',
+    abstract:
+      'The constant changes in cancer cell bioenergetics are widely known as metabolic reprogramming.',
+    year: 2022,
+    type: 'Review',
+    journal: 'Pharmaceutics',
+    issn: ['1999-4923'],
+    language: 'eng',
+    quartile: 'Q1',
+    areas: ['Life Sciences and Medicine'],
+    citations: 133,
+    openAccess: true,
+    international: true,
+    countries: ['Colombia', 'Venezuela'],
+    correspondence: true,
+    authorsCount: 9,
+    authors: [{ id: 7, name: 'Ana María Pérez', published: true }],
+    ...over,
+  };
+}
+
+export const fakePublicationRepo = (
+  all: RankedPublication[] = [makePublication()],
+): PublicationRepository => ({
+  list: async (q) => queryPublications(all, q),
+  stats: async () => publicationStats(all),
+});
+
 export function renderApp(
   url: string,
   repo: AuthorRepository = fakeRepo(),
   groupRepo = fakeGroupRepo(),
   centerRepo = fakeCenterRepo(),
+  publicationRepo = fakePublicationRepo(),
 ) {
   const queryClient = createQueryClient();
   queryClient.setDefaultOptions({ queries: { ...queryClient.getDefaultOptions().queries, retry: false } });
@@ -153,6 +195,7 @@ export function renderApp(
       queries={authorQueries(repo)}
       groups={groupQueries(groupRepo)}
       centers={centerQueries(centerRepo)}
+      publications={publicationQueries(publicationRepo)}
     >
       <MemoryRouter initialEntries={[url]}>
         <AppRoutes />

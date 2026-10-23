@@ -1,21 +1,24 @@
-// Elige dónde viven fotos, logos, páginas oficiales de centros y ranking: Vercel Blob si el store está conectado (token o BLOB_STORE_ID, que
+// Elige dónde viven fotos, logos, páginas oficiales de centros, ranking y publicaciones: Vercel Blob si el store está conectado (token o BLOB_STORE_ID, que
 // Vercel inyecta al conectarlo); si no, disco (local o servidor propio). En Vercel no hay disco.
 import { createBlobMapStore, createBlobPhotoStore, type BlobAccess } from './blob-store.ts';
 import {
   createDiskMapStore,
   normalizeFlag,
+  normalizePublication,
   normalizeRanking,
   normalizeWebsite,
   type MapStore,
 } from './ods-store.ts';
 import { createDiskPhotoStore, type PhotoStore } from './photo-store.ts';
 import type { AuthorRanking } from '../src/domain/authors/author.ts';
+import type { StoredPublication } from '../src/domain/publications/publication.ts';
 
 export const DEFAULT_PHOTOS_DIR = 'data/photos';
 export const DEFAULT_LOGOS_DIR = 'data/logos';
 export const DEFAULT_SITES_FILE = 'data/center-sites.json';
 export const DEFAULT_RANKING_FILE = 'data/ranking.json';
 export const DEFAULT_RANKING_HIDDEN_FILE = 'data/ranking-hidden.json';
+export const DEFAULT_PUBLICATIONS_FILE = 'data/publications.json';
 
 export interface StoreOptions {
   photosDir?: string;
@@ -24,6 +27,8 @@ export interface StoreOptions {
   rankingFile?: string;
   /** Investigadores del ranking ocultos en /admin/ranking (sobrevive a cargar otro Excel). */
   rankingHiddenFile?: string;
+  /** Ranking de publicaciones Scopus de /admin/produccion, por puesto. */
+  publicationsFile?: string;
   /** BLOB_READ_WRITE_TOKEN. */
   blobToken?: string;
   /** BLOB_STORE_ID (store conectado por OIDC). */
@@ -42,6 +47,7 @@ const unconfigured = (): {
   sites: MapStore<string>;
   ranking: MapStore<AuthorRanking>;
   rankingHidden: MapStore<true>;
+  publications: MapStore<StoredPublication>;
 } => {
   const fail = async (): Promise<never> => {
     throw new Error(NO_BLOB);
@@ -58,6 +64,7 @@ const unconfigured = (): {
     sites: { all: async () => ({}), set: fail, replace: fail },
     ranking: { all: async () => ({}), set: fail, replace: fail },
     rankingHidden: { all: async () => ({}), set: fail, replace: fail },
+    publications: { all: async () => ({}), set: fail, replace: fail },
   };
 };
 
@@ -67,6 +74,7 @@ export function createStores({
   sitesFile,
   rankingFile,
   rankingHiddenFile,
+  publicationsFile,
   blobToken,
   blobStoreId,
   blobAccess,
@@ -85,6 +93,7 @@ export function createStores({
       sites: createBlobMapStore(cfg, 'cris/center-sites.json', normalizeWebsite),
       ranking: createBlobMapStore(cfg, 'cris/ranking.json', normalizeRanking),
       rankingHidden: createBlobMapStore(cfg, 'cris/ranking-hidden.json', normalizeFlag),
+      publications: createBlobMapStore(cfg, 'cris/publications.json', normalizePublication),
     };
   }
   if (onVercel) return { kind: 'none' as const, ...unconfigured() };
@@ -95,6 +104,7 @@ export function createStores({
     sites: createDiskMapStore(sitesFile || DEFAULT_SITES_FILE, normalizeWebsite),
     ranking: createDiskMapStore(rankingFile || DEFAULT_RANKING_FILE, normalizeRanking),
     rankingHidden: createDiskMapStore(rankingHiddenFile || DEFAULT_RANKING_HIDDEN_FILE, normalizeFlag),
+    publications: createDiskMapStore(publicationsFile || DEFAULT_PUBLICATIONS_FILE, normalizePublication),
   };
 }
 
@@ -112,6 +122,7 @@ export const storeOptionsFromEnv = (env: Record<string, string | undefined>): St
   sitesFile: env.CRIS_CENTER_SITES_FILE,
   rankingFile: env.CRIS_RANKING_FILE,
   rankingHiddenFile: env.CRIS_RANKING_HIDDEN_FILE,
+  publicationsFile: env.CRIS_PUBLICATIONS_FILE,
   blobToken: env.BLOB_READ_WRITE_TOKEN || byPrefix(env, '_READ_WRITE_TOKEN', 'vercel_blob_rw_'),
   blobStoreId: env.BLOB_STORE_ID || byPrefix(env, '_STORE_ID', 'store_'),
   blobAccess: env.CRIS_BLOB_ACCESS,

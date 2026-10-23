@@ -160,6 +160,8 @@ export interface InvestigatorDirectory {
    * navegador ni se guarda (el ranking se guarda por id).
    */
   byDocument: Map<string, number>;
+  /** EID de Scopus → seleccionados que lo firman (autores del ranking de publicaciones). */
+  byEid: Map<string, number[]>;
 }
 
 /**
@@ -172,6 +174,12 @@ export async function fetchInvestigators(base: string): Promise<InvestigatorDire
     getData(`${base}/investigator/seleccionados`),
   ]);
   const extra = new Map(list(selected, toSelected).map((s) => [s.id, s]));
+  const byEid = new Map<string, number[]>();
+  for (const r of selected.map(obj)) {
+    if (typeof r?.id !== 'number') continue;
+    for (const eid of list(obj(r.produccion)?.publicacionesScopus, (p) => str(p.eid)))
+      byEid.set(eid, [...new Set([...(byEid.get(eid) ?? []), r.id])]);
+  }
   const authors = list(rows, toPublicInvestigator).map((a) => {
     const s = extra.get(a.id);
     return {
@@ -192,6 +200,7 @@ export async function fetchInvestigators(base: string): Promise<InvestigatorDire
     selected: new Set(extra.keys()),
     production: new Map([...extra].map(([id, s]) => [id, s.production])),
     byDocument,
+    byEid,
   };
 }
 

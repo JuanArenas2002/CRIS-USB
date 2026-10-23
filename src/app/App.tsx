@@ -5,11 +5,13 @@ import '@/i18n'; // inicializa i18next una sola vez (cliente, prerender y tests)
 import type { AuthorQueries } from '@/application/authors/author-queries';
 import type { CenterQueries } from '@/application/centers/center-queries';
 import type { GroupQueries } from '@/application/groups/group-queries';
+import type { PublicationQueries } from '@/application/publications/publication-queries';
 import { ApiError } from '@/infrastructure/http/api-client';
 import { RootLayout } from '@/presentation/components/layout/RootLayout';
 import { AuthorQueriesContext } from '@/presentation/hooks/use-authors';
 import { CenterQueriesContext } from '@/presentation/hooks/use-centers';
 import { GroupQueriesContext } from '@/presentation/hooks/use-groups';
+import { PublicationQueriesContext } from '@/presentation/hooks/use-publications';
 import { CenterPage } from '@/presentation/pages/CenterPage';
 import { CentersPage } from '@/presentation/pages/CentersPage';
 import { GroupsPage } from '@/presentation/pages/GroupsPage';
@@ -17,6 +19,8 @@ import { GroupPage } from '@/presentation/pages/GroupPage';
 import { AdminCentersPage } from '@/presentation/pages/AdminCentersPage';
 import { AdminPhotosPage } from '@/presentation/pages/AdminPhotosPage';
 import { AdminRankingPage } from '@/presentation/pages/AdminRankingPage';
+import { AdminPublicationsPage } from '@/presentation/pages/AdminPublicationsPage';
+import { ProductsPage } from '@/presentation/pages/ProductsPage';
 import { HeadCollectorContext } from '@/presentation/hooks/use-document-metadata';
 import { AuthorPage } from '@/presentation/pages/AuthorPage';
 import { DirectoryPage } from '@/presentation/pages/DirectoryPage';
@@ -45,18 +49,29 @@ interface ProvidersProps {
   queries: AuthorQueries;
   groups: GroupQueries;
   centers: CenterQueries;
+  publications: PublicationQueries;
   /** Solo en prerender: recibe los metadatos de la página renderizada. */
   onHead?: (meta: PageMeta) => void;
   children: ReactNode;
 }
 
-export function AppProviders({ queryClient, queries, groups, centers, onHead, children }: ProvidersProps) {
+export function AppProviders({
+  queryClient,
+  queries,
+  groups,
+  centers,
+  publications,
+  onHead,
+  children,
+}: ProvidersProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthorQueriesContext.Provider value={queries}>
         <GroupQueriesContext.Provider value={groups}>
           <CenterQueriesContext.Provider value={centers}>
-            <HeadCollectorContext.Provider value={onHead ?? null}>{children}</HeadCollectorContext.Provider>
+            <PublicationQueriesContext.Provider value={publications}>
+              <HeadCollectorContext.Provider value={onHead ?? null}>{children}</HeadCollectorContext.Provider>
+            </PublicationQueriesContext.Provider>
           </CenterQueriesContext.Provider>
         </GroupQueriesContext.Provider>
       </AuthorQueriesContext.Provider>
@@ -86,10 +101,12 @@ export function AppRoutes() {
           <Route path="grupos/:slug" element={<GroupPage />} />
           <Route path="centros" element={<CentersPage />} />
           <Route path="centros/:slug" element={<CenterPage />} />
+          <Route path="productos" element={<ProductsPage />} />
           {/* Vista oculta: fuera del menú, noindex y bloqueada en robots.txt. */}
           <Route path="admin/fotos" element={<AdminPhotosPage />} />
           <Route path="admin/centros" element={<AdminCentersPage />} />
           <Route path="admin/ranking" element={<AdminRankingPage />} />
+          <Route path="admin/produccion" element={<AdminPublicationsPage />} />
           {NAV_ITEMS.filter((i) => !i.ready).map((i) => (
             <Route key={i.to} path={i.to} element={<ComingSoonPage item={i} />} />
           ))}

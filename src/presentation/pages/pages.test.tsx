@@ -11,6 +11,8 @@ import {
   renderApp,
   fakeCenterRepo,
   makeCenterDetail,
+  fakePublicationRepo,
+  makePublication,
 } from '@/test-utils';
 
 test('directorio: tarjetas con enlace rastreable al perfil y métricas reales', async () => {
@@ -410,4 +412,51 @@ test('admin ranking: respuesta ilegible → mensaje claro, sin mostrar el token'
   ).toBeInTheDocument();
   expect(document.body.textContent).not.toContain('TOKEN-SECRETO-123');
   vi.unstubAllGlobals();
+});
+
+test('productos: cada publicación con año, tipo, idioma, revista, ISSN, DOI, citas y acceso abierto', async () => {
+  renderApp('/productos');
+  const title = await screen.findByRole('link', { name: /Metabolic Reprogramming in Cancer Cells/ });
+  expect(title).toHaveAttribute('href', 'https://doi.org/10.3390/pharmaceutics14061303');
+  // Año, tipo, idioma, ISSN y acceso abierto (ícono con texto para lectores de pantalla).
+  const item = within(title.closest('li')!);
+  expect(item.getByText('2022')).toBeInTheDocument();
+  expect(item.getByText('Revisión')).toBeInTheDocument();
+  expect(item.getByText('Inglés')).toBeInTheDocument();
+  expect(item.getByText('ISSN 1999-4923')).toBeInTheDocument();
+  expect(item.getByTitle('Acceso abierto')).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /^10\.3390\/pharmaceutics14061303/ })).toHaveAttribute(
+    'href',
+    'https://doi.org/10.3390/pharmaceutics14061303',
+  );
+  expect(screen.getByText('Puesto 1')).toBeInTheDocument();
+  expect(screen.getByText('133 citas')).toBeInTheDocument();
+  expect(screen.getByText('1 publicación')).toBeInTheDocument();
+});
+
+test('productos: sin resultados para el filtro ofrece restablecerlo', async () => {
+  const user = userEvent.setup();
+  renderApp('/productos?cuartil=Q4');
+  const empty = await screen.findByRole('status');
+  expect(empty).toHaveTextContent('No se encontraron publicaciones');
+  await user.click(within(empty).getByRole('button', { name: 'Restablecer filtros' }));
+  expect(await screen.findByText('1 publicación')).toBeInTheDocument();
+});
+
+test('productos: con rango de años el puesto se recalcula y se muestra el general', async () => {
+  renderApp(
+    '/productos?desde=2020&hasta=2023',
+    undefined,
+    undefined,
+    undefined,
+    fakePublicationRepo([
+      makePublication({ rank: 1, eid: '2-s2.0-1', title: 'Reciente', year: 2025 }),
+      makePublication({ rank: 2, eid: '2-s2.0-2', title: 'En rango', year: 2022 }),
+    ]),
+  );
+  expect(await screen.findByText('#2 general')).toBeInTheDocument();
+  expect(screen.getByText('Puesto 1')).toBeInTheDocument();
+  expect(screen.queryByText('Reciente')).not.toBeInTheDocument();
+  expect(screen.getByRole('combobox', { name: 'Año desde' })).toHaveTextContent('Desde 2020');
+  expect(screen.getByRole('combobox', { name: 'Año hasta' })).toHaveTextContent('Hasta 2023');
 });

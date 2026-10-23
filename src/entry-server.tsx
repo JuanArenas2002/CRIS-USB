@@ -20,6 +20,12 @@ import {
 } from '@/domain/authors/author';
 import { centerQueries, type CenterQueries } from '@/application/centers/center-queries';
 import { groupQueries, type GroupQueries } from '@/application/groups/group-queries';
+import { publicationQueries, type PublicationQueries } from '@/application/publications/publication-queries';
+import {
+  publicationStats,
+  queryPublications,
+  type RankedPublication,
+} from '@/domain/publications/publication';
 import { summarizeCenter, type CenterDetail } from '@/domain/centers/center';
 import { hasPublicDetail, summarizeGroup, type GroupDetail, type GroupMember } from '@/domain/groups/group';
 import { NAV_ITEMS } from '@/shared/navigation';
@@ -58,12 +64,21 @@ export function createServerCenterQueries(centers: CenterDetail[]): CenterQuerie
   });
 }
 
+/** Ranking de publicaciones con sus autores ya cruzados (scripts/prerender.mjs). */
+export function createServerPublicationQueries(all: RankedPublication[]): PublicationQueries {
+  return publicationQueries({
+    list: async (q) => queryPublications(all, q),
+    stats: async () => publicationStats(all),
+  });
+}
+
 export function render(
   url: string,
   queryClient: QueryClient,
   queries: AuthorQueries,
   groups: GroupQueries,
   centers: CenterQueries,
+  publications: PublicationQueries,
 ) {
   const head: { meta?: PageMeta } = {};
   const html = renderToString(
@@ -72,6 +87,7 @@ export function render(
       queries={queries}
       groups={groups}
       centers={centers}
+      publications={publications}
       onHead={(m) => (head.meta = m)}
     >
       <StaticRouter location={withBase(url)} basename={BASE || undefined}>
