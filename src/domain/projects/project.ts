@@ -1,5 +1,5 @@
 import type { OdsId } from '../ods/ods';
-import { authorSlug, slugify } from '../authors/author';
+import { authorSlug, slugify } from '../authors/author.ts';
 
 /** Producto de un proyecto (artículo, software, patente…), tal como lo registra Metri-K. */
 export interface ProjectProduct {
