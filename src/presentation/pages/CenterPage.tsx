@@ -5,6 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { authorSlug, displayName, externalProfiles, parseAuthorId } from '@/domain/authors/author';
 import { resolutionFileUrl, type CenterDetail } from '@/domain/centers/center';
 import { sortGroups } from '@/domain/groups/group';
+import { projectsOfCenter } from '@/domain/projects/project';
+import { ProjectList } from './ProjectsPage';
+import { useProjects } from '@/presentation/hooks/use-projects';
 import { GroupRow, GroupRowHeader } from '@/presentation/components/groups/GroupRow';
 import { CenterStatus } from '@/presentation/components/centers/CenterCard';
 import { ErrorState } from '@/presentation/components/feedback/Feedback';
@@ -310,6 +313,8 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
 
         <CenterGroups centerId={c.id} />
 
+        <CenterProjects centerName={c.name} />
+
         {/* Resoluciones */}
         <section className={`${card} p-5 md:p-6`}>
           <SectionHead icon="gavel">{t('detail.resolutions')}</SectionHead>
@@ -418,6 +423,38 @@ function CenterGroups({ centerId }: { centerId: number }) {
         </>
       ) : (
         <p className="text-body-sm text-neutral-muted">{t('detail.noGroups')}</p>
+      )}
+    </section>
+  );
+}
+
+/** Proyectos del centro: Metri-K los vincula por el nombre del centro (`projectsOfCenter`). */
+function CenterProjects({ centerName }: { centerName: string }) {
+  const { t } = useTranslation('centers');
+  const { data, isError, refetch, error } = useProjects();
+  const projects = data ? projectsOfCenter(data, centerName) : null;
+  return (
+    <section aria-labelledby="center-projects-title" className={`${card} p-5 md:p-6`}>
+      <SectionHead icon="science" id="center-projects-title">
+        {t('detail.projects')}
+      </SectionHead>
+      {isError ? (
+        <ErrorState error={error} onRetry={() => refetch()} />
+      ) : !projects ? (
+        <div
+          aria-busy="true"
+          aria-label={t('detail.projectsLoading')}
+          className="h-40 animate-pulse rounded-2xl bg-surface-cream-alt motion-reduce:animate-none"
+        />
+      ) : projects.length ? (
+        <>
+          <p className="-mt-2 mb-4 text-body-sm text-on-surface-variant">
+            {t('detail.projectsLead', { count: projects.length })}
+          </p>
+          <ProjectList projects={projects} />
+        </>
+      ) : (
+        <p className="text-body-sm text-neutral-muted">{t('detail.noProjects')}</p>
       )}
     </section>
   );

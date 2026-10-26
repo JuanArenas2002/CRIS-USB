@@ -12,8 +12,8 @@ export const NAV_ITEMS: NavItem[] = [
   { key: 'centers', to: '/centros', ready: true },
   { key: 'groups', to: '/grupos', ready: true },
   { key: 'authors', to: '/', ready: true },
-  { key: 'projects', to: '/proyectos', ready: false },
-  { key: 'products', to: '/productos', ready: false },
+  { key: 'projects', to: '/proyectos', ready: true },
+  { key: 'products', to: '/productos', ready: true },
   { key: 'relations', to: '/relacionamiento', ready: false },
 ];
 

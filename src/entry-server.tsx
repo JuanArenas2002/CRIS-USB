@@ -20,6 +20,14 @@ import {
 } from '@/domain/authors/author';
 import { centerQueries, type CenterQueries } from '@/application/centers/center-queries';
 import { groupQueries, type GroupQueries } from '@/application/groups/group-queries';
+import { publicationQueries, type PublicationQueries } from '@/application/publications/publication-queries';
+import { projectQueries, type ProjectQueries } from '@/application/projects/project-queries';
+import { projectSlug, type Project } from '@/domain/projects/project';
+import {
+  publicationStats,
+  queryPublications,
+  type RankedPublication,
+} from '@/domain/publications/publication';
 import { summarizeCenter, type CenterDetail } from '@/domain/centers/center';
 import { hasPublicDetail, summarizeGroup, type GroupDetail, type GroupMember } from '@/domain/groups/group';
 import { NAV_ITEMS } from '@/shared/navigation';
@@ -58,12 +66,30 @@ export function createServerCenterQueries(centers: CenterDetail[]): CenterQuerie
   });
 }
 
+/** Ranking de publicaciones con sus autores ya cruzados (scripts/prerender.mjs). */
+export function createServerPublicationQueries(all: RankedPublication[]): PublicationQueries {
+  return publicationQueries({
+    list: async (q) => queryPublications(all, q),
+    stats: async () => publicationStats(all),
+  });
+}
+
+/** Proyectos ya proyectados por scripts/projects-source.ts (sin cédulas). */
+export function createServerProjectQueries(projects: Project[]): ProjectQueries {
+  return projectQueries({
+    list: async () => projects,
+    getById: async (id) => projects.find((p) => p.id === id) ?? null,
+  });
+}
+
 export function render(
   url: string,
   queryClient: QueryClient,
   queries: AuthorQueries,
   groups: GroupQueries,
   centers: CenterQueries,
+  publications: PublicationQueries,
+  projects: ProjectQueries,
 ) {
   const head: { meta?: PageMeta } = {};
   const html = renderToString(
@@ -72,6 +98,8 @@ export function render(
       queries={queries}
       groups={groups}
       centers={centers}
+      publications={publications}
+      projects={projects}
       onHead={(m) => (head.meta = m)}
     >
       <StaticRouter location={withBase(url)} basename={BASE || undefined}>
@@ -95,6 +123,7 @@ export {
   createQueryClient,
   hasPublicDetail,
   isIndexable,
+  projectSlug,
   toPublicProfile,
   withRankingCenter,
 };

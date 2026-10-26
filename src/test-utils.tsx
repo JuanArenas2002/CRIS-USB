@@ -1,6 +1,15 @@
 import { summarizeGroup, type GroupDetail, type GroupRepository } from '@/domain/groups/group';
 import { groupQueries } from '@/application/groups/group-queries';
 import { centerQueries } from '@/application/centers/center-queries';
+import { publicationQueries } from '@/application/publications/publication-queries';
+import { projectQueries } from '@/application/projects/project-queries';
+import type { Project, ProjectRepository } from '@/domain/projects/project';
+import {
+  publicationStats,
+  queryPublications,
+  type PublicationRepository,
+  type RankedPublication,
+} from '@/domain/publications/publication';
 import { summarizeCenter, type CenterDetail, type CenterRepository } from '@/domain/centers/center';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
@@ -139,11 +148,92 @@ export const fakeCenterRepo = (centers: CenterDetail[] = [makeCenterDetail()]): 
   getById: async (id) => centers.find((c) => c.id === id) ?? null,
 });
 
+export function makePublication(over: Partial<RankedPublication> = {}): RankedPublication {
+  return {
+    rank: 1,
+    score: 89.9,
+    eid: '2-s2.0-85132899267',
+    doi: '10.3390/pharmaceutics14061303',
+    title: 'Metabolic Reprogramming in Cancer Cells',
+    abstract:
+      'The constant changes in cancer cell bioenergetics are widely known as metabolic reprogramming.',
+    year: 2022,
+    type: 'Review',
+    journal: 'Pharmaceutics',
+    issn: ['1999-4923'],
+    language: 'eng',
+    quartile: 'Q1',
+    areas: ['Life Sciences and Medicine'],
+    citations: 133,
+    openAccess: true,
+    international: true,
+    countries: ['Colombia', 'Venezuela'],
+    correspondence: true,
+    authorsCount: 9,
+    authors: [{ id: 7, name: 'Ana María Pérez', published: true }],
+    ...over,
+  };
+}
+
+export const fakePublicationRepo = (
+  all: RankedPublication[] = [makePublication()],
+): PublicationRepository => ({
+  list: async (q) => queryPublications(all, q),
+  stats: async () => publicationStats(all),
+});
+
+export function makeProject(over: Partial<Project> = {}): Project {
+  return {
+    id: 3,
+    code: '1-3-02-7-24',
+    title: 'Programa de fortalecimiento a organizaciones de cuidado comunitario',
+    centers: ['Centro de Investigación e Innovación Social José Consuegra Higgins'],
+    groups: ['Educación, ciencias sociales y humanas'],
+    area: 'Ciencias Sociales',
+    year: 2024,
+    startYear: 2024,
+    endYear: 2025,
+    status: 'En ejecución',
+    funder: 'ONU Mujeres',
+    allies: null,
+    resources: '$1.126.642.650',
+    territory: 'Nacional',
+    problem: 'Limitado reconocimiento de las organizaciones de cuidado comunitario.',
+    solution: null,
+    objective: 'Diseñar e implementar un programa de fortalecimiento.',
+    results: null,
+    beneficiaries: null,
+    evidence: 'Sitio: https://cuidaconmigo.com/x',
+    ods: [5],
+    leaders: [],
+    photoUrl: null,
+    gallery: [],
+    products: [
+      {
+        title: 'Plataforma Cuida Conmigo',
+        type: 'Desarrollo de Software',
+        subtype: 'Plataforma Web',
+        year: 2025,
+        status: 'Publicado',
+        url: 'https://cuidaconmigo.com/',
+      },
+    ],
+    ...over,
+  };
+}
+
+export const fakeProjectRepo = (projects: Project[] = [makeProject()]): ProjectRepository => ({
+  list: async () => projects,
+  getById: async (id) => projects.find((p) => p.id === id) ?? null,
+});
+
 export function renderApp(
   url: string,
   repo: AuthorRepository = fakeRepo(),
   groupRepo = fakeGroupRepo(),
   centerRepo = fakeCenterRepo(),
+  publicationRepo = fakePublicationRepo(),
+  projectRepo = fakeProjectRepo(),
 ) {
   const queryClient = createQueryClient();
   queryClient.setDefaultOptions({ queries: { ...queryClient.getDefaultOptions().queries, retry: false } });
@@ -153,6 +243,8 @@ export function renderApp(
       queries={authorQueries(repo)}
       groups={groupQueries(groupRepo)}
       centers={centerQueries(centerRepo)}
+      publications={publicationQueries(publicationRepo)}
+      projects={projectQueries(projectRepo)}
     >
       <MemoryRouter initialEntries={[url]}>
         <AppRoutes />

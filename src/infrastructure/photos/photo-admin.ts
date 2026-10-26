@@ -30,10 +30,10 @@ export async function toSquareWebp(file: Blob): Promise<Blob> {
   return toWebp(canvas);
 }
 
-/** Logo: sin recortar y con su transparencia, a lo sumo 512 px por lado. */
-export async function toLogoWebp(file: Blob): Promise<Blob> {
+/** Logo: sin recortar y con su transparencia, a lo sumo `side` px por lado (512 por defecto). */
+export async function toLogoWebp(file: Blob, side = SIDE): Promise<Blob> {
   const img = await createImageBitmap(file, { imageOrientation: 'from-image' });
-  const scale = Math.min(1, SIDE / Math.max(img.width, img.height));
+  const scale = Math.min(1, side / Math.max(img.width, img.height));
   const canvas = document.createElement('canvas');
   canvas.width = Math.max(1, Math.round(img.width * scale));
   canvas.height = Math.max(1, Math.round(img.height * scale));
@@ -42,15 +42,31 @@ export async function toLogoWebp(file: Blob): Promise<Blob> {
   return toWebp(canvas);
 }
 
+/** Centro elegido en /admin/proyectos/fotos y su contraseña (la del director). */
+export interface CenterKey {
+  id: number;
+  password: string;
+}
+// encodeURIComponent: una cabecera HTTP no admite tildes ni ñ tal cual.
+const centerHeaders = (c: CenterKey) => ({
+  'X-Center-Id': String(c.id),
+  'X-Center-Password': encodeURIComponent(c.password),
+});
+
 async function call(
   method: 'PUT' | 'DELETE',
   path: string,
   token: string,
   body?: Blob,
+  center?: CenterKey,
 ): Promise<string | null> {
   const res = await fetch(path, {
     method,
-    headers: { 'X-Admin-Token': token, ...(body ? { 'Content-Type': 'image/webp' } : {}) },
+    headers: {
+      'X-Admin-Token': token,
+      ...(body ? { 'Content-Type': 'image/webp' } : {}),
+      ...(center ? centerHeaders(center) : {}),
+    },
     body,
   });
   const data = (await res.json().catch(() => ({}))) as {
@@ -69,6 +85,35 @@ export const uploadPhoto = (id: number, photo: Blob, token: string) =>
 export const deletePhoto = (id: number, token: string) => call('DELETE', photoPath(id), token);
 export const uploadLogo = (id: number, logo: Blob, token: string) => call('PUT', logoPath(id), token, logo);
 export const deleteLogo = (id: number, token: string) => call('DELETE', logoPath(id), token);
+
+/** Fotos de proyecto sin recortar: 1280 px por lado deja una foto nítida por debajo de 1 MB. */
+export const toProjectPhotoWebp = (file: Blob) => toLogoWebp(file, 1280);
+/** `slot` 0 = foto principal; 1…12 = galería. */
+const projectPhotoPath = (id: number, slot: number) => withBase(`/api/projects/${id}/photos/${slot}`);
+export const uploadProjectPhoto = (id: number, slot: number, photo: Blob, token: string, center: CenterKey) =>
+  call('PUT', projectPhotoPath(id, slot), token, photo, center);
+export const deleteProjectPhoto = (id: number, slot: number, token: string, center: CenterKey) =>
+  call('DELETE', projectPhotoPath(id, slot), token, undefined, center);
+
+/** true si la contraseña es la del centro (401 = token inválido, se propaga). */
+export async function checkCenterAccess(center: CenterKey, token: string) {
+  const res = await fetch(withBase(`/api/centers/${center.id}/access`), {
+    headers: { 'X-Admin-Token': token, ...centerHeaders(center) },
+  });
+  if (res.status === 401) throw new ApiError(401, 'Token de administración inválido');
+  return res.ok;
+}
+
+/** Contraseña de fotos de proyectos del centro; null la quita (nadie podrá subir fotos). */
+export async function saveCenterPassword(id: number, password: string | null, token: string) {
+  const res = await fetch(withBase(`/api/centers/${id}/password`), {
+    method: 'PUT',
+    headers: { 'X-Admin-Token': token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password }),
+  });
+  const data = (await res.json().catch(() => ({}))) as { detail?: string };
+  if (!res.ok) throw new ApiError(res.status, data.detail ?? `Error ${res.status}`);
+}
 
 /** Página oficial del centro; null o "" la quitan. Devuelve la URL normalizada por el BFF. */
 export async function saveCenterWebsite(id: number, website: string | null, token: string) {

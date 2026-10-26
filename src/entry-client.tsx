@@ -7,9 +7,13 @@ import { AppProviders, AppRoutes, createQueryClient } from '@/app/App';
 import { authorQueries } from '@/application/authors/author-queries';
 import { centerQueries } from '@/application/centers/center-queries';
 import { groupQueries } from '@/application/groups/group-queries';
+import { publicationQueries } from '@/application/publications/publication-queries';
+import { projectQueries } from '@/application/projects/project-queries';
 import { httpCenterRepository } from '@/infrastructure/centers/http-center-repository';
 import { httpGroupRepository } from '@/infrastructure/groups/http-group-repository';
 import { httpAuthorRepository } from '@/infrastructure/authors/http-author-repository';
+import { httpPublicationRepository } from '@/infrastructure/publications/http-publication-repository';
+import { httpProjectRepository } from '@/infrastructure/projects/http-project-repository';
 import { createApiClient } from '@/infrastructure/http/api-client';
 import i18n, { DEFAULT_LANGUAGE } from '@/i18n';
 import './styles/index.css';
@@ -26,6 +30,8 @@ const api = createApiClient({ baseUrl: import.meta.env.VITE_API_BASE_URL || BASE
 const queries = authorQueries(httpAuthorRepository(api));
 const groups = groupQueries(httpGroupRepository(api));
 const centers = centerQueries(httpCenterRepository(api));
+const publications = publicationQueries(httpPublicationRepository(api));
+const projects = projectQueries(httpProjectRepository(api));
 const queryClient = createQueryClient();
 const root = document.getElementById('root')!;
 
@@ -41,7 +47,14 @@ if (prerendered && matches) {
 
 const app = (
   <StrictMode>
-    <AppProviders queryClient={queryClient} queries={queries} groups={groups} centers={centers}>
+    <AppProviders
+      queryClient={queryClient}
+      queries={queries}
+      groups={groups}
+      centers={centers}
+      publications={publications}
+      projects={projects}
+    >
       <BrowserRouter basename={BASE || undefined}>
         <AppRoutes />
       </BrowserRouter>

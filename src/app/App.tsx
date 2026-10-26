@@ -5,18 +5,27 @@ import '@/i18n'; // inicializa i18next una sola vez (cliente, prerender y tests)
 import type { AuthorQueries } from '@/application/authors/author-queries';
 import type { CenterQueries } from '@/application/centers/center-queries';
 import type { GroupQueries } from '@/application/groups/group-queries';
+import type { PublicationQueries } from '@/application/publications/publication-queries';
+import type { ProjectQueries } from '@/application/projects/project-queries';
 import { ApiError } from '@/infrastructure/http/api-client';
 import { RootLayout } from '@/presentation/components/layout/RootLayout';
 import { AuthorQueriesContext } from '@/presentation/hooks/use-authors';
 import { CenterQueriesContext } from '@/presentation/hooks/use-centers';
 import { GroupQueriesContext } from '@/presentation/hooks/use-groups';
+import { PublicationQueriesContext } from '@/presentation/hooks/use-publications';
+import { ProjectQueriesContext } from '@/presentation/hooks/use-projects';
+import { ProjectPage } from '@/presentation/pages/ProjectPage';
+import { ProjectsPage } from '@/presentation/pages/ProjectsPage';
 import { CenterPage } from '@/presentation/pages/CenterPage';
 import { CentersPage } from '@/presentation/pages/CentersPage';
 import { GroupsPage } from '@/presentation/pages/GroupsPage';
 import { GroupPage } from '@/presentation/pages/GroupPage';
 import { AdminCentersPage } from '@/presentation/pages/AdminCentersPage';
+import { AdminProjectPhotosPage } from '@/presentation/pages/AdminProjectPhotosPage';
 import { AdminPhotosPage } from '@/presentation/pages/AdminPhotosPage';
 import { AdminRankingPage } from '@/presentation/pages/AdminRankingPage';
+import { AdminPublicationsPage } from '@/presentation/pages/AdminPublicationsPage';
+import { ProductsPage } from '@/presentation/pages/ProductsPage';
 import { HeadCollectorContext } from '@/presentation/hooks/use-document-metadata';
 import { AuthorPage } from '@/presentation/pages/AuthorPage';
 import { DirectoryPage } from '@/presentation/pages/DirectoryPage';
@@ -45,18 +54,33 @@ interface ProvidersProps {
   queries: AuthorQueries;
   groups: GroupQueries;
   centers: CenterQueries;
+  publications: PublicationQueries;
+  projects: ProjectQueries;
   /** Solo en prerender: recibe los metadatos de la página renderizada. */
   onHead?: (meta: PageMeta) => void;
   children: ReactNode;
 }
 
-export function AppProviders({ queryClient, queries, groups, centers, onHead, children }: ProvidersProps) {
+export function AppProviders({
+  queryClient,
+  queries,
+  groups,
+  centers,
+  publications,
+  projects,
+  onHead,
+  children,
+}: ProvidersProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthorQueriesContext.Provider value={queries}>
         <GroupQueriesContext.Provider value={groups}>
           <CenterQueriesContext.Provider value={centers}>
-            <HeadCollectorContext.Provider value={onHead ?? null}>{children}</HeadCollectorContext.Provider>
+            <PublicationQueriesContext.Provider value={publications}>
+              <ProjectQueriesContext.Provider value={projects}>
+                <HeadCollectorContext.Provider value={onHead ?? null}>{children}</HeadCollectorContext.Provider>
+              </ProjectQueriesContext.Provider>
+            </PublicationQueriesContext.Provider>
           </CenterQueriesContext.Provider>
         </GroupQueriesContext.Provider>
       </AuthorQueriesContext.Provider>
@@ -86,10 +110,15 @@ export function AppRoutes() {
           <Route path="grupos/:slug" element={<GroupPage />} />
           <Route path="centros" element={<CentersPage />} />
           <Route path="centros/:slug" element={<CenterPage />} />
+          <Route path="proyectos" element={<ProjectsPage />} />
+          <Route path="proyectos/:slug" element={<ProjectPage />} />
+          <Route path="productos" element={<ProductsPage />} />
           {/* Vista oculta: fuera del menú, noindex y bloqueada en robots.txt. */}
           <Route path="admin/fotos" element={<AdminPhotosPage />} />
           <Route path="admin/centros" element={<AdminCentersPage />} />
+          <Route path="admin/proyectos/fotos" element={<AdminProjectPhotosPage />} />
           <Route path="admin/ranking" element={<AdminRankingPage />} />
+          <Route path="admin/produccion" element={<AdminPublicationsPage />} />
           {NAV_ITEMS.filter((i) => !i.ready).map((i) => (
             <Route key={i.to} path={i.to} element={<ComingSoonPage item={i} />} />
           ))}

@@ -240,6 +240,13 @@ export function AuthorCard({ author }: { author: Author }) {
           <span className="text-label-sm text-neutral-muted">{t('card.noIds')}</span>
         )}
       </div>
+      {/* ponytail: solo visual; el clic lo recibe el enlace del nombre que cubre la tarjeta. */}
+      <span
+        aria-hidden="true"
+        className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-secondary px-4 py-2.5 text-label-md font-semibold text-on-primary transition-colors group-hover:bg-primary-container"
+      >
+        {t('card.viewProfile')} <Icon name="arrow_forward" className="text-[18px]" />
+      </span>
     </article>
   );
 }

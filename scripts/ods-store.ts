@@ -1,11 +1,13 @@
 // Datos que el portal guarda por id en un solo JSON (Metri-K aún no los tiene):
 // - Página oficial de cada centro (vista oculta /admin/centros).
 // - Ranking de productividad USB de cada investigador y quiénes se ocultan (vista oculta /admin/ranking).
+// - Ranking de publicaciones Scopus, por puesto (vista oculta /admin/produccion).
 // Dos almacenamientos con la misma interfaz (ver stores.ts): un JSON en disco en local / servidor
 // propio y Vercel Blob en Vercel. Migrar a Metri-K cuando el backend los soporte.
 import fs from 'node:fs';
 import path from 'node:path';
 import type { AuthorRanking } from '../src/domain/authors/author.ts';
+import { QUARTILES, type Quartile, type StoredPublication } from '../src/domain/publications/publication.ts';
 
 /** Limpia un valor; null = sin valor (se quita la entrada). */
 export type Normalize<T> = (v: unknown) => T | null;
@@ -45,6 +47,50 @@ export const normalizeRanking: Normalize<AuthorRanking> = (v) => {
   if (index === null || position === null) return null;
   const center = typeof r.center === 'string' && r.center.trim() ? r.center.trim().slice(0, 40) : null;
   return { index, rank: position, centerRank: center ? rank(r.centerRank) : null, center };
+};
+
+const text = (v: unknown, max: number) =>
+  typeof v === 'string' && v.trim() ? v.trim().replace(/\s+/g, ' ').slice(0, max) : null;
+const texts = (v: unknown, max: number) =>
+  Array.isArray(v) ? [...new Set(v.flatMap((x) => text(x, 80) ?? []))].slice(0, max) : [];
+const count = (v: unknown) => (typeof v === 'number' && v >= 0 ? Math.floor(v) : 0);
+
+/** Publicación del ranking: EID de Scopus, título y puesto obligatorios; lo demás, si es válido. */
+export const normalizePublication: Normalize<StoredPublication> = (v) => {
+  const r = v as Partial<Record<keyof StoredPublication, unknown>> | null;
+  if (!r || typeof r !== 'object') return null;
+  const eid = typeof r.eid === 'string' ? /^2-s2\.0-\d{6,15}$/.exec(r.eid.trim())?.[0] : undefined;
+  const title = text(r.title, 600);
+  const position = rank(r.rank);
+  if (!eid || !title || position === null) return null;
+  const year = Number.isInteger(r.year) && (r.year as number) > 1900 ? (r.year as number) : null;
+  const score =
+    typeof r.score === 'number' && r.score >= 0 && r.score <= 100 ? Math.round(r.score * 100) / 100 : 0;
+  return {
+    rank: position,
+    score,
+    eid,
+    doi: (typeof r.doi === 'string' && /^10\.\d{4,9}\/\S+$/.exec(r.doi.trim())?.[0]) || null,
+    title,
+    abstract: text(r.abstract, 6000),
+    year,
+    type: text(r.type, 40),
+    journal: text(r.journal, 300),
+    issn: texts(r.issn, 4).flatMap((x) => {
+      const m = /^(\d{4})-?(\d{3}[\dX])$/i.exec(x);
+      return m ? [`${m[1]}-${m[2]!.toUpperCase()}`] : [];
+    }),
+    language:
+      (typeof r.language === 'string' && /^[a-z]{2,3}$/.exec(r.language.trim().toLowerCase())?.[0]) || null,
+    quartile: QUARTILES.includes(r.quartile as Quartile) ? (r.quartile as Quartile) : null,
+    areas: texts(r.areas, 5),
+    citations: count(r.citations),
+    openAccess: r.openAccess === true,
+    international: r.international === true,
+    countries: texts(r.countries, 60),
+    correspondence: r.correspondence === true,
+    authorsCount: count(r.authorsCount) || null,
+  };
 };
 
 /** Limpia lo leído (archivo editado a mano, versión vieja…): solo entradas válidas. */

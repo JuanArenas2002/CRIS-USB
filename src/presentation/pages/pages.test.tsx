@@ -11,6 +11,10 @@ import {
   renderApp,
   fakeCenterRepo,
   makeCenterDetail,
+  fakePublicationRepo,
+  makePublication,
+  fakeProjectRepo,
+  makeProject,
 } from '@/test-utils';
 
 test('directorio: tarjetas con enlace rastreable al perfil y métricas reales', async () => {
@@ -103,15 +107,15 @@ test('perfil: investigador inexistente o retirado no es público (404 noindex)',
 });
 
 test('menú: las 6 secciones en orden; las pendientes llevan a "en construcción" (noindex)', async () => {
-  renderApp('/proyectos');
+  renderApp('/relacionamiento');
   const nav = screen.getByRole('navigation', { name: 'Principal' });
   expect(
     within(nav)
       .getAllByRole('link')
       .map((a) => a.textContent),
   ).toEqual(['Centros', 'Grupos', 'Investigadores', 'Proyectos', 'Productos', 'Relacionamiento']);
-  expect(within(nav).getByRole('link', { name: 'Proyectos' })).toHaveAttribute('aria-current', 'page');
-  expect(screen.getByRole('heading', { level: 1, name: 'Proyectos' })).toBeInTheDocument();
+  expect(within(nav).getByRole('link', { name: 'Relacionamiento' })).toHaveAttribute('aria-current', 'page');
+  expect(screen.getByRole('heading', { level: 1, name: 'Relacionamiento' })).toBeInTheDocument();
   await waitFor(() =>
     expect(document.querySelector('meta[name="robots"]')).toHaveAttribute('content', 'noindex, follow'),
   );
@@ -410,4 +414,92 @@ test('admin ranking: respuesta ilegible → mensaje claro, sin mostrar el token'
   ).toBeInTheDocument();
   expect(document.body.textContent).not.toContain('TOKEN-SECRETO-123');
   vi.unstubAllGlobals();
+});
+
+test('productos: cada publicación con año, tipo, idioma, revista, ISSN, DOI, citas y acceso abierto', async () => {
+  renderApp('/productos');
+  const title = await screen.findByRole('link', { name: /Metabolic Reprogramming in Cancer Cells/ });
+  expect(title).toHaveAttribute('href', 'https://doi.org/10.3390/pharmaceutics14061303');
+  // Año, tipo, idioma, ISSN y acceso abierto (ícono con texto para lectores de pantalla).
+  const item = within(title.closest('li')!);
+  expect(item.getByText('2022')).toBeInTheDocument();
+  expect(item.getByText('Revisión')).toBeInTheDocument();
+  expect(item.getByText('Inglés')).toBeInTheDocument();
+  expect(item.getByText('ISSN 1999-4923')).toBeInTheDocument();
+  expect(item.getByTitle('Acceso abierto')).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /^10\.3390\/pharmaceutics14061303/ })).toHaveAttribute(
+    'href',
+    'https://doi.org/10.3390/pharmaceutics14061303',
+  );
+  expect(screen.getByText('Puesto 1')).toBeInTheDocument();
+  expect(screen.getByText('133 citas')).toBeInTheDocument();
+  expect(screen.getByText('1 publicación')).toBeInTheDocument();
+});
+
+test('productos: sin resultados para el filtro ofrece restablecerlo', async () => {
+  const user = userEvent.setup();
+  renderApp('/productos?cuartil=Q4');
+  const empty = await screen.findByRole('status');
+  expect(empty).toHaveTextContent('No se encontraron publicaciones');
+  await user.click(within(empty).getByRole('button', { name: 'Restablecer filtros' }));
+  expect(await screen.findByText('1 publicación')).toBeInTheDocument();
+});
+
+test('productos: con rango de años el puesto se recalcula y se muestra el general', async () => {
+  renderApp(
+    '/productos?desde=2020&hasta=2023',
+    undefined,
+    undefined,
+    undefined,
+    fakePublicationRepo([
+      makePublication({ rank: 1, eid: '2-s2.0-1', title: 'Reciente', year: 2025 }),
+      makePublication({ rank: 2, eid: '2-s2.0-2', title: 'En rango', year: 2022 }),
+    ]),
+  );
+  expect(await screen.findByText('#2 general')).toBeInTheDocument();
+  expect(screen.getByText('Puesto 1')).toBeInTheDocument();
+  expect(screen.queryByText('Reciente')).not.toBeInTheDocument();
+  expect(screen.getByRole('combobox', { name: 'Año desde' })).toHaveTextContent('Desde 2020');
+  expect(screen.getByRole('combobox', { name: 'Año hasta' })).toHaveTextContent('Hasta 2023');
+});
+
+test('proyectos: lista con título enlazado, área, año y estado como icono', async () => {
+  renderApp('/proyectos?estado=En%20ejecuci%C3%B3n');
+  const link = await screen.findByRole('link', { name: /Programa de fortalecimiento/ });
+  expect(link).toHaveAttribute('href', expect.stringMatching(/^\/proyectos\/3-programa-de-fortalecimiento/));
+  expect(screen.getByText('1 proyecto')).toBeInTheDocument();
+  // El estado no va como texto visible: solo icono, con el texto para lectores de pantalla.
+  expect(screen.getAllByText('En ejecución', { selector: '.sr-only' }).length).toBeGreaterThan(0);
+});
+
+test('ficha de proyecto: carrusel con las fotos asociadas y flechas', async () => {
+  const gallery = [1, 2, 3, 4].map((slot) => ({ slot, url: `/api/projects/3/photos/${slot}?v=1` }));
+  const repo = fakeProjectRepo([makeProject({ gallery })]);
+  renderApp(
+    '/proyectos/3-programa-de-fortalecimiento-a-organizaciones-de-cuidado-comunitario',
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    repo,
+  );
+  const carousel = await screen.findByRole('group', { name: 'Registro fotográfico' });
+  expect(within(carousel).getAllByRole('img')).toHaveLength(4);
+  // Al inicio no se puede retroceder.
+  expect(within(carousel).getByRole('button', { name: 'Foto anterior' })).toBeDisabled();
+  expect(within(carousel).getByRole('button', { name: 'Foto siguiente' })).toBeInTheDocument();
+});
+
+test('centro: lista sus proyectos (cruce por nombre del centro, sin tildes ni mayúsculas)', async () => {
+  const repo = fakeProjectRepo([
+    makeProject({ id: 3, centers: ['CENTRO DE CRECIMIENTO EMPRESARIAL MACONDOLAB'] }),
+    makeProject({ id: 4, title: 'Proyecto de otro centro', centers: ['Otro centro'] }),
+  ]);
+  renderApp('/centros/1-nombre-viejo', fakeRepo(), fakeGroupRepo(), fakeCenterRepo(), undefined, repo);
+  const section = await screen.findByRole('region', { name: 'Proyectos de investigación' });
+  expect(
+    await within(section).findByRole('link', { name: /Programa de fortalecimiento/ }),
+  ).toBeInTheDocument();
+  expect(within(section).queryByText('Proyecto de otro centro')).not.toBeInTheDocument();
+  expect(within(section).getByText('1 proyecto de investigación de este centro.')).toBeInTheDocument();
 });
