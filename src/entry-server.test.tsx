@@ -4,6 +4,7 @@ import { createQueryClient } from '@/app/App';
 import {
   fakeCenterRepo,
   fakeGroupRepo,
+  fakeProjectRepo,
   fakePublicationRepo,
   fakeRepo,
   makeAuthor,
@@ -12,6 +13,7 @@ import {
 import { centerQueries } from '@/application/centers/center-queries';
 import { groupQueries } from '@/application/groups/group-queries';
 import { publicationQueries } from '@/application/publications/publication-queries';
+import { projectQueries } from '@/application/projects/project-queries';
 import { createServerAuthorQueries, createServerPublicationQueries, render } from './entry-server';
 
 test('prerender de perfil: HTML con contenido, metadatos únicos y JSON-LD verificable', () => {
@@ -28,6 +30,7 @@ test('prerender de perfil: HTML con contenido, metadatos únicos y JSON-LD verif
     groupQueries(fakeGroupRepo()),
     centerQueries(fakeCenterRepo()),
     publicationQueries(fakePublicationRepo()),
+    projectQueries(fakeProjectRepo()),
   );
 
   expect(html).toContain('<h1');
@@ -100,6 +103,7 @@ test('prerender de /productos: el ranking de publicaciones sale en el HTML y es 
     groupQueries(fakeGroupRepo()),
     centerQueries(fakeCenterRepo()),
     publications,
+    projectQueries(fakeProjectRepo()),
   );
   expect(html).toContain('Metabolic Reprogramming in Cancer Cells');
   expect(html).toContain('Second &lt;b&gt;paper&lt;/b&gt;');
@@ -109,4 +113,26 @@ test('prerender de /productos: el ranking de publicaciones sale en el HTML y es 
   expect(head).toContain('content="index, follow"');
   // Sin «Cargando…»: los datos se hidratan desde el HTML.
   expect(html).not.toContain('aria-busy="true"');
+});
+
+test('prerender de proyecto: ficha con objetivo, productos, ODS y enlaces de evidencia', async () => {
+  const projects = projectQueries(fakeProjectRepo());
+  const qc = createQueryClient();
+  await qc.fetchQuery(projects.detail(3));
+  const { html, head } = render(
+    '/proyectos/3-programa-de-fortalecimiento-a-organizaciones-de-cuidado-comunitario',
+    qc,
+    authorQueries(fakeRepo()),
+    groupQueries(fakeGroupRepo()),
+    centerQueries(fakeCenterRepo()),
+    publicationQueries(fakePublicationRepo()),
+    projects,
+  );
+  expect(html).toContain('<h1');
+  expect(html).toContain('Diseñar e implementar un programa de fortalecimiento.');
+  expect(html).toContain('Plataforma Cuida Conmigo');
+  expect(html).toContain('href="https://cuidaconmigo.com/x"');
+  expect(html).toContain('ods-5.webp');
+  expect(html).toContain('ResearchProject');
+  expect(head).toContain('content="index, follow"');
 });

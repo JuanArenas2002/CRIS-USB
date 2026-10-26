@@ -3,8 +3,15 @@ import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Center } from '@/domain/centers/center';
 import { ApiError } from '@/infrastructure/http/api-client';
-import { deleteLogo, saveCenterWebsite, toLogoWebp, uploadLogo } from '@/infrastructure/photos/photo-admin';
+import {
+  deleteLogo,
+  saveCenterPassword,
+  saveCenterWebsite,
+  toLogoWebp,
+  uploadLogo,
+} from '@/infrastructure/photos/photo-admin';
 import { AdminTokenForm, useAdminToken } from '@/presentation/components/admin/AdminToken';
+import { PasswordInput } from '@/presentation/components/admin/PasswordInput';
 import { ErrorState } from '@/presentation/components/feedback/Feedback';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { useCenters } from '@/presentation/hooks/use-centers';
@@ -89,6 +96,7 @@ function CenterRow({
 }) {
   const [preview, setPreview] = useState<{ blob: Blob; url: string } | null>(null);
   const [website, setWebsite] = useState(c.website ?? '');
+  const [password, setPassword] = useState('');
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
   const shown = preview?.url ?? withBaseUrl(c.logoUrl);
   const siteDirty = website.trim() !== (c.website ?? '');
@@ -202,6 +210,47 @@ function CenterRow({
           className="h-10 rounded-lg bg-primary px-5 text-label-md font-semibold text-on-primary hover:bg-secondary disabled:opacity-40"
         >
           Guardar página
+        </button>
+      </form>
+
+      {/* La contraseña no se muestra ni se puede leer: solo se reemplaza o se quita. */}
+      <form
+        className="flex flex-wrap items-end gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          run(
+            () => saveCenterPassword(c.id, password, token).then(() => setPassword('')),
+            'Contraseña guardada: compártela solo con la dirección del centro',
+          );
+        }}
+      >
+        <label className="flex min-w-0 flex-1 flex-col gap-1 text-label-sm font-semibold text-on-surface-variant">
+          Contraseña para fotos de proyectos (director)
+          <PasswordInput
+            autoComplete="new-password"
+            minLength={8}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Mínimo 8 caracteres"
+          />
+        </label>
+        <button
+          type="submit"
+          disabled={password.length < 8 || busy}
+          className="h-10 rounded-lg bg-primary px-5 text-label-md font-semibold text-on-primary hover:bg-secondary disabled:opacity-40"
+        >
+          Guardar contraseña
+        </button>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => {
+            if (confirm(`¿Quitar la contraseña de ${c.name}? Nadie podrá subir fotos de sus proyectos.`))
+              run(() => saveCenterPassword(c.id, null, token), 'Contraseña quitada');
+          }}
+          className="h-10 rounded-lg px-3 text-label-md font-semibold text-error hover:bg-error-container/40 disabled:opacity-40"
+        >
+          Quitar
         </button>
       </form>
 

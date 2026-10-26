@@ -129,7 +129,18 @@ const metrik = vi.fn(async (url: string) => {
                       { id: 5, number: '5', title: 'Género', description: 'x' },
                     ]
                   : []
-                : (centersMock[p] ?? null);
+                : p === '/api/proyectos/seleccionados'
+                  ? [
+                      {
+                        id: 1,
+                        codigo: 'P-1',
+                        titulo: 'Proyecto uno',
+                        centros: ['CENTRO UNO'],
+                        lideres: [{ nombre: 'Ana', cedula: '11111111' }],
+                      },
+                      { id: 2, codigo: 'P-2', titulo: 'Proyecto de otro centro', centros: ['Otro'] },
+                    ]
+                  : (centersMock[p] ?? null);
   return data ? Response.json({ data, message: 'ok' }) : Response.json({ message: 'x' }, { status: 404 });
 });
 
@@ -146,6 +157,8 @@ beforeAll(async () => {
     metrikUrl: 'http://metrik/api',
     photosDir,
     logosDir: path.join(odsDir, 'logos'),
+    projectPhotosDir: path.join(odsDir, 'project-photos'),
+    centerPasswordsFile: path.join(odsDir, 'center-passwords.json'),
     sitesFile: path.join(odsDir, 'center-sites.json'),
     rankingFile: path.join(odsDir, 'ranking.json'),
     rankingHiddenFile: path.join(odsDir, 'ranking-hidden.json'),
@@ -513,4 +526,61 @@ test('JSON pequeño sin comprimir aunque se acepte gzip (no compensa)', async ()
   const res = await fetch(`${base}/api/groups/14`, { headers: { 'Accept-Encoding': 'gzip' } });
   expect(res.headers.get('content-encoding')).toBeNull();
   expect((await res.json()).id).toBe(14);
+});
+
+test('proyectos: sin cédulas; fotos solo con token y contraseña del centro (director)', async () => {
+  const PASSWORD = 'clave-del-director';
+  const headers = (password: string, token = TOKEN) => ({
+    'X-Admin-Token': token,
+    'X-Center-Id': '1',
+    'X-Center-Password': encodeURIComponent(password),
+  });
+  const send = (project: number, slot: number, method: string, password = PASSWORD, token = TOKEN) =>
+    fetch(`${base}/api/projects/${project}/photos/${slot}`, {
+      method,
+      body: method === 'PUT' ? new Uint8Array(WEBP) : undefined,
+      headers: headers(password, token),
+    });
+  const setPassword = (password: unknown) =>
+    fetch(`${base}/api/centers/1/password`, {
+      method: 'PUT',
+      body: JSON.stringify({ password }),
+      headers: { 'X-Admin-Token': TOKEN },
+    });
+
+  const list = await get('/api/projects');
+  expect(list.body[0]).toMatchObject({ id: 1, leaders: ['Ana'], photoUrl: null, gallery: [] });
+  expect(list.text).not.toContain('11111111');
+
+  // Sin contraseña asignada nadie entra; la contraseña corta se rechaza.
+  expect((await send(1, 0, 'PUT')).status).toBe(403);
+  expect((await setPassword('corta')).status).toBe(400);
+  expect((await setPassword(PASSWORD)).status).toBe(200);
+  expect(fs.readFileSync(path.join(odsDir, 'center-passwords.json'), 'utf8')).not.toContain(PASSWORD);
+
+  const access = (password: string) =>
+    fetch(`${base}/api/centers/1/access`, { headers: headers(password) }).then((r) => r.status);
+  expect(await access('otra-clave')).toBe(403);
+  expect(await access(PASSWORD)).toBe(200);
+
+  expect((await send(1, 0, 'PUT', PASSWORD, 'otro')).status).toBe(401);
+  expect((await send(1, 0, 'PUT', 'otra-clave')).status).toBe(403);
+  // Proyecto de otro centro: la contraseña de este centro no sirve.
+  expect((await send(2, 0, 'PUT')).status).toBe(403);
+  expect((await send(1, 13, 'PUT')).status).toBe(404);
+
+  const { photoUrl } = await (await send(1, 0, 'PUT')).json();
+  expect(photoUrl).toMatch(/^\/api\/projects\/1\/photos\/0\?v=\d+$/);
+  await send(1, 2, 'PUT');
+  expect(Buffer.from(await (await fetch(base + photoUrl)).arrayBuffer())).toEqual(WEBP);
+  const detail = (await get('/api/projects/1')).body;
+  expect(detail.photoUrl).toBe(photoUrl);
+  expect(detail.gallery).toEqual([{ slot: 2, url: expect.stringMatching(/\/photos\/2\?v=/) }]);
+
+  await send(1, 0, 'DELETE');
+  await send(1, 2, 'DELETE');
+  expect((await get('/api/projects/1')).body).toMatchObject({ photoUrl: null, gallery: [] });
+  // Quitar la contraseña cierra el acceso.
+  expect((await setPassword(null)).status).toBe(200);
+  expect(await access(PASSWORD)).toBe(403);
 });

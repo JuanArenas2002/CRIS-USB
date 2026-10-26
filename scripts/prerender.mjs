@@ -6,6 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { loadEnv } from 'vite';
 import { fetchPublicCenters } from './centers-source.ts';
 import { fetchPublicGroups, mapLimit } from './groups-source.ts';
+import { fetchPublicProjects } from './projects-source.ts';
 import {
   fetchGroupMembers,
   fetchInvestigators,
@@ -13,7 +14,7 @@ import {
   withProfiles,
 } from './investigators-source.ts';
 import { DEFAULT_METRIK_URL } from './public-api.ts';
-import { logoUrl, photoUrl } from './photo-store.ts';
+import { logoUrl, photoUrl, withProjectPhotos } from './photo-store.ts';
 import { createStores, storeOptionsFromEnv } from './stores.ts';
 import { withAuthors } from '../src/domain/publications/publication.ts';
 
@@ -91,11 +92,14 @@ const publications = withAuthors(
   new Set(published.keys()),
 );
 const publicationsQ = ssr.createServerPublicationQueries(publications);
+const projectPhotoVersions = await stores.projectPhotos.versions();
+const projects = (await fetchPublicProjects(metrik)).map((p) => withProjectPhotos(p, projectPhotoVersions));
+const projectsQ = ssr.createServerProjectQueries(projects);
 
 async function writePage(url, file, prefetch = async () => {}) {
   const qc = ssr.createQueryClient();
   await prefetch(qc);
-  const { html, head } = ssr.render(url, qc, authorsQ, groupsQ, centersQ, publicationsQ);
+  const { html, head } = ssr.render(url, qc, authorsQ, groupsQ, centersQ, publicationsQ, projectsQ);
   const out = template.replace('<!--app-head-->', () => head).replace('<!--app-html-->', () => html);
   await fs.mkdir(path.dirname(file), { recursive: true });
   await fs.writeFile(file, out);
@@ -144,7 +148,27 @@ for (const c of centers.filter((x) => x.active)) {
   centerPaths.push(url);
   // Con la lista de grupos: la sección «Grupos de investigación» del centro sale en el HTML.
   await writePage(url, path.join(dist, url, 'index.html'), (qc) =>
-    Promise.all([qc.fetchQuery(centersQ.detail(c.id)), qc.fetchQuery(groupsQ.list())]),
+    Promise.all([
+      qc.fetchQuery(centersQ.detail(c.id)),
+      qc.fetchQuery(groupsQ.list()),
+      qc.fetchQuery(projectsQ.list()),
+    ]),
+  );
+}
+// Proyectos: catálogo y una ficha por proyecto (con grupos y centros para enlazarlos por nombre).
+await writePage('/proyectos', path.join(dist, 'proyectos', 'index.html'), (qc) =>
+  qc.fetchQuery(projectsQ.list()),
+);
+const projectPaths = [];
+for (const p of projects) {
+  const url = `/proyectos/${ssr.projectSlug(p)}`;
+  projectPaths.push(url);
+  await writePage(url, path.join(dist, url, 'index.html'), (qc) =>
+    Promise.all([
+      qc.fetchQuery(projectsQ.detail(p.id)),
+      qc.fetchQuery(groupsQ.list()),
+      qc.fetchQuery(centersQ.list()),
+    ]),
   );
 }
 // Producción: primera página del ranking (mismos filtros que la página sin parámetros).
@@ -163,7 +187,7 @@ await writePage('/404', path.join(dist, '404.html'));
 const xmlEsc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${['/', '/grupos', ...groupPaths, '/centros', ...centerPaths, ...(publications.length ? ['/productos'] : []), ...profilePaths].map((p) => `  <url><loc>${xmlEsc(siteUrl + p)}</loc></url>`).join('\n')}
+${['/', '/grupos', ...groupPaths, '/centros', ...centerPaths, '/proyectos', ...projectPaths, ...(publications.length ? ['/productos'] : []), ...profilePaths].map((p) => `  <url><loc>${xmlEsc(siteUrl + p)}</loc></url>`).join('\n')}
 </urlset>
 `;
 await fs.writeFile(path.join(dist, 'sitemap.xml'), sitemap);
@@ -179,6 +203,7 @@ await fs.writeFile(
 
 - [Directorio de investigadores](${siteUrl}/)
 - [Grupos de investigación](${siteUrl}/grupos)
+- [Proyectos de investigación](${siteUrl}/proyectos)
 - [Producción científica destacada (publicaciones Scopus)](${siteUrl}/productos)
 - [Sitemap con todas las páginas](${siteUrl}/sitemap.xml)
 `,
@@ -198,5 +223,5 @@ for (const raw of (env.CRIS_GOOGLE_VERIFICATION || '').split(',')) {
 }
 
 console.log(
-  `Prerender: ${authors.length} investigadores (${profilePaths.length} indexables), ${groupPaths.length} grupos, ${centerPaths.length} centros, ${publications.length} publicaciones. Sitemap en ${siteUrl}/sitemap.xml`,
+  `Prerender: ${authors.length} investigadores (${profilePaths.length} indexables), ${groupPaths.length} grupos, ${centerPaths.length} centros, ${projectPaths.length} proyectos, ${publications.length} publicaciones. Sitemap en ${siteUrl}/sitemap.xml`,
 );

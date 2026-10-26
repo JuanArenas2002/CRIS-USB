@@ -21,6 +21,8 @@ import {
 import { centerQueries, type CenterQueries } from '@/application/centers/center-queries';
 import { groupQueries, type GroupQueries } from '@/application/groups/group-queries';
 import { publicationQueries, type PublicationQueries } from '@/application/publications/publication-queries';
+import { projectQueries, type ProjectQueries } from '@/application/projects/project-queries';
+import { projectSlug, type Project } from '@/domain/projects/project';
 import {
   publicationStats,
   queryPublications,
@@ -72,6 +74,14 @@ export function createServerPublicationQueries(all: RankedPublication[]): Public
   });
 }
 
+/** Proyectos ya proyectados por scripts/projects-source.ts (sin cédulas). */
+export function createServerProjectQueries(projects: Project[]): ProjectQueries {
+  return projectQueries({
+    list: async () => projects,
+    getById: async (id) => projects.find((p) => p.id === id) ?? null,
+  });
+}
+
 export function render(
   url: string,
   queryClient: QueryClient,
@@ -79,6 +89,7 @@ export function render(
   groups: GroupQueries,
   centers: CenterQueries,
   publications: PublicationQueries,
+  projects: ProjectQueries,
 ) {
   const head: { meta?: PageMeta } = {};
   const html = renderToString(
@@ -88,6 +99,7 @@ export function render(
       groups={groups}
       centers={centers}
       publications={publications}
+      projects={projects}
       onHead={(m) => (head.meta = m)}
     >
       <StaticRouter location={withBase(url)} basename={BASE || undefined}>
@@ -111,6 +123,7 @@ export {
   createQueryClient,
   hasPublicDetail,
   isIndexable,
+  projectSlug,
   toPublicProfile,
   withRankingCenter,
 };

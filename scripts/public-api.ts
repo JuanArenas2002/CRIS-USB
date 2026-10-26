@@ -14,6 +14,9 @@ import { gzipSync } from 'node:zlib';
 import { pathToFileURL } from 'node:url';
 import { fetchInvestigatorCenters, fetchPublicCenters, fetchResolutionPdf } from './centers-source.ts';
 import { fetchPublicGroups, mapLimit } from './groups-source.ts';
+import { fetchPublicProjects } from './projects-source.ts';
+import { MIN_CENTER_PASSWORD, hashPassword, verifyPassword } from './center-password.ts';
+import { projectsOfCenter } from '../src/domain/projects/project.ts';
 import {
   fetchGroupMembers,
   fetchInvestigatorGroups,
@@ -21,7 +24,15 @@ import {
   normalizeDocument,
   publishAuthors,
 } from './investigators-source.ts';
-import { MAX_PHOTO_BYTES, logoUrl, photoUrl } from './photo-store.ts';
+import {
+  MAX_PHOTO_BYTES,
+  MAX_PROJECT_GALLERY,
+  logoUrl,
+  photoUrl,
+  projectPhotoKey,
+  projectPhotoUrl,
+  withProjectPhotos,
+} from './photo-store.ts';
 import { normalizePublication, normalizeRanking, normalizeWebsite } from './ods-store.ts';
 import { createStores, storeOptionsFromEnv, type StoreOptions } from './stores.ts';
 import { summarizeCenter, type CenterDetail, type CenterRef } from '../src/domain/centers/center.ts';
@@ -104,13 +115,21 @@ export function createPublicApi({
   const {
     photos,
     logos,
+    projectPhotos,
     sites,
+    centerPasswords,
     ranking: rankingStore,
     rankingHidden,
     publications: publicationStore,
   } = createStores(storage);
   const metrikGroups = cached<GroupDetail[]>(() => fetchPublicGroups(`${base}/group`));
   const metrikCenters = cached<CenterDetail[]>(() => fetchPublicCenters(base));
+  const metrikProjects = cached(() => fetchPublicProjects(base));
+  // Fotos fuera de la caché, como los logos: lo que sube el admin se ve al instante.
+  const projects = async () => {
+    const v = await projectPhotos.versions();
+    return (await metrikProjects()).map((p) => withProjectPhotos(p, v));
+  };
   const centers = async () => {
     const [v, site] = await Promise.all([logos.versions(), sites.all()]);
     return (await metrikCenters()).map((c) => {
@@ -243,7 +262,11 @@ export function createPublicApi({
       const photo = /^\/api\/investigators\/(\d{1,12})\/photo$/.exec(p);
       const logo = /^\/api\/centers\/(\d{1,12})\/logo$/.exec(p);
       const site = /^\/api\/centers\/(\d{1,12})\/website$/.exec(p);
-      // Fotos y logos: misma validación (WebP ≤ 1 MB) y mismo tipo de almacenamiento.
+      const projectPhoto = /^\/api\/projects\/(\d{1,10})\/photos\/(\d{1,2})$/.exec(p);
+      const centerPassword = /^\/api\/centers\/(\d{1,12})\/password$/.exec(p);
+      // Comprobar la contraseña de un centro antes de mostrar sus proyectos en el admin.
+      const centerAccess = /^\/api\/centers\/(\d{1,12})\/access$/.exec(p);
+      // Fotos, logos y fotos de proyectos: misma validación (WebP ≤ 1 MB) y mismo tipo de almacenamiento.
       const image = photo
         ? {
             store: photos,
@@ -260,14 +283,24 @@ export function createPublicApi({
               url: logoUrl,
               exists: async (id: number) => (await metrikCenters()).some((c) => c.id === id && c.active),
             }
-          : null;
+          : projectPhoto
+            ? {
+                store: projectPhotos,
+                id: projectPhotoKey(Number(projectPhoto[1]), Number(projectPhoto[2])),
+                key: 'photoUrl',
+                url: projectPhotoUrl,
+                exists: async (key: number) =>
+                  key % 100 <= MAX_PROJECT_GALLERY &&
+                  (await metrikProjects()).some((x) => x.id === Math.floor(key / 100)),
+              }
+            : null;
 
       const rankingUpload = p === '/api/ranking';
       const rankingEntry = /^\/api\/ranking\/(\d{1,12})$/.exec(p);
       // Varios a la vez («Activar / Desactivar todos» en el admin): una sola escritura.
       const rankingBulk = p === '/api/ranking/visibility';
       // Lista del ranking para el admin: nombres y puestos de todos (incluidos los ocultos).
-      const adminRead = rankingUpload && req.method === 'GET';
+      const adminRead = (rankingUpload || centerAccess) && req.method === 'GET';
       const publicationsUpload = p === '/api/publications';
 
       // ── Escritura (y lectura del admin): fotos, logos, ODS, páginas y ranking, con token ──
@@ -277,7 +310,7 @@ export function createPublicApi({
           !image &&
           !rankingUpload &&
           !publicationsUpload &&
-          !((site || rankingEntry || rankingBulk) && req.method === 'PUT')
+          !((site || centerPassword || rankingEntry || rankingBulk) && req.method === 'PUT')
         )
           return send(405, { detail: 'Método no permitido' });
         if (!adminToken)
@@ -285,6 +318,56 @@ export function createPublicApi({
         const token = req.headers['x-admin-token'];
         if (typeof token !== 'string' || !sameSecret(token, adminToken))
           return send(401, { detail: 'Token de administración inválido' });
+        // Fotos de proyectos: además del token, la contraseña del centro (X-Center-Id y
+        // X-Center-Password); el proyecto debe ser de ese centro. Solo los directores la tienen.
+        const centerId = Number(centerAccess?.[1] ?? req.headers['x-center-id']);
+        const centerOk = async () => {
+          const center = (await metrikCenters()).find((c) => c.id === centerId && c.active);
+          let password = '';
+          try {
+            password = decodeURIComponent(String(req.headers['x-center-password'] ?? ''));
+          } catch {
+            /* mal codificada: cuenta como vacía */
+          }
+          return center && verifyPassword(password, (await centerPasswords.all())[centerId]) ? center : null;
+        };
+        if (centerAccess) {
+          return (await centerOk())
+            ? send(200, { ok: true }, true)
+            : send(403, { detail: 'Contraseña del centro incorrecta' });
+        }
+        if (projectPhoto) {
+          const center = await centerOk();
+          if (!center) return send(403, { detail: 'Contraseña del centro incorrecta' });
+          const projectId = Number(projectPhoto[1]);
+          if (!projectsOfCenter(await metrikProjects(), center.name).some((x) => x.id === projectId))
+            return send(403, { detail: 'El proyecto no es de este centro' });
+        }
+        if (centerPassword) {
+          const id = Number(centerPassword[1]);
+          if (!(await metrikCenters()).some((c) => c.id === id && c.active))
+            return send(404, { detail: 'No encontrado' });
+          const body = await readBody(req, MAX_JSON_BYTES);
+          let password: unknown;
+          try {
+            password = body && (JSON.parse(body.toString('utf8')) as { password?: unknown }).password;
+          } catch {
+            password = undefined;
+          }
+          if (!(
+            password === null ||
+            (typeof password === 'string' && password.length >= MIN_CENTER_PASSWORD)
+          ))
+            return send(400, {
+              detail: `Se espera { "password": "…" } (mínimo ${MIN_CENTER_PASSWORD} caracteres) o { "password": null }`,
+            });
+          try {
+            await centerPasswords.set(id, password === null ? null : hashPassword(password));
+            return send(200, { hasPassword: password !== null }, true);
+          } catch (err) {
+            return send(500, { detail: `No se pudo guardar la contraseña: ${(err as Error).message}` });
+          }
+        }
         if (adminRead) {
           const [ranking, hidden, dir] = await Promise.all([
             rankingStore.all(),
@@ -570,6 +653,13 @@ export function createPublicApi({
         return g ? send(200, g) : send(404, { detail: 'No encontrado' });
       }
 
+      // ponytail: el listado va completo (~10 proyectos, pocos KB); resumirlo si pasan de cientos.
+      if (p === '/api/projects') return send(200, await projects());
+      const prj = /^\/api\/projects\/(\d{1,12})$/.exec(p);
+      if (prj) {
+        const x = (await projects()).find((y) => y.id === Number(prj[1]));
+        return x ? send(200, x) : send(404, { detail: 'No encontrado' });
+      }
       if (p === '/api/centers') return send(200, (await centers()).map(summarizeCenter));
       const ctr = /^\/api\/centers\/(\d{1,12})$/.exec(p);
       if (ctr) {

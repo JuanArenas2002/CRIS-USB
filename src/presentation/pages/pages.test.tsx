@@ -13,6 +13,8 @@ import {
   makeCenterDetail,
   fakePublicationRepo,
   makePublication,
+  fakeProjectRepo,
+  makeProject,
 } from '@/test-utils';
 
 test('directorio: tarjetas con enlace rastreable al perfil y métricas reales', async () => {
@@ -105,15 +107,15 @@ test('perfil: investigador inexistente o retirado no es público (404 noindex)',
 });
 
 test('menú: las 6 secciones en orden; las pendientes llevan a "en construcción" (noindex)', async () => {
-  renderApp('/proyectos');
+  renderApp('/relacionamiento');
   const nav = screen.getByRole('navigation', { name: 'Principal' });
   expect(
     within(nav)
       .getAllByRole('link')
       .map((a) => a.textContent),
   ).toEqual(['Centros', 'Grupos', 'Investigadores', 'Proyectos', 'Productos', 'Relacionamiento']);
-  expect(within(nav).getByRole('link', { name: 'Proyectos' })).toHaveAttribute('aria-current', 'page');
-  expect(screen.getByRole('heading', { level: 1, name: 'Proyectos' })).toBeInTheDocument();
+  expect(within(nav).getByRole('link', { name: 'Relacionamiento' })).toHaveAttribute('aria-current', 'page');
+  expect(screen.getByRole('heading', { level: 1, name: 'Relacionamiento' })).toBeInTheDocument();
   await waitFor(() =>
     expect(document.querySelector('meta[name="robots"]')).toHaveAttribute('content', 'noindex, follow'),
   );
@@ -459,4 +461,45 @@ test('productos: con rango de años el puesto se recalcula y se muestra el gener
   expect(screen.queryByText('Reciente')).not.toBeInTheDocument();
   expect(screen.getByRole('combobox', { name: 'Año desde' })).toHaveTextContent('Desde 2020');
   expect(screen.getByRole('combobox', { name: 'Año hasta' })).toHaveTextContent('Hasta 2023');
+});
+
+test('proyectos: lista con título enlazado, área, año y estado como icono', async () => {
+  renderApp('/proyectos?estado=En%20ejecuci%C3%B3n');
+  const link = await screen.findByRole('link', { name: /Programa de fortalecimiento/ });
+  expect(link).toHaveAttribute('href', expect.stringMatching(/^\/proyectos\/3-programa-de-fortalecimiento/));
+  expect(screen.getByText('1 proyecto')).toBeInTheDocument();
+  // El estado no va como texto visible: solo icono, con el texto para lectores de pantalla.
+  expect(screen.getAllByText('En ejecución', { selector: '.sr-only' }).length).toBeGreaterThan(0);
+});
+
+test('ficha de proyecto: carrusel con las fotos asociadas y flechas', async () => {
+  const gallery = [1, 2, 3, 4].map((slot) => ({ slot, url: `/api/projects/3/photos/${slot}?v=1` }));
+  const repo = fakeProjectRepo([makeProject({ gallery })]);
+  renderApp(
+    '/proyectos/3-programa-de-fortalecimiento-a-organizaciones-de-cuidado-comunitario',
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    repo,
+  );
+  const carousel = await screen.findByRole('group', { name: 'Registro fotográfico' });
+  expect(within(carousel).getAllByRole('img')).toHaveLength(4);
+  // Al inicio no se puede retroceder.
+  expect(within(carousel).getByRole('button', { name: 'Foto anterior' })).toBeDisabled();
+  expect(within(carousel).getByRole('button', { name: 'Foto siguiente' })).toBeInTheDocument();
+});
+
+test('centro: lista sus proyectos (cruce por nombre del centro, sin tildes ni mayúsculas)', async () => {
+  const repo = fakeProjectRepo([
+    makeProject({ id: 3, centers: ['CENTRO DE CRECIMIENTO EMPRESARIAL MACONDOLAB'] }),
+    makeProject({ id: 4, title: 'Proyecto de otro centro', centers: ['Otro centro'] }),
+  ]);
+  renderApp('/centros/1-nombre-viejo', fakeRepo(), fakeGroupRepo(), fakeCenterRepo(), undefined, repo);
+  const section = await screen.findByRole('region', { name: 'Proyectos de investigación' });
+  expect(
+    await within(section).findByRole('link', { name: /Programa de fortalecimiento/ }),
+  ).toBeInTheDocument();
+  expect(within(section).queryByText('Proyecto de otro centro')).not.toBeInTheDocument();
+  expect(within(section).getByText('1 proyecto de investigación de este centro.')).toBeInTheDocument();
 });

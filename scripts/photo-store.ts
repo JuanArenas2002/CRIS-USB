@@ -20,6 +20,29 @@ export function assertPhoto(data: Buffer) {
 export const photoUrl = (id: number, version: number) => `/api/investigators/${id}/photo?v=${version}`;
 export const logoUrl = (id: number, version: number) => `/api/centers/${id}/logo?v=${version}`;
 
+/**
+ * Fotos de proyectos en un solo almacén: clave = proyecto × 100 + posición (0 = principal, 1…12 =
+ * galería). ponytail: tope de 99 posiciones por proyecto; pasar a un índice JSON si hiciera falta más.
+ */
+export const MAX_PROJECT_GALLERY = 12;
+export const projectPhotoKey = (projectId: number, slot: number) => projectId * 100 + slot;
+export const projectPhotoUrl = (key: number, version: number) =>
+  `/api/projects/${Math.floor(key / 100)}/photos/${key % 100}?v=${version}`;
+
+/** Foto principal y galería de cada proyecto según las versiones del almacén. */
+export function withProjectPhotos<P extends { id: number }>(p: P, versions: Map<number, number>) {
+  const url = (slot: number) => {
+    const v = versions.get(projectPhotoKey(p.id, slot));
+    return v === undefined ? null : projectPhotoUrl(projectPhotoKey(p.id, slot), v);
+  };
+  const gallery = [];
+  for (let slot = 1; slot <= MAX_PROJECT_GALLERY; slot++) {
+    const u = url(slot);
+    if (u) gallery.push({ slot, url: u });
+  }
+  return { ...p, photoUrl: url(0), gallery };
+}
+
 export interface PhotoStore {
   /** id del investigador → versión de su foto. */
   versions(): Promise<Map<number, number>>;
