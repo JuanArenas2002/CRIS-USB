@@ -109,7 +109,6 @@ test('prerender de /productos: el ranking de publicaciones sale en el HTML y es 
   expect(html).toContain('Second &lt;b&gt;paper&lt;/b&gt;');
   expect(html).toContain('href="https://doi.org/10.3390/pharmaceutics14061303"');
   expect(html).toContain('scopus.com/inward/record.uri?eid=2-s2.0-1000000');
-  expect(html).toMatch(/ISSN (<!-- -->)?1999-4923/);
   expect(head).toContain('content="index, follow"');
   // Sin «Cargando…»: los datos se hidratan desde el HTML.
   expect(html).not.toContain('aria-busy="true"');

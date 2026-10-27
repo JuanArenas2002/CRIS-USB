@@ -3,14 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { authorSlug, displayName } from '@/domain/authors/author';
 import { hasPublicDetail, isInterinstitutional, type Group } from '@/domain/groups/group';
 import { categoryTone } from './category-tone';
-import { GroupCenters } from './GroupCenters';
 import { GroupTypeIcon } from './GroupTypeIcon';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { useLabels } from '@/presentation/hooks/use-labels';
 
 /** Fila de la vista en lista: densa y escaneable; toda la fila enlaza al detalle (si es público). */
-/** `exceptCenter`: en la ficha de un centro, su propio logo sobra en cada fila. */
-export function GroupRow({ group, exceptCenter }: { group: Group; exceptCenter?: number }) {
+export function GroupRow({ group }: { group: Group }) {
   const { t } = useTranslation('groups');
   const labels = useLabels();
   const linked = hasPublicDetail(group);
@@ -49,7 +47,6 @@ export function GroupRow({ group, exceptCenter }: { group: Group; exceptCenter?:
             <span className="xl:hidden">{` · ${labels.domain(group.type!)}`}</span>
           ) : null}
         </p>
-        <GroupCenters ids={group.centerIds} except={exceptCenter} className="mt-2" />
       </div>
 
       <p className="hidden truncate text-body-sm text-on-surface-variant lg:block">

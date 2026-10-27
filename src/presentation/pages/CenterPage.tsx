@@ -416,7 +416,7 @@ function CenterGroups({ centerId }: { centerId: number }) {
             <GroupRowHeader />
             <ul className="divide-y divide-border-subtle">
               {groups.map((g) => (
-                <GroupRow key={g.id} group={g} exceptCenter={centerId} />
+                <GroupRow key={g.id} group={g} />
               ))}
             </ul>
           </div>

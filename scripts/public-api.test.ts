@@ -70,6 +70,25 @@ const centersMock: Record<string, unknown[]> = {
     },
   ],
 };
+// Equipo de los proyectos en el Metri-K simulado: PATCH agrega/actualiza por cédula, DELETE quita.
+const staff: Record<number, { cedula?: string; nombreCompleto: string; rol: string }[]> = {};
+const metrikWrites: { method: string; url: string; body: unknown }[] = [];
+async function metrikCall(url: string, init?: RequestInit) {
+  const m = /\/proyectos\/seleccionados\/(\d+)\/personal(?:\/(\d+))?$/.exec(new URL(url).pathname);
+  if (m && init?.method && init.method !== 'GET') {
+    const id = Number(m[1]);
+    const body = init.body ? JSON.parse(String(init.body)) : null;
+    metrikWrites.push({ method: init.method, url, body });
+    const list = (staff[id] ??= []);
+    if (init.method === 'PATCH') {
+      const i = body.cedula ? list.findIndex((x) => x.cedula === body.cedula) : -1;
+      if (i >= 0) list[i] = body;
+      else list.push(body);
+    } else staff[id] = list.filter((x) => x.cedula !== m[2]);
+    return Response.json({ message: 'ok' });
+  }
+  return metrik(url);
+}
 const metrik = vi.fn(async (url: string) => {
   const p = new URL(url).pathname;
   const data =
@@ -137,6 +156,7 @@ const metrik = vi.fn(async (url: string) => {
                         titulo: 'Proyecto uno',
                         centros: ['CENTRO UNO'],
                         lideres: [{ nombre: 'Ana', cedula: '11111111' }],
+                        personal: staff[1] ?? [],
                       },
                       { id: 2, codigo: 'P-2', titulo: 'Proyecto de otro centro', centros: ['Otro'] },
                     ]
@@ -166,7 +186,7 @@ beforeAll(async () => {
     adminToken: TOKEN,
   });
   vi.stubGlobal('fetch', (input: string, init?: RequestInit) =>
-    input.startsWith('http://metrik') ? metrik(input) : realFetch(input, init),
+    input.startsWith('http://metrik') ? metrikCall(input, init) : realFetch(input, init),
   );
   server = http.createServer((req, res) => void handler(req, res));
   await new Promise<void>((r) => server.listen(0, '127.0.0.1', r));
@@ -549,7 +569,12 @@ test('proyectos: sin cédulas; fotos solo con token y contraseña del centro (di
     });
 
   const list = await get('/api/projects');
-  expect(list.body[0]).toMatchObject({ id: 1, leaders: ['Ana'], photoUrl: null, gallery: [] });
+  expect(list.body[0]).toMatchObject({
+    id: 1,
+    team: [{ name: 'Ana', role: null }],
+    photoUrl: null,
+    gallery: [],
+  });
   expect(list.text).not.toContain('11111111');
 
   // Sin contraseña asignada nadie entra; la contraseña corta se rechaza.
@@ -583,4 +608,61 @@ test('proyectos: sin cédulas; fotos solo con token y contraseña del centro (di
   // Quitar la contraseña cierra el acceso.
   expect((await setPassword(null)).status).toBe(200);
   expect(await access(PASSWORD)).toBe(403);
+});
+
+test('proyectos: equipo en Metri-K (PATCH/DELETE) solo con token y contraseña del centro; cédulas fuera de lo público', async () => {
+  const PASSWORD = 'clave-del-director';
+  await fetch(`${base}/api/centers/1/password`, {
+    method: 'PUT',
+    body: JSON.stringify({ password: PASSWORD }),
+    headers: { 'X-Admin-Token': TOKEN },
+  });
+  const call = (path: string, method = 'GET', body?: unknown, password = PASSWORD) =>
+    fetch(`${base}/api/projects/${path}`, {
+      method,
+      body: body ? JSON.stringify(body) : undefined,
+      headers: {
+        'X-Admin-Token': TOKEN,
+        'X-Center-Id': '1',
+        'X-Center-Password': encodeURIComponent(password),
+      },
+    });
+
+  expect((await call('1/personal', 'GET', undefined, 'otra-clave')).status).toBe(403);
+  // Proyecto de otro centro.
+  expect((await call('2/personal', 'PATCH', { nombreCompleto: 'X', rol: 'Estudiante' })).status).toBe(403);
+  expect((await call('1/personal', 'PATCH', { rol: 'Estudiante' })).status).toBe(400);
+  expect((await call('1/personal', 'PATCH', { nombreCompleto: 'X', cedula: 'abc' })).status).toBe(400);
+
+  // Con cédula y sin ella (la cédula es opcional); el rol es texto libre.
+  await call('1/personal', 'PATCH', {
+    cedula: '7434389',
+    nombreCompleto: 'ROBERTO FIGUEROA DEL VALLE',
+    rol: 'Investigador Principal',
+  });
+  const res = await call('1/personal', 'PATCH', { nombreCompleto: 'Luisa Díaz', rol: 'Semillerista' });
+  expect(await res.json()).toEqual([
+    { cedula: '7434389', nombreCompleto: 'ROBERTO FIGUEROA DEL VALLE', rol: 'Investigador Principal' },
+    { cedula: null, nombreCompleto: 'Luisa Díaz', rol: 'Semillerista' },
+  ]);
+  // El cuerpo que llega a Metri-K es exactamente { cedula?, nombreCompleto, rol }.
+  expect(metrikWrites.slice(-2).map((w) => w.body)).toEqual([
+    { cedula: '7434389', nombreCompleto: 'ROBERTO FIGUEROA DEL VALLE', rol: 'Investigador Principal' },
+    { nombreCompleto: 'Luisa Díaz', rol: 'Semillerista' },
+  ]);
+
+  // Lo público muestra nombre y rol, nunca la cédula.
+  const pub = await get('/api/projects/1');
+  expect(pub.body.team).toContainEqual({
+    name: 'ROBERTO FIGUEROA DEL VALLE',
+    role: 'Investigador Principal',
+  });
+  expect(pub.text).not.toContain('7434389');
+
+  const after = await (await call('1/personal/7434389', 'DELETE')).json();
+  expect(after).toEqual([{ cedula: null, nombreCompleto: 'Luisa Díaz', rol: 'Semillerista' }]);
+  expect(metrikWrites.at(-1)).toMatchObject({
+    method: 'DELETE',
+    url: 'http://metrik/api/proyectos/seleccionados/1/personal/7434389',
+  });
 });

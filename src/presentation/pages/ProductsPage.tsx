@@ -1,5 +1,7 @@
 import { Trans, useTranslation } from 'react-i18next';
 import { publicationUrl, type ListedPublication, type Quartile } from '@/domain/publications/publication';
+import { scopusProductType, type Product } from '@/domain/authors/author';
+import { ProductRows } from '@/presentation/components/authors/ProductsTable';
 import { HeroWaves } from '@/presentation/components/layout/HeroWaves';
 import { ContactCta } from '@/presentation/components/layout/ContactCta';
 import { EmptyState, ErrorState, feedbackButtonClass } from '@/presentation/components/feedback/Feedback';
@@ -19,7 +21,35 @@ const fieldClass =
   'h-11 rounded-xl bg-canvas-cream text-on-surface transition-all focus:bg-surface-container-lowest focus:ring-2 focus:ring-secondary focus:outline-none';
 
 /** Producción científica destacada: ranking de publicaciones Scopus cargado en /admin/produccion. */
+/**
+ * Publicación del ranking → fila de la tabla de productos del investigador. Cuartil, citas y
+ * acceso abierto van en el detalle bajo el tipo; el orden sigue siendo el del ranking.
+ */
+function useAsProduct() {
+  const { t } = useTranslation('publications');
+  return (p: ListedPublication): Product => ({
+    key: p.eid,
+    typology: 'GNC',
+    type: scopusProductType(p.type),
+    title: p.title,
+    authors: null,
+    year: p.year,
+    venue: p.journal,
+    index: [
+      'Scopus',
+      p.quartile,
+      t('item.citations', { count: p.citations }),
+      p.openAccess ? t('item.openAccess') : null,
+    ]
+      .filter(Boolean)
+      .join(' · '),
+    doi: p.doi,
+    url: publicationUrl(p),
+  });
+}
+
 export function ProductsPage() {
+  const asProduct = useAsProduct();
   const { t } = useTranslation(['publications', 'common']);
   const { number, domain } = useLabels();
   const search = usePublicationSearch();
@@ -272,16 +302,36 @@ export function ProductsPage() {
           {list.data ? (
             list.data.items.length ? (
               <>
-                <ol
+                <div
                   aria-busy={list.isPlaceholderData}
-                  className={`flex flex-col gap-4 transition-opacity duration-200 ${
+                  className={`overflow-hidden rounded-xl bg-surface-container-lowest shadow-sm transition-opacity duration-200 ${
                     list.isPlaceholderData ? 'pointer-events-none opacity-50' : ''
                   }`}
                 >
-                  {list.data.items.map((p, i) => (
-                    <PublicationItem key={p.eid} publication={p} index={i} />
-                  ))}
-                </ol>
+                  <ProductRows
+                    products={list.data.items.map(asProduct)}
+                    rank={{
+                      label: t('item.colRank'),
+                      of: (row) => {
+                        const p = list.data.items.find((x) => x.eid === row.key)!;
+                        return (
+                          <span className="inline-flex flex-col items-center leading-tight">
+                            <span className="text-body-md font-bold text-primary">
+                              <span className="sr-only">{t('item.rank', { rank: p.position })}</span>
+                              <span aria-hidden="true">#{p.position}</span>
+                            </span>
+                            {/* Con filtros, el puesto es dentro del resultado: se muestra el general. */}
+                            {p.position !== p.rank ? (
+                              <span className="text-label-sm text-neutral-muted">
+                                {t('item.general', { rank: p.rank })}
+                              </span>
+                            ) : null}
+                          </span>
+                        );
+                      },
+                    }}
+                  />
+                </div>
                 <Pagination page={list.data.page} pages={list.data.pages} />
               </>
             ) : s?.total === 0 ? (
@@ -301,155 +351,15 @@ export function ProductsPage() {
           ) : list.isError ? (
             <ErrorState error={list.error} onRetry={() => list.refetch()} />
           ) : (
-            <div aria-busy="true" aria-label={t('loading')} className="flex flex-col gap-4">
-              {Array.from({ length: 4 }, (_, i) => (
-                <PublicationSkeleton key={i} />
-              ))}
-            </div>
+            <div
+              aria-busy="true"
+              aria-label={t('loading')}
+              className="h-96 animate-pulse rounded-xl bg-surface-container-lowest motion-reduce:animate-none"
+            />
           )}
         </div>
       </section>
       <ContactCta />
     </>
   );
-}
-
-/** Esqueleto con la forma de una publicación (puesto, chips, título, revista y autores). */
-function PublicationSkeleton() {
-  return (
-    <div className="grid grid-cols-[auto_1fr] gap-4 rounded-2xl bg-surface-container-lowest p-4 shadow-sm ring-1 ring-border-subtle md:gap-6 md:p-6">
-      <div className="flex w-14 flex-col items-center gap-2 md:w-20">
-        <div className="shimmer h-9 w-12 rounded-lg" />
-        <div className="shimmer h-3 w-10 rounded" />
-      </div>
-      <div className="flex flex-col gap-3">
-        <div className="flex gap-2">
-          <div className="shimmer h-5 w-9 rounded-full" />
-          <div className="shimmer h-5 w-16 rounded-full" />
-          <div className="shimmer h-5 w-10 rounded-full" />
-        </div>
-        <div className="shimmer h-5 w-11/12 rounded" />
-        <div className="shimmer h-5 w-2/3 rounded" />
-        <div className="shimmer h-3.5 w-1/2 rounded" />
-        <div className="shimmer h-3.5 w-1/3 rounded" />
-      </div>
-    </div>
-  );
-}
-
-function PublicationItem({ publication: p, index }: { publication: ListedPublication; index: number }) {
-  const { t, i18n } = useTranslation(['publications', 'common']);
-  const { number, domain } = useLabels();
-  const url = publicationUrl(p);
-  const language = p.language ? languageName(p.language, i18n.resolvedLanguage) : null;
-  return (
-    <li
-      style={{ animationDelay: `${Math.min(index, 10) * 40}ms` }}
-      className="fade-up grid grid-cols-[auto_1fr] gap-4 rounded-2xl bg-surface-container-lowest p-4 shadow-sm ring-1 ring-border-subtle md:gap-6 md:p-6"
-    >
-      <div className="flex w-14 flex-col items-center gap-1 md:w-20">
-        <p className="text-headline-sm font-bold text-primary md:text-headline-lg">
-          <span className="sr-only">{t('item.rank', { rank: p.position })}</span>
-          <span aria-hidden="true">#{p.position}</span>
-        </p>
-        {/* Con filtros, el puesto es dentro del resultado: se muestra también el general. */}
-        {p.position !== p.rank ? (
-          <p className="text-center text-label-sm text-neutral-muted">
-            {t('item.general', { rank: p.rank })}
-          </p>
-        ) : null}
-        <p className="text-center text-label-sm text-neutral-muted">
-          {t('item.score')}
-          <span className="block text-label-md font-bold text-secondary">{number(p.score)}</span>
-        </p>
-      </div>
-
-      <div className="flex min-w-0 flex-col gap-2">
-        <div className="flex flex-wrap items-center gap-2 text-label-sm">
-          {p.year ? <span className="font-bold text-primary-container">{p.year}</span> : null}
-          {p.type ? (
-            <span className="rounded-full bg-surface-cream-alt px-2 py-0.5 font-semibold text-on-surface-variant">
-              {domain(p.type)}
-            </span>
-          ) : null}
-          {language ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-surface-cream-alt px-2 py-0.5 font-semibold text-on-surface-variant">
-              <Icon name="translate" className="text-[14px]" />
-              <span className="sr-only">{t('item.language')}: </span>
-              {language}
-            </span>
-          ) : null}
-          <span
-            title={t(p.openAccess ? 'item.openAccess' : 'item.closedAccess')}
-            className={`inline-flex h-6 w-6 items-center justify-center rounded-full ${
-              p.openAccess
-                ? 'bg-badge-sage-bg text-badge-sage-text'
-                : 'bg-surface-cream-alt text-neutral-muted'
-            }`}
-          >
-            <Icon name={p.openAccess ? 'lock_open' : 'lock'} className="text-[15px]" />
-            <span className="sr-only">{t(p.openAccess ? 'item.openAccess' : 'item.closedAccess')}</span>
-          </span>
-        </div>
-
-        <h3 className="text-body-lg leading-snug font-semibold text-primary-container">
-          <a href={url} target="_blank" rel="noopener" className="hover:text-secondary hover:underline">
-            {p.title}
-            <span className="sr-only"> {t('common:newTab')}</span>
-          </a>
-        </h3>
-
-        <p className="text-label-md break-words text-neutral-muted">
-          {[
-            p.journal ? (
-              <span key="journal" className="font-semibold text-on-surface-variant italic">
-                {p.journal}
-              </span>
-            ) : null,
-            p.issn.length ? <span key="issn">ISSN {p.issn.join(' / ')}</span> : null,
-            p.doi ? (
-              <span key="doi">
-                DOI:{' '}
-                <a
-                  href={`https://doi.org/${p.doi}`}
-                  target="_blank"
-                  rel="noopener"
-                  className="font-semibold text-secondary hover:underline"
-                >
-                  {p.doi}
-                  <span className="sr-only"> {t('common:newTab')}</span>
-                </a>
-              </span>
-            ) : null,
-            <span key="cites" className="inline-flex items-center gap-1 align-middle">
-              <Icon name="format_quote" className="text-[16px] text-secondary" />
-              {t('item.citations', { count: p.citations })}
-            </span>,
-          ]
-            .filter(Boolean)
-            .flatMap((x, i) => (i ? [<span key={`sep-${i}`}> · </span>, x] : [x]))}
-        </p>
-
-        {p.abstract ? (
-          <details className="group">
-            <summary className="inline-flex cursor-pointer items-center gap-1 text-label-md font-semibold text-secondary">
-              {t('item.abstract')}
-              <Icon name="expand_more" className="text-[18px] transition-transform group-open:rotate-180" />
-            </summary>
-            <p className="mt-2 text-body-sm leading-relaxed text-on-surface-variant">{p.abstract}</p>
-          </details>
-        ) : null}
-      </div>
-    </li>
-  );
-}
-
-/** "eng" → "inglés" / "English" en el idioma activo; un código desconocido sale en mayúsculas. */
-function languageName(code: string, locale = 'es') {
-  try {
-    const name = new Intl.DisplayNames([locale], { type: 'language' }).of(code);
-    return name && name !== code ? name.charAt(0).toUpperCase() + name.slice(1) : code.toUpperCase();
-  } catch {
-    return code.toUpperCase();
-  }
 }

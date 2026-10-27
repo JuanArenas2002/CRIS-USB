@@ -11,6 +11,7 @@ import {
   uploadLogo,
 } from '@/infrastructure/photos/photo-admin';
 import { AdminTokenForm, useAdminToken } from '@/presentation/components/admin/AdminToken';
+import { useConfirm } from '@/presentation/components/admin/ConfirmDialog';
 import { PasswordInput } from '@/presentation/components/admin/PasswordInput';
 import { ErrorState } from '@/presentation/components/feedback/Feedback';
 import { Icon } from '@/presentation/components/ui/Icon';
@@ -94,6 +95,7 @@ function CenterRow({
   onChanged: () => void;
   onUnauthorized: () => void;
 }) {
+  const [confirm, confirmDialog] = useConfirm();
   const [preview, setPreview] = useState<{ blob: Blob; url: string } | null>(null);
   const [website, setWebsite] = useState(c.website ?? '');
   const [password, setPassword] = useState('');
@@ -133,6 +135,7 @@ function CenterRow({
 
   return (
     <li className="flex flex-col gap-4 rounded-xl bg-surface-container-lowest p-5 shadow-sm">
+      {confirmDialog}
       <div className="flex items-center gap-4">
         <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border-subtle bg-white p-2">
           {shown ? (
@@ -175,8 +178,9 @@ function CenterRow({
         <button
           type="button"
           disabled={!c.logoUrl || busy}
-          onClick={() => {
-            if (confirm(`¿Quitar el logo de ${c.name}?`)) run(() => deleteLogo(c.id, token), 'Logo quitado');
+          onClick={async () => {
+            if (await confirm(`¿Quitar el logo de ${c.name}?`))
+              run(() => deleteLogo(c.id, token), 'Logo quitado');
           }}
           className="h-10 rounded-lg px-3 text-label-md font-semibold text-error hover:bg-error-container/40 disabled:opacity-40"
         >
@@ -244,8 +248,10 @@ function CenterRow({
         <button
           type="button"
           disabled={busy}
-          onClick={() => {
-            if (confirm(`¿Quitar la contraseña de ${c.name}? Nadie podrá subir fotos de sus proyectos.`))
+          onClick={async () => {
+            if (
+              await confirm(`¿Quitar la contraseña de ${c.name}? Nadie podrá subir fotos de sus proyectos.`)
+            )
               run(() => saveCenterPassword(c.id, null, token), 'Contraseña quitada');
           }}
           className="h-10 rounded-lg px-3 text-label-md font-semibold text-error hover:bg-error-container/40 disabled:opacity-40"

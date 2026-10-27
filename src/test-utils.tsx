@@ -205,7 +205,7 @@ export function makeProject(over: Partial<Project> = {}): Project {
     beneficiaries: null,
     evidence: 'Sitio: https://cuidaconmigo.com/x',
     ods: [5],
-    leaders: [],
+    team: [],
     photoUrl: null,
     gallery: [],
     products: [

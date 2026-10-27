@@ -16,6 +16,7 @@ import {
 } from '@/infrastructure/ranking/ranking-admin';
 import { readXlsxSheet } from '@/infrastructure/ranking/xlsx';
 import { AdminTokenForm, useAdminToken } from '@/presentation/components/admin/AdminToken';
+import { useConfirm } from '@/presentation/components/admin/ConfirmDialog';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
 
@@ -26,6 +27,7 @@ type Status = { kind: 'idle' | 'busy' | 'ok' | 'error'; text?: string };
  * productividad USB. El ranking decide quién sale en el directorio de investigadores.
  */
 export function AdminRankingPage() {
+  const [confirm, confirmDialog] = useConfirm();
   useDocumentMetadata({
     title: 'Ranking de productividad',
     description: 'Administración interna del ranking de productividad USB.',
@@ -69,6 +71,7 @@ export function AdminRankingPage() {
 
   return (
     <div className="container-page py-10">
+      {confirmDialog}
       <p className="text-label-md font-bold tracking-widest text-secondary uppercase">Administración</p>
       <h1 className="mt-1 text-headline-lg-mobile font-bold tracking-tight text-primary md:text-headline-lg">
         Ranking de productividad USB
@@ -125,9 +128,9 @@ export function AdminRankingPage() {
                 <button
                   type="button"
                   disabled={busy}
-                  onClick={() => {
+                  onClick={async () => {
                     if (
-                      confirm(
+                      await confirm(
                         '¿Quitar el ranking? El directorio volverá a mostrar los seleccionados de Metri-K.',
                       )
                     )
@@ -193,6 +196,7 @@ const fold = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCas
  * entre los activos (si se oculta al 4.º, el 5.º se muestra como 4.º, en general y en su centro).
  */
 function RankingList({ token, onUnauthorized }: { token: string; onUnauthorized: () => void }) {
+  const [confirm, confirmDialog] = useConfirm();
   const qc = useQueryClient();
   const list = useQuery({
     // Sin el token en la clave: la clave aparece en mensajes de error y herramientas de depuración.
@@ -236,16 +240,17 @@ function RankingList({ token, onUnauthorized }: { token: string; onUnauthorized:
   const toggle = (r: RankingAdminRow) => apply(r.id, () => setRankingVisible(r.id, r.hidden, token));
   // Con búsqueda o centro elegido, se aplica solo a los filtrados.
   const filtered = Boolean(q || center);
-  const setAll = (visible: boolean) => {
+  const setAll = async (visible: boolean) => {
     const ids = shown.filter((r) => r.hidden === visible).map((r) => r.id);
     if (!ids.length) return;
     const who = filtered ? `los ${ids.length} filtrados` : `los ${ids.length}`;
-    if (confirm(`¿${visible ? 'Activar' : 'Desactivar'} a ${who}?`))
+    if (await confirm(`¿${visible ? 'Activar' : 'Desactivar'} a ${who}?`))
       apply(0, () => setRankingVisibleMany(ids, visible, token));
   };
 
   return (
     <section aria-labelledby="ranking-list-title" className="mt-10">
+      {confirmDialog}
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <h2 id="ranking-list-title" className="text-headline-sm font-bold text-primary">

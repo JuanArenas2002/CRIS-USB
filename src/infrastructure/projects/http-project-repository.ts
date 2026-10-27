@@ -26,7 +26,7 @@ const projectSchema = z.object({
   beneficiaries: text,
   evidence: text,
   ods: z.array(z.number().int().min(1).max(17)),
-  leaders: z.array(z.string()),
+  team: z.array(z.object({ name: z.string(), role: z.string().nullable() })),
   photoUrl: z.string().nullable(),
   gallery: z.array(z.object({ slot: z.number().int(), url: z.string() })),
   products: z.array(

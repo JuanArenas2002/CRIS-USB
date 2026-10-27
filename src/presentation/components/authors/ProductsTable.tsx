@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TYPOLOGIES, type Product, type TypologyId } from '@/domain/authors/author';
 import { Icon } from '@/presentation/components/ui/Icon';
@@ -118,79 +118,7 @@ export function ProductsTable({
       </div>
 
       <div className="overflow-hidden rounded-xl bg-surface-container-lowest shadow-sm">
-        {/* En móvil cada fila es una tarjeta (sin scroll lateral); desde md, tabla normal. */}
-        <div>
-          <table className="block w-full border-collapse text-left text-body-sm md:table">
-            <thead className="hidden md:table-header-group">
-              <tr className="bg-surface-cream-alt text-label-md tracking-wider text-on-surface-variant uppercase">
-                <th scope="col" className="w-20 px-4 py-3 text-center">
-                  {t('products.colYear')}
-                </th>
-                <th scope="col" className="px-4 py-3">
-                  {t('products.colTitle')}
-                </th>
-                <th scope="col" className="px-4 py-3">
-                  {t('products.colType')}
-                </th>
-                <th scope="col" className="px-4 py-3">
-                  {t('products.colSubtype')}
-                </th>
-                <th scope="col" className="px-4 py-3 text-right">
-                  {t('products.colLink')}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="block divide-y divide-surface-cream-alt md:table-row-group">
-              {visible.slice(0, limit).map((p) => (
-                <tr
-                  key={p.key}
-                  className="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1.5 px-4 py-3.5 transition-colors hover:bg-surface-cream-alt/40 md:table-row md:p-0"
-                >
-                  <td className="order-1 font-bold text-primary-container md:table-cell md:px-4 md:py-3.5 md:text-center md:align-top">
-                    {p.year ?? '—'}
-                  </td>
-                  <td className="order-3 col-span-2 min-w-0 md:table-cell md:max-w-xl md:px-4 md:py-3.5 md:align-top">
-                    <p className="leading-snug font-semibold text-primary-container">{p.title}</p>
-                    {p.venue || p.doi ? (
-                      <p className="mt-1 text-label-sm break-all text-neutral-muted">
-                        {[p.venue, p.doi && `DOI: ${p.doi}`].filter(Boolean).join(' · ')}
-                      </p>
-                    ) : null}
-                  </td>
-                  <td className="order-2 justify-self-end md:table-cell md:px-4 md:py-3.5 md:align-top">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-label-sm font-semibold whitespace-nowrap ${TYPOLOGY_STYLE[p.typology].chip}`}
-                    >
-                      {labels.typologyShort(p.typology)}
-                    </span>
-                  </td>
-                  <td className="order-4 min-w-0 text-label-md text-on-surface-variant md:table-cell md:px-4 md:py-3.5 md:align-top">
-                    {labels.domain(p.type)}
-                    {p.index ? (
-                      <span className="block text-label-sm text-neutral-muted">{labels.domain(p.index)}</span>
-                    ) : null}
-                  </td>
-                  <td className="order-5 justify-self-end md:table-cell md:px-4 md:py-3.5 md:text-right md:align-top">
-                    {p.url ? (
-                      <a
-                        href={p.url}
-                        target="_blank"
-                        rel="noopener"
-                        className="inline-flex items-center gap-1 rounded bg-surface-cream-alt px-2.5 py-1 text-label-sm font-semibold text-primary-container transition-colors hover:bg-primary-container hover:text-on-primary"
-                      >
-                        {p.doi ? 'DOI' : t('products.view')}
-                        <Icon name="open_in_new" className="text-[14px]" />
-                        <span className="sr-only">{t('products.openTitle', { title: p.title })}</span>
-                      </a>
-                    ) : (
-                      <span className="text-label-sm text-neutral-muted">—</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ProductRows products={visible.slice(0, limit)} />
         {!visible.length ? (
           <p className="px-4 py-10 text-center text-body-md text-neutral-muted">{t('products.none')}</p>
         ) : null}
@@ -241,5 +169,106 @@ function Select({
         className="pointer-events-none absolute top-3 right-2.5 text-[18px] text-on-surface-variant"
       />
     </div>
+  );
+}
+
+/**
+ * Filas de la tabla de productos (perfil del investigador, ficha de proyecto y /productos).
+ * Sin contenedor: cada vista pone el suyo, sus filtros y su paginación.
+ */
+export function ProductRows({
+  products,
+  rank,
+}: {
+  products: Product[];
+  /** Columna opcional de puesto (ranking de /productos): título y contenido por fila. */
+  rank?: { label: string; of: (p: Product) => ReactNode };
+}) {
+  const { t } = useTranslation('authors');
+  const labels = useLabels();
+  // En móvil cada fila es una tarjeta (sin scroll lateral); desde md, tabla normal.
+  return (
+    <table className="block w-full border-collapse text-left text-body-sm md:table">
+      <thead className="hidden md:table-header-group">
+        <tr className="bg-surface-cream-alt text-label-md tracking-wider text-on-surface-variant uppercase">
+          {rank ? (
+            <th scope="col" className="w-24 px-4 py-3 text-center">
+              {rank.label}
+            </th>
+          ) : null}
+          <th scope="col" className="w-20 px-4 py-3 text-center">
+            {t('products.colYear')}
+          </th>
+          <th scope="col" className="px-4 py-3">
+            {t('products.colTitle')}
+          </th>
+          <th scope="col" className="px-4 py-3">
+            {t('products.colType')}
+          </th>
+          <th scope="col" className="px-4 py-3">
+            {t('products.colSubtype')}
+          </th>
+          <th scope="col" className="px-4 py-3 text-right">
+            {t('products.colLink')}
+          </th>
+        </tr>
+      </thead>
+      <tbody className="block divide-y divide-surface-cream-alt md:table-row-group">
+        {products.map((p) => (
+          <tr
+            key={p.key}
+            className="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1.5 px-4 py-3.5 transition-colors hover:bg-surface-cream-alt/40 md:table-row md:p-0"
+          >
+            {rank ? (
+              <td className="hidden md:table-cell md:px-4 md:py-3.5 md:text-center md:align-top">
+                {rank.of(p)}
+              </td>
+            ) : null}
+            <td className="order-1 font-bold text-primary-container md:table-cell md:px-4 md:py-3.5 md:text-center md:align-top">
+              {/* En móvil el puesto va junto al año (la fila es una tarjeta de dos columnas). */}
+              {rank ? <span className="mr-2 md:hidden">{rank.of(p)}</span> : null}
+              {p.year ?? '—'}
+            </td>
+            <td className="order-3 col-span-2 min-w-0 md:table-cell md:max-w-xl md:px-4 md:py-3.5 md:align-top">
+              <p className="leading-snug font-semibold text-primary-container">{p.title}</p>
+              {p.venue || p.doi ? (
+                <p className="mt-1 text-label-sm break-all text-neutral-muted">
+                  {[p.venue, p.doi && `DOI: ${p.doi}`].filter(Boolean).join(' · ')}
+                </p>
+              ) : null}
+            </td>
+            <td className="order-2 justify-self-end md:table-cell md:px-4 md:py-3.5 md:align-top">
+              <span
+                className={`rounded-full px-2 py-0.5 text-label-sm font-semibold whitespace-nowrap ${TYPOLOGY_STYLE[p.typology].chip}`}
+              >
+                {labels.typologyShort(p.typology)}
+              </span>
+            </td>
+            <td className="order-4 min-w-0 text-label-md text-on-surface-variant md:table-cell md:px-4 md:py-3.5 md:align-top">
+              {labels.domain(p.type)}
+              {p.index ? (
+                <span className="block text-label-sm text-neutral-muted">{labels.domain(p.index)}</span>
+              ) : null}
+            </td>
+            <td className="order-5 justify-self-end md:table-cell md:px-4 md:py-3.5 md:text-right md:align-top">
+              {p.url ? (
+                <a
+                  href={p.url}
+                  target="_blank"
+                  rel="noopener"
+                  className="inline-flex items-center gap-1 rounded bg-surface-cream-alt px-2.5 py-1 text-label-sm font-semibold text-primary-container transition-colors hover:bg-primary-container hover:text-on-primary"
+                >
+                  {p.doi ? 'DOI' : t('products.view')}
+                  <Icon name="open_in_new" className="text-[14px]" />
+                  <span className="sr-only">{t('products.openTitle', { title: p.title })}</span>
+                </a>
+              ) : (
+                <span className="text-label-sm text-neutral-muted">—</span>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }

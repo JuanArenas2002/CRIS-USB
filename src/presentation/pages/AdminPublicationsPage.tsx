@@ -12,6 +12,7 @@ import {
 } from '@/infrastructure/publications/publication-admin';
 import { readXlsxSheet } from '@/infrastructure/ranking/xlsx';
 import { AdminTokenForm, useAdminToken } from '@/presentation/components/admin/AdminToken';
+import { useConfirm } from '@/presentation/components/admin/ConfirmDialog';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
 import { usePublicationStats } from '@/presentation/hooks/use-publications';
@@ -25,6 +26,7 @@ const fmt = (n: number) => n.toLocaleString('es-CO');
  * publicaciones Scopus que se muestra en /productos.
  */
 export function AdminPublicationsPage() {
+  const [confirm, confirmDialog] = useConfirm();
   useDocumentMetadata({
     title: 'Ranking de publicaciones',
     description: 'Administración interna del ranking de publicaciones Scopus.',
@@ -69,6 +71,7 @@ export function AdminPublicationsPage() {
 
   return (
     <div className="container-page py-10">
+      {confirmDialog}
       <p className="text-label-md font-bold tracking-widest text-secondary uppercase">Administración</p>
       <h1 className="mt-1 text-headline-lg-mobile font-bold tracking-tight text-primary md:text-headline-lg">
         Ranking de publicaciones Scopus
@@ -156,8 +159,8 @@ export function AdminPublicationsPage() {
               <button
                 type="button"
                 disabled={busy}
-                onClick={() => {
-                  if (confirm('¿Quitar el ranking de publicaciones? /productos quedará vacío.'))
+                onClick={async () => {
+                  if (await confirm('¿Quitar el ranking de publicaciones? /productos quedará vacío.'))
                     run(
                       () => clearPublications(token),
                       () => 'Ranking de publicaciones quitado',

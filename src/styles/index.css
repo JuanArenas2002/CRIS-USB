@@ -85,6 +85,14 @@ span.material-symbols-outlined {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Toast del admin: entra desde abajo. */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
 /* Líneas decorativas de las cards: la punteada fluye y la continua ondula. Más rápido al pasar el mouse. */
 @keyframes wave-dash {
   to {
