@@ -3,8 +3,9 @@ import { useState, type ReactNode } from 'react';
 import { Link, Navigate, useLocation, useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { authorSlug, parseAuthorId, slugify } from '@/domain/authors/author';
-import { projectSlug, timeProgress, type Project } from '@/domain/projects/project';
+import { authorSlug, displayName, parseAuthorId, slugify } from '@/domain/authors/author';
+import { projectProducts, projectSlug, timeProgress, type Project } from '@/domain/projects/project';
+import { EMPTY_FILTERS, ProductsTable } from '@/presentation/components/authors/ProductsTable';
 import { centerPath } from '@/presentation/components/centers/CenterCard';
 import { ErrorState } from '@/presentation/components/feedback/Feedback';
 import { OdsIcon } from '@/presentation/components/groups/OdsIcons';
@@ -142,9 +143,7 @@ function ProjectProfile({ project: p }: { project: Project }) {
   const groupOf = (name: string) => groups.find((g) => norm(g.name) === norm(name));
   const centerOf = (name: string) => centers.find((c) => norm(c.name) === norm(name));
 
-  const types = [...new Set(p.products.map((x) => x.type ?? '—'))];
-  const [type, setType] = useState<string | null>(null);
-  const products = p.products.filter((x) => !type || (x.type ?? '—') === type);
+  const [filters, setFilters] = useState(EMPTY_FILTERS);
 
   useDocumentMetadata({
     title: p.title,
@@ -408,14 +407,28 @@ function ProjectProfile({ project: p }: { project: Project }) {
                   );
                 })}
               </ul>
-              {p.leaders.length || p.allies ? (
+              {p.team.length || p.allies ? (
                 <dl className={`${card} flex flex-col gap-3 p-4 text-body-sm`}>
-                  {p.leaders.length ? (
+                  {p.team.length ? (
                     <div>
                       <dt className="text-label-sm tracking-wider text-neutral-muted uppercase">
                         {t('detail.leaders')}
                       </dt>
-                      <dd className="font-semibold text-on-surface">{p.leaders.join(' · ')}</dd>
+                      <dd>
+                        <ul className="mt-1 flex flex-col gap-1.5">
+                          {p.team.map((m) => (
+                            <li key={m.name} className="flex items-start gap-2">
+                              <Icon name="person" className="mt-0.5 text-[16px] text-secondary" />
+                              <span>
+                                <span className="font-semibold text-on-surface">{displayName(m.name)}</span>
+                                {m.role ? (
+                                  <span className="block text-label-sm text-neutral-muted">{m.role}</span>
+                                ) : null}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </dd>
                     </div>
                   ) : null}
                   {p.allies ? (
@@ -432,67 +445,13 @@ function ProjectProfile({ project: p }: { project: Project }) {
           </div>
         </section>
 
-        {/* Productos */}
+        {/* Productos: misma tabla que en el perfil del investigador */}
         <section>
           <SectionTitle lead={t('detail.productsLead', { count: p.products.length, code: p.code })}>
             {t('detail.products')}
           </SectionTitle>
           {p.products.length ? (
-            <>
-              {types.length > 1 ? (
-                <div role="group" aria-label={t('detail.products')} className="mb-4 flex flex-wrap gap-1.5">
-                  {[null, ...types].map((ty) => (
-                    <button
-                      key={ty ?? ''}
-                      type="button"
-                      aria-pressed={type === ty}
-                      onClick={() => setType(ty)}
-                      className={`rounded-lg px-4 py-1.5 text-label-md transition-colors ${
-                        type === ty
-                          ? 'bg-primary-container text-on-primary shadow-sm'
-                          : 'bg-surface-cream-alt text-on-surface-variant hover:text-primary'
-                      }`}
-                    >
-                      {ty === null
-                        ? t('detail.all', { count: p.products.length })
-                        : `${ty} (${p.products.filter((x) => (x.type ?? '—') === ty).length})`}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-              <ul className="flex flex-col gap-3">
-                {products.map((x) => (
-                  <li
-                    key={x.title}
-                    className={`${card} flex flex-col justify-between gap-4 p-4 md:flex-row md:items-center`}
-                  >
-                    <div className="flex max-w-3xl flex-col gap-1.5">
-                      <p className="flex flex-wrap items-center gap-2 text-label-sm">
-                        {x.type ? (
-                          <span className="rounded-full bg-badge-sage-bg px-2.5 py-0.5 font-semibold text-badge-sage-text">
-                            {x.subtype ? `${x.type} · ${x.subtype}` : x.type}
-                          </span>
-                        ) : null}
-                        {x.year ? <span className="text-neutral-muted">{x.year}</span> : null}
-                        {x.status ? <span className="text-neutral-muted">· {x.status}</span> : null}
-                      </p>
-                      <h3 className="text-headline-sm font-semibold text-primary">{x.title}</h3>
-                    </div>
-                    {x.url ? (
-                      <a
-                        href={x.url}
-                        target="_blank"
-                        rel="noopener"
-                        className="inline-flex shrink-0 items-center gap-1 self-start rounded-lg bg-surface-cream-alt px-4 py-2 text-label-md text-primary transition-colors hover:bg-badge-sage-bg md:self-center"
-                      >
-                        {t('detail.openProduct')} <Icon name="open_in_new" className="text-[16px]" />
-                        <span className="sr-only">{t('common:newTab')}</span>
-                      </a>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            </>
+            <ProductsTable products={projectProducts(p)} filters={filters} onFiltersChange={setFilters} />
           ) : (
             <p className="text-body-sm text-neutral-muted">{t('detail.noProducts')}</p>
           )}

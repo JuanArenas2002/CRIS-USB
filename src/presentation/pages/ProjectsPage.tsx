@@ -17,7 +17,7 @@ import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata'
 import { useLabels } from '@/presentation/hooks/use-labels';
 import { useProjects } from '@/presentation/hooks/use-projects';
 import { useCenters } from '@/presentation/hooks/use-centers';
-import { slugify } from '@/domain/authors/author';
+import { displayName, initials, slugify } from '@/domain/authors/author';
 import { ORGANIZATION, absoluteUrl, safeJson } from '@/shared/seo';
 
 // Mismo estándar visual que CentersPage: héroe oscuro, buscador flotante y lista.
@@ -54,7 +54,7 @@ export function ProjectStatus({ status }: { status: string | null }) {
   );
 }
 
-const COLS = 'lg:grid-cols-[8rem_minmax(0,1fr)_9rem_4rem_3.5rem_8rem]';
+const COLS = 'lg:grid-cols-[8rem_minmax(0,1fr)_12rem_9rem_4rem_3.5rem_8rem]';
 
 export function ProjectsPage() {
   const { data, isError, error, refetch } = useProjects();
@@ -273,6 +273,7 @@ export function ProjectList({ projects }: { projects: Project[] }) {
       >
         <span>{t('table.photo')}</span>
         <span>{t('table.title')}</span>
+        <span>{t('table.team')}</span>
         <span>{t('table.center')}</span>
         <span>{t('table.year')}</span>
         <span>{t('table.status')}</span>
@@ -317,6 +318,30 @@ function ProjectCenters({ names }: { names: string[] }) {
   );
 }
 
+/** Investigador principal (o el primero del equipo) y cuántos más hay. */
+function TeamSummary({ team }: { team: Project['team'] }) {
+  const { t } = useTranslation('projects');
+  if (!team.length) return <span className="text-body-sm text-neutral-muted">—</span>;
+  const lead = team.find((m) => /principal/i.test(m.role ?? '')) ?? team[0]!;
+  const others = team.length - 1;
+  return (
+    <span className="flex min-w-0 items-center gap-2" title={team.map((m) => displayName(m.name)).join(', ')}>
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-badge-sage-bg text-label-sm font-bold text-badge-sage-text">
+        {initials(displayName(lead.name))}
+      </span>
+      <span className="min-w-0 leading-tight">
+        <span className="block truncate text-body-sm font-semibold text-on-surface">
+          {displayName(lead.name)}
+        </span>
+        <span className="block truncate text-label-sm text-neutral-muted">
+          {lead.role ?? t('table.team')}
+          {others > 0 ? ` · ${t('table.more', { count: others })}` : ''}
+        </span>
+      </span>
+    </span>
+  );
+}
+
 /** Fila de la lista: foto principal, título, centro, año, estado y «Ver detalle»; toda la fila enlaza. */
 function ProjectRow({ project: p }: { project: Project }) {
   const { t } = useTranslation('projects');
@@ -349,8 +374,14 @@ function ProjectRow({ project: p }: { project: Project }) {
           <ProjectCenters names={p.centers} />
           <ProjectStatus status={p.status} />
         </p>
+        <div className="mt-1.5 lg:hidden">
+          <TeamSummary team={p.team} />
+        </div>
       </div>
 
+      <div className="hidden min-w-0 lg:block">
+        <TeamSummary team={p.team} />
+      </div>
       <div className="hidden lg:block">
         <ProjectCenters names={p.centers} />
       </div>

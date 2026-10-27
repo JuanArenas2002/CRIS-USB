@@ -322,23 +322,19 @@ test('centro: lista solo sus grupos (cruce group.centerIds)', async () => {
   expect(within(section).getByText(/^1 grupo de investigación adscrito/)).toBeInTheDocument();
 });
 
-test('grupos: cada grupo muestra logo y sigla de su centro, enlazados a la ficha del centro', async () => {
+test('grupos: la lista no lleva logos de centro; las tarjetas sí, enlazados a la ficha del centro', async () => {
   const groups = [makeGroupDetail({ id: 1, name: 'Bioinformática y Salud', centerIds: [1] })];
   renderApp('/grupos', fakeRepo(), fakeGroupRepo(groups));
+  await screen.findByText('Bioinformática y Salud');
+  expect(screen.queryByRole('list', { name: 'Centros de investigación' })).not.toBeInTheDocument();
+
+  cleanup();
+  renderApp('/grupos?vista=tarjetas', fakeRepo(), fakeGroupRepo(groups));
   const centers = await screen.findByRole('list', { name: 'Centros de investigación' });
   expect(within(centers).getByRole('link', { name: /MACONDOLAB/ })).toHaveAttribute(
     'href',
     '/centros/1-centro-de-crecimiento-empresarial-macondolab',
   );
-
-  // En la ficha de ese mismo centro, la fila del grupo no repite su logo.
-  cleanup();
-  renderApp('/centros/1-centro-de-crecimiento-empresarial-macondolab', fakeRepo(), fakeGroupRepo(groups));
-  const section = (await screen.findByRole('heading', { name: 'Grupos de investigación' })).closest(
-    'section',
-  )!;
-  await within(section).findByText('Bioinformática y Salud');
-  expect(within(section).queryByRole('list', { name: 'Centros de investigación' })).not.toBeInTheDocument();
 });
 
 test('admin fotos: lista a todos los seleccionados, no solo la primera página', async () => {
@@ -416,23 +412,20 @@ test('admin ranking: respuesta ilegible → mensaje claro, sin mostrar el token'
   vi.unstubAllGlobals();
 });
 
-test('productos: cada publicación con año, tipo, idioma, revista, ISSN, DOI, citas y acceso abierto', async () => {
+test('productos: misma tabla que los productos del investigador (año, título, tipología, tipo, enlace)', async () => {
   renderApp('/productos');
-  const title = await screen.findByRole('link', { name: /Metabolic Reprogramming in Cancer Cells/ });
-  expect(title).toHaveAttribute('href', 'https://doi.org/10.3390/pharmaceutics14061303');
-  // Año, tipo, idioma, ISSN y acceso abierto (ícono con texto para lectores de pantalla).
-  const item = within(title.closest('li')!);
-  expect(item.getByText('2022')).toBeInTheDocument();
-  expect(item.getByText('Revisión')).toBeInTheDocument();
-  expect(item.getByText('Inglés')).toBeInTheDocument();
-  expect(item.getByText('ISSN 1999-4923')).toBeInTheDocument();
-  expect(item.getByTitle('Acceso abierto')).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: /^10\.3390\/pharmaceutics14061303/ })).toHaveAttribute(
+  const row = within((await screen.findByText('Metabolic Reprogramming in Cancer Cells')).closest('tr')!);
+  expect(row.getByText('2022')).toBeInTheDocument();
+  expect(row.getByText('Nuevo Conocimiento')).toBeInTheDocument();
+  expect(row.getByText('Artículo científico')).toBeInTheDocument();
+  // Revista y DOI bajo el título; cuartil, citas y acceso abierto bajo el tipo.
+  expect(row.getByText('Pharmaceutics · DOI: 10.3390/pharmaceutics14061303')).toBeInTheDocument();
+  expect(row.getByText(/Q1 · 133 citas · Acceso abierto/)).toBeInTheDocument();
+  expect(row.getByRole('link', { name: /DOI/ })).toHaveAttribute(
     'href',
     'https://doi.org/10.3390/pharmaceutics14061303',
   );
-  expect(screen.getByText('Puesto 1')).toBeInTheDocument();
-  expect(screen.getByText('133 citas')).toBeInTheDocument();
+  expect(row.getAllByText('Puesto 1').length).toBeGreaterThan(0);
   expect(screen.getByText('1 publicación')).toBeInTheDocument();
 });
 
@@ -456,9 +449,11 @@ test('productos: con rango de años el puesto se recalcula y se muestra el gener
       makePublication({ rank: 2, eid: '2-s2.0-2', title: 'En rango', year: 2022 }),
     ]),
   );
-  expect(await screen.findByText('#2 general')).toBeInTheDocument();
-  expect(screen.getByText('Puesto 1')).toBeInTheDocument();
+  expect(await screen.findByText('En rango')).toBeInTheDocument();
   expect(screen.queryByText('Reciente')).not.toBeInTheDocument();
+  // Con filtro, el puesto se recalcula (1) y se muestra el general (#2).
+  expect(screen.getAllByText('Puesto 1').length).toBeGreaterThan(0);
+  expect(screen.getAllByText('#2 general').length).toBeGreaterThan(0);
   expect(screen.getByRole('combobox', { name: 'Año desde' })).toHaveTextContent('Desde 2020');
   expect(screen.getByRole('combobox', { name: 'Año hasta' })).toHaveTextContent('Hasta 2023');
 });
@@ -502,4 +497,18 @@ test('centro: lista sus proyectos (cruce por nombre del centro, sin tildes ni ma
   ).toBeInTheDocument();
   expect(within(section).queryByText('Proyecto de otro centro')).not.toBeInTheDocument();
   expect(within(section).getByText('1 proyecto de investigación de este centro.')).toBeInTheDocument();
+});
+
+test('proyectos: la lista muestra el investigador principal y cuántos más hay en el equipo', async () => {
+  const repo = fakeProjectRepo([
+    makeProject({
+      team: [
+        { name: 'LUISA DÍAZ', role: 'Estudiante' },
+        { name: 'ROBERTO FIGUEROA DEL VALLE', role: 'Investigador Principal' },
+      ],
+    }),
+  ]);
+  renderApp('/proyectos', undefined, undefined, undefined, undefined, repo);
+  expect((await screen.findAllByText('Roberto Figueroa del Valle')).length).toBeGreaterThan(0);
+  expect(screen.getAllByText(/Investigador Principal · \+1 más/).length).toBeGreaterThan(0);
 });

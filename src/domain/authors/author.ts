@@ -367,13 +367,16 @@ const THESIS_TYPE: Record<string, string> = {
 };
 const fold = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
 
+/** Tipo Minciencias de una publicación Scopus (artículo, capítulo o ponencia). */
+export const scopusProductType = (type: string | null) => SCOPUS_TYPE[type ?? ''] ?? 'Artículo científico';
+
 /** Aplana la producción en productos con su tipología Minciencias; más recientes primero. */
 export function toProducts(p: AuthorProduction): Product[] {
   return [
     ...p.publications.map((x): Product => ({
       key: `p${x.id}`,
       typology: 'GNC',
-      type: SCOPUS_TYPE[x.type ?? ''] ?? 'Artículo científico',
+      type: scopusProductType(x.type),
       title: x.title,
       authors: x.authors,
       year: x.year,

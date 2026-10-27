@@ -629,16 +629,12 @@ const en: typeof es = {
     noDataTitle: 'No publications yet',
     noDataBody: "The university's featured scientific output will be available here soon.",
     item: {
-      rank: 'Position {{rank}}',
-      score: 'Score',
+      colRank: 'Rank',
+      rank: 'Rank {{rank}}',
       general: '#{{rank}} overall',
       citations_one: '{{count}} citation',
       citations_other: '{{count}} citations',
       openAccess: 'Open access',
-      closedAccess: 'Not open access',
-      language: 'Language',
-      abstract: 'Show abstract',
-      open: 'View publication',
     },
   },
   projects: {
@@ -664,6 +660,9 @@ const en: typeof es = {
     emptyTitle: 'No projects found',
     emptyBody: 'Try another search term or clear the filters.',
     table: {
+      team: 'Researchers',
+      more_one: '+{{count}} more',
+      more_other: '+{{count}} more',
       photo: 'Photo',
       title: 'Project',
       center: 'Center',

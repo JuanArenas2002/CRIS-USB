@@ -630,16 +630,12 @@ const pt: typeof es = {
     noDataTitle: 'Ainda não há publicações',
     noDataBody: 'Em breve você encontrará aqui a produção científica em destaque da universidade.',
     item: {
+      colRank: 'Posição',
       rank: 'Posição {{rank}}',
-      score: 'Pontuação',
       general: '#{{rank}} geral',
       citations_one: '{{count}} citação',
       citations_other: '{{count}} citações',
       openAccess: 'Acesso aberto',
-      closedAccess: 'Sem acesso aberto',
-      language: 'Idioma',
-      abstract: 'Ver resumo',
-      open: 'Ver publicação',
     },
   },
   projects: {
@@ -665,6 +661,9 @@ const pt: typeof es = {
     emptyTitle: 'Nenhum projeto encontrado',
     emptyBody: 'Tente outro termo de busca ou remova os filtros.',
     table: {
+      team: 'Pesquisadores',
+      more_one: '+{{count}} mais',
+      more_other: '+{{count}} mais',
       photo: 'Foto',
       title: 'Projeto',
       center: 'Centro',

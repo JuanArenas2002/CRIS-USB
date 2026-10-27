@@ -126,3 +126,39 @@ export async function saveCenterWebsite(id: number, website: string | null, toke
   if (!res.ok) throw new ApiError(res.status, data.detail ?? `Error ${res.status}`);
   return data.website ?? null;
 }
+
+/** Integrante del equipo tal como lo guarda Metri-K (con cédula: solo el admin del centro la ve). */
+export interface ProjectStaff {
+  cedula: string | null;
+  nombreCompleto: string;
+  rol: string | null;
+}
+
+async function staffCall(path: string, token: string, center: CenterKey, init: RequestInit = {}) {
+  const res = await fetch(withBase(path), {
+    ...init,
+    headers: {
+      'X-Admin-Token': token,
+      ...centerHeaders(center),
+      ...(init.body ? { 'Content-Type': 'application/json' } : {}),
+    },
+  });
+  const data = (await res.json().catch(() => ({}))) as ProjectStaff[] & { detail?: string };
+  if (!res.ok) throw new ApiError(res.status, data.detail ?? `Error ${res.status}`);
+  return data as ProjectStaff[];
+}
+
+/** Equipo del proyecto en Metri-K (lectura en vivo, con cédulas). */
+export const listStaff = (projectId: number, token: string, center: CenterKey) =>
+  staffCall(`/api/projects/${projectId}/personal`, token, center);
+/** Agrega una persona (la cédula es opcional); devuelve el equipo actualizado. */
+export const addStaff = (projectId: number, person: ProjectStaff, token: string, center: CenterKey) =>
+  staffCall(`/api/projects/${projectId}/personal`, token, center, {
+    method: 'PATCH',
+    body: JSON.stringify(person),
+  });
+/** Quita a una persona por cédula; devuelve el equipo actualizado. */
+export const removeStaff = (projectId: number, cedula: string, token: string, center: CenterKey) =>
+  staffCall(`/api/projects/${projectId}/personal/${encodeURIComponent(cedula)}`, token, center, {
+    method: 'DELETE',
+  });

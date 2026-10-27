@@ -14,7 +14,7 @@ import { gzipSync } from 'node:zlib';
 import { pathToFileURL } from 'node:url';
 import { fetchInvestigatorCenters, fetchPublicCenters, fetchResolutionPdf } from './centers-source.ts';
 import { fetchPublicGroups, mapLimit } from './groups-source.ts';
-import { fetchPublicProjects } from './projects-source.ts';
+import { fetchPublicProjects, fetchStaff, removeStaff, saveStaff, toStaff } from './projects-source.ts';
 import { MIN_CENTER_PASSWORD, hashPassword, verifyPassword } from './center-password.ts';
 import { projectsOfCenter } from '../src/domain/projects/project.ts';
 import {
@@ -73,7 +73,7 @@ const MAX_PUBLICATIONS_BYTES = 4 * 1024 * 1024;
  */
 function cached<T>(load: () => Promise<T>) {
   let entry: { at: number; data: T } | null = null;
-  return async (): Promise<T> => {
+  const get = async (): Promise<T> => {
     if (entry && Date.now() - entry.at < TTL_MS) return entry.data;
     try {
       entry = { at: Date.now(), data: await load() };
@@ -82,6 +82,8 @@ function cached<T>(load: () => Promise<T>) {
     }
     return entry.data;
   };
+  /** Tras escribir en Metri-K: la próxima lectura va a la fuente. */
+  return Object.assign(get, { reset: () => void (entry = null) });
 }
 
 /** Comparación en tiempo constante (sha256 iguala longitudes). */
@@ -266,6 +268,9 @@ export function createPublicApi({
       const centerPassword = /^\/api\/centers\/(\d{1,12})\/password$/.exec(p);
       // Comprobar la contraseña de un centro antes de mostrar sus proyectos en el admin.
       const centerAccess = /^\/api\/centers\/(\d{1,12})\/access$/.exec(p);
+      // Equipo del proyecto (Metri-K `personal`): GET lista con cédulas, PATCH agrega, DELETE quita.
+      const staff = /^\/api\/projects\/(\d{1,10})\/personal$/.exec(p);
+      const staffOne = /^\/api\/projects\/(\d{1,10})\/personal\/([^/]{1,40})$/.exec(p);
       // Fotos, logos y fotos de proyectos: misma validación (WebP ≤ 1 MB) y mismo tipo de almacenamiento.
       const image = photo
         ? {
@@ -300,13 +305,15 @@ export function createPublicApi({
       // Varios a la vez («Activar / Desactivar todos» en el admin): una sola escritura.
       const rankingBulk = p === '/api/ranking/visibility';
       // Lista del ranking para el admin: nombres y puestos de todos (incluidos los ocultos).
-      const adminRead = (rankingUpload || centerAccess) && req.method === 'GET';
+      const adminRead = (rankingUpload || centerAccess || staff) && req.method === 'GET';
       const publicationsUpload = p === '/api/publications';
 
       // ── Escritura (y lectura del admin): fotos, logos, ODS, páginas y ranking, con token ──
-      if (req.method === 'PUT' || req.method === 'DELETE' || adminRead) {
+      if (req.method === 'PUT' || req.method === 'PATCH' || req.method === 'DELETE' || adminRead) {
         if (
           !adminRead &&
+          !(staff && req.method === 'PATCH') &&
+          !(staffOne && req.method === 'DELETE') &&
           !image &&
           !rankingUpload &&
           !publicationsUpload &&
@@ -336,12 +343,47 @@ export function createPublicApi({
             ? send(200, { ok: true }, true)
             : send(403, { detail: 'Contraseña del centro incorrecta' });
         }
-        if (projectPhoto) {
+        const projectRoute = projectPhoto ?? staff ?? staffOne;
+        if (projectRoute) {
           const center = await centerOk();
           if (!center) return send(403, { detail: 'Contraseña del centro incorrecta' });
-          const projectId = Number(projectPhoto[1]);
+          const projectId = Number(projectRoute[1]);
           if (!projectsOfCenter(await metrikProjects(), center.name).some((x) => x.id === projectId))
             return send(403, { detail: 'El proyecto no es de este centro' });
+        }
+        if (staff || staffOne) {
+          const projectId = Number((staff ?? staffOne)![1]);
+          try {
+            if (staff && req.method === 'GET') return send(200, await fetchStaff(base, projectId), true);
+            if (staff) {
+              const body = await readBody(req, MAX_JSON_BYTES);
+              let person: ReturnType<typeof toStaff> = null;
+              try {
+                person = body && toStaff(JSON.parse(body.toString('utf8')));
+              } catch {
+                person = null;
+              }
+              // Nombre obligatorio; cédula opcional (solo dígitos); rol libre y corto.
+              if (
+                !person ||
+                person.nombreCompleto.length > 200 ||
+                (person.rol?.length ?? 0) > 80 ||
+                (person.cedula !== null && !/^\d{4,15}$/.test(person.cedula))
+              )
+                return send(400, {
+                  detail: 'Se espera { "nombreCompleto": "…", "rol": "…", "cedula": "123…" (opcional) }',
+                });
+              await saveStaff(base, projectId, person);
+            } else {
+              const cedula = decodeURIComponent(staffOne![2]!);
+              if (!/^\d{4,15}$/.test(cedula)) return send(400, { detail: 'Cédula inválida' });
+              await removeStaff(base, projectId, cedula);
+            }
+          } catch (err) {
+            return send(502, { detail: (err as Error).message }, true);
+          }
+          metrikProjects.reset(); // la página pública muestra el cambio de inmediato
+          return send(200, await fetchStaff(base, projectId), true);
         }
         if (centerPassword) {
           const id = Number(centerPassword[1]);

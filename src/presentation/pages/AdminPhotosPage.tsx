@@ -5,6 +5,7 @@ import { displayName, initials, type Author } from '@/domain/authors/author';
 import { ApiError } from '@/infrastructure/http/api-client';
 import { deletePhoto, toSquareWebp, uploadPhoto } from '@/infrastructure/photos/photo-admin';
 import { AdminTokenForm, useAdminToken } from '@/presentation/components/admin/AdminToken';
+import { useConfirm } from '@/presentation/components/admin/ConfirmDialog';
 import { ErrorState } from '@/presentation/components/feedback/Feedback';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { AuthorQueriesContext } from '@/presentation/hooks/use-authors';
@@ -113,6 +114,7 @@ function PhotoRow({
   onChanged: () => void;
   onUnauthorized: () => void;
 }) {
+  const [confirm, confirmDialog] = useConfirm();
   const name = displayName(author.name);
   const [preview, setPreview] = useState<{ blob: Blob; url: string } | null>(null);
   const [status, setStatus] = useState<{ kind: 'idle' | 'busy' | 'ok' | 'error'; text?: string }>({
@@ -149,6 +151,7 @@ function PhotoRow({
 
   return (
     <li className="flex flex-col gap-3 rounded-xl bg-surface-container-lowest p-4 shadow-sm">
+      {confirmDialog}
       <div className="flex items-center gap-3">
         <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-surface-dark-forest text-headline-sm font-bold text-secondary-fixed">
           {shown ? (
@@ -187,8 +190,8 @@ function PhotoRow({
         <button
           type="button"
           disabled={!author.photoUrl || status.kind === 'busy'}
-          onClick={() => {
-            if (confirm(`¿Quitar la foto de ${name}?`))
+          onClick={async () => {
+            if (await confirm(`¿Quitar la foto de ${name}?`))
               run(() => deletePhoto(author.id, token), 'Foto quitada');
           }}
           className="h-9 rounded-lg px-3 text-label-md font-semibold text-error hover:bg-error-container/40 disabled:opacity-40"
