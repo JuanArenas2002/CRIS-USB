@@ -7,6 +7,7 @@ import { storeOptionsFromEnv } from './stores.ts';
 
 const api = createPublicApi({
   metrikUrl: process.env.CRIS_METRIK_URL || undefined,
+  collabUrl: process.env.CRIS_COLLAB_URL || undefined,
   adminToken: process.env.CRIS_ADMIN_TOKEN || undefined,
   ...storeOptionsFromEnv(process.env),
   onVercel: true,

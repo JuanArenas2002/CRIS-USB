@@ -20,6 +20,13 @@ const groupRef = z.object({
   type: z.string().nullable().optional(),
 });
 
+const rankingSchema = z.object({
+  index: z.number().min(0).max(100),
+  rank: z.number().int().positive(),
+  centerRank: z.number().int().positive().nullable(),
+  center: z.string().nullable(),
+});
+
 const author = {
   id: z.number().int(),
   name: z.string(),
@@ -31,15 +38,9 @@ const author = {
   scholarUrl: httpsUrl,
   mainGroup: groupRef.nullable(),
   photoUrl: z.string().startsWith('/api/investigators/').nullable(),
-  ranking: z
-    .object({
-      index: z.number().min(0).max(100),
-      rank: z.number().int().positive(),
-      centerRank: z.number().int().positive().nullable(),
-      center: z.string().nullable(),
-    })
-    .nullable()
-    .default(null),
+  ranking: rankingSchema.nullable().default(null),
+  tiers: z.object({ top12: rankingSchema.optional(), top60: rankingSchema.optional() }).default({}),
+  tierOnly: z.boolean().optional(),
   centers: z
     .array(
       z.object({
@@ -125,6 +126,7 @@ export function httpAuthorRepository(get: ApiGet): AuthorRepository {
       if (q.category) params.set('cat', q.category);
       if (q.groupId) params.set('group', String(q.groupId));
       if (q.centerId) params.set('center', String(q.centerId));
+      if (q.tier) params.set('tier', q.tier);
       return get(`/api/investigators?${params}`, pageSchema, signal);
     },
     async getById(id, signal) {

@@ -3,6 +3,8 @@ import { groupQueries } from '@/application/groups/group-queries';
 import { centerQueries } from '@/application/centers/center-queries';
 import { publicationQueries } from '@/application/publications/publication-queries';
 import { projectQueries } from '@/application/projects/project-queries';
+import { relationQueries } from '@/application/relations/relation-queries';
+import type { CollaborationMap, RelationsRepository } from '@/domain/relations/relations';
 import type { Project, ProjectRepository } from '@/domain/projects/project';
 import {
   publicationStats,
@@ -42,6 +44,7 @@ export function makeAuthor(over: Partial<AuthorProfile> = {}): AuthorProfile {
     metrics: null,
     photoUrl: null,
     ranking: { index: 92.5, rank: 4, centerRank: 1, center: 'MACONDOLAB' },
+    tiers: {},
     production: null,
     ...over,
   };
@@ -227,6 +230,49 @@ export const fakeProjectRepo = (projects: Project[] = [makeProject()]): ProjectR
   getById: async (id) => projects.find((p) => p.id === id) ?? null,
 });
 
+export const fakeRelationsRepo = (
+  map: Omit<CollaborationMap, 'year'> = {
+    countries: [
+      {
+        iso2: 'CO',
+        iso3: 'COL',
+        isoNumeric: '170',
+        country: 'Colombia',
+        local: true,
+        publications: 1352,
+        citations: 14354,
+      },
+      {
+        iso2: 'ES',
+        iso3: 'ESP',
+        isoNumeric: '724',
+        country: 'Spain',
+        local: false,
+        publications: 341,
+        citations: 5000,
+      },
+    ],
+  },
+): RelationsRepository => ({
+  countries: async (year) => ({ year, ...map }),
+  publications: async (iso3) =>
+    iso3 === 'ESP'
+      ? [
+          {
+            eid: '2-s2.0-85183412613',
+            title: 'Sporting Mind: The Interplay of Physical Activity and Psychological Health',
+            year: 2024,
+            doi: '10.3390/sports12010037',
+            journal: 'Sports',
+            docType: 'Review',
+            citations: 307,
+            quartile: 'Q1',
+            partners: ['Universidad Europea de Madrid'],
+          },
+        ]
+      : [],
+});
+
 export function renderApp(
   url: string,
   repo: AuthorRepository = fakeRepo(),
@@ -234,6 +280,7 @@ export function renderApp(
   centerRepo = fakeCenterRepo(),
   publicationRepo = fakePublicationRepo(),
   projectRepo = fakeProjectRepo(),
+  relationsRepo = fakeRelationsRepo(),
 ) {
   const queryClient = createQueryClient();
   queryClient.setDefaultOptions({ queries: { ...queryClient.getDefaultOptions().queries, retry: false } });
@@ -245,6 +292,7 @@ export function renderApp(
       centers={centerQueries(centerRepo)}
       publications={publicationQueries(publicationRepo)}
       projects={projectQueries(projectRepo)}
+      relations={relationQueries(relationsRepo)}
     >
       <MemoryRouter initialEntries={[url]}>
         <AppRoutes />

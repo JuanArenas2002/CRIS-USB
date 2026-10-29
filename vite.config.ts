@@ -9,6 +9,7 @@ import { storeOptionsFromEnv } from './scripts/stores.ts';
 function publicApi(env: Record<string, string>): Plugin {
   const handler = createPublicApi({
     metrikUrl: env.CRIS_METRIK_URL || undefined,
+    collabUrl: env.CRIS_COLLAB_URL || undefined,
     adminToken: env.CRIS_ADMIN_TOKEN || undefined,
     ...storeOptionsFromEnv(env),
   });

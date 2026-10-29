@@ -1,6 +1,25 @@
 import type { CenterRef } from '../centers/center';
 import type { OdsId } from '../ods/ods';
 
+/**
+ * Apartados del directorio (Top 12, Top 60): cada uno con su propio Excel de ranking, cargado en
+ * /admin/ranking con el mismo formato que el general e independiente de él (quien esté oculto o no
+ * figure en el general sale igual en su Top). Sin apartado, "Investigadores Unisimón": el general.
+ */
+export const RANKING_TIERS = { top12: 12, top60: 60 } as const;
+export type RankingTier = keyof typeof RANKING_TIERS;
+export const isRankingTier = (v: unknown): v is RankingTier =>
+  typeof v === 'string' && Object.hasOwn(RANKING_TIERS, v);
+
+/** Los del apartado, con los puestos e índice de su Excel (la tarjeta los muestra), por puesto. */
+export const inRankingTier = (all: Author[], tier: RankingTier): Author[] =>
+  all
+    .flatMap((a) => {
+      const ranking = a.tiers?.[tier];
+      return ranking ? [{ ...a, ranking }] : [];
+    })
+    .sort((a, b) => a.ranking.rank - b.ranking.rank);
+
 /** Categorías Minciencias de investigador, de mayor a menor. */
 export const AUTHOR_CATEGORIES = [
   { id: 'emerito', label: 'Emérito', code: 'IE' },
@@ -42,6 +61,10 @@ export interface Author {
   centers?: CenterRef[];
   /** Ranking de productividad USB (Excel cargado en /admin/ranking); null si no figura. */
   ranking?: AuthorRanking | null;
+  /** Su fila en el ranking de cada apartado (Top 12, Top 60) en el que figura. */
+  tiers?: Partial<Record<RankingTier, AuthorRanking>>;
+  /** Solo figura en un Top: tiene perfil y sale en su Top, pero no en el directorio general. */
+  tierOnly?: boolean;
 }
 
 /** Fila del ranking de productividad USB de un investigador. */
@@ -197,6 +220,8 @@ export interface AuthorListQuery {
   groupId?: number;
   /** Centro de investigación (id de Metri-K); ordena por puesto en ese centro. */
   centerId?: number;
+  /** Apartado (Top 12 / Top 60); sin él, el directorio general. */
+  tier?: RankingTier;
   page: number;
   pageSize: number;
 }
@@ -278,7 +303,7 @@ export function groupByCenter(all: Author[], centerId?: number): CenterSection[]
 
 export function queryAuthors(all: Author[], q: AuthorListQuery): AuthorListPage {
   const term = norm(q.search?.trim() ?? '');
-  const items = all
+  const items = (q.tier ? inRankingTier(all, q.tier) : all.filter((a) => !a.tierOnly))
     .filter(
       (a) =>
         (!q.category || a.category === q.category) &&
@@ -306,7 +331,7 @@ export function queryAuthors(all: Author[], q: AuthorListQuery): AuthorListPage 
  */
 export function featuredAuthors(all: Author[]): Author[] {
   return all
-    .filter((a) => a.metrics)
+    .filter((a) => a.metrics && !a.tierOnly)
     .sort(
       (a, b) =>
         (a.ranking?.rank ?? Infinity) - (b.ranking?.rank ?? Infinity) ||
@@ -315,7 +340,8 @@ export function featuredAuthors(all: Author[]): Author[] {
     );
 }
 
-export function authorStats(all: Author[]): AuthorStats {
+export function authorStats(everyone: Author[]): AuthorStats {
+  const all = everyone.filter((a) => !a.tierOnly);
   const byCategory = Object.fromEntries(AUTHOR_CATEGORIES.map((c) => [c.id, 0])) as Record<
     AuthorCategoryId,
     number

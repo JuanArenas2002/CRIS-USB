@@ -13,6 +13,8 @@ import http, { type IncomingMessage, type ServerResponse } from 'node:http';
 import { gzipSync } from 'node:zlib';
 import { pathToFileURL } from 'node:url';
 import { fetchInvestigatorCenters, fetchPublicCenters, fetchResolutionPdf } from './centers-source.ts';
+import { fetchCollaborationMap, fetchCountryPublications } from './collaboration-source.ts';
+import { FIRST_RELATIONS_YEAR } from '../src/domain/relations/relations.ts';
 import { fetchPublicGroups, mapLimit } from './groups-source.ts';
 import { fetchPublicProjects, fetchStaff, removeStaff, saveStaff, toStaff } from './projects-source.ts';
 import { MIN_CENTER_PASSWORD, hashPassword, verifyPassword } from './center-password.ts';
@@ -23,6 +25,7 @@ import {
   fetchInvestigators,
   normalizeDocument,
   publishAuthors,
+  publishWithTiers,
 } from './investigators-source.ts';
 import {
   MAX_PHOTO_BYTES,
@@ -46,6 +49,8 @@ import {
   type AuthorCategoryId,
   type GroupRef,
   withRankingCenter,
+  isRankingTier,
+  type RankingTier,
 } from '../src/domain/authors/author.ts';
 import {
   PUBLICATION_SORTS,
@@ -58,6 +63,8 @@ import {
 } from '../src/domain/publications/publication.ts';
 
 export const DEFAULT_METRIK_URL = 'https://metrik.unisimon.edu.co/back/api';
+/** API de colaboración (relacionamiento). Sin `/api` al final. */
+export const DEFAULT_COLLAB_URL = 'http://localhost:8000';
 export { DEFAULT_PHOTOS_DIR } from './stores.ts';
 const TTL_MS = 10 * 60 * 1000;
 const MAX_JSON_BYTES = 1024;
@@ -103,11 +110,14 @@ async function readBody(req: IncomingMessage, max: number): Promise<Buffer | nul
 
 export function createPublicApi({
   metrikUrl = DEFAULT_METRIK_URL,
+  collabUrl = DEFAULT_COLLAB_URL,
   adminToken,
   compress = false,
   ...storage
 }: {
   metrikUrl?: string;
+  /** API de colaboración (mapa de relacionamiento). */
+  collabUrl?: string;
   adminToken?: string;
   onVercel?: boolean;
   /** gzip propio del JSON: solo en el servidor propio (Vercel y Vite ya tienen su capa delante). */
@@ -122,12 +132,38 @@ export function createPublicApi({
     centerPasswords,
     ranking: rankingStore,
     rankingHidden,
+    rankingTiers,
     publications: publicationStore,
   } = createStores(storage);
   const metrikGroups = cached<GroupDetail[]>(() => fetchPublicGroups(`${base}/group`));
   const metrikCenters = cached<CenterDetail[]>(() => fetchPublicCenters(base));
   const metrikProjects = cached(() => fetchPublicProjects(base));
   // Fotos fuera de la caché, como los logos: lo que sube el admin se ve al instante.
+  // Relacionamiento: un mapa por año (y uno con todos), cacheado 10 min como lo demás.
+  const collabBase = collabUrl.replace(/\/+$/, '');
+  const collabByYear = new Map<number, () => ReturnType<typeof fetchCollaborationMap>>();
+  const collaboration = (year: number | null) => {
+    const key = year ?? 0;
+    if (!collabByYear.has(key))
+      collabByYear.set(
+        key,
+        cached(() => fetchCollaborationMap(collabBase, year)),
+      );
+    return collabByYear.get(key)!();
+  };
+  const countryPubs = new Map<string, () => ReturnType<typeof fetchCountryPublications>>();
+  /** Publicaciones con un país (ISO3 → nombre Scopus del mapa del mismo año); null si no está. */
+  const publicationsWith = async (iso3: string, year: number | null) => {
+    const country = (await collaboration(year)).countries.find((c) => c.iso3 === iso3);
+    if (!country) return null;
+    const key = `${iso3}:${year ?? ''}`;
+    if (!countryPubs.has(key))
+      countryPubs.set(
+        key,
+        cached(() => fetchCountryPublications(collabBase, country.country, year)),
+      );
+    return countryPubs.get(key)!();
+  };
   const projects = async () => {
     const v = await projectPhotos.versions();
     return (await metrikProjects()).map((p) => withProjectPhotos(p, v));
@@ -161,11 +197,13 @@ export function createPublicApi({
   // publicados, la primera visita tras vencer la caché tarda unos segundos. Pedir a Metri-K un
   // endpoint masivo de centros si molesta.
   const investigators = async () => {
-    const [withPhoto, v, ranking, hidden] = await Promise.all([
+    const [withPhoto, v, ranking, hidden, top12, top60] = await Promise.all([
       photoUrls(),
       logos.versions(),
       rankingStore.all(),
       rankingHidden.all(),
+      rankingTiers.top12.all(),
+      rankingTiers.top60.all(),
     ]);
     const withLogo = <C extends { id: number }>(c: C) => {
       const version = v.get(c.id);
@@ -174,9 +212,13 @@ export function createPublicApi({
     const known: CenterRef[] = (await metrikCenters().catch(() => []))
       .filter((c) => c.active)
       .map(({ id, code, acronym, name }) => withLogo({ id, code, acronym, name }));
-    return mapLimit(publishAuthors(await directory(), ranking, hidden), 8, async (a) =>
+    const published = publishWithTiers(await directory(), ranking, hidden, { top12, top60 });
+    return mapLimit(published, 8, async (a) =>
       withRankingCenter(
-        { ...withPhoto(a), centers: (await centersOf(a.id).catch((): CenterRef[] => [])).map(withLogo) },
+        {
+          ...withPhoto(a),
+          centers: (await centersOf(a.id).catch((): CenterRef[] => [])).map(withLogo),
+        },
         known,
       ),
     );
@@ -300,12 +342,14 @@ export function createPublicApi({
               }
             : null;
 
-      const rankingUpload = p === '/api/ranking';
+      // Ranking general (/api/ranking) o el de un apartado (/api/ranking/top12, /api/ranking/top60).
+      const rankingTier = /^\/api\/ranking\/(top12|top60)$/.exec(p)?.[1] as RankingTier | undefined;
+      const rankingUpload = p === '/api/ranking' || !!rankingTier;
       const rankingEntry = /^\/api\/ranking\/(\d{1,12})$/.exec(p);
       // Varios a la vez («Activar / Desactivar todos» en el admin): una sola escritura.
       const rankingBulk = p === '/api/ranking/visibility';
       // Lista del ranking para el admin: nombres y puestos de todos (incluidos los ocultos).
-      const adminRead = (rankingUpload || centerAccess || staff) && req.method === 'GET';
+      const adminRead = (p === '/api/ranking' || centerAccess || staff) && req.method === 'GET';
       const publicationsUpload = p === '/api/publications';
 
       // ── Escritura (y lectura del admin): fotos, logos, ODS, páginas y ranking, con token ──
@@ -523,9 +567,11 @@ export function createPublicApi({
           }
         }
         if (rankingUpload) {
-          // DELETE: sin ranking, se vuelve a publicar a los seleccionados de Metri-K.
+          // DELETE: sin ranking general, se vuelve a publicar a los seleccionados de Metri-K; sin el de
+          // un apartado, ese Top queda vacío.
+          const target = rankingTier ? rankingTiers[rankingTier] : rankingStore;
           if (req.method === 'DELETE') {
-            await rankingStore.replace({});
+            await target.replace({});
             return send(200, { published: 0, notFound: [], inactive: [], invalid: [] });
           }
           const body = await readBody(req, MAX_RANKING_BYTES);
@@ -544,6 +590,7 @@ export function createPublicApi({
           const { byDocument, authors } = await directory();
           const active = new Set(authors.map((a) => a.id));
           const byId: Record<string, unknown> = {};
+          const labels = new Map<number, string>();
           const notFound: string[] = [];
           const inactive: string[] = [];
           const invalid: string[] = [];
@@ -556,11 +603,19 @@ export function createPublicApi({
             else if (id === undefined) notFound.push(label);
             else if (!active.has(id)) inactive.push(label);
             // Repetido: queda el mejor puesto.
-            else if (!byId[id] || entry.rank < (byId[id] as { rank: number }).rank) byId[id] = entry;
+            else if (!byId[id] || entry.rank < (byId[id] as { rank: number }).rank) {
+              byId[id] = entry;
+              labels.set(id, label);
+            }
           }
           try {
-            const saved = await rankingStore.replace(byId);
-            return send(200, { published: Object.keys(saved).length, notFound, inactive, invalid });
+            const saved = await target.replace(byId);
+            return send(200, {
+              published: Object.keys(saved).length,
+              notFound,
+              inactive,
+              invalid,
+            });
           } catch (err) {
             return send(500, { detail: `No se pudo guardar el ranking: ${(err as Error).message}` });
           }
@@ -628,6 +683,7 @@ export function createPublicApi({
             category: AUTHOR_CATEGORIES.some((c) => c.id === cat) ? (cat as AuthorCategoryId) : undefined,
             groupId: Number(sp.get('group')) || undefined,
             centerId: Number(sp.get('center')) || undefined,
+            tier: isRankingTier(sp.get('tier')) ? (sp.get('tier') as RankingTier) : undefined,
             page: Math.max(1, Math.floor(page)),
             pageSize: Math.min(Math.max(1, Math.floor(size)), MAX_PAGE_SIZE),
           }),
@@ -695,6 +751,19 @@ export function createPublicApi({
         return g ? send(200, g) : send(404, { detail: 'No encontrado' });
       }
 
+      const countryPubsRoute = /^\/api\/relations\/countries\/([A-Z]{3})\/publications$/.exec(p);
+      if (p === '/api/relations/countries' || countryPubsRoute) {
+        const raw = sp.get('year');
+        const year = raw ? Number(raw) : null;
+        if (
+          year !== null &&
+          !(Number.isInteger(year) && year >= FIRST_RELATIONS_YEAR && year <= new Date().getFullYear())
+        )
+          return send(400, { detail: 'Año inválido' });
+        if (!countryPubsRoute) return send(200, await collaboration(year));
+        const pubs = await publicationsWith(countryPubsRoute[1]!, year);
+        return pubs ? send(200, pubs) : send(404, { detail: 'País sin publicaciones' });
+      }
       // ponytail: el listado va completo (~10 proyectos, pocos KB); resumirlo si pasan de cientos.
       if (p === '/api/projects') return send(200, await projects());
       const prj = /^\/api\/projects\/(\d{1,12})$/.exec(p);

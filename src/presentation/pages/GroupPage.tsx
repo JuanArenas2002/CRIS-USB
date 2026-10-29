@@ -26,7 +26,12 @@ import { categoryTone } from '@/presentation/components/groups/category-tone';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { Field, InfoColumn, SectionHead } from '@/presentation/components/ui/InfoBlocks';
 import { TabBar } from '@/presentation/components/ui/TabBar';
-import { TypologyCard, TYPOLOGY_STYLE } from '@/presentation/components/ui/TypologyCard';
+import { TypologyCard } from '@/presentation/components/ui/TypologyCard';
+import {
+  EMPTY_FILTERS,
+  ProductsTable,
+  type ProductFilters,
+} from '@/presentation/components/authors/ProductsTable';
 import { useAuthorProfiles } from '@/presentation/hooks/use-authors';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
 import { useLabels } from '@/presentation/hooks/use-labels';
@@ -104,9 +109,10 @@ function GroupProfile({ group }: { group: GroupDetail }) {
       ),
     [profiles.data],
   );
-  const [typology, setTypology] = useState<TypologyId | ''>('');
+  // Mismos filtros que la tabla de productos del investigador; una tarjeta de tipología la preselecciona.
+  const [filters, setFilters] = useState<ProductFilters>(EMPTY_FILTERS);
   const showTypology = (t: TypologyId) => {
-    setTypology(t);
+    setFilters({ ...EMPTY_FILTERS, typology: t });
     setTab('produccion');
   };
   const articles = products.filter((p) => p.type === 'Artículo científico').length;
@@ -197,16 +203,12 @@ function GroupProfile({ group }: { group: GroupDetail }) {
               <h1 className="text-headline-lg-mobile font-bold tracking-tight text-primary md:text-headline-lg">
                 {group.name}
               </h1>
-              <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-body-sm text-on-surface-variant">
-                {leader ? (
-                  <span className="flex items-center gap-1.5 font-medium text-primary">
-                    <Icon name="verified_user" className="text-[16px] text-secondary" />
-                    {t('detail.leader', { name: displayName(leader.name) })}
-                  </span>
-                ) : null}
-                {leader ? <span className="text-neutral-muted">·</span> : null}
-                <span>Universidad Simón Bolívar{city ? ` (${city})` : ''}</span>
-              </p>
+              {/* Encabezado limpio: solo identidad. Líder y avalista van en Información institucional. */}
+              {city ? (
+                <p className="flex items-center gap-1.5 text-body-sm text-on-surface-variant">
+                  <Icon name="location_on" className="text-[16px] text-secondary" /> {city}
+                </p>
+              ) : null}
               <GroupCenters ids={group.centerIds} className="mt-1" />
             </div>
           </div>
@@ -414,8 +416,8 @@ function GroupProfile({ group }: { group: GroupDetail }) {
           ) : productionReady ? (
             <GroupProduction
               products={products}
-              typology={typology}
-              onTypology={setTypology}
+              filters={filters}
+              onFiltersChange={setFilters}
               note={productionHint}
             />
           ) : (
@@ -442,6 +444,8 @@ function GroupProfile({ group }: { group: GroupDetail }) {
 const capitalize = (s: string) => s.charAt(0).toLocaleUpperCase() + s.slice(1);
 
 /** Nombre y textos de cada línea: libres, del backend; se traducen en el navegador (no son nombres propios). */
+const LINES_PREVIEW = 6;
+
 function ResearchLines({ lines }: { lines: GroupLine[] }) {
   const { t } = useTranslation(['groups', 'common']);
   const stride = 1 + LINE_FIELDS.length;
@@ -449,6 +453,10 @@ function ResearchLines({ lines }: { lines: GroupLine[] }) {
   const text = (line: number, field: number) => tr.texts[line * stride + field];
   // Sin traducir en una interfaz en otro idioma, el texto se marca como español (lectores de pantalla).
   const lang = sourceLang(tr.status);
+  // Más de 6 líneas: se muestran 6 y el resto con «Ver más líneas».
+  const [showAll, setShowAll] = useState(false);
+  const shown = showAll ? lines : lines.slice(0, LINES_PREVIEW);
+  const hidden = lines.length - LINES_PREVIEW;
   return (
     <div className="flex-1 border-border-subtle/60 pb-6 lg:border-r lg:pr-6 lg:pb-0 max-lg:border-b">
       <h3 className="mb-3.5 flex items-center gap-2 text-headline-sm font-bold tracking-tight text-primary">
@@ -465,7 +473,7 @@ function ResearchLines({ lines }: { lines: GroupLine[] }) {
           aria-label={t('common:autoTranslate.pending')}
           className="grid grid-cols-1 items-start gap-2.5 sm:grid-cols-2"
         >
-          {lines.map((line, i) => (
+          {shown.map((line, i) => (
             <div
               key={line.id}
               className="flex items-center gap-2.5 rounded-xl border border-border-subtle/80 bg-canvas-cream p-3"
@@ -480,7 +488,7 @@ function ResearchLines({ lines }: { lines: GroupLine[] }) {
         </div>
       ) : lines.length ? (
         <div lang={lang} className="grid grid-cols-1 items-start gap-2.5 sm:grid-cols-2">
-          {lines.map((line, i) => {
+          {shown.map((line, i) => {
             const fields = LINE_FIELDS.filter((f) => line[f.key]);
             return (
               <details
@@ -523,6 +531,20 @@ function ResearchLines({ lines }: { lines: GroupLine[] }) {
               </details>
             );
           })}
+          {hidden > 0 ? (
+            <button
+              type="button"
+              aria-expanded={showAll}
+              onClick={() => setShowAll((v) => !v)}
+              className="inline-flex items-center justify-center gap-1 justify-self-start rounded-lg px-3 py-2 text-label-md font-semibold text-secondary transition-colors hover:bg-surface-cream-alt sm:col-span-2"
+            >
+              {showAll ? t('detail.lessLines') : t('detail.moreLines', { count: hidden })}
+              <Icon
+                name="expand_more"
+                className={`text-[18px] transition-transform ${showAll ? 'rotate-180' : ''}`}
+              />
+            </button>
+          ) : null}
         </div>
       ) : (
         <p className="text-body-sm text-neutral-muted">{t('detail.noLines')}</p>
@@ -720,140 +742,28 @@ function Kpi({
   );
 }
 
-const PRODUCTS_PAGE = 20;
-
+/** Producción del grupo: la misma tabla (filtros incluidos) que los productos del investigador. */
 function GroupProduction({
   products,
-  typology,
-  onTypology,
+  filters,
+  onFiltersChange,
   note,
 }: {
   products: Product[];
-  typology: TypologyId | '';
-  onTypology: (t: TypologyId | '') => void;
+  filters: ProductFilters;
+  onFiltersChange: (f: ProductFilters) => void;
   note: string;
 }) {
-  const { t } = useTranslation(['groups', 'common', 'authors']);
-  const labels = useLabels();
-  const [limit, setLimit] = useState(PRODUCTS_PAGE);
-  const visible = products.filter((p) => !typology || p.typology === typology);
-  const chips: { id: TypologyId | ''; label: string; n: number }[] = [
-    { id: '', label: t('production.all'), n: products.length },
-    ...TYPOLOGIES.map((x) => ({
-      id: x.id,
-      label: labels.typologyShort(x.id),
-      n: products.filter((p) => p.typology === x.id).length,
-    })),
-  ];
-  const select = (t: TypologyId | '') => {
-    setLimit(PRODUCTS_PAGE);
-    onTypology(t);
-  };
-
+  const { t } = useTranslation('groups');
   return (
-    <section className={`${card} flex flex-col gap-5 p-5 md:p-6`}>
+    <section className="flex flex-col gap-4">
       <div>
         <h2 className="text-headline-md font-semibold text-primary">{t('production.title')}</h2>
         <p className="text-body-sm text-on-surface-variant">
           {t('production.lead', { count: products.length, note })}
         </p>
       </div>
-      <div
-        role="group"
-        aria-label={t('production.filterLabel')}
-        className="flex flex-wrap items-center gap-2"
-      >
-        {chips.map((c) => (
-          <button
-            key={c.id || 'all'}
-            type="button"
-            aria-pressed={typology === c.id}
-            disabled={!c.n}
-            onClick={() => select(c.id)}
-            className={`rounded-full px-4 py-1.5 text-label-sm font-semibold transition-all disabled:cursor-default disabled:opacity-50 ${
-              typology === c.id
-                ? 'bg-primary text-on-primary'
-                : 'bg-canvas-cream text-on-surface-variant enabled:hover:bg-badge-sage-bg'
-            }`}
-          >
-            {c.label} ({c.n})
-          </button>
-        ))}
-      </div>
-
-      {visible.length ? (
-        <ul className="flex flex-col gap-3">
-          {visible.slice(0, limit).map((p) => (
-            <ProductItem key={p.key} product={p} />
-          ))}
-        </ul>
-      ) : (
-        <p className="py-8 text-center text-body-md text-neutral-muted">{t('production.none')}</p>
-      )}
-      {visible.length > limit ? (
-        <button
-          type="button"
-          onClick={() => setLimit((l) => l + PRODUCTS_PAGE)}
-          className="self-center rounded-lg border border-border-subtle px-5 py-2 text-label-md font-semibold text-primary transition-colors hover:bg-surface-cream-alt"
-        >
-          {t('production.more', { count: visible.length - limit })}
-        </button>
-      ) : null}
+      <ProductsTable products={products} filters={filters} onFiltersChange={onFiltersChange} />
     </section>
-  );
-}
-
-function ProductItem({ product: p }: { product: Product }) {
-  const { t } = useTranslation(['groups', 'common', 'authors']);
-  const labels = useLabels();
-  const icon = TYPOLOGIES.find((x) => x.id === p.typology)!.icon;
-  const style = TYPOLOGY_STYLE[p.typology];
-  return (
-    <li className="flex flex-col items-start justify-between gap-4 rounded-xl bg-canvas-cream p-4 transition-all hover:bg-surface-cream-alt sm:flex-row">
-      <div className="flex min-w-0 items-start gap-3.5">
-        <span
-          className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${style.iconBox}`}
-        >
-          <Icon name={icon} className="text-[18px]" />
-        </span>
-        <div className="flex min-w-0 flex-col gap-1">
-          <p className="flex flex-wrap items-center gap-2">
-            <span className={`rounded-full px-2 py-0.5 text-label-sm font-bold ${style.chip}`}>
-              {labels.typology(p.typology)}
-            </span>
-            <span className="font-mono text-[12px] font-semibold text-secondary">
-              {labels.domain(p.type)}
-            </span>
-            {p.year ? <span className="text-[12px] text-neutral-muted">{p.year}</span> : null}
-          </p>
-          <h3 className="text-headline-sm font-semibold text-primary">{p.title}</h3>
-          {p.authors || p.venue ? (
-            <p className="text-body-sm text-on-surface-variant">
-              {p.authors}
-              {p.authors && p.venue ? ' — ' : null}
-              {p.venue ? <em>{p.venue}</em> : null}
-            </p>
-          ) : null}
-          {p.doi || p.index ? (
-            <p className="mt-0.5 flex flex-wrap items-center gap-x-4 text-[12px] font-medium text-secondary">
-              {p.doi ? <span>DOI: {p.doi}</span> : null}
-              {p.index ? <span>{labels.domain(p.index)}</span> : null}
-            </p>
-          ) : null}
-        </div>
-      </div>
-      {p.url ? (
-        <a
-          href={p.url}
-          target="_blank"
-          rel="noopener"
-          className="inline-flex shrink-0 items-center gap-1 self-end text-label-sm font-semibold text-primary hover:text-secondary sm:self-center"
-        >
-          {p.doi ? t('production.viewDoi') : t('production.viewProduct')}{' '}
-          <Icon name="open_in_new" className="text-[16px]" />
-          <span className="sr-only">{t('common:newTab')}</span>
-        </a>
-      ) : null}
-    </li>
   );
 }

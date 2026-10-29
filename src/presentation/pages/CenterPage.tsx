@@ -157,39 +157,16 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
               </span>
             )}
             <div className="flex min-w-0 flex-col gap-1">
-              <p className="flex flex-wrap items-center gap-2">
-                <span className="rounded bg-primary-container px-2 py-0.5 text-label-sm font-bold text-on-primary">
-                  {c.code}
-                </span>
-                {c.acronym ? (
-                  <span className="text-headline-sm font-bold text-secondary">{c.acronym}</span>
-                ) : null}
-                <CenterStatus size="sm" />
-              </p>
+              {/* Encabezado limpio: solo identidad. Código, estado y dirección van en Información institucional. */}
+              {c.acronym ? <p className="text-headline-sm font-bold text-secondary">{c.acronym}</p> : null}
               <h1 className="text-headline-lg-mobile font-bold tracking-tight text-primary md:text-headline-lg">
                 {c.name}
               </h1>
-              <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-body-sm text-on-surface-variant">
-                {director ? (
-                  <span className="flex items-center gap-1.5 font-medium text-primary">
-                    <Icon name="verified_user" className="text-[16px] text-secondary" />
-                    {t('detail.director', { name: displayName(director.name) })}
-                  </span>
-                ) : null}
-                {director ? <span className="text-neutral-muted">·</span> : null}
-                <span>Universidad Simón Bolívar{city ? ` (${city})` : ''}</span>
-                {c.website ? (
-                  <a
-                    href={c.website}
-                    target="_blank"
-                    rel="noopener"
-                    className="inline-flex items-center gap-1 font-semibold text-secondary hover:underline"
-                  >
-                    <Icon name="language" className="text-[16px]" /> {t('detail.website')}
-                    <span className="sr-only">{t('common:newTab')}</span>
-                  </a>
-                ) : null}
-              </p>
+              {city ? (
+                <p className="flex items-center gap-1.5 text-body-sm text-on-surface-variant">
+                  <Icon name="location_on" className="text-[16px] text-secondary" /> {city}
+                </p>
+              ) : null}
             </div>
           </div>
         </section>
@@ -215,6 +192,18 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
               <Field label={t('detail.status')}>
                 <CenterStatus size="sm" />
               </Field>
+              {c.website ? (
+                <a
+                  href={c.website}
+                  target="_blank"
+                  rel="noopener"
+                  className="mt-1 inline-flex items-center justify-center gap-2 self-start rounded-lg bg-secondary px-4 py-2.5 text-label-md font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary"
+                >
+                  <Icon name="language" className="text-[18px]" /> {t('detail.website')}
+                  <Icon name="open_in_new" className="text-[16px]" />
+                  <span className="sr-only">{t('common:newTab')}</span>
+                </a>
+              ) : null}
             </InfoColumn>
             <InfoColumn icon="location_on" title={t('detail.location')}>
               <Field label={t('detail.campus')}>{city ?? '—'}</Field>
@@ -311,10 +300,6 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
           </div>
         </section>
 
-        <CenterGroups centerId={c.id} />
-
-        <CenterProjects centerName={c.name} />
-
         {/* Resoluciones */}
         <section className={`${card} p-5 md:p-6`}>
           <SectionHead icon="gavel">{t('detail.resolutions')}</SectionHead>
@@ -377,6 +362,10 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
             <p className="text-body-sm text-neutral-muted">{t('detail.noResolutions')}</p>
           )}
         </section>
+
+        <CenterGroups centerId={c.id} />
+
+        <CenterProjects centerName={c.name} />
 
         <Link
           to="/centros"

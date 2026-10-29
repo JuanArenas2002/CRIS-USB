@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { displayName } from '@/domain/authors/author';
+import { RANKING_TIERS, displayName, type RankingTier } from '@/domain/authors/author';
 import { ApiError } from '@/infrastructure/http/api-client';
 import {
   RANKING_SHEET,
@@ -18,13 +18,18 @@ import { readXlsxSheet } from '@/infrastructure/ranking/xlsx';
 import { AdminTokenForm, useAdminToken } from '@/presentation/components/admin/AdminToken';
 import { useConfirm } from '@/presentation/components/admin/ConfirmDialog';
 import { Icon } from '@/presentation/components/ui/Icon';
+import { AuthorQueriesContext } from '@/presentation/hooks/use-authors';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
 
 type Status = { kind: 'idle' | 'busy' | 'ok' | 'error'; text?: string };
 
+const TIERS = Object.keys(RANKING_TIERS) as RankingTier[];
+const tierName = (t?: RankingTier) => (t ? `Top ${RANKING_TIERS[t]}` : 'Investigadores Unisimón');
+
 /**
- * Vista oculta (fuera del menú, noindex, bloqueada en robots.txt) para cargar el ranking de
- * productividad USB. El ranking decide quién sale en el directorio de investigadores.
+ * Vista oculta (fuera del menú, noindex, bloqueada en robots.txt) para cargar los rankings de
+ * productividad USB, todos con el mismo Excel: el general (decide quién sale en el directorio,
+ * "Investigadores Unisimón") y los del Top 12 y Top 60 (apartados del directorio).
  */
 export function AdminRankingPage() {
   const [confirm, confirmDialog] = useConfirm();
@@ -39,6 +44,16 @@ export function AdminRankingPage() {
   const [file, setFile] = useState<{ name: string; rows: RankingRow[] } | null>(null);
   const [result, setResult] = useState<RankingResult | null>(null);
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
+  const [tier, setTier] = useState<RankingTier | undefined>();
+  // Cuántos muestra hoy cada Top (publicados con fila en ese Excel).
+  const authors = useQuery({ ...useContext(AuthorQueriesContext)!.all(), enabled: !!token });
+  const inTier = (t: RankingTier) => authors.data?.filter((a) => a.tiers?.[t]).length;
+  const choose = (t: RankingTier | undefined) => {
+    setTier(t);
+    setFile(null);
+    setResult(null);
+    setStatus({ kind: 'idle' });
+  };
 
   const pick = async (f: File | undefined) => {
     if (!f) return;
@@ -98,6 +113,36 @@ export function AdminRankingPage() {
               </button>
             </div>
 
+            <div
+              role="group"
+              aria-label="Ranking a administrar"
+              className="inline-flex flex-wrap self-start rounded-full bg-surface-container-lowest p-1 shadow-sm ring-1 ring-border-subtle"
+            >
+              {[undefined, ...TIERS].map((t) => (
+                <button
+                  key={t ?? 'general'}
+                  type="button"
+                  aria-pressed={tier === t}
+                  disabled={busy}
+                  onClick={() => choose(t)}
+                  className={`h-9 rounded-full px-4 text-label-md font-semibold whitespace-nowrap transition-colors disabled:opacity-60 ${
+                    tier === t
+                      ? 'bg-primary text-on-primary shadow-sm'
+                      : 'text-on-surface-variant hover:bg-surface-cream-alt'
+                  }`}
+                >
+                  {tierName(t)}
+                </button>
+              ))}
+            </div>
+            <p className="text-body-sm text-neutral-muted">
+              {tier
+                ? `Excel del ${tierName(tier)}, mismo formato que el general. Es independiente del general: sale todo el que esté activo en GrupLAC, aunque esté oculto o no figure en el general.${
+                    inTier(tier) === undefined ? '' : ` Hoy muestra ${inTier(tier)} investigadores.`
+                  }`
+                : 'Ranking general: decide quién sale en el directorio («Investigadores Unisimón»).'}
+            </p>
+
             <div className="flex flex-col gap-4 rounded-xl bg-surface-container-lowest p-5 shadow-sm">
               <label className="cursor-pointer rounded-lg border border-dashed border-border-subtle px-3 py-6 text-center text-label-md font-semibold text-secondary hover:bg-surface-cream-alt">
                 <Icon name="upload_file" className="mr-1 align-middle text-[20px]" />
@@ -117,13 +162,16 @@ export function AdminRankingPage() {
                   disabled={!file || busy}
                   onClick={() =>
                     run(
-                      () => uploadRanking(file!.rows, token),
-                      (r) => `Ranking publicado: ${r.published} investigadores en el directorio`,
+                      () => uploadRanking(file!.rows, token, tier),
+                      (r) =>
+                        tier
+                          ? `${tierName(tier)} publicado: ${r.published} investigadores`
+                          : `Ranking publicado: ${r.published} investigadores en el directorio`,
                     )
                   }
                   className="h-10 rounded-lg bg-primary px-5 text-label-md font-semibold text-on-primary hover:bg-secondary disabled:opacity-40"
                 >
-                  Publicar ranking
+                  {tier ? `Publicar ${tierName(tier)}` : 'Publicar ranking'}
                 </button>
                 <button
                   type="button"
@@ -131,17 +179,22 @@ export function AdminRankingPage() {
                   onClick={async () => {
                     if (
                       await confirm(
-                        '¿Quitar el ranking? El directorio volverá a mostrar los seleccionados de Metri-K.',
+                        tier
+                          ? `¿Quitar el ${tierName(tier)}? Ese apartado del directorio quedará vacío.`
+                          : '¿Quitar el ranking? El directorio volverá a mostrar los seleccionados de Metri-K.',
                       )
                     )
                       run(
-                        () => clearRanking(token),
-                        () => 'Ranking quitado: se muestran los seleccionados de Metri-K',
+                        () => clearRanking(token, tier),
+                        () =>
+                          tier
+                            ? `${tierName(tier)} quitado`
+                            : 'Ranking quitado: se muestran los seleccionados de Metri-K',
                       );
                   }}
                   className="h-10 rounded-lg px-3 text-label-md font-semibold text-error hover:bg-error-container/40 disabled:opacity-40"
                 >
-                  Quitar ranking
+                  {tier ? `Quitar ${tierName(tier)}` : 'Quitar ranking'}
                 </button>
               </div>
               {status.kind !== 'idle' ? (
@@ -162,7 +215,7 @@ export function AdminRankingPage() {
               </div>
             ) : null}
           </div>
-          <RankingList token={token} onUnauthorized={rejected} />
+          {tier ? null : <RankingList token={token} onUnauthorized={rejected} />}
         </>
       )}
     </div>

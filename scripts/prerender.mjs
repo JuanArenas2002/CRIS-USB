@@ -10,7 +10,7 @@ import { fetchPublicProjects } from './projects-source.ts';
 import {
   fetchGroupMembers,
   fetchInvestigators,
-  publishAuthors,
+  publishWithTiers,
   withProfiles,
 } from './investigators-source.ts';
 import { DEFAULT_METRIK_URL } from './public-api.ts';
@@ -43,9 +43,13 @@ const metrikCenters = await fetchPublicCenters(metrik);
 const centerRefs = metrikCenters
   .filter((c) => c.active)
   .map(({ id, code, acronym, name }) => ({ id, code, acronym, name, logoUrl: logoOf(id) }));
-// Publicados: los del ranking USB (/admin/ranking) o, sin ranking, los seleccionados en Metri-K.
+// Publicados: los del ranking USB (/admin/ranking) o, sin ranking, los seleccionados en Metri-K;
+// más los del Top 12 / Top 60 (su propio Excel), que también tienen perfil.
 const directory = await fetchInvestigators(metrik);
-const ranked = publishAuthors(directory, await stores.ranking.all(), await stores.rankingHidden.all());
+const ranked = publishWithTiers(directory, await stores.ranking.all(), await stores.rankingHidden.all(), {
+  top12: await stores.rankingTiers.top12.all(),
+  top60: await stores.rankingTiers.top60.all(),
+});
 const authors = (await withProfiles(metrik, { authors: ranked, production: directory.production })).map((a) =>
   ssr.withRankingCenter(
     {
@@ -178,6 +182,8 @@ await writePage('/productos', path.join(dist, 'productos', 'index.html'), (qc) =
     qc.fetchQuery(publicationsQ.stats()),
   ]),
 );
+// Relacionamiento: el mapa se pide en el navegador (la API de colaboración puede no estar en el build).
+await writePage('/relacionamiento', path.join(dist, 'relacionamiento', 'index.html'));
 for (const section of ssr.NAV_ITEMS.filter((i) => !i.ready).map((i) => i.to)) {
   await writePage(section, path.join(dist, section, 'index.html'));
 }
@@ -187,7 +193,7 @@ await writePage('/404', path.join(dist, '404.html'));
 const xmlEsc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${['/', '/grupos', ...groupPaths, '/centros', ...centerPaths, '/proyectos', ...projectPaths, ...(publications.length ? ['/productos'] : []), ...profilePaths].map((p) => `  <url><loc>${xmlEsc(siteUrl + p)}</loc></url>`).join('\n')}
+${['/', '/grupos', ...groupPaths, '/centros', ...centerPaths, '/proyectos', ...projectPaths, '/relacionamiento', ...(publications.length ? ['/productos'] : []), ...profilePaths].map((p) => `  <url><loc>${xmlEsc(siteUrl + p)}</loc></url>`).join('\n')}
 </urlset>
 `;
 await fs.writeFile(path.join(dist, 'sitemap.xml'), sitemap);

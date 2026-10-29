@@ -38,9 +38,6 @@ export function SiteHeader() {
             <span className="text-headline-sm leading-none font-semibold tracking-tight text-primary">
               UNISIMÓN RESEARCH
             </span>
-            <span className="mt-0.5 text-label-sm tracking-wider text-on-surface-variant uppercase">
-              Universidad Simón Bolívar
-            </span>
           </span>
         </Link>
 
