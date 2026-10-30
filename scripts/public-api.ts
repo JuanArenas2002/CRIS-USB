@@ -64,7 +64,7 @@ import {
 
 export const DEFAULT_METRIK_URL = 'https://metrik.unisimon.edu.co/back/api';
 /** API de colaboración (relacionamiento). Sin `/api` al final. */
-export const DEFAULT_COLLAB_URL = 'http://localhost:8000';
+export const DEFAULT_COLLAB_URL = 'https://metrik.unisimon.edu.co/etl';
 export { DEFAULT_PHOTOS_DIR } from './stores.ts';
 const TTL_MS = 10 * 60 * 1000;
 const MAX_JSON_BYTES = 1024;
