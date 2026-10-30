@@ -1,7 +1,7 @@
 // Servidor de producción propio (sin Vercel ni nginx obligatorio): `npm run build && npm start`.
 // Sirve las páginas prerenderizadas de dist/ y el BFF (/api) en un solo proceso Node.
 // Todo se configura con variables de entorno (.env, ver .env.example):
-//   HOST, PORT, CRIS_STATIC_DIR, CRIS_METRIK_URL, CRIS_ADMIN_TOKEN, CRIS_PHOTOS_DIR,
+//   HOST, PORT, CRIS_STATIC_DIR, CRIS_METRIK_URL, CRIS_COLLAB_URL, CRIS_ADMIN_TOKEN, CRIS_PHOTOS_DIR,
 //   BLOB_* (opcional, Vercel Blob en vez de disco).
 // Detrás de nginx/IIS/Apache también funciona: basta con hacer proxy de todo al PORT.
 import fs from 'node:fs';
@@ -122,6 +122,7 @@ if (import.meta.main) {
   const api = createPublicApi({
     compress: true,
     metrikUrl: env.CRIS_METRIK_URL || undefined,
+    collabUrl: env.CRIS_COLLAB_URL || undefined,
     adminToken: env.CRIS_ADMIN_TOKEN || undefined,
     ...storeOptionsFromEnv(env),
   });

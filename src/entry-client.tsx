@@ -9,6 +9,8 @@ import { centerQueries } from '@/application/centers/center-queries';
 import { groupQueries } from '@/application/groups/group-queries';
 import { publicationQueries } from '@/application/publications/publication-queries';
 import { projectQueries } from '@/application/projects/project-queries';
+import { relationQueries } from '@/application/relations/relation-queries';
+import { httpRelationsRepository } from '@/infrastructure/relations/http-relations-repository';
 import { httpCenterRepository } from '@/infrastructure/centers/http-center-repository';
 import { httpGroupRepository } from '@/infrastructure/groups/http-group-repository';
 import { httpAuthorRepository } from '@/infrastructure/authors/http-author-repository';
@@ -32,6 +34,7 @@ const groups = groupQueries(httpGroupRepository(api));
 const centers = centerQueries(httpCenterRepository(api));
 const publications = publicationQueries(httpPublicationRepository(api));
 const projects = projectQueries(httpProjectRepository(api));
+const relations = relationQueries(httpRelationsRepository(api));
 const queryClient = createQueryClient();
 const root = document.getElementById('root')!;
 
@@ -54,6 +57,7 @@ const app = (
       centers={centers}
       publications={publications}
       projects={projects}
+      relations={relations}
     >
       <BrowserRouter basename={BASE || undefined}>
         <AppRoutes />

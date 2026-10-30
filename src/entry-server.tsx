@@ -22,6 +22,7 @@ import { centerQueries, type CenterQueries } from '@/application/centers/center-
 import { groupQueries, type GroupQueries } from '@/application/groups/group-queries';
 import { publicationQueries, type PublicationQueries } from '@/application/publications/publication-queries';
 import { projectQueries, type ProjectQueries } from '@/application/projects/project-queries';
+import { relationQueries } from '@/application/relations/relation-queries';
 import { projectSlug, type Project } from '@/domain/projects/project';
 import {
   publicationStats,
@@ -82,6 +83,12 @@ export function createServerProjectQueries(projects: Project[]): ProjectQueries 
   });
 }
 
+/** El prerender no consulta la API de colaboración (puede no estar disponible en el build). */
+const SERVER_RELATIONS = relationQueries({
+  countries: async (year) => ({ year, countries: [] }),
+  publications: async () => [],
+});
+
 export function render(
   url: string,
   queryClient: QueryClient,
@@ -99,6 +106,8 @@ export function render(
       groups={groups}
       centers={centers}
       publications={publications}
+      // Relacionamiento no se prerenderiza con datos: el mapa se carga en el navegador.
+      relations={SERVER_RELATIONS}
       projects={projects}
       onHead={(m) => (head.meta = m)}
     >

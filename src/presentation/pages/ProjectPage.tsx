@@ -217,16 +217,14 @@ function ProjectProfile({ project: p }: { project: Project }) {
             <h1 className="text-headline-lg-mobile leading-snug font-bold tracking-tight text-primary md:text-headline-lg">
               {p.title}
             </h1>
-            <p className="flex flex-wrap items-center gap-2">
-              <span className="rounded bg-surface-cream-alt px-2 py-0.5 text-label-md tracking-wider text-primary">
-                {t('detail.code', { code: p.code })}
-              </span>
-              <ProjectStatus status={p.status} />
+            {/* Encabezado limpio: el código ya va en la ruta y los centros en «Equipo, grupos y centros». */}
+            <p className="flex flex-wrap items-center gap-3 text-body-sm text-on-surface-variant">
               {p.territory ? (
-                <span className="inline-flex items-center gap-1 rounded bg-surface-cream-alt px-2 py-0.5 text-label-md text-on-surface-variant">
-                  <Icon name="location_on" className="text-[14px]" /> {p.territory}
+                <span className="flex items-center gap-1.5">
+                  <Icon name="location_on" className="text-[16px] text-secondary" /> {p.territory}
                 </span>
               ) : null}
+              <ProjectStatus status={p.status} />
             </p>
           </div>
         </div>

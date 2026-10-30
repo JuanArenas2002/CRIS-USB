@@ -9,6 +9,7 @@ import type {
   AuthorProfile,
   AuthorRanking,
   GroupRef,
+  RankingTier,
   ScopusPublication,
   TechDevelopment,
   Thesis,
@@ -244,6 +245,44 @@ export function publishAuthors(
   return renumber(
     authors.filter((a) => a.id in ranking && !hidden[a.id]).map((a) => ({ ...a, ranking: ranking[a.id]! })),
   );
+}
+
+/**
+ * Publicados del general (publishAuthors) más los de cada Top: activos en GrupLAC con fila en su
+ * Excel, aunque estén ocultos o fuera del general (esos van con `tierOnly`). Los puestos de cada Top
+ * se renumeran entre sus activos.
+ */
+export function publishWithTiers(
+  dir: Pick<InvestigatorDirectory, 'authors' | 'selected'>,
+  ranking: Record<string, AuthorRanking>,
+  hidden: Record<string, true>,
+  tierRows: Record<RankingTier, Record<string, AuthorRanking>>,
+): Author[] {
+  const general = publishAuthors(dir, ranking, hidden);
+  const byTier = Object.fromEntries(
+    (Object.keys(tierRows) as RankingTier[]).map((t) => [
+      t,
+      new Map(
+        renumber(
+          dir.authors
+            .filter((a) => a.id in tierRows[t])
+            .map((a) => ({ id: a.id, ranking: tierRows[t][a.id]! })),
+        ).map((a) => [a.id, a.ranking]),
+      ),
+    ]),
+  ) as Record<RankingTier, Map<number, AuthorRanking>>;
+  const tiersOf = (id: number) =>
+    Object.fromEntries(
+      (Object.keys(byTier) as RankingTier[]).flatMap((t) => {
+        const r = byTier[t].get(id);
+        return r ? [[t, r]] : [];
+      }),
+    );
+  const inGeneral = new Set(general.map((a) => a.id));
+  const extra = dir.authors
+    .filter((a) => !inGeneral.has(a.id) && Object.values(byTier).some((m) => m.has(a.id)))
+    .map((a) => ({ ...a, ranking: null, tierOnly: true }));
+  return [...general, ...extra].map((a) => ({ ...a, tiers: tiersOf(a.id) }));
 }
 
 export async function fetchInvestigatorGroups(base: string, id: number): Promise<GroupRef[]> {

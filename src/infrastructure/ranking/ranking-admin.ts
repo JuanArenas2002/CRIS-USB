@@ -2,6 +2,7 @@ import { withBase } from '@/shared/base';
 // Ranking de productividad USB (vista oculta /admin/ranking). El navegador lee el Excel y envía solo
 // lo que el portal usa (cédula, nombre, puestos, centro e índice); horas y demás columnas no salen
 // del equipo. El BFF cruza la cédula con Metri-K y guarda el ranking por id de investigador.
+import type { RankingTier } from '@/domain/authors/author';
 import { ApiError } from '@/infrastructure/http/api-client';
 
 export const RANKING_SHEET = 'Ranking_Completo';
@@ -76,8 +77,13 @@ export function rankingRows(table: string[][]): RankingRow[] {
   });
 }
 
-async function call(method: 'PUT' | 'DELETE', token: string, rows?: RankingRow[]): Promise<RankingResult> {
-  const res = await fetch(withBase('/api/ranking'), {
+async function call(
+  method: 'PUT' | 'DELETE',
+  token: string,
+  tier?: RankingTier,
+  rows?: RankingRow[],
+): Promise<RankingResult> {
+  const res = await fetch(withBase(tier ? `/api/ranking/${tier}` : '/api/ranking'), {
     method,
     headers: { 'X-Admin-Token': token, ...(rows ? { 'Content-Type': 'application/json' } : {}) },
     body: rows ? JSON.stringify({ rows }) : undefined,
@@ -92,8 +98,10 @@ async function call(method: 'PUT' | 'DELETE', token: string, rows?: RankingRow[]
   };
 }
 
-export const uploadRanking = (rows: RankingRow[], token: string) => call('PUT', token, rows);
-export const clearRanking = (token: string) => call('DELETE', token);
+/** Sin `tier`, el ranking general (decide quién se publica); con él, el del Top 12 o Top 60. */
+export const uploadRanking = (rows: RankingRow[], token: string, tier?: RankingTier) =>
+  call('PUT', token, tier, rows);
+export const clearRanking = (token: string, tier?: RankingTier) => call('DELETE', token, tier);
 
 /** Fila del ranking en el admin: puestos del Excel y los que se muestran (renumerados). */
 export interface RankingAdminRow {

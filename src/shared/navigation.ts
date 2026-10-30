@@ -14,7 +14,7 @@ export const NAV_ITEMS: NavItem[] = [
   { key: 'authors', to: '/', ready: true },
   { key: 'projects', to: '/proyectos', ready: true },
   { key: 'products', to: '/productos', ready: true },
-  { key: 'relations', to: '/relacionamiento', ready: false },
+  { key: 'relations', to: '/relacionamiento', ready: true },
 ];
 
 /** "Investigadores" vive en "/" y en los perfiles /investigadores/*. */

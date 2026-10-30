@@ -6,6 +6,7 @@ import {
   type AuthorListPage,
   type AuthorListQuery,
   type AuthorProfile,
+  type RankingTier,
 } from '@/domain/authors/author';
 import type { AuthorRepository } from '@/domain/authors/author-repository';
 
@@ -17,6 +18,7 @@ export interface DirectoryFilters {
   category?: AuthorCategoryId;
   groupId?: number;
   centerId?: number;
+  tier?: RankingTier;
   page: number;
 }
 
@@ -55,6 +57,7 @@ export function authorQueries(repo: AuthorRepository) {
               category: f.category,
               groupId: f.groupId,
               centerId: f.centerId,
+              tier: f.tier,
             },
             signal,
           );

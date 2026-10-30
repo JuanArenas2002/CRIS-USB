@@ -476,6 +476,49 @@ test('ranking USB: decide quién se publica, por cédula; la cédula no sale ni 
   expect((await get('/api/investigators?size=50')).body.items.map((a: { id: number }) => a.id)).toEqual([1]);
 });
 
+test('Top 12 / Top 60: su propio Excel, independiente del general (ocultos y fuera de él incluidos)', async () => {
+  const send = (url: string, method: string, body?: unknown) =>
+    fetch(`${base}${url}`, {
+      method,
+      body: body === undefined ? undefined : JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Token': TOKEN },
+    });
+  const row = (cc: string, name: string, rank: number, index: number) => ({
+    cc,
+    name,
+    rank,
+    index,
+    center: null,
+    centerRank: null,
+  });
+  expect((await send('/api/ranking/top5', 'PUT', { rows: [row('11111111', 'Ana', 1, 90)] })).status).toBe(
+    405,
+  );
+  // General: solo Ana (id 1) se publica.
+  await send('/api/ranking', 'PUT', { rows: [row('11111111', 'Ana', 1, 90)] });
+  const res = await send('/api/ranking/top12', 'PUT', {
+    rows: [row('22222222', 'Luis', 1, 95), row('11111111', 'Ana', 2, 80)],
+  });
+  expect(await res.json()).toMatchObject({ published: 2, notFound: [], inactive: [] });
+  const ana = (await get('/api/investigators/1')).body;
+  expect(ana.tiers).toEqual({ top12: { index: 80, rank: 2, centerRank: null, center: null } });
+  expect(ana.ranking.rank).toBe(1);
+  // Luis no está en el general: tiene perfil y sale en el Top 12, pero no en el directorio general.
+  expect((await get('/api/investigators/2')).body.tierOnly).toBe(true);
+  const general = (await get('/api/investigators?size=50')).body;
+  expect(general.items.map((a: { id: number }) => a.id)).toEqual([1]);
+  const top = (await get('/api/investigators?size=50&tier=top12')).body;
+  expect(top.items.map((a: { id: number; ranking: { rank: number } }) => [a.id, a.ranking.rank])).toEqual([
+    [2, 1],
+    [1, 2],
+  ]);
+  expect((await get('/api/investigators/stats')).body.total).toBe(1);
+  expect(fs.existsSync(path.join(odsDir, 'ranking-top12.json'))).toBe(true);
+  expect((await send('/api/ranking/top12', 'DELETE')).status).toBe(200);
+  expect((await get('/api/investigators/1')).body.tiers).toEqual({});
+  await send('/api/ranking', 'DELETE');
+});
+
 test('ranking de publicaciones: carga con token, autores por EID y consulta pública filtrable', async () => {
   const send = (method: string, body?: unknown, token = TOKEN) =>
     fetch(`${base}/api/publications`, {

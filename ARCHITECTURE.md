@@ -58,5 +58,5 @@ Las dependencias apuntan hacia el dominio. El dominio no importa React ni infrae
 1. **Fotos:** Metri-K aún no tiene foto de investigadores; se muestra un monograma con iniciales.
 2. **Publicaciones:** Metri-K no tiene conteo de publicaciones por investigador.
 3. **Exposición de datos en Metri-K:** pendiente de corregir en origen (ver arriba).
-4. Relacionamiento muestra una página "en construcción" (`noindex`) hasta tener fuente de datos. Productos muestra el ranking de publicaciones Scopus cargado en `/admin/produccion`.
+4. Relacionamiento muestra el mapa de coautorías por país de la API de colaboración (`CRIS_COLLAB_URL`); se pide en el navegador, no en el prerender. Antes mostraba una página "en construcción" (`noindex`) hasta tener fuente de datos. Productos muestra el ranking de publicaciones Scopus cargado en `/admin/produccion`.
 5. **Proyectos:** Metri-K entrega centros y grupos por nombre (sin id); la ficha los enlaza cuando el nombre coincide con uno publicado.

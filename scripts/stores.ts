@@ -11,7 +11,7 @@ import {
 } from './ods-store.ts';
 import { createDiskPhotoStore, type PhotoStore } from './photo-store.ts';
 import { normalizePasswordHash } from './center-password.ts';
-import type { AuthorRanking } from '../src/domain/authors/author.ts';
+import type { AuthorRanking, RankingTier } from '../src/domain/authors/author.ts';
 import type { StoredPublication } from '../src/domain/publications/publication.ts';
 
 export const DEFAULT_PHOTOS_DIR = 'data/photos';
@@ -31,6 +31,7 @@ export interface StoreOptions {
   sitesFile?: string;
   /** Contraseñas (hash) de centro para las fotos de proyectos. */
   centerPasswordsFile?: string;
+  /** Ranking general; los de Top 12 / Top 60 van al lado (`ranking-top12.json`, `ranking-top60.json`). */
   rankingFile?: string;
   /** Investigadores del ranking ocultos en /admin/ranking (sobrevive a cargar otro Excel). */
   rankingHiddenFile?: string;
@@ -56,6 +57,7 @@ const unconfigured = (): {
   centerPasswords: MapStore<string>;
   ranking: MapStore<AuthorRanking>;
   rankingHidden: MapStore<true>;
+  rankingTiers: Record<RankingTier, MapStore<AuthorRanking>>;
   publications: MapStore<StoredPublication>;
 } => {
   const fail = async (): Promise<never> => {
@@ -75,6 +77,10 @@ const unconfigured = (): {
     centerPasswords: { all: async () => ({}), set: fail, replace: fail },
     ranking: { all: async () => ({}), set: fail, replace: fail },
     rankingHidden: { all: async () => ({}), set: fail, replace: fail },
+    rankingTiers: {
+      top12: { all: async () => ({}), set: fail, replace: fail },
+      top60: { all: async () => ({}), set: fail, replace: fail },
+    },
     publications: { all: async () => ({}), set: fail, replace: fail },
   };
 };
@@ -108,10 +114,16 @@ export function createStores({
       centerPasswords: createBlobMapStore(cfg, 'cris/center-passwords.json', normalizePasswordHash),
       ranking: createBlobMapStore(cfg, 'cris/ranking.json', normalizeRanking),
       rankingHidden: createBlobMapStore(cfg, 'cris/ranking-hidden.json', normalizeFlag),
+      rankingTiers: {
+        top12: createBlobMapStore(cfg, 'cris/ranking-top12.json', normalizeRanking),
+        top60: createBlobMapStore(cfg, 'cris/ranking-top60.json', normalizeRanking),
+      },
       publications: createBlobMapStore(cfg, 'cris/publications.json', normalizePublication),
     };
   }
   if (onVercel) return { kind: 'none' as const, ...unconfigured() };
+  const besideRanking = (tier: RankingTier) =>
+    (rankingFile || DEFAULT_RANKING_FILE).replace(/(\.json)?$/, `-${tier}.json`);
   return {
     kind: 'disk' as const,
     photos: createDiskPhotoStore(photosDir || DEFAULT_PHOTOS_DIR),
@@ -124,6 +136,10 @@ export function createStores({
     ),
     ranking: createDiskMapStore(rankingFile || DEFAULT_RANKING_FILE, normalizeRanking),
     rankingHidden: createDiskMapStore(rankingHiddenFile || DEFAULT_RANKING_HIDDEN_FILE, normalizeFlag),
+    rankingTiers: {
+      top12: createDiskMapStore(besideRanking('top12'), normalizeRanking),
+      top60: createDiskMapStore(besideRanking('top60'), normalizeRanking),
+    },
     publications: createDiskMapStore(publicationsFile || DEFAULT_PUBLICATIONS_FILE, normalizePublication),
   };
 }

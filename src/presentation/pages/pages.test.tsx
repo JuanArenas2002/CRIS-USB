@@ -15,17 +15,15 @@ import {
   makePublication,
   fakeProjectRepo,
   makeProject,
+  fakeRelationsRepo,
 } from '@/test-utils';
 
-test('directorio: tarjetas con enlace rastreable al perfil y métricas reales', async () => {
+test('directorio: tabla general con enlace rastreable al perfil y métricas reales', async () => {
   renderApp('/');
   const link = await screen.findByRole('link', { name: 'Ana María Pérez' });
   expect(link).toHaveAttribute('href', '/investigadores/7-ana-maria-perez');
-  // Cada identificador de la tarjeta enlaza a su perfil externo.
-  expect(screen.getByRole('link', { name: /^ORCID, perfil de Ana María Pérez/ })).toHaveAttribute(
-    'href',
-    'https://orcid.org/0000-0002-1825-0097',
-  );
+  // "Investigadores Unisimón" es una tabla: una fila por investigador.
+  expect(screen.getByRole('rowheader', { name: /Ana María Pérez/ })).toBeInTheDocument();
   expect(screen.getByText('1 Perfil Activo')).toBeInTheDocument();
   expect(screen.getByText('Investigador Sénior')).toBeInTheDocument(); // categoría Minciencias
   await waitFor(() => expect(document.title).toBe('Directorio de investigadores | Unisimón Research'));
@@ -64,6 +62,30 @@ test('directorio: error recuperable con reintento', async () => {
   fail = false;
   await userEvent.click(screen.getByRole('button', { name: 'Reintentar' }));
   expect(await screen.findByRole('link', { name: 'Ana María Pérez' })).toBeInTheDocument();
+});
+
+test('directorio: el selector de apartado muestra cada Top con los puestos de su Excel', async () => {
+  const rk = (rank: number) => ({ index: 90 - rank, rank, centerRank: null, center: null });
+  const authors = [
+    makeAuthor({ id: 1, name: 'Ana Primera', ranking: rk(5), tiers: { top12: rk(1), top60: rk(2) } }),
+    makeAuthor({ id: 2, name: 'Bruno Treinta', ranking: rk(30), tiers: { top60: rk(1) } }),
+    makeAuthor({ id: 3, name: 'Carla Sin Ranking', ranking: null }),
+  ];
+  renderApp('/', fakeRepo({}, authors));
+  expect(await screen.findByRole('link', { name: 'Carla Sin Ranking' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Investigadores Unisimón' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await userEvent.click(screen.getByRole('button', { name: 'Top 12' }));
+  expect(await screen.findByRole('heading', { name: /Top 12 · Ranking/ })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Ana Primera' })).toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'Bruno Treinta' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'Carla Sin Ranking' })).not.toBeInTheDocument();
+  cleanup();
+  renderApp('/?vista=top60', fakeRepo({}, authors));
+  expect(await screen.findByRole('link', { name: 'Bruno Treinta' })).toBeInTheDocument();
+  expect(screen.getByText('2 Perfiles Activos')).toBeInTheDocument();
 });
 
 test('perfil: canonicaliza el slug y muestra identificadores', async () => {
@@ -106,7 +128,7 @@ test('perfil: investigador inexistente o retirado no es público (404 noindex)',
   );
 });
 
-test('menú: las 6 secciones en orden; las pendientes llevan a "en construcción" (noindex)', async () => {
+test('menú: las 6 secciones en orden, todas con contenido', async () => {
   renderApp('/relacionamiento');
   const nav = screen.getByRole('navigation', { name: 'Principal' });
   expect(
@@ -115,10 +137,46 @@ test('menú: las 6 secciones en orden; las pendientes llevan a "en construcción
       .map((a) => a.textContent),
   ).toEqual(['Centros', 'Grupos', 'Investigadores', 'Proyectos', 'Productos', 'Relacionamiento']);
   expect(within(nav).getByRole('link', { name: 'Relacionamiento' })).toHaveAttribute('aria-current', 'page');
-  expect(screen.getByRole('heading', { level: 1, name: 'Relacionamiento' })).toBeInTheDocument();
-  await waitFor(() =>
-    expect(document.querySelector('meta[name="robots"]')).toHaveAttribute('content', 'noindex, follow'),
+});
+
+test('relacionamiento: mapa por país y año; al elegir un país se ven sus publicaciones', async () => {
+  const user = userEvent.setup();
+  const base = fakeRelationsRepo();
+  const countries = vi.fn(base.countries);
+  renderApp('/relacionamiento', undefined, undefined, undefined, undefined, undefined, {
+    ...base,
+    countries,
+  });
+  expect(
+    screen.getByRole('heading', { level: 1, name: 'Relacionamiento internacional' }),
+  ).toBeInTheDocument();
+  expect(await screen.findByRole('img', { name: /Mapa mundial/ })).toBeInTheDocument();
+  // Lista con el nombre del país traducido desde su ISO ("Spain" de Scopus → "España").
+  const spain = await screen.findByRole('button', { name: /España/ });
+  expect(screen.getByRole('button', { name: /Colombia/ })).toBeInTheDocument();
+
+  await user.click(spain);
+  expect(spain).toHaveAttribute('aria-pressed', 'true');
+  const panel = within(await screen.findByRole('region', { name: 'España' }));
+  // Misma tabla de productos del portal: título, revista/DOI y enlace.
+  expect(
+    await panel.findByText('Sporting Mind: The Interplay of Physical Activity and Psychological Health'),
+  ).toBeInTheDocument();
+  expect(panel.getByText(/Q1 · 307 citas · con Universidad Europea de Madrid/)).toBeInTheDocument();
+  expect(panel.getByRole('link', { name: /DOI/ })).toHaveAttribute(
+    'href',
+    'https://doi.org/10.3390/sports12010037',
   );
+
+  // El mapa se acerca al país; «Ver mundo» vuelve a la vista completa y cierra el panel.
+  await user.click(screen.getByRole('button', { name: 'Ver mundo' }));
+  expect(screen.queryByRole('region', { name: 'España' })).not.toBeInTheDocument();
+  expect(spain).toHaveAttribute('aria-pressed', 'false');
+
+  // Filtro por año: pide a la API solo ese año.
+  await user.click(screen.getByRole('combobox', { name: 'Año' }));
+  await user.click(screen.getByRole('option', { name: '2024' }));
+  await waitFor(() => expect(countries).toHaveBeenLastCalledWith(2024, expect.anything()));
 });
 
 test('directorio: filtro por categoría Minciencias va a la consulta', async () => {
@@ -511,4 +569,78 @@ test('proyectos: la lista muestra el investigador principal y cuántos más hay 
   renderApp('/proyectos', undefined, undefined, undefined, undefined, repo);
   expect((await screen.findAllByText('Roberto Figueroa del Valle')).length).toBeGreaterThan(0);
   expect(screen.getAllByText(/Investigador Principal · \+1 más/).length).toBeGreaterThan(0);
+});
+
+test('grupo: la producción usa la misma tabla que los productos del investigador', async () => {
+  const user = userEvent.setup();
+  const author = makeAuthor({
+    production: {
+      publications: [
+        {
+          id: 1,
+          title: 'Artículo del grupo',
+          year: 2024,
+          journal: 'Revista Uno',
+          type: 'Article',
+          citedBy: 5,
+          doi: null,
+          url: null,
+          authors: null,
+        },
+      ],
+      theses: [
+        {
+          id: 2,
+          title: 'Tesis del grupo',
+          year: 2023,
+          level: 'Maestria',
+          program: 'P',
+          url: null,
+          authors: null,
+        },
+      ],
+      developments: [],
+    },
+  });
+  renderApp('/grupos/1-bioinformatica-y-salud', fakeRepo({}, [author]));
+  await user.click(await screen.findByRole('tab', { name: /Producción/ }));
+  const row = within((await screen.findByText('Artículo del grupo')).closest('tr')!);
+  expect(row.getByText('2024')).toBeInTheDocument();
+  expect(row.getByText('Nuevo Conocimiento')).toBeInTheDocument();
+  // Mismos filtros que en el perfil: tipología, tipo y año.
+  expect(screen.getByRole('combobox', { name: 'Tipología' })).toBeInTheDocument();
+  expect(screen.getByText('Tesis del grupo').closest('tr')).toBeInTheDocument();
+});
+
+test('grupo: con más de 6 líneas muestra 6 y el resto con «Ver más líneas»', async () => {
+  const user = userEvent.setup();
+  const lines = Array.from({ length: 8 }, (_, i) => ({
+    id: i + 1,
+    code: null,
+    name: `Línea número ${i + 1}`,
+    objective: null,
+    achievements: null,
+    impact: null,
+  }));
+  renderApp('/grupos/1-bioinformatica-y-salud', fakeRepo(), fakeGroupRepo([makeGroupDetail({ lines })]));
+  expect(await screen.findByText('Línea número 6')).toBeInTheDocument();
+  expect(screen.queryByText('Línea número 7')).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: /Ver 2 líneas más/ }));
+  expect(screen.getByText('Línea número 8')).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: /Ver menos líneas/ }));
+  expect(screen.queryByText('Línea número 8')).not.toBeInTheDocument();
+});
+
+test('relacionamiento: un clic en el país del mapa lo selecciona (el arrastre no lo impide)', async () => {
+  const user = userEvent.setup();
+  renderApp('/relacionamiento');
+  await screen.findByRole('img', { name: /Mapa mundial/ });
+  const spainOnMap = await waitFor(() => {
+    const el = document.querySelector('path[data-iso="ESP"]');
+    if (!el) throw new Error('mapa aún sin países');
+    return el;
+  });
+  await user.click(spainOnMap);
+  expect(await screen.findByRole('region', { name: 'España' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /España/ })).toHaveAttribute('aria-pressed', 'true');
 });

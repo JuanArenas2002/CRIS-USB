@@ -7,6 +7,7 @@ import type { CenterQueries } from '@/application/centers/center-queries';
 import type { GroupQueries } from '@/application/groups/group-queries';
 import type { PublicationQueries } from '@/application/publications/publication-queries';
 import type { ProjectQueries } from '@/application/projects/project-queries';
+import type { RelationQueries } from '@/application/relations/relation-queries';
 import { ApiError } from '@/infrastructure/http/api-client';
 import { RootLayout } from '@/presentation/components/layout/RootLayout';
 import { AuthorQueriesContext } from '@/presentation/hooks/use-authors';
@@ -14,6 +15,8 @@ import { CenterQueriesContext } from '@/presentation/hooks/use-centers';
 import { GroupQueriesContext } from '@/presentation/hooks/use-groups';
 import { PublicationQueriesContext } from '@/presentation/hooks/use-publications';
 import { ProjectQueriesContext } from '@/presentation/hooks/use-projects';
+import { RelationQueriesContext } from '@/presentation/hooks/use-relations';
+import { RelationsPage } from '@/presentation/pages/RelationsPage';
 import { ProjectPage } from '@/presentation/pages/ProjectPage';
 import { ProjectsPage } from '@/presentation/pages/ProjectsPage';
 import { CenterPage } from '@/presentation/pages/CenterPage';
@@ -56,6 +59,7 @@ interface ProvidersProps {
   centers: CenterQueries;
   publications: PublicationQueries;
   projects: ProjectQueries;
+  relations: RelationQueries;
   /** Solo en prerender: recibe los metadatos de la página renderizada. */
   onHead?: (meta: PageMeta) => void;
   children: ReactNode;
@@ -68,6 +72,7 @@ export function AppProviders({
   centers,
   publications,
   projects,
+  relations,
   onHead,
   children,
 }: ProvidersProps) {
@@ -78,7 +83,11 @@ export function AppProviders({
           <CenterQueriesContext.Provider value={centers}>
             <PublicationQueriesContext.Provider value={publications}>
               <ProjectQueriesContext.Provider value={projects}>
-                <HeadCollectorContext.Provider value={onHead ?? null}>{children}</HeadCollectorContext.Provider>
+                <RelationQueriesContext.Provider value={relations}>
+                  <HeadCollectorContext.Provider value={onHead ?? null}>
+                    {children}
+                  </HeadCollectorContext.Provider>
+                </RelationQueriesContext.Provider>
               </ProjectQueriesContext.Provider>
             </PublicationQueriesContext.Provider>
           </CenterQueriesContext.Provider>
@@ -113,6 +122,7 @@ export function AppRoutes() {
           <Route path="proyectos" element={<ProjectsPage />} />
           <Route path="proyectos/:slug" element={<ProjectPage />} />
           <Route path="productos" element={<ProductsPage />} />
+          <Route path="relacionamiento" element={<RelationsPage />} />
           {/* Vista oculta: fuera del menú, noindex y bloqueada en robots.txt. */}
           <Route path="admin/fotos" element={<AdminPhotosPage />} />
           <Route path="admin/centros" element={<AdminCentersPage />} />
