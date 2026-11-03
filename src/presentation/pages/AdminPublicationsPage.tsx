@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { useQueryClient } from '@tanstack/react-query';
-import { QUARTILES, publicationStats, type StoredPublication } from '@/domain/publications/publication';
+import { publicationStats, type StoredPublication } from '@/domain/publications/publication';
 import { ApiError } from '@/infrastructure/http/api-client';
 import {
   PUBLICATIONS_SHEET,
@@ -81,14 +81,14 @@ export function AdminPublicationsPage() {
         <Link to="/productos" className="font-semibold text-secondary hover:underline">
           /productos
         </Link>{' '}
-        muestra las publicaciones en el orden del ranking, con su revista, cuartil, citas y resumen. Los
-        autores se toman de la producción Scopus de los investigadores seleccionados en Metri-K (por EID). Del
-        Excel no se envían los aportes del modelo ni las categorías SCImago.
+        muestra las publicaciones en el orden del ranking, con su revista, citas y resumen. Los autores se
+        toman de la producción Scopus de los investigadores seleccionados en Metri-K (por EID). Del cuartil
+        solo se publica el total de Q1; no se envían los aportes del modelo ni las categorías SCImago.
       </p>
       <p className="mt-3 text-label-md text-on-surface-variant">
         {current.data
           ? current.data.total
-            ? `Publicado ahora: ${fmt(current.data.total)} publicaciones (${fmt(current.data.byQuartile.Q1)} en Q1).`
+            ? `Publicado ahora: ${fmt(current.data.total)} publicaciones (${fmt(current.data.q1)} en Q1).`
             : 'Aún no hay publicaciones cargadas: /productos muestra la sección vacía.'
           : current.isError
             ? 'No se pudo consultar lo publicado.'
@@ -132,7 +132,7 @@ export function AdminPublicationsPage() {
                       ? `${preview.years[preview.years.length - 1]}–${preview.years[0]}`
                       : '—',
                   ],
-                  ['Cuartiles', QUARTILES.map((q) => `${q}: ${preview.byQuartile[q]}`).join(' · ')],
+                  ['En Q1', fmt(preview.q1)],
                   ['Acceso abierto', fmt(preview.openAccess)],
                 ].map(([k, v]) => (
                   <div key={k} className="rounded-lg bg-canvas-cream px-3 py-2">

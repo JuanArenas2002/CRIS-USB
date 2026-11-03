@@ -67,7 +67,6 @@ export function toCountryPublication(raw: unknown): CountryPublication | null {
     journal: str(r?.journal),
     docType: docType(r?.doc_type),
     citations: num(r?.citations),
-    quartile: str(r?.quartile)?.toUpperCase() ?? null,
     partners: Array.isArray(r?.partner_institutions)
       ? r!.partner_institutions.flatMap((x) => str(x) ?? [])
       : [],

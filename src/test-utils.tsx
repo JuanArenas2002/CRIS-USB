@@ -165,7 +165,6 @@ export function makePublication(over: Partial<RankedPublication> = {}): RankedPu
     journal: 'Pharmaceutics',
     issn: ['1999-4923'],
     language: 'eng',
-    quartile: 'Q1',
     areas: ['Life Sciences and Medicine'],
     citations: 133,
     openAccess: true,
@@ -266,7 +265,6 @@ export const fakeRelationsRepo = (
             journal: 'Sports',
             docType: 'Review',
             citations: 307,
-            quartile: 'Q1',
             partners: ['Universidad Europea de Madrid'],
           },
         ]

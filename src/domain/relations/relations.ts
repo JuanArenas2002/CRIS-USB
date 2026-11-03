@@ -29,7 +29,6 @@ export interface CountryPublication {
   /** Tipo documental de Scopus ("Article", "Review", "Conference paper"…). */
   docType: string | null;
   citations: number;
-  quartile: string | null;
   /** Instituciones del país con las que se publicó. */
   partners: string[];
 }
@@ -39,6 +38,13 @@ export interface RelationsRepository {
   /** Publicaciones con un país (por ISO3); [] si el país no tiene. */
   publications(iso3: string, year: number | null, signal?: AbortSignal): Promise<CountryPublication[]>;
 }
+
+/**
+ * Países aliados, de más a menos publicaciones. No se suman sus publicaciones: una misma publicación
+ * cuenta en cada país de sus autores.
+ */
+export const internationalPartners = (countries: CountryCollaboration[]) =>
+  countries.filter((c) => !c.local && c.publications > 0).sort((a, b) => b.publications - a.publications);
 
 /** Primer año del selector. ponytail: fijo; pedir a la API el rango real si cambia la serie. */
 export const FIRST_RELATIONS_YEAR = 2015;

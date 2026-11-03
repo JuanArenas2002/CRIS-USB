@@ -2,20 +2,22 @@ import { withBase } from '@/shared/base';
 import { useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { CONTACT_EMAIL } from '@/shared/contact';
+import { CONTACT_EMAIL, IRAKA_URL } from '@/shared/contact';
 import { NAV_ITEMS, isNavActive } from '@/shared/navigation';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { LanguageSelector } from './LanguageSelector';
 
 const itemClass = (active: boolean) =>
-  `rounded-lg px-3 py-1.5 text-label-md transition-colors ${
+  `rounded-lg px-2.5 py-1.5 text-label-md transition-colors 2xl:px-3 ${
     active
       ? 'bg-primary-container font-bold text-on-primary'
       : 'font-semibold text-on-surface-variant hover:text-primary'
   }`;
 
 export function SiteHeader() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'home']);
+  // Enlace externo: nombre completo para lectores de pantalla y tooltip; en pantalla, solo «Iraka».
+  const iraka = `${t('home:hero.iraka')} ${t('newTab')}`;
   const { pathname } = useLocation();
   const mobileMenu = useRef<HTMLDetailsElement>(null);
   // Cierra el menú móvil al navegar.
@@ -41,7 +43,7 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <nav aria-label={t('nav.main')} className="hidden items-center gap-2 xl:flex">
+        <nav aria-label={t('nav.main')} className="hidden items-center gap-0.5 xl:flex 2xl:gap-2">
           {NAV_ITEMS.map((item) => {
             const active = isNavActive(item, pathname);
             return (
@@ -55,6 +57,16 @@ export function SiteHeader() {
               </Link>
             );
           })}
+          <a
+            href={IRAKA_URL}
+            target="_blank"
+            rel="noopener"
+            aria-label={iraka}
+            title={t('home:hero.iraka')}
+            className={`${itemClass(false)} inline-flex items-center gap-1`}
+          >
+            Iraka <Icon name="open_in_new" className="text-[14px]" />
+          </a>
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
@@ -91,6 +103,15 @@ export function SiteHeader() {
                   </Link>
                 );
               })}
+              <a
+                href={IRAKA_URL}
+                target="_blank"
+                rel="noopener"
+                aria-label={iraka}
+                className={`${itemClass(false)} inline-flex items-center gap-1.5 py-2.5`}
+              >
+                {t('home:hero.iraka')} <Icon name="open_in_new" className="text-[14px]" />
+              </a>
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
                 className="rounded-lg px-3 py-2.5 text-label-md font-semibold text-primary hover:bg-surface-cream-alt md:hidden"

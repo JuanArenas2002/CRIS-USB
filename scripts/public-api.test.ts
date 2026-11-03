@@ -536,7 +536,6 @@ test('ranking de publicaciones: carga con token, autores por EID y consulta púb
     year: 2024,
     type: 'Article',
     journal: 'Journal',
-    quartile: 'Q2',
     areas: ['Natural Sciences'],
     citations: 3,
     openAccess: false,
@@ -552,6 +551,7 @@ test('ranking de publicaciones: carga con token, autores por EID y consulta púb
 
   const res = await send('PUT', {
     rows: [
+      // El Excel trae cuartil, pero es sensible: no se guarda ni se publica.
       row(1, '2-s2.0-1000001', { quartile: 'Q1', openAccess: true }), // sin autor seleccionado
       row(2, '2-s2.0-85000000005', { doi: '10.1000/xyz' }), // de Ana (id 1) en Metri-K
       row(5, '2-s2.0-85000000005'), // repetido: queda el mejor puesto
@@ -565,17 +565,19 @@ test('ranking de publicaciones: carga con token, autores por EID y consulta púb
   expect(list.body.items.map((p: { rank: number }) => p.rank)).toEqual([1, 2]);
   expect(list.body.items[0].authors).toEqual([]);
   expect(list.body.items[1].authors).toEqual([{ id: 1, name: expect.any(String), published: true }]);
-  expect((await get('/api/publications?quartile=Q1')).body.total).toBe(1);
+  expect(JSON.stringify(list.body)).not.toMatch(/quartile|"Q1"/);
+  // Tampoco se puede filtrar por cuartil (permitiría deducirlo): el parámetro se ignora.
+  expect((await get('/api/publications?quartile=Q1')).body.total).toBe(2);
   // Con filtro, el puesto se recalcula dentro del resultado; `rank` sigue siendo el general.
-  expect((await get('/api/publications?quartile=Q2&from=2020&to=2024')).body.items).toMatchObject([
-    { rank: 2, position: 1 },
-  ]);
+  expect(
+    (await get('/api/publications?type=Article&from=2020&to=2024&q=paper%202')).body.items,
+  ).toMatchObject([{ rank: 2, position: 1 }]);
   expect((await get('/api/publications?from=2025')).body.total).toBe(0);
   expect((await get('/api/publications?oa=1&q=paper%202')).body.total).toBe(0);
   expect((await get('/api/publications?sort=cited&size=1&page=2')).body.items[0].rank).toBe(2);
   expect((await get('/api/publications/stats')).body).toMatchObject({
     total: 2,
-    byQuartile: { Q1: 1, Q2: 1, Q3: 0, Q4: 0 },
+    q1: 1,
     openAccess: 1,
     years: [2024],
   });

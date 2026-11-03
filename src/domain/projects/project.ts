@@ -110,6 +110,7 @@ export const projectProducts = (p: Pick<Project, 'id' | 'products'>): Product[] 
       year: x.year,
       venue: null,
       index: x.status,
+      citations: null,
       doi: x.url?.match(/doi\.org\/(10\.\S+)/)?.[1] ?? null,
       url: x.url,
     }))

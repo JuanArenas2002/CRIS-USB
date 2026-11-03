@@ -39,7 +39,7 @@ test('pluralización, interpolación segura y respaldo al español', async () =>
 });
 
 test('selector: español por defecto; cambia todo al momento, conserva el formulario y recuerda la elección', async () => {
-  renderApp('/');
+  renderApp('/investigadores');
   expect(document.documentElement.lang).toBe('es-CO');
   const search = await screen.findByLabelText('Buscar investigadores');
   await userEvent.type(search, 'ana');
@@ -68,7 +68,7 @@ test('selector: español por defecto; cambia todo al momento, conserva el formul
 test('errores del backend: el código se muestra en el idioma activo', async () => {
   await i18n.changeLanguage('pt');
   renderApp(
-    '/',
+    '/investigadores',
     fakeRepo({
       list: async () => {
         throw new ApiError(503, 'El servicio de datos tuvo un problema.');

@@ -164,7 +164,10 @@ export function RelationsPage() {
                       {t('noData')}
                     </p>
                   </div>
-                  <p className="text-label-sm text-neutral-muted">{t('localNote')}</p>
+                  <p className="text-label-sm text-neutral-muted">
+                    <strong className="font-semibold text-on-surface-variant">{t('source')}</strong> ·{' '}
+                    {t('localNote')}
+                  </p>
                 </div>
               </div>
 
@@ -234,14 +237,13 @@ function useAsProduct() {
     year: p.year,
     venue: p.journal,
     index: [
-      p.quartile,
-      t('publications:item.citations', { count: p.citations }),
       p.partners.length
         ? t('relations:partners', { list: p.partners.slice(0, 2).join(', '), count: p.partners.length })
         : null,
     ]
       .filter(Boolean)
       .join(' · '),
+    citations: p.citations,
     doi: p.doi,
     url: p.doi
       ? `https://doi.org/${p.doi}`

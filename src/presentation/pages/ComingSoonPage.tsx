@@ -31,7 +31,7 @@ export function ComingSoonPage({ item }: { item: NavItem }) {
           <p className="mt-1 max-w-md text-body-md text-neutral-muted">
             {t('comingSoon.body', { section: label.toLowerCase() })}
           </p>
-          <Link to="/" className={feedbackButtonClass}>
+          <Link to="/investigadores" className={feedbackButtonClass}>
             {t('comingSoon.action')}
           </Link>
         </div>

@@ -167,6 +167,7 @@ test('producción de un grupo: une integrantes sin duplicar coautorías', () => 
     year,
     venue: null,
     index: null,
+    citations: null,
     doi: null,
     url: null,
   });

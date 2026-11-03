@@ -1,6 +1,8 @@
 // Producción científica destacada (/productos): publicaciones Scopus de los investigadores
 // seleccionados, rankeadas por el modelo de puntaje del Excel que se carga en /admin/produccion.
 // Solo tipos (`import type`) además de funciones puras: lo importan el BFF y el prerender en Node.
+// El cuartil de la revista es un dato sensible: se guarda, pero solo se publica el total en Q1
+// (`RankedPublication` no lo lleva y no hay filtro por cuartil, que permitiría deducirlo).
 
 export const QUARTILES = ['Q1', 'Q2', 'Q3', 'Q4'] as const;
 export type Quartile = (typeof QUARTILES)[number];
@@ -35,6 +37,7 @@ export interface StoredPublication {
   issn: string[];
   /** Código ISO 639 del idioma, p. ej. "eng", "spa". */
   language: string | null;
+  /** Solo en el servidor: nunca sale por publicación. */
   quartile: Quartile | null;
   /** Grandes áreas QS de la revista. */
   areas: string[];
@@ -48,7 +51,7 @@ export interface StoredPublication {
   authorsCount: number | null;
 }
 
-export interface RankedPublication extends StoredPublication {
+export interface RankedPublication extends Omit<StoredPublication, 'quartile'> {
   authors: PublicationAuthor[];
 }
 
@@ -62,7 +65,6 @@ export interface PublicationQuery {
   /** Rango de años, ambos inclusive. */
   yearFrom?: number;
   yearTo?: number;
-  quartile?: Quartile;
   type?: string;
   area?: string;
   openAccess?: boolean;
@@ -81,7 +83,8 @@ export interface PublicationPage {
 /** Totales y opciones de filtro sobre todo el ranking publicado. */
 export interface PublicationStats {
   total: number;
-  byQuartile: Record<Quartile, number>;
+  /** Publicaciones en revistas Q1 (solo el total). */
+  q1: number;
   openAccess: number;
   international: number;
   citations: number;
@@ -119,7 +122,6 @@ export function queryPublications(all: RankedPublication[], q: PublicationQuery)
       (p) =>
         (!from || (p.year !== null && p.year >= from)) &&
         (!to || (p.year !== null && p.year <= to)) &&
-        (!q.quartile || p.quartile === q.quartile) &&
         (!q.type || p.type === q.type) &&
         (!q.area || p.areas.includes(q.area)) &&
         (!q.openAccess || p.openAccess) &&
@@ -142,12 +144,12 @@ const byCount = (values: string[]) => {
   return [...n].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([v]) => v);
 };
 
-export function publicationStats(all: StoredPublication[]): PublicationStats {
-  const byQuartile = Object.fromEntries(QUARTILES.map((x) => [x, 0])) as Record<Quartile, number>;
-  for (const p of all) if (p.quartile) byQuartile[p.quartile]++;
+export function publicationStats(
+  all: (Omit<StoredPublication, 'quartile'> & { quartile?: Quartile | null })[],
+): PublicationStats {
   return {
     total: all.length,
-    byQuartile,
+    q1: all.filter((p) => p.quartile === 'Q1').length,
     openAccess: all.filter((p) => p.openAccess).length,
     international: all.filter((p) => p.international).length,
     citations: all.reduce((n, p) => n + p.citations, 0),
@@ -167,7 +169,8 @@ export function withAuthors(
   names: Map<number, string>,
   published: Set<number>,
 ): RankedPublication[] {
-  return all.map((p) => ({
+  // El cuartil se queda en el servidor.
+  return all.map(({ quartile: _quartile, ...p }) => ({
     ...p,
     authors: (byEid.get(p.eid) ?? []).flatMap((id) => {
       const name = names.get(id);

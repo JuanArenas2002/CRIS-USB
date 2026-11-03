@@ -1,4 +1,4 @@
-import { withBase, withBaseUrl } from '@/shared/base';
+import { withBaseUrl } from '@/shared/base';
 import { useMemo, useState, type ReactNode } from 'react';
 import { Link, Navigate, useParams, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -157,7 +157,7 @@ function Profile({ author }: { author: AuthorProfile }) {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Investigadores', item: absoluteUrl('/') },
+        { '@type': 'ListItem', position: 1, name: 'Investigadores', item: absoluteUrl('/investigadores') },
         { '@type': 'ListItem', position: 2, name, item: absoluteUrl(path) },
       ],
     },
@@ -179,9 +179,9 @@ function Profile({ author }: { author: AuthorProfile }) {
               <Icon name="chevron_right" className="text-[16px]" />
             </li>
             <li>
-              <a href={withBase('/#directorio')} className="hover:text-primary">
+              <Link to="/investigadores" className="hover:text-primary">
                 {t('profile.breadcrumbDirectory')}
-              </a>
+              </Link>
             </li>
             <li aria-hidden="true">
               <Icon name="chevron_right" className="text-[16px]" />
@@ -557,7 +557,7 @@ function Profile({ author }: { author: AuthorProfile }) {
         </div>
 
         <Link
-          to="/"
+          to="/investigadores"
           className="inline-flex items-center gap-1 text-label-md font-semibold text-primary hover:underline"
         >
           <Icon name="chevron_left" className="text-[18px]" /> {t('profile.back')}

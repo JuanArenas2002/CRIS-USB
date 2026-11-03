@@ -17,7 +17,7 @@ export function NotFoundPage() {
       <EmptyState
         title={t('notFound.heading')}
         action={
-          <Link to="/" className={feedbackButtonClass}>
+          <Link to="/investigadores" className={feedbackButtonClass}>
             {t('notFound.action')}
           </Link>
         }

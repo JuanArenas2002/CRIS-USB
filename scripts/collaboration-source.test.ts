@@ -42,8 +42,9 @@ test('publicación: tipo documental legible y sin el detalle de autores (ORCID, 
   })!;
   expect(p).toMatchObject({
     docType: 'Conference paper',
-    quartile: 'Q2',
     partners: ['Universidad Europea de Madrid'],
   });
   expect(JSON.stringify(p)).not.toContain('0000-0002-8171-662X');
+  // El cuartil de la revista es sensible: no pasa al portal.
+  expect(p).not.toHaveProperty('quartile');
 });

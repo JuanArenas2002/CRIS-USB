@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
-import { Navigate, Route, Routes, useLocation } from 'react-router';
+import { Route, Routes, useLocation } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import '@/i18n'; // inicializa i18next una sola vez (cliente, prerender y tests)
 import type { AuthorQueries } from '@/application/authors/author-queries';
@@ -32,6 +32,7 @@ import { ProductsPage } from '@/presentation/pages/ProductsPage';
 import { HeadCollectorContext } from '@/presentation/hooks/use-document-metadata';
 import { AuthorPage } from '@/presentation/pages/AuthorPage';
 import { DirectoryPage } from '@/presentation/pages/DirectoryPage';
+import { HomePage } from '@/presentation/pages/HomePage';
 import { NotFoundPage } from '@/presentation/pages/NotFoundPage';
 import { ComingSoonPage } from '@/presentation/pages/ComingSoonPage';
 import { NAV_ITEMS } from '@/shared/navigation';
@@ -112,8 +113,8 @@ export function AppRoutes() {
       <ScrollToTop />
       <Routes>
         <Route element={<RootLayout />}>
-          <Route index element={<DirectoryPage />} />
-          <Route path="investigadores" element={<Navigate replace to="/" />} />
+          <Route index element={<HomePage />} />
+          <Route path="investigadores" element={<DirectoryPage />} />
           <Route path="investigadores/:slug" element={<AuthorPage />} />
           <Route path="grupos" element={<GroupsPage />} />
           <Route path="grupos/:slug" element={<GroupPage />} />

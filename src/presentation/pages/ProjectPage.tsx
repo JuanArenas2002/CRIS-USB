@@ -119,6 +119,46 @@ function Linkified({ text }: { text: string }) {
 
 const norm = (s: string) => slugify(s);
 
+/** Equipos grandes se pliegan para no descuadrar la columna de grupos y centros. */
+const TEAM_PREVIEW = 6;
+
+function TeamList({ team }: { team: Project['team'] }) {
+  const { t } = useTranslation('projects');
+  const [showAll, setShowAll] = useState(false);
+  const hidden = team.length - TEAM_PREVIEW;
+  const visible = showAll || hidden <= 0 ? team : team.slice(0, TEAM_PREVIEW);
+  return (
+    <div>
+      <ul id="project-team" className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
+        {visible.map((m) => (
+          <li key={m.name} className="flex items-start gap-2">
+            <Icon name="person" className="mt-0.5 text-[16px] text-secondary" />
+            <span>
+              <span className="font-semibold text-on-surface">{displayName(m.name)}</span>
+              {m.role ? <span className="block text-label-sm text-neutral-muted">{m.role}</span> : null}
+            </span>
+          </li>
+        ))}
+      </ul>
+      {hidden > 0 ? (
+        <button
+          type="button"
+          aria-expanded={showAll}
+          aria-controls="project-team"
+          onClick={() => setShowAll((v) => !v)}
+          className="mt-1 -mb-2 -ml-3 inline-flex items-center gap-1 rounded-lg px-3 py-2 text-label-md font-semibold text-secondary transition-colors hover:bg-surface-cream-alt"
+        >
+          {showAll ? t('detail.lessTeam') : t('detail.moreTeam', { count: hidden })}
+          <Icon
+            name="expand_more"
+            className={`text-[18px] transition-transform ${showAll ? 'rotate-180' : ''}`}
+          />
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
 function ProjectProfile({ project: p }: { project: Project }) {
   const { t } = useTranslation(['projects', 'common', 'groups']);
   const path = projectPath(p);
@@ -142,6 +182,7 @@ function ProjectProfile({ project: p }: { project: Project }) {
   const centers = useCenters().data ?? [];
   const groupOf = (name: string) => groups.find((g) => norm(g.name) === norm(name));
   const centerOf = (name: string) => centers.find((c) => norm(c.name) === norm(name));
+  const hasTeam = p.team.length > 0 || Boolean(p.allies);
 
   const [filters, setFilters] = useState(EMPTY_FILTERS);
 
@@ -356,89 +397,73 @@ function ProjectProfile({ project: p }: { project: Project }) {
           </section>
         ) : null}
 
-        {/* Equipo, grupos y centros */}
+        {/* Equipo, grupos y centros: el equipo a un lado y grupos + centros apilados al otro. */}
         <section>
           <SectionTitle>{t('detail.team')}</SectionTitle>
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <div className="flex flex-col gap-3">
-              <h3 className="text-headline-sm font-semibold text-primary">{t('detail.groups')}</h3>
-              <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {p.groups.map((name) => {
-                  const g = groupOf(name);
-                  return (
-                    <li key={name} className={`${card} flex flex-col justify-between gap-3 p-4`}>
-                      <p className="flex items-start gap-2 font-semibold text-primary">
-                        <Icon name="hub" className="mt-0.5 text-[18px] text-secondary" /> {name}
-                      </p>
-                      {g ? (
-                        <Link
-                          to={`/grupos/${authorSlug(g)}`}
-                          className="inline-flex items-center gap-1 border-t border-surface-cream-alt pt-2 text-label-md font-semibold text-secondary hover:underline"
-                        >
-                          {t('detail.viewGroup')} <Icon name="arrow_forward" className="text-[16px]" />
-                        </Link>
-                      ) : null}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-            <div className="flex flex-col gap-3">
-              <h3 className="text-headline-sm font-semibold text-primary">{t('detail.centers')}</h3>
-              <ul className="grid grid-cols-1 gap-3">
-                {p.centers.map((name) => {
-                  const c = centerOf(name);
-                  return (
-                    <li key={name} className={`${card} flex flex-col justify-between gap-3 p-4`}>
-                      <p className="flex items-start gap-2 font-semibold text-primary">
-                        <Icon name="domain" className="mt-0.5 text-[18px] text-secondary" /> {name}
-                      </p>
-                      {c ? (
-                        <Link
-                          to={centerPath(c)}
-                          className="inline-flex items-center gap-1 border-t border-surface-cream-alt pt-2 text-label-md font-semibold text-secondary hover:underline"
-                        >
-                          {t('detail.viewCenter')} <Icon name="arrow_forward" className="text-[16px]" />
-                        </Link>
-                      ) : null}
-                    </li>
-                  );
-                })}
-              </ul>
-              {p.team.length || p.allies ? (
-                <dl className={`${card} flex flex-col gap-3 p-4 text-body-sm`}>
-                  {p.team.length ? (
-                    <div>
-                      <dt className="text-label-sm tracking-wider text-neutral-muted uppercase">
-                        {t('detail.leaders')}
-                      </dt>
-                      <dd>
-                        <ul className="mt-1 flex flex-col gap-1.5">
-                          {p.team.map((m) => (
-                            <li key={m.name} className="flex items-start gap-2">
-                              <Icon name="person" className="mt-0.5 text-[16px] text-secondary" />
-                              <span>
-                                <span className="font-semibold text-on-surface">{displayName(m.name)}</span>
-                                {m.role ? (
-                                  <span className="block text-label-sm text-neutral-muted">{m.role}</span>
-                                ) : null}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </dd>
-                    </div>
-                  ) : null}
+          <div className={`grid grid-cols-1 items-start gap-6 ${hasTeam ? 'lg:grid-cols-2' : ''}`}>
+            {hasTeam ? (
+              <div className="flex flex-col gap-3">
+                <h3 className="text-headline-sm font-semibold text-primary">{t('detail.leaders')}</h3>
+                <div className={`${card} flex flex-col gap-4 p-4 text-body-sm`}>
+                  {p.team.length ? <TeamList team={p.team} /> : null}
                   {p.allies ? (
-                    <div>
+                    <dl className={p.team.length ? 'border-t border-surface-cream-alt pt-3' : undefined}>
                       <dt className="flex items-center gap-1 text-label-sm tracking-wider text-neutral-muted uppercase">
                         <Icon name="handshake" className="text-[16px]" /> {t('detail.allies')}
                       </dt>
-                      <dd className="font-semibold text-on-surface">{p.allies}</dd>
-                    </div>
+                      <dd className="mt-1 font-semibold text-on-surface">{p.allies}</dd>
+                    </dl>
                   ) : null}
-                </dl>
-              ) : null}
+                </div>
+              </div>
+            ) : null}
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-3">
+                <h3 className="text-headline-sm font-semibold text-primary">{t('detail.groups')}</h3>
+                <ul className={`grid grid-cols-1 gap-3 ${hasTeam ? '' : 'sm:grid-cols-2'}`}>
+                  {p.groups.map((name) => {
+                    const g = groupOf(name);
+                    return (
+                      <li key={name} className={`${card} flex flex-col justify-between gap-3 p-4`}>
+                        <p className="flex items-start gap-2 font-semibold text-primary">
+                          <Icon name="hub" className="mt-0.5 text-[18px] text-secondary" /> {name}
+                        </p>
+                        {g ? (
+                          <Link
+                            to={`/grupos/${authorSlug(g)}`}
+                            className="inline-flex items-center gap-1 border-t border-surface-cream-alt pt-2 text-label-md font-semibold text-secondary hover:underline"
+                          >
+                            {t('detail.viewGroup')} <Icon name="arrow_forward" className="text-[16px]" />
+                          </Link>
+                        ) : null}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+              <div className="flex flex-col gap-3">
+                <h3 className="text-headline-sm font-semibold text-primary">{t('detail.centers')}</h3>
+                <ul className="grid grid-cols-1 gap-3">
+                  {p.centers.map((name) => {
+                    const c = centerOf(name);
+                    return (
+                      <li key={name} className={`${card} flex flex-col justify-between gap-3 p-4`}>
+                        <p className="flex items-start gap-2 font-semibold text-primary">
+                          <Icon name="domain" className="mt-0.5 text-[18px] text-secondary" /> {name}
+                        </p>
+                        {c ? (
+                          <Link
+                            to={centerPath(c)}
+                            className="inline-flex items-center gap-1 border-t border-surface-cream-alt pt-2 text-label-md font-semibold text-secondary hover:underline"
+                          >
+                            {t('detail.viewCenter')} <Icon name="arrow_forward" className="text-[16px]" />
+                          </Link>
+                        ) : null}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
             </div>
           </div>
         </section>

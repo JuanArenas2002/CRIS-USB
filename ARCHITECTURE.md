@@ -37,21 +37,23 @@ Las dependencias apuntan hacia el dominio. El dominio no importa React ni infrae
 
 **SSG.** HTML estático con contenido real para el directorio, cada investigador y cada grupo. El costo es reconstruir periódicamente.
 
+**Portada.** `/` presenta las seis áreas con las mismas consultas (y caché) de cada módulo, por lo que sus cifras coinciden con lo publicado; `/investigadores` es el directorio y `/` reenvía allí los enlaces antiguos con filtros (`?q=`, `?vista=`…).
+
 **URLs** `/investigadores/{id}-{slug}` y `/grupos/{id}-{slug}`. El id resuelve el recurso; un slug distinto redirige al canónico.
 
 ## Contrato del BFF
 
-| Ruta | Respuesta |
-| --- | --- |
-| `GET /api/investigators?q&cat&group&page&size` | `{ items: Author[], total, page, pages }` (máx. 100 por página) |
-| `GET /api/investigators/stats` | `{ total, byCategory }` |
-| `GET /api/investigators/{id}` | `AuthorProfile` (con `groups`) o 404 |
-| `GET /api/groups` | `Group[]` (líneas solo con nombre) |
-| `GET /api/groups/{id}` | `GroupDetail` (líneas completas + historial) o 404 |
-| `GET /api/publications?q&from&to&quartile&type&area&oa&sort&page&size` | `{ items: (RankedPublication & { position })[], total, page, pages }`: `rank` es el puesto general; `position`, el puesto recalculado dentro del filtro |
-| `GET /api/projects` | `Project[]` (todos los seleccionados en Metri-K, completos) |
-| `GET /api/projects/{id}` | `Project` o 404 |
-| `GET /api/publications/stats` | `{ total, byQuartile, openAccess, international, citations, years, types, areas }` |
+| Ruta                                                          | Respuesta                                                                                                                                               |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/investigators?q&cat&group&page&size`                | `{ items: Author[], total, page, pages }` (máx. 100 por página)                                                                                         |
+| `GET /api/investigators/stats`                                | `{ total, byCategory }`                                                                                                                                 |
+| `GET /api/investigators/{id}`                                 | `AuthorProfile` (con `groups`) o 404                                                                                                                    |
+| `GET /api/groups`                                             | `Group[]` (líneas solo con nombre)                                                                                                                      |
+| `GET /api/groups/{id}`                                        | `GroupDetail` (líneas completas + historial) o 404                                                                                                      |
+| `GET /api/publications?q&from&to&type&area&oa&sort&page&size` | `{ items: (RankedPublication & { position })[], total, page, pages }`: `rank` es el puesto general; `position`, el puesto recalculado dentro del filtro |
+| `GET /api/projects`                                           | `Project[]` (todos los seleccionados en Metri-K, completos)                                                                                             |
+| `GET /api/projects/{id}`                                      | `Project` o 404                                                                                                                                         |
+| `GET /api/publications/stats`                                 | `{ total, openAccess, international, citations, years, types, areas }`                                                                                  |
 
 ## Limitaciones
 

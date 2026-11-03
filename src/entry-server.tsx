@@ -31,6 +31,8 @@ import {
 } from '@/domain/publications/publication';
 import { summarizeCenter, type CenterDetail } from '@/domain/centers/center';
 import { hasPublicDetail, summarizeGroup, type GroupDetail, type GroupMember } from '@/domain/groups/group';
+import { HOME_TOP_FILTERS } from '@/presentation/components/home/HomeHighlights';
+import { HOME_RECENT_FILTERS } from '@/presentation/components/home/HomeRecent';
 import { NAV_ITEMS } from '@/shared/navigation';
 import { headTags, titleTag, safeJson, type PageMeta } from '@/shared/seo';
 
@@ -127,6 +129,8 @@ export function render(
 }
 
 export {
+  HOME_RECENT_FILTERS,
+  HOME_TOP_FILTERS,
   NAV_ITEMS,
   authorSlug,
   createQueryClient,

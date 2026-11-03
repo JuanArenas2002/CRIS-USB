@@ -19,7 +19,7 @@ import {
 } from '@/test-utils';
 
 test('directorio: tabla general con enlace rastreable al perfil y métricas reales', async () => {
-  renderApp('/');
+  renderApp('/investigadores');
   const link = await screen.findByRole('link', { name: 'Ana María Pérez' });
   expect(link).toHaveAttribute('href', '/investigadores/7-ana-maria-perez');
   // "Investigadores Unisimón" es una tabla: una fila por investigador.
@@ -32,7 +32,7 @@ test('directorio: tabla general con enlace rastreable al perfil y métricas real
 
 test('directorio: la búsqueda va al backend (debounce) y una búsqueda filtrada es noindex', async () => {
   const list = vi.fn(fakeRepo().list);
-  renderApp('/', fakeRepo({ list }));
+  renderApp('/investigadores', fakeRepo({ list }));
   await userEvent.type(await screen.findByLabelText('Buscar investigadores'), 'ana');
   await waitFor(() =>
     expect(list).toHaveBeenCalledWith(expect.objectContaining({ search: 'ana', page: 1 }), expect.anything()),
@@ -43,7 +43,10 @@ test('directorio: la búsqueda va al backend (debounce) y una búsqueda filtrada
 });
 
 test('directorio: vacío ofrece restablecer filtros', async () => {
-  renderApp('/?q=zzz', fakeRepo({ list: async () => ({ items: [], total: 0, page: 1, pages: 0 }) }));
+  renderApp(
+    '/investigadores?q=zzz',
+    fakeRepo({ list: async () => ({ items: [], total: 0, page: 1, pages: 0 }) }),
+  );
   expect(await screen.findByText('No se encontraron investigadores')).toBeInTheDocument();
   // Uno en la barra de filtros y otro en el estado vacío.
   expect(screen.getAllByRole('button', { name: 'Restablecer filtros' })).toHaveLength(2);
@@ -57,7 +60,7 @@ test('directorio: error recuperable con reintento', async () => {
       return { items: [makeAuthor()], total: 1, page: 1, pages: 1 };
     },
   });
-  renderApp('/', repo);
+  renderApp('/investigadores', repo);
   expect(await screen.findByText('No se pudo conectar con el servicio de datos.')).toBeInTheDocument();
   fail = false;
   await userEvent.click(screen.getByRole('button', { name: 'Reintentar' }));
@@ -71,7 +74,7 @@ test('directorio: el selector de apartado muestra cada Top con los puestos de su
     makeAuthor({ id: 2, name: 'Bruno Treinta', ranking: rk(30), tiers: { top60: rk(1) } }),
     makeAuthor({ id: 3, name: 'Carla Sin Ranking', ranking: null }),
   ];
-  renderApp('/', fakeRepo({}, authors));
+  renderApp('/investigadores', fakeRepo({}, authors));
   expect(await screen.findByRole('link', { name: 'Carla Sin Ranking' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Investigadores Unisimón' })).toHaveAttribute(
     'aria-pressed',
@@ -83,7 +86,7 @@ test('directorio: el selector de apartado muestra cada Top con los puestos de su
   expect(screen.queryByRole('link', { name: 'Bruno Treinta' })).not.toBeInTheDocument();
   expect(screen.queryByRole('link', { name: 'Carla Sin Ranking' })).not.toBeInTheDocument();
   cleanup();
-  renderApp('/?vista=top60', fakeRepo({}, authors));
+  renderApp('/investigadores?vista=top60', fakeRepo({}, authors));
   expect(await screen.findByRole('link', { name: 'Bruno Treinta' })).toBeInTheDocument();
   expect(screen.getByText('2 Perfiles Activos')).toBeInTheDocument();
 });
@@ -128,14 +131,25 @@ test('perfil: investigador inexistente o retirado no es público (404 noindex)',
   );
 });
 
-test('menú: las 6 secciones en orden, todas con contenido', async () => {
+test('menú: las 6 secciones en orden, todas con contenido, y el enlace a Iraka', async () => {
   renderApp('/relacionamiento');
   const nav = screen.getByRole('navigation', { name: 'Principal' });
   expect(
     within(nav)
       .getAllByRole('link')
       .map((a) => a.textContent),
-  ).toEqual(['Centros', 'Grupos', 'Investigadores', 'Proyectos', 'Productos', 'Relacionamiento']);
+  ).toEqual([
+    'Centros',
+    'Grupos',
+    'Investigadores',
+    'Proyectos',
+    'Productos',
+    'Relacionamiento',
+    expect.stringMatching(/^Iraka/),
+  ]);
+  expect(within(nav).getAllByRole('link').at(-1)).toHaveAccessibleName(
+    'Iraka · Periodismo científico (abre en una pestaña nueva)',
+  );
   expect(within(nav).getByRole('link', { name: 'Relacionamiento' })).toHaveAttribute('aria-current', 'page');
 });
 
@@ -151,6 +165,7 @@ test('relacionamiento: mapa por país y año; al elegir un país se ven sus publ
     screen.getByRole('heading', { level: 1, name: 'Relacionamiento internacional' }),
   ).toBeInTheDocument();
   expect(await screen.findByRole('img', { name: /Mapa mundial/ })).toBeInTheDocument();
+  expect(screen.getByText('*Datos Scopus')).toBeInTheDocument();
   // Lista con el nombre del país traducido desde su ISO ("Spain" de Scopus → "España").
   const spain = await screen.findByRole('button', { name: /España/ });
   expect(screen.getByRole('button', { name: /Colombia/ })).toBeInTheDocument();
@@ -162,7 +177,10 @@ test('relacionamiento: mapa por país y año; al elegir un país se ven sus publ
   expect(
     await panel.findByText('Sporting Mind: The Interplay of Physical Activity and Psychological Health'),
   ).toBeInTheDocument();
-  expect(panel.getByText(/Q1 · 307 citas · con Universidad Europea de Madrid/)).toBeInTheDocument();
+  // Las citas van en su propia columna; bajo el tipo, solo los aliados.
+  expect(panel.getByText('con Universidad Europea de Madrid')).toBeInTheDocument();
+  expect(panel.getByRole('columnheader', { name: 'Citas' })).toBeInTheDocument();
+  expect(panel.getByText('307')).toBeInTheDocument();
   expect(panel.getByRole('link', { name: /DOI/ })).toHaveAttribute(
     'href',
     'https://doi.org/10.3390/sports12010037',
@@ -181,7 +199,7 @@ test('relacionamiento: mapa por país y año; al elegir un país se ven sus publ
 
 test('directorio: filtro por categoría Minciencias va a la consulta', async () => {
   const list = vi.fn(fakeRepo().list);
-  renderApp('/', fakeRepo({ list }));
+  renderApp('/investigadores', fakeRepo({ list }));
   await userEvent.click(await screen.findByLabelText('Categoría Minciencias'));
   await userEvent.click(screen.getByRole('option', { name: /Junior/ }));
   await waitFor(() =>
@@ -476,9 +494,15 @@ test('productos: misma tabla que los productos del investigador (año, título, 
   expect(row.getByText('2022')).toBeInTheDocument();
   expect(row.getByText('Nuevo Conocimiento')).toBeInTheDocument();
   expect(row.getByText('Artículo científico')).toBeInTheDocument();
-  // Revista y DOI bajo el título; cuartil, citas y acceso abierto bajo el tipo.
+  // Revista y DOI bajo el título; acceso abierto bajo el tipo; citas en su columna (el cuartil nunca se muestra).
   expect(row.getByText('Pharmaceutics · DOI: 10.3390/pharmaceutics14061303')).toBeInTheDocument();
-  expect(row.getByText(/Q1 · 133 citas · Acceso abierto/)).toBeInTheDocument();
+  expect(row.getByText('Scopus · Acceso abierto')).toBeInTheDocument();
+  expect(screen.getByRole('columnheader', { name: 'Citas' })).toBeInTheDocument();
+  expect(row.getByText('133')).toBeInTheDocument();
+  expect(screen.getByText('En revistas Q1')).toBeInTheDocument();
+  // Del cuartil solo se muestra el total en Q1; nunca el de cada publicación.
+  expect(screen.getByRole('table')).not.toHaveTextContent(/\bQ[1-4]\b/);
+  expect(screen.queryByRole('combobox', { name: /cuartil/i })).not.toBeInTheDocument();
   expect(row.getByRole('link', { name: /DOI/ })).toHaveAttribute(
     'href',
     'https://doi.org/10.3390/pharmaceutics14061303',
@@ -489,7 +513,7 @@ test('productos: misma tabla que los productos del investigador (año, título, 
 
 test('productos: sin resultados para el filtro ofrece restablecerlo', async () => {
   const user = userEvent.setup();
-  renderApp('/productos?cuartil=Q4');
+  renderApp('/productos?tipo=Book');
   const empty = await screen.findByRole('status');
   expect(empty).toHaveTextContent('No se encontraron publicaciones');
   await user.click(within(empty).getByRole('button', { name: 'Restablecer filtros' }));
@@ -541,6 +565,33 @@ test('ficha de proyecto: carrusel con las fotos asociadas y flechas', async () =
   // Al inicio no se puede retroceder.
   expect(within(carousel).getByRole('button', { name: 'Foto anterior' })).toBeDisabled();
   expect(within(carousel).getByRole('button', { name: 'Foto siguiente' })).toBeInTheDocument();
+});
+
+test('ficha de proyecto: un equipo grande se pliega con «Ver más»', async () => {
+  const user = userEvent.setup();
+  const team = Array.from({ length: 8 }, (_, i) => ({
+    name: `PERSONA NUMERO ${i + 1}`,
+    role: 'Coinvestigador',
+  }));
+  const repo = fakeProjectRepo([makeProject({ team })]);
+  renderApp(
+    '/proyectos/3-programa-de-fortalecimiento-a-organizaciones-de-cuidado-comunitario',
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    repo,
+  );
+  expect(await screen.findByText('Persona Numero 6')).toBeInTheDocument();
+  expect(screen.queryByText('Persona Numero 7')).not.toBeInTheDocument();
+  const toggle = screen.getByRole('button', { name: /Ver 2 integrantes más/ });
+  expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await user.click(toggle);
+  expect(screen.getByText('Persona Numero 8')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /Ver menos integrantes/ })).toHaveAttribute(
+    'aria-expanded',
+    'true',
+  );
 });
 
 test('centro: lista sus proyectos (cruce por nombre del centro, sin tildes ni mayúsculas)', async () => {
@@ -643,4 +694,82 @@ test('relacionamiento: un clic en el país del mapa lo selecciona (el arrastre n
   await user.click(spainOnMap);
   expect(await screen.findByRole('region', { name: 'España' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /España/ })).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('portada: las seis áreas enlazan a sus rutas y muestran cifras reales', async () => {
+  renderApp('/');
+  expect(
+    await screen.findByRole('heading', { level: 1, name: /desafíos de nuestro territorio/ }),
+  ).toBeInTheDocument();
+  const area = (name: string) => within(screen.getByRole('main')).getByRole('link', { name });
+  expect(area('Centros')).toHaveAttribute('href', '/centros');
+  expect(area('Grupos')).toHaveAttribute('href', '/grupos');
+  expect(area('Investigadores')).toHaveAttribute('href', '/investigadores');
+  expect(area('Proyectos')).toHaveAttribute('href', '/proyectos');
+  expect(area('Productos')).toHaveAttribute('href', '/productos');
+  expect(area('Relacionamiento')).toHaveAttribute('href', '/relacionamiento');
+  // Iraka: botón principal del hero, menú principal y pie (en todas las páginas).
+  expect(
+    within(screen.getByRole('navigation', { name: 'Principal' })).getByRole('link', {
+      name: 'Iraka · Periodismo científico (abre en una pestaña nueva)',
+    }),
+  ).toHaveAttribute('href', 'https://iraka.unisimon.edu.co/');
+  expect(
+    within(screen.getByRole('contentinfo')).getByRole('link', { name: /Iraka · Periodismo científico/ }),
+  ).toHaveAttribute('href', 'https://iraka.unisimon.edu.co/');
+  expect(
+    within(screen.getByRole('main')).getByRole('link', { name: /Iraka · Periodismo científico/ }),
+  ).toHaveAttribute('href', 'https://iraka.unisimon.edu.co/');
+  // Orden pedido: proyectos, grupos, publicaciones y países.
+  expect(
+    within(screen.getByRole('region', { name: 'La investigación en cifras' }))
+      .getAllByRole('term')
+      .map((d) => d.firstChild?.textContent),
+  ).toEqual([
+    'Proyectos publicados',
+    'Grupos de investigación',
+    'Publicaciones científicas',
+    'Países con coautoría',
+  ]);
+  // Colombia es el país local: no cuenta como aliado; España, sí.
+  expect(await screen.findByText('1 país aliado · Mayor coautoría: España')).toBeInTheDocument();
+  expect(screen.getByText('Mayor coautoría: España')).toBeInTheDocument(); // nota de la métrica
+  expect(screen.getByText('1 perfil · 1 Sénior y Eméritos')).toBeInTheDocument();
+  // El hero muestra proyectos reales en ejecución y nada de noticias de ejemplo.
+  expect(screen.queryByText(/noticia/i)).not.toBeInTheDocument();
+  await waitFor(() =>
+    expect(document.title).toBe('Investigación en la Universidad Simón Bolívar | Unisimón Research'),
+  );
+  expect(document.querySelector('meta[name="robots"]')).toHaveAttribute('content', 'index, follow');
+});
+
+test('portada: un área que falla no tumba las demás y se puede reintentar', async () => {
+  let fail = true;
+  const relations = {
+    ...fakeRelationsRepo(),
+    countries: async (year: number | null) => {
+      if (fail) throw new ApiError(503, 'Servicio no disponible');
+      return fakeRelationsRepo().countries(year);
+    },
+  };
+  renderApp('/', undefined, undefined, undefined, undefined, undefined, relations);
+  const retry = await screen.findByRole('button', { name: 'Reintentar: Países con coautoría' });
+  expect(await screen.findByText(/1 perfil/)).toBeInTheDocument();
+  expect(within(screen.getByRole('main')).getByRole('link', { name: 'Relacionamiento' })).toBeInTheDocument();
+  fail = false;
+  await userEvent.click(retry);
+  expect(await screen.findByText(/1 país aliado/)).toBeInTheDocument();
+});
+
+test('portada: sin datos no muestra 0 y oculta los destacados vacíos', async () => {
+  renderApp('/', fakeRepo({}, []), undefined, undefined, undefined, fakeProjectRepo([]));
+  expect(await screen.findByText('Sin datos publicados')).toBeInTheDocument(); // proyectos
+  expect(screen.queryByText(/Top 12/)).not.toBeInTheDocument();
+  expect(screen.queryByRole('complementary', { name: 'Proyecto en ejecución' })).not.toBeInTheDocument();
+});
+
+test('portada: los enlaces antiguos del directorio redirigen con sus filtros', async () => {
+  renderApp('/?vista=top12');
+  expect(await screen.findByRole('heading', { name: 'Quiénes investigan en Unisimón' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Top 12', pressed: true })).toBeInTheDocument();
 });
