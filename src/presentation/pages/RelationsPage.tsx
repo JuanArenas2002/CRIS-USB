@@ -164,7 +164,10 @@ export function RelationsPage() {
                       {t('noData')}
                     </p>
                   </div>
-                  <p className="text-label-sm text-neutral-muted">{t('localNote')}</p>
+                  <p className="text-label-sm text-neutral-muted">
+                    <strong className="font-semibold text-on-surface-variant">{t('source')}</strong> ·{' '}
+                    {t('localNote')}
+                  </p>
                 </div>
               </div>
 

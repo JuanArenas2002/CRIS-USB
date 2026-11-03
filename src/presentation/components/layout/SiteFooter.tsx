@@ -1,11 +1,12 @@
 import { withBase } from '@/shared/base';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { CONTACT_EMAIL } from '@/shared/contact';
+import { CONTACT_EMAIL, IRAKA_URL } from '@/shared/contact';
 import { NAV_ITEMS } from '@/shared/navigation';
+import { Icon } from '@/presentation/components/ui/Icon';
 
 export function SiteFooter() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'home']);
   return (
     <footer className="w-full bg-surface-dark-forest py-16 text-on-primary">
       <div className="container-page">
@@ -34,6 +35,15 @@ export function SiteFooter() {
                 {t(`nav.items.${item.key}.label`)}
               </Link>
             ))}
+            <a
+              href={IRAKA_URL}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-1.5 self-start text-body-sm text-primary-fixed-dim hover:text-on-primary"
+            >
+              {t('home:hero.iraka')} <Icon name="open_in_new" className="text-[14px]" />
+              <span className="sr-only">{t('newTab')}</span>
+            </a>
           </nav>
           <div className="flex flex-col gap-2 text-body-sm text-primary-fixed-dim">
             <span className="text-label-md tracking-wider text-tertiary-fixed uppercase">

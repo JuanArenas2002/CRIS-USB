@@ -110,7 +110,20 @@ async function writePage(url, file, prefetch = async () => {}) {
 }
 
 // 2. Páginas.
+// Portada: cifras y destacados con las mismas consultas de cada módulo. Relacionamiento se pide en
+// el navegador, como en su página.
 await writePage('/', path.join(dist, 'index.html'), (qc) =>
+  Promise.all([
+    qc.fetchQuery(authorsQ.stats()),
+    qc.fetchQuery(authorsQ.directory(ssr.HOME_TOP_FILTERS)),
+    qc.fetchQuery(groupsQ.list()),
+    qc.fetchQuery(centersQ.list()),
+    qc.fetchQuery(projectsQ.list()),
+    qc.fetchQuery(publicationsQ.stats()),
+    qc.fetchQuery(publicationsQ.list(ssr.HOME_RECENT_FILTERS)),
+  ]),
+);
+await writePage('/investigadores', path.join(dist, 'investigadores', 'index.html'), (qc) =>
   Promise.all([
     qc.fetchQuery(authorsQ.directory({ search: '', page: 1 })),
     qc.fetchQuery(authorsQ.stats()),
@@ -193,7 +206,7 @@ await writePage('/404', path.join(dist, '404.html'));
 const xmlEsc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${['/', '/grupos', ...groupPaths, '/centros', ...centerPaths, '/proyectos', ...projectPaths, '/relacionamiento', ...(publications.length ? ['/productos'] : []), ...profilePaths].map((p) => `  <url><loc>${xmlEsc(siteUrl + p)}</loc></url>`).join('\n')}
+${['/', '/investigadores', '/grupos', ...groupPaths, '/centros', ...centerPaths, '/proyectos', ...projectPaths, '/relacionamiento', ...(publications.length ? ['/productos'] : []), ...profilePaths].map((p) => `  <url><loc>${xmlEsc(siteUrl + p)}</loc></url>`).join('\n')}
 </urlset>
 `;
 await fs.writeFile(path.join(dist, 'sitemap.xml'), sitemap);
@@ -207,7 +220,8 @@ await fs.writeFile(
 
 > Portal público de investigación de la Universidad Simón Bolívar (Colombia): investigadores activos con su categoría Minciencias, grupos de investigación y perfiles científicos (ORCID, Scopus, CvLAC, Google Scholar), y grupos con sus líneas de investigación e historial de categoría.
 
-- [Directorio de investigadores](${siteUrl}/)
+- [Inicio](${siteUrl}/)
+- [Directorio de investigadores](${siteUrl}/investigadores)
 - [Grupos de investigación](${siteUrl}/grupos)
 - [Proyectos de investigación](${siteUrl}/proyectos)
 - [Producción científica destacada (publicaciones Scopus)](${siteUrl}/productos)

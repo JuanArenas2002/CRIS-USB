@@ -11,14 +11,20 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { key: 'centers', to: '/centros', ready: true },
   { key: 'groups', to: '/grupos', ready: true },
-  { key: 'authors', to: '/', ready: true },
+  { key: 'authors', to: '/investigadores', ready: true },
   { key: 'projects', to: '/proyectos', ready: true },
   { key: 'products', to: '/productos', ready: true },
   { key: 'relations', to: '/relacionamiento', ready: true },
 ];
 
-/** "Investigadores" vive en "/" y en los perfiles /investigadores/*. */
 export function isNavActive(item: NavItem, pathname: string): boolean {
-  if (item.to === '/') return pathname === '/' || pathname.startsWith('/investigadores');
   return pathname === item.to || pathname.startsWith(item.to + '/');
 }
+
+/** Filtros del directorio (use-author-search) en la URL. */
+const DIRECTORY_PARAMS = ['q', 'cat', 'grupo', 'centro', 'vista', 'page'];
+
+export const isDirectorySearch = (search: string) => {
+  const params = new URLSearchParams(search);
+  return DIRECTORY_PARAMS.some((p) => params.has(p));
+};

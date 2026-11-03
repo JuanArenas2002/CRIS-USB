@@ -14,26 +14,6 @@ import { useCenters } from '@/presentation/hooks/use-centers';
 import { useGroups } from '@/presentation/hooks/use-groups';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
 import { useLabels } from '@/presentation/hooks/use-labels';
-import { ORGANIZATION, SITE_NAME, SITE_URL, safeJson } from '@/shared/seo';
-
-// WebSite + la universidad como Organization (tipo que Google reconoce en resultados enriquecidos).
-// ponytail: sin `logo` hasta tener una versión cuadrada ≥ 112 px (el logo actual es 400×65).
-const websiteJsonLd = [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: SITE_NAME,
-    url: SITE_URL + '/',
-    inLanguage: 'es-CO',
-    publisher: ORGANIZATION,
-  },
-  {
-    '@context': 'https://schema.org',
-    ...ORGANIZATION,
-    alternateName: 'Unisimón',
-    sameAs: ['https://www.unisimon.edu.co'],
-  },
-];
 
 export function DirectoryPage() {
   const { t } = useTranslation(['authors', 'common']);
@@ -47,7 +27,7 @@ export function DirectoryPage() {
   useDocumentMetadata({
     title: t('directory.metaTitle'),
     description: t('directory.metaDescription'),
-    path: '/',
+    path: '/investigadores',
     // Búsquedas, filtros y páginas >1 no se indexan: los perfiles se descubren por enlaces y sitemap.
     noindex: search.isFiltered,
   });
@@ -78,7 +58,6 @@ export function DirectoryPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJson(websiteJsonLd) }} />
       <DirectoryHero stats={stats.data} />
       <DirectoryFilters
         term={search.term}
