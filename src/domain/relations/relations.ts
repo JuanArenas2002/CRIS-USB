@@ -29,7 +29,6 @@ export interface CountryPublication {
   /** Tipo documental de Scopus ("Article", "Review", "Conference paper"…). */
   docType: string | null;
   citations: number;
-  quartile: string | null;
   /** Instituciones del país con las que se publicó. */
   partners: string[];
 }

@@ -177,7 +177,10 @@ test('relacionamiento: mapa por país y año; al elegir un país se ven sus publ
   expect(
     await panel.findByText('Sporting Mind: The Interplay of Physical Activity and Psychological Health'),
   ).toBeInTheDocument();
-  expect(panel.getByText(/Q1 · 307 citas · con Universidad Europea de Madrid/)).toBeInTheDocument();
+  // Las citas van en su propia columna; bajo el tipo, solo los aliados.
+  expect(panel.getByText('con Universidad Europea de Madrid')).toBeInTheDocument();
+  expect(panel.getByRole('columnheader', { name: 'Citas' })).toBeInTheDocument();
+  expect(panel.getByText('307')).toBeInTheDocument();
   expect(panel.getByRole('link', { name: /DOI/ })).toHaveAttribute(
     'href',
     'https://doi.org/10.3390/sports12010037',
@@ -491,9 +494,15 @@ test('productos: misma tabla que los productos del investigador (año, título, 
   expect(row.getByText('2022')).toBeInTheDocument();
   expect(row.getByText('Nuevo Conocimiento')).toBeInTheDocument();
   expect(row.getByText('Artículo científico')).toBeInTheDocument();
-  // Revista y DOI bajo el título; cuartil, citas y acceso abierto bajo el tipo.
+  // Revista y DOI bajo el título; acceso abierto bajo el tipo; citas en su columna (el cuartil nunca se muestra).
   expect(row.getByText('Pharmaceutics · DOI: 10.3390/pharmaceutics14061303')).toBeInTheDocument();
-  expect(row.getByText(/Q1 · 133 citas · Acceso abierto/)).toBeInTheDocument();
+  expect(row.getByText('Scopus · Acceso abierto')).toBeInTheDocument();
+  expect(screen.getByRole('columnheader', { name: 'Citas' })).toBeInTheDocument();
+  expect(row.getByText('133')).toBeInTheDocument();
+  expect(screen.getByText('En revistas Q1')).toBeInTheDocument();
+  // Del cuartil solo se muestra el total en Q1; nunca el de cada publicación.
+  expect(screen.getByRole('table')).not.toHaveTextContent(/\bQ[1-4]\b/);
+  expect(screen.queryByRole('combobox', { name: /cuartil/i })).not.toBeInTheDocument();
   expect(row.getByRole('link', { name: /DOI/ })).toHaveAttribute(
     'href',
     'https://doi.org/10.3390/pharmaceutics14061303',
@@ -504,7 +513,7 @@ test('productos: misma tabla que los productos del investigador (año, título, 
 
 test('productos: sin resultados para el filtro ofrece restablecerlo', async () => {
   const user = userEvent.setup();
-  renderApp('/productos?cuartil=Q4');
+  renderApp('/productos?tipo=Book');
   const empty = await screen.findByRole('status');
   expect(empty).toHaveTextContent('No se encontraron publicaciones');
   await user.click(within(empty).getByRole('button', { name: 'Restablecer filtros' }));
@@ -556,6 +565,33 @@ test('ficha de proyecto: carrusel con las fotos asociadas y flechas', async () =
   // Al inicio no se puede retroceder.
   expect(within(carousel).getByRole('button', { name: 'Foto anterior' })).toBeDisabled();
   expect(within(carousel).getByRole('button', { name: 'Foto siguiente' })).toBeInTheDocument();
+});
+
+test('ficha de proyecto: un equipo grande se pliega con «Ver más»', async () => {
+  const user = userEvent.setup();
+  const team = Array.from({ length: 8 }, (_, i) => ({
+    name: `PERSONA NUMERO ${i + 1}`,
+    role: 'Coinvestigador',
+  }));
+  const repo = fakeProjectRepo([makeProject({ team })]);
+  renderApp(
+    '/proyectos/3-programa-de-fortalecimiento-a-organizaciones-de-cuidado-comunitario',
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    repo,
+  );
+  expect(await screen.findByText('Persona Numero 6')).toBeInTheDocument();
+  expect(screen.queryByText('Persona Numero 7')).not.toBeInTheDocument();
+  const toggle = screen.getByRole('button', { name: /Ver 2 integrantes más/ });
+  expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await user.click(toggle);
+  expect(screen.getByText('Persona Numero 8')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /Ver menos integrantes/ })).toHaveAttribute(
+    'aria-expanded',
+    'true',
+  );
 });
 
 test('centro: lista sus proyectos (cruce por nombre del centro, sin tildes ni mayúsculas)', async () => {

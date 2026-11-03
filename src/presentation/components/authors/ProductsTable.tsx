@@ -208,6 +208,9 @@ export function ProductRows({
           <th scope="col" className="px-4 py-3">
             {t('products.colSubtype')}
           </th>
+          <th scope="col" className="w-24 px-4 py-3 text-right">
+            {t('products.colCitations')}
+          </th>
           <th scope="col" className="px-4 py-3 text-right">
             {t('products.colLink')}
           </th>
@@ -244,13 +247,26 @@ export function ProductRows({
                 {labels.typologyShort(p.typology)}
               </span>
             </td>
-            <td className="order-4 min-w-0 text-label-md text-on-surface-variant md:table-cell md:px-4 md:py-3.5 md:align-top">
+            <td className="order-4 col-span-2 min-w-0 text-label-md text-on-surface-variant md:table-cell md:px-4 md:py-3.5 md:align-top">
               {labels.domain(p.type)}
               {p.index ? (
                 <span className="block text-label-sm text-neutral-muted">{labels.domain(p.index)}</span>
               ) : null}
             </td>
-            <td className="order-5 justify-self-end md:table-cell md:px-4 md:py-3.5 md:text-right md:align-top">
+            {/* En móvil, «12 citas» junto al subtipo; en tabla, solo el número. */}
+            <td className="order-5 text-label-md text-on-surface-variant tabular-nums md:table-cell md:px-4 md:py-3.5 md:text-right md:align-top md:font-semibold md:text-on-surface">
+              {p.citations === null ? (
+                <span aria-label={t('products.noCitations')} className="hidden text-neutral-muted md:inline">
+                  —
+                </span>
+              ) : (
+                <>
+                  <span className="md:hidden">{t('products.citations', { count: p.citations })}</span>
+                  <span className="hidden md:inline">{labels.number(p.citations)}</span>
+                </>
+              )}
+            </td>
+            <td className="order-6 justify-self-end md:table-cell md:px-4 md:py-3.5 md:text-right md:align-top">
               {p.url ? (
                 <a
                   href={p.url}

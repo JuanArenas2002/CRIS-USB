@@ -43,17 +43,17 @@ Las dependencias apuntan hacia el dominio. El dominio no importa React ni infrae
 
 ## Contrato del BFF
 
-| Ruta                                                                   | Respuesta                                                                                                                                               |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET /api/investigators?q&cat&group&page&size`                         | `{ items: Author[], total, page, pages }` (máx. 100 por página)                                                                                         |
-| `GET /api/investigators/stats`                                         | `{ total, byCategory }`                                                                                                                                 |
-| `GET /api/investigators/{id}`                                          | `AuthorProfile` (con `groups`) o 404                                                                                                                    |
-| `GET /api/groups`                                                      | `Group[]` (líneas solo con nombre)                                                                                                                      |
-| `GET /api/groups/{id}`                                                 | `GroupDetail` (líneas completas + historial) o 404                                                                                                      |
-| `GET /api/publications?q&from&to&quartile&type&area&oa&sort&page&size` | `{ items: (RankedPublication & { position })[], total, page, pages }`: `rank` es el puesto general; `position`, el puesto recalculado dentro del filtro |
-| `GET /api/projects`                                                    | `Project[]` (todos los seleccionados en Metri-K, completos)                                                                                             |
-| `GET /api/projects/{id}`                                               | `Project` o 404                                                                                                                                         |
-| `GET /api/publications/stats`                                          | `{ total, byQuartile, openAccess, international, citations, years, types, areas }`                                                                      |
+| Ruta                                                          | Respuesta                                                                                                                                               |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/investigators?q&cat&group&page&size`                | `{ items: Author[], total, page, pages }` (máx. 100 por página)                                                                                         |
+| `GET /api/investigators/stats`                                | `{ total, byCategory }`                                                                                                                                 |
+| `GET /api/investigators/{id}`                                 | `AuthorProfile` (con `groups`) o 404                                                                                                                    |
+| `GET /api/groups`                                             | `Group[]` (líneas solo con nombre)                                                                                                                      |
+| `GET /api/groups/{id}`                                        | `GroupDetail` (líneas completas + historial) o 404                                                                                                      |
+| `GET /api/publications?q&from&to&type&area&oa&sort&page&size` | `{ items: (RankedPublication & { position })[], total, page, pages }`: `rank` es el puesto general; `position`, el puesto recalculado dentro del filtro |
+| `GET /api/projects`                                           | `Project[]` (todos los seleccionados en Metri-K, completos)                                                                                             |
+| `GET /api/projects/{id}`                                      | `Project` o 404                                                                                                                                         |
+| `GET /api/publications/stats`                                 | `{ total, openAccess, international, citations, years, types, areas }`                                                                                  |
 
 ## Limitaciones
 

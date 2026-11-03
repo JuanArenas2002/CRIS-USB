@@ -377,6 +377,8 @@ export interface Product {
   venue: string | null;
   /** Indexación o detalle (p. ej. "Scopus · Review"). */
   index: string | null;
+  /** Citas (solo publicaciones Scopus; `null` en el resto). */
+  citations: number | null;
   doi: string | null;
   url: string | null;
 }
@@ -408,6 +410,7 @@ export function toProducts(p: AuthorProduction): Product[] {
       year: x.year,
       venue: x.journal,
       index: ['Scopus', x.type].filter(Boolean).join(' · '),
+      citations: x.citedBy,
       doi: x.doi,
       url: x.doi ? `https://doi.org/${x.doi}` : x.url,
     })),
@@ -420,6 +423,7 @@ export function toProducts(p: AuthorProduction): Product[] {
       year: x.year,
       venue: x.company,
       index: x.kind,
+      citations: null,
       doi: null,
       url: null,
     })),
@@ -432,6 +436,7 @@ export function toProducts(p: AuthorProduction): Product[] {
       year: x.year,
       venue: x.program,
       index: 'Repositorio institucional',
+      citations: null,
       doi: null,
       url: x.url,
     })),

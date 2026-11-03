@@ -1,5 +1,5 @@
 import { Trans, useTranslation } from 'react-i18next';
-import { publicationUrl, type ListedPublication, type Quartile } from '@/domain/publications/publication';
+import { publicationUrl, type ListedPublication } from '@/domain/publications/publication';
 import { scopusProductType, type Product } from '@/domain/authors/author';
 import { ProductRows } from '@/presentation/components/authors/ProductsTable';
 import { HeroWaves } from '@/presentation/components/layout/HeroWaves';
@@ -22,8 +22,8 @@ const fieldClass =
 
 /** Producción científica destacada: ranking de publicaciones Scopus cargado en /admin/produccion. */
 /**
- * Publicación del ranking → fila de la tabla de productos del investigador. Cuartil, citas y
- * acceso abierto van en el detalle bajo el tipo; el orden sigue siendo el del ranking.
+ * Publicación del ranking → fila de la tabla de productos del investigador. El acceso abierto va
+ * en el detalle bajo el tipo y las citas en su columna (el cuartil no se publica); el orden sigue siendo el del ranking.
  */
 function useAsProduct() {
   const { t } = useTranslation('publications');
@@ -35,14 +35,8 @@ function useAsProduct() {
     authors: null,
     year: p.year,
     venue: p.journal,
-    index: [
-      'Scopus',
-      p.quartile,
-      t('item.citations', { count: p.citations }),
-      p.openAccess ? t('item.openAccess') : null,
-    ]
-      .filter(Boolean)
-      .join(' · '),
+    index: ['Scopus', p.openAccess ? t('item.openAccess') : null].filter(Boolean).join(' · '),
+    citations: p.citations,
     doi: p.doi,
     url: publicationUrl(p),
   });
@@ -133,7 +127,7 @@ export function ProductsPage() {
                 value: s?.total,
                 accent: 'text-surface-container-lowest',
               },
-              { key: 'q1', label: t('statQ1'), value: s?.byQuartile.Q1, accent: 'text-secondary-fixed' },
+              { key: 'q1', label: t('statQ1'), value: s?.q1, accent: 'text-secondary-fixed' },
               {
                 key: 'oa',
                 label: t('statOpenAccess'),
@@ -177,7 +171,7 @@ export function ProductsPage() {
               className={`${fieldClass} w-full pr-4 pl-10 text-body-sm`}
             />
           </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-6">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
             <FilterSelect
               className=""
               label={t('yearFrom')}
@@ -199,18 +193,6 @@ export function ProductsPage() {
                 ['', t('anyYearTo')],
                 ...options(years.filter((y) => !filters.yearFrom || y >= filters.yearFrom).map(String), (y) =>
                   t('toYear', { year: y }),
-                ),
-              ]}
-            />
-            <FilterSelect
-              className=""
-              label={t('quartile')}
-              value={filters.quartile ?? ''}
-              onChange={(v) => search.set('cuartil', v)}
-              options={[
-                ['', t('allQuartiles')],
-                ...options(['Q1', 'Q2', 'Q3', 'Q4'], (q) =>
-                  s ? `${q} (${number(s.byQuartile[q as Quartile])})` : q,
                 ),
               ]}
             />
@@ -263,9 +245,6 @@ export function ProductsPage() {
         <div className="container-page">
           <div className="mb-8 flex flex-col">
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-label-md font-bold tracking-widest text-secondary uppercase">
-                {t('eyebrow')}
-              </p>
               <p
                 aria-live="polite"
                 className="inline-flex items-center gap-2 rounded-full bg-badge-sage-bg px-3 py-1 text-label-md font-semibold text-badge-sage-text"
@@ -287,7 +266,6 @@ export function ProductsPage() {
             >
               {t('listTitle')}
             </h2>
-            <p className="mt-1 max-w-2xl text-body-md text-neutral-muted">{t('listLead')}</p>
           </div>
 
           {/* Al cambiar filtro o página: barra de progreso y la lista anterior atenuada. */}

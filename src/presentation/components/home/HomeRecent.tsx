@@ -56,11 +56,6 @@ function LeadPublication({ publication }: { publication: ListedPublication }) {
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-surface-container bg-surface-container-lowest shadow-sm md:col-span-7">
       <div className="relative flex min-h-40 flex-col justify-end bg-surface-dark-forest p-5 text-on-primary sm:p-6">
-        {publication.quartile ? (
-          <span className="absolute top-4 left-4 rounded-sm bg-primary-container px-2.5 py-1 text-label-sm font-bold tracking-wider uppercase">
-            {publication.quartile}
-          </span>
-        ) : null}
         <Icon name="menu_book" className="absolute top-4 right-4 text-[28px] text-secondary-fixed" />
         <p className="line-clamp-2 text-body-md font-semibold text-primary-fixed">{publication.journal}</p>
       </div>
@@ -88,7 +83,7 @@ function PublicationRow({ publication }: { publication: ListedPublication }) {
   return (
     <article className="flex gap-3.5 rounded-xl border border-surface-container bg-surface-container-lowest p-4 shadow-sm">
       <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-badge-sage-bg text-body-md font-bold text-primary-container">
-        {publication.quartile ?? <Icon name="article" className="text-[24px]" />}
+        <Icon name="article" className="text-[24px]" />
       </span>
       <div className="min-w-0 space-y-1.5">
         <Meta publication={publication} />

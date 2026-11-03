@@ -54,12 +54,10 @@ import {
 } from '../src/domain/authors/author.ts';
 import {
   PUBLICATION_SORTS,
-  QUARTILES,
   publicationStats,
   queryPublications,
   withAuthors,
   type PublicationSort,
-  type Quartile,
 } from '../src/domain/publications/publication.ts';
 
 export const DEFAULT_METRIK_URL = 'https://metrik.unisimon.edu.co/back/api';
@@ -713,7 +711,6 @@ export function createPublicApi({
       }
 
       if (p === '/api/publications') {
-        const quartile = sp.get('quartile');
         const sort = sp.get('sort');
         const page = Number(sp.get('page')) || 1;
         const size = Number(sp.get('size')) || 20;
@@ -723,7 +720,6 @@ export function createPublicApi({
             search: sp.get('q') ?? undefined,
             yearFrom: Number(sp.get('from')) || undefined,
             yearTo: Number(sp.get('to')) || undefined,
-            quartile: QUARTILES.includes(quartile as Quartile) ? (quartile as Quartile) : undefined,
             type: sp.get('type') || undefined,
             area: sp.get('area') || undefined,
             openAccess: sp.get('oa') === '1' || undefined,

@@ -2,12 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import type { PublicationFilters, PublicationQueries } from '@/application/publications/publication-queries';
-import {
-  PUBLICATION_SORTS,
-  QUARTILES,
-  type PublicationSort,
-  type Quartile,
-} from '@/domain/publications/publication';
+import { PUBLICATION_SORTS, type PublicationSort } from '@/domain/publications/publication';
 import { useDebounce } from './use-debounce';
 
 export const PublicationQueriesContext = createContext<PublicationQueries | null>(null);
@@ -21,17 +16,15 @@ function usePublicationQueries() {
 export const usePublications = (f: PublicationFilters) => useQuery(usePublicationQueries().list(f));
 export const usePublicationStats = () => useQuery(usePublicationQueries().stats());
 
-/** Filtros de /productos en la URL (?q=&desde=&hasta=&cuartil=&tipo=&area=&oa=&orden=&page=). */
+/** Filtros de /productos en la URL (?q=&desde=&hasta=&tipo=&area=&oa=&orden=&page=). */
 export function usePublicationSearch() {
   const [params, setParams] = useSearchParams();
   const q = params.get('q') ?? '';
-  const quartileParam = params.get('cuartil');
   const sortParam = params.get('orden');
   const filters: PublicationFilters = {
     search: q,
     yearFrom: Number(params.get('desde')) || undefined,
     yearTo: Number(params.get('hasta')) || undefined,
-    quartile: QUARTILES.includes(quartileParam as Quartile) ? (quartileParam as Quartile) : undefined,
     type: params.get('tipo') || undefined,
     area: params.get('area') || undefined,
     openAccess: params.get('oa') === '1' || undefined,
@@ -66,13 +59,7 @@ export function usePublicationSearch() {
     filters,
     set,
     hasActiveFilters: Boolean(
-      q ||
-      filters.yearFrom ||
-      filters.yearTo ||
-      filters.quartile ||
-      filters.type ||
-      filters.area ||
-      filters.openAccess,
+      q || filters.yearFrom || filters.yearTo || filters.type || filters.area || filters.openAccess,
     ),
     isFiltered: params.size > 0,
     reset: () => {

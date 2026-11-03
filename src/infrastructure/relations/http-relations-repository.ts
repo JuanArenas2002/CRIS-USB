@@ -27,7 +27,6 @@ const publicationsSchema = z.array(
     journal: z.string().nullable(),
     docType: z.string().nullable(),
     citations: z.number(),
-    quartile: z.string().nullable(),
     partners: z.array(z.string()),
   }),
 ) as unknown as z.ZodType<CountryPublication[]>;

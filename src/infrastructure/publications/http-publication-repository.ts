@@ -1,15 +1,12 @@
 import { z } from 'zod';
-import {
-  QUARTILES,
-  type PublicationPage,
-  type PublicationRepository,
-  type PublicationStats,
+import type {
+  PublicationPage,
+  PublicationRepository,
+  PublicationStats,
 } from '@/domain/publications/publication';
 import type { ApiGet } from '@/infrastructure/http/api-client';
 
 // Contrato del BFF `/api/publications` y `/api/publications/stats` (ranking de /admin/produccion).
-const quartile = z.enum(QUARTILES);
-
 const publication = z.object({
   rank: z.number().int(),
   score: z.number(),
@@ -22,7 +19,6 @@ const publication = z.object({
   journal: z.string().nullable(),
   issn: z.array(z.string()),
   language: z.string().nullable(),
-  quartile: quartile.nullable(),
   areas: z.array(z.string()),
   citations: z.number().int(),
   openAccess: z.boolean(),
@@ -42,7 +38,7 @@ const pageSchema = z.object({
 
 const statsSchema = z.object({
   total: z.number().int(),
-  byQuartile: z.record(quartile, z.number().int()),
+  q1: z.number().int(),
   openAccess: z.number().int(),
   international: z.number().int(),
   citations: z.number().int(),
@@ -58,7 +54,6 @@ export function httpPublicationRepository(get: ApiGet): PublicationRepository {
       if (q.search) params.set('q', q.search);
       if (q.yearFrom) params.set('from', String(q.yearFrom));
       if (q.yearTo) params.set('to', String(q.yearTo));
-      if (q.quartile) params.set('quartile', q.quartile);
       if (q.type) params.set('type', q.type);
       if (q.area) params.set('area', q.area);
       if (q.openAccess) params.set('oa', '1');
