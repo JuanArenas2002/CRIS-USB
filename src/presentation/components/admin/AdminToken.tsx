@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import {
+  ADMIN_SESSION,
+  endAdminSession,
+  hasAdminSession,
+  startAdminSession,
+} from '@/infrastructure/http/admin-session';
 
 // Token compartido por las vistas ocultas de administración (/admin/fotos, /admin/centros, /admin/ranking).
-const TOKEN_KEY = 'cris-admin-token';
+// No se guarda en el navegador: el BFF lo cambia por una cookie de sesión HttpOnly (ver admin-session.ts).
 
 /** Tolera pegar la línea completa del .env (`CRIS_ADMIN_TOKEN=…`), comillas o espacios. */
 export const cleanToken = (raw: string) =>
@@ -11,40 +17,31 @@ export const cleanToken = (raw: string) =>
     .replace(/^["']|["']$/g, '')
     .trim();
 
-const readToken = () => {
-  try {
-    return sessionStorage.getItem(TOKEN_KEY) ?? '';
-  } catch {
-    return '';
-  }
-};
-
-/** El token vive solo en esta pestaña (sessionStorage) y se olvida si el servidor lo rechaza. */
+/**
+ * `token` es un marcador NO secreto ('' o ADMIN_SESSION): la credencial real vive en la cookie HttpOnly que
+ * pone el servidor. Al montar se comprueba si ya hay sesión (sobrevive a recargas, 8 h).
+ */
 export function useAdminToken() {
-  const [token, setToken] = useState(readToken);
+  const [token, setToken] = useState('');
   const [error, setError] = useState('');
 
-  const save = (draft: string) => {
-    const t = cleanToken(draft);
-    setToken(t);
+  useEffect(() => {
+    let alive = true;
+    void hasAdminSession().then((ok) => alive && ok && setToken(ADMIN_SESSION));
+    return () => void (alive = false);
+  }, []);
+
+  const save = async (draft: string) => {
     setError('');
-    try {
-      sessionStorage.setItem(TOKEN_KEY, t);
-    } catch {
-      /* sin almacenamiento: el token vive en memoria */
-    }
+    if (await startAdminSession(cleanToken(draft))) setToken(ADMIN_SESSION);
+    else setError('El servidor rechazó el token. Pega solo el valor que va después de CRIS_ADMIN_TOKEN=.');
   };
   const clear = (reason = '') => {
     setToken('');
     setError(reason);
-    try {
-      sessionStorage.removeItem(TOKEN_KEY);
-    } catch {
-      /* nada que borrar */
-    }
+    void endAdminSession();
   };
-  const rejected = () =>
-    clear('El servidor rechazó el token. Pega solo el valor que va después de CRIS_ADMIN_TOKEN=.');
+  const rejected = () => clear('La sesión de administración venció o el token cambió. Vuelve a ingresarlo.');
 
   return { token, error, save, clear, rejected };
 }
@@ -57,7 +54,7 @@ export function AdminTokenForm({ error, onSubmit }: { error: string; onSubmit: (
         e.preventDefault();
         onSubmit(draft);
       }}
-      className="mt-8 flex max-w-md flex-col gap-3 rounded-xl bg-surface-container-lowest p-6 shadow-sm"
+      className="mt-8 flex max-w-md flex-col gap-3 rounded-xl bg-surface-container-lowest p-6 border border-border-subtle"
     >
       <label htmlFor="admin-token" className="text-label-md font-semibold text-on-surface">
         Token de administración

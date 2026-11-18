@@ -6,7 +6,9 @@
 // Detrás de nginx/IIS/Apache también funciona: basta con hacer proxy de todo al PORT.
 import fs from 'node:fs';
 import http, { type IncomingMessage, type ServerResponse } from 'node:http';
+import https from 'node:https';
 import path from 'node:path';
+import { promisify } from 'node:util';
 import zlib from 'node:zlib';
 import { createPublicApi } from './public-api.ts';
 import { storeOptionsFromEnv } from './stores.ts';
@@ -27,6 +29,35 @@ const TYPES: Record<string, string> = {
 };
 const COMPRESSIBLE = /\.(html|js|css|json|xml|txt|svg)$/;
 
+// Compresión hecha UNA vez por archivo y guardada en memoria: Brotli (≈20 % menos que gzip en JS/CSS/HTML)
+// y gzip para navegadores sin br. dist/ no cambia mientras corre el proceso; si cambia (build nuevo), la
+// fecha del archivo invalida la entrada. Mientras no está lista, se responde con gzip al vuelo (como antes).
+const brotli = promisify(zlib.brotliCompress);
+const gzipAsync = promisify(zlib.gzip);
+const packed = new Map<string, { mtime: number; br: Buffer; gz: Buffer }>();
+const packing = new Set<string>();
+
+function pack(file: string, mtime: number) {
+  if (packing.has(file)) return;
+  packing.add(file);
+  void fs.promises
+    .readFile(file)
+    .then(async (raw) => {
+      const [br, gz] = await Promise.all([
+        brotli(raw, {
+          params: {
+            [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
+            [zlib.constants.BROTLI_PARAM_SIZE_HINT]: raw.length,
+          },
+        }),
+        gzipAsync(raw, { level: 9 }),
+      ]);
+      packed.set(file, { mtime, br, gz });
+    })
+    .catch(() => undefined) // sin caché: se sigue sirviendo con gzip al vuelo
+    .finally(() => packing.delete(file));
+}
+
 /** Carga .env si existe (las variables del sistema tienen prioridad). */
 function loadDotEnv(file = '.env') {
   if (!fs.existsSync(file)) return;
@@ -36,6 +67,39 @@ function loadDotEnv(file = '.env') {
     const value = m[2]!.replace(/^(['"])(.*)\1$/, '$2');
     if (process.env[m[1]!] === undefined) process.env[m[1]!] = value;
   }
+}
+
+/**
+ * /news-api/* -> backend de noticias (/api/*): mismo origen para el navegador, así la cookie de sesión
+ * (HttpOnly, SameSite=Lax) funciona sin CORS. Se reenvían método, cuerpo y cabeceras (incl. Cookie y CSRF).
+ */
+function proxyNews(req: IncomingMessage, res: ServerResponse) {
+  const base = (process.env.CRIS_NEWS_API_URL || 'http://localhost:8005').replace(/\/+$/, '');
+  const target = new URL(base + (req.url ?? '').replace(/^\/news-api/, '/api'));
+  const upstream = (target.protocol === 'https:' ? https : http).request(
+    target,
+    {
+      method: req.method,
+      // IP real del lector para el backend (límite de intentos y visitantes únicos de la analítica).
+      // El backend solo la cree si se inicia con --proxy-headers --forwarded-allow-ips=<IP de este proceso>.
+      headers: {
+        ...req.headers,
+        host: target.host,
+        'x-forwarded-for': [req.headers['x-forwarded-for'], req.socket.remoteAddress]
+          .filter(Boolean)
+          .join(', '),
+      },
+    },
+    (r) => {
+      res.writeHead(r.statusCode ?? 502, r.headers);
+      r.pipe(res);
+    },
+  );
+  upstream.on('error', () => {
+    if (!res.headersSent) res.writeHead(502, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(JSON.stringify({ detail: 'El servidor de noticias no responde.' }));
+  });
+  req.pipe(upstream);
 }
 
 /** Equivale a `try_files $uri $uri/index.html $uri.html` de nginx, sin salir de la carpeta. */
@@ -72,6 +136,11 @@ export function createSiteServer({
   const root = path.resolve(staticDir);
   if (!fs.existsSync(path.join(root, 'index.html')))
     throw new Error(`No existe ${root}/index.html: ejecuta primero "npm run build".`);
+  // Precompresión en segundo plano (hilos de zlib, no bloquea): la primera visita ya recibe Brotli.
+  for (const rel of fs.readdirSync(root, { recursive: true }) as string[]) {
+    const file = path.join(root, rel);
+    if (COMPRESSIBLE.test(file)) pack(file, fs.statSync(file).mtimeMs);
+  }
 
   function sendFile(req: IncomingMessage, res: ServerResponse, file: string, status = 200) {
     const ext = path.extname(file).toLowerCase();
@@ -84,7 +153,21 @@ export function createSiteServer({
     const hashed = /[\\/]assets[\\/][^\\/]+-[A-Za-z0-9_-]{8,}\.(js|css)$/.test(file);
     res.setHeader('Cache-Control', hashed ? 'public, max-age=31536000, immutable' : 'no-cache');
     if (req.method === 'HEAD') return res.end();
-    const gzip = COMPRESSIBLE.test(ext) && /\bgzip\b/.test(String(req.headers['accept-encoding'] ?? ''));
+    const accept = String(req.headers['accept-encoding'] ?? '');
+    if (COMPRESSIBLE.test(ext)) {
+      res.setHeader('Vary', 'Accept-Encoding');
+      const mtime = fs.statSync(file).mtimeMs;
+      const hit = packed.get(file);
+      const wantsBr = /\bbr\b/.test(accept);
+      if (hit?.mtime === mtime && (wantsBr || /\bgzip\b/.test(accept))) {
+        const body = wantsBr ? hit.br : hit.gz;
+        res.setHeader('Content-Encoding', wantsBr ? 'br' : 'gzip');
+        res.setHeader('Content-Length', body.length);
+        return res.end(body);
+      }
+      pack(file, mtime);
+    }
+    const gzip = COMPRESSIBLE.test(ext) && /\bgzip\b/.test(accept);
     if (gzip) {
       res.setHeader('Content-Encoding', 'gzip');
       res.setHeader('Vary', 'Accept-Encoding');
@@ -101,14 +184,15 @@ export function createSiteServer({
       req.url = req.url.slice(base.length) || '/';
     const pathname = new URL(req.url ?? '/', 'http://localhost').pathname;
     if (pathname.startsWith('/api/')) return void api(req, res);
+    if (pathname.startsWith('/news-api/')) return void proxyNews(req, res);
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       res.statusCode = 405;
       return res.end();
     }
     const file = resolveStatic(root, pathname);
     if (file) return sendFile(req, res, file);
-    // Vistas que no se prerenderizan (admin): la app las resuelve en el navegador.
-    if (/^\/admin(\/|$)/.test(pathname)) return sendFile(req, res, path.join(root, 'index.html'));
+    // Vistas que no se prerenderizan (admin, noticias): la app las resuelve en el navegador.
+    if (/^\/(admin|noticias)(\/|$)/.test(pathname)) return sendFile(req, res, path.join(root, 'index.html'));
     const notFound = path.join(root, '404.html');
     return sendFile(req, res, fs.existsSync(notFound) ? notFound : path.join(root, 'index.html'), 404);
   });
@@ -123,6 +207,7 @@ if (import.meta.main) {
     compress: true,
     metrikUrl: env.CRIS_METRIK_URL || undefined,
     collabUrl: env.CRIS_COLLAB_URL || undefined,
+    orcidUrl: env.CRIS_ORCID_URL || undefined,
     adminToken: env.CRIS_ADMIN_TOKEN || undefined,
     ...storeOptionsFromEnv(env),
   });

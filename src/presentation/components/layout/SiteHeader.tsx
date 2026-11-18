@@ -19,6 +19,7 @@ export function SiteHeader() {
   // Enlace externo: nombre completo para lectores de pantalla y tooltip; en pantalla, solo «Iraka».
   const iraka = `${t('home:hero.iraka')} ${t('newTab')}`;
   const { pathname } = useLocation();
+  const newsActive = pathname === '/noticias' || pathname.startsWith('/noticias/');
   const mobileMenu = useRef<HTMLDetailsElement>(null);
   // Cierra el menú móvil al navegar.
   useEffect(() => {
@@ -57,6 +58,13 @@ export function SiteHeader() {
               </Link>
             );
           })}
+          <Link
+            to="/noticias"
+            aria-current={newsActive ? 'page' : undefined}
+            className={itemClass(newsActive)}
+          >
+            {t('nav.news')}
+          </Link>
           <a
             href={IRAKA_URL}
             target="_blank"
@@ -103,6 +111,13 @@ export function SiteHeader() {
                   </Link>
                 );
               })}
+              <Link
+                to="/noticias"
+                aria-current={newsActive ? 'page' : undefined}
+                className={`${itemClass(newsActive)} py-2.5`}
+              >
+                {t('nav.news')}
+              </Link>
               <a
                 href={IRAKA_URL}
                 target="_blank"

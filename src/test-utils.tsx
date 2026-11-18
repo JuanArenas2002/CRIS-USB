@@ -1,4 +1,9 @@
-import { summarizeGroup, type GroupDetail, type GroupRepository } from '@/domain/groups/group';
+import {
+  summarizeGroup,
+  tallyByConvocation,
+  type GroupDetail,
+  type GroupRepository,
+} from '@/domain/groups/group';
 import { groupQueries } from '@/application/groups/group-queries';
 import { centerQueries } from '@/application/centers/center-queries';
 import { publicationQueries } from '@/application/publications/publication-queries';
@@ -106,6 +111,8 @@ export const fakeGroupRepo = (groups: GroupDetail[] = [makeGroupDetail()]): Grou
   list: async () => groups.map(summarizeGroup),
   getById: async (id) => groups.find((g) => g.id === id) ?? null,
   members: async () => [{ ...makeAuthor(), profilePublished: true }],
+  trajectory: async () => tallyByConvocation(groups),
+  staffing: async () => [],
 });
 
 export function makeCenterDetail(over: Partial<CenterDetail> = {}): CenterDetail {
@@ -254,6 +261,10 @@ export const fakeRelationsRepo = (
   },
 ): RelationsRepository => ({
   countries: async (year) => ({ year, ...map }),
+  byYear: async () => [
+    { year: 2025, nc: 149, dc: 9, intlNc: 113, intlDc: 4 },
+    { year: 2026, nc: 101, dc: 4, intlNc: 78, intlDc: 1 },
+  ],
   publications: async (iso3) =>
     iso3 === 'ESP'
       ? [
@@ -298,3 +309,20 @@ export function renderApp(
     </AppProviders>,
   );
 }
+
+/** Decisión de privacidad ya registrada (como la devuelve /privacy/preferences), para fijarla en pruebas. */
+export const consentDecided = (analytics: boolean, functional = false) => ({
+  status: 'ready' as const,
+  prefs: {
+    needs_decision: false,
+    cookie_policy_version: 1,
+    categories: { functional, analytics, advertising: false },
+    consent: {
+      policy_version: 1,
+      method: 'custom',
+      decided_at: '2026-11-13T10:00:00Z',
+      expires_at: '2027-11-13T10:00:00Z',
+      categories: { functional, analytics },
+    },
+  },
+});

@@ -23,8 +23,15 @@ export function Drawer({
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
-    if (open && !d.open) d.showModal?.();
-    if (!open && d.open) d.close?.();
+    // Sin showModal (navegadores antiguos, jsdom): se abre como diálogo no modal.
+    if (open && !d.open) {
+      if (d.showModal) d.showModal();
+      else d.setAttribute('open', '');
+    }
+    if (!open && d.open) {
+      if (d.close) d.close();
+      else d.removeAttribute('open');
+    }
   }, [open]);
 
   return (

@@ -2,6 +2,7 @@ import { Outlet } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { SiteHeader } from './SiteHeader';
 import { SiteFooter } from './SiteFooter';
+import { PrivacyCenter } from '@/presentation/components/privacy/PrivacyCenter';
 
 export function RootLayout() {
   const { t } = useTranslation();
@@ -18,6 +19,7 @@ export function RootLayout() {
         <Outlet />
       </main>
       <SiteFooter />
+      <PrivacyCenter />
     </>
   );
 }

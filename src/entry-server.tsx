@@ -30,7 +30,7 @@ import {
   type RankedPublication,
 } from '@/domain/publications/publication';
 import { summarizeCenter, type CenterDetail } from '@/domain/centers/center';
-import { hasPublicDetail, summarizeGroup, type GroupDetail, type GroupMember } from '@/domain/groups/group';
+import { hasPublicDetail, summarizeGroup, tallyByConvocation, type GroupDetail, type GroupMember } from '@/domain/groups/group';
 import { HOME_TOP_FILTERS } from '@/presentation/components/home/HomeHighlights';
 import { HOME_RECENT_FILTERS } from '@/presentation/components/home/HomeRecent';
 import { NAV_ITEMS } from '@/shared/navigation';
@@ -58,6 +58,8 @@ export function createServerGroupQueries(
     members: async (id) => members.get(id) ?? [],
     list: async () => groups.map(summarizeGroup),
     getById: async (id) => groups.find((g) => g.id === id) ?? null,
+    trajectory: async () => tallyByConvocation(groups),
+    staffing: async () => [],
   });
 }
 
@@ -88,6 +90,7 @@ export function createServerProjectQueries(projects: Project[]): ProjectQueries 
 /** El prerender no consulta la API de colaboración (puede no estar disponible en el build). */
 const SERVER_RELATIONS = relationQueries({
   countries: async (year) => ({ year, countries: [] }),
+  byYear: async () => [],
   publications: async () => [],
 });
 

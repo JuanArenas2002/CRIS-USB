@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { CONTACT_EMAIL, IRAKA_URL } from '@/shared/contact';
 import { NAV_ITEMS } from '@/shared/navigation';
 import { Icon } from '@/presentation/components/ui/Icon';
+import { openPreferences } from '@/infrastructure/privacy/consent';
 
 export function SiteFooter() {
-  const { t } = useTranslation(['common', 'home']);
+  const { t } = useTranslation(['common', 'home', 'privacy']);
   return (
     <footer className="w-full bg-surface-dark-forest py-16 text-on-primary">
       <div className="container-page">
@@ -59,9 +60,22 @@ export function SiteFooter() {
             </a>
           </div>
         </div>
-        <p className="border-t border-primary-container pt-6 text-label-sm text-primary-fixed-dim">
-          {t('footer.rights')}
-        </p>
+        <div className="flex flex-col gap-3 border-t border-primary-container pt-6 text-label-sm text-primary-fixed-dim sm:flex-row sm:items-center sm:justify-between">
+          <p>{t('footer.rights')}</p>
+          {/* Acceso permanente: cambiar o revocar la decisión es tan fácil como darla. */}
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            <Link to="/privacidad" className="underline-offset-2 hover:text-on-primary hover:underline">
+              {t('privacy:links.page')}
+            </Link>
+            <button
+              type="button"
+              onClick={openPreferences}
+              className="text-left underline underline-offset-2 hover:text-on-primary"
+            >
+              {t('privacy:links.settings')}
+            </button>
+          </div>
+        </div>
       </div>
     </footer>
   );

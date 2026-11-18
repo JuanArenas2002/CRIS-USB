@@ -8,14 +8,20 @@
 //   Los ODS de grupos y centros vienen de Metri-K.
 // Dev/preview: montado como middleware en vite.config.ts.
 // Producción: `node scripts/public-api.ts` detrás de nginx (ver README).
-import { createHash, timingSafeEqual } from 'node:crypto';
+import { normalizeOrcid, type OrcidProfile, type OrcidSearchHit } from '../src/domain/orcid/orcid.ts';
+import { DEFAULT_ORCID_URL, fetchOrcidProfile, searchOrcid } from './orcid-source.ts';
+import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
 import http, { type IncomingMessage, type ServerResponse } from 'node:http';
 import { gzipSync } from 'node:zlib';
 import { pathToFileURL } from 'node:url';
 import { fetchInvestigatorCenters, fetchPublicCenters, fetchResolutionPdf } from './centers-source.ts';
-import { fetchCollaborationMap, fetchCountryPublications } from './collaboration-source.ts';
+import {
+  fetchCollaborationMap,
+  fetchCountryPublications,
+  fetchInstitutionByYear,
+} from './collaboration-source.ts';
 import { FIRST_RELATIONS_YEAR } from '../src/domain/relations/relations.ts';
-import { fetchPublicGroups, mapLimit } from './groups-source.ts';
+import { fetchPublicGroups, getData, mapLimit, toGroupStaffing } from './groups-source.ts';
 import { fetchPublicProjects, fetchStaff, removeStaff, saveStaff, toStaff } from './projects-source.ts';
 import { MIN_CENTER_PASSWORD, hashPassword, verifyPassword } from './center-password.ts';
 import { projectsOfCenter } from '../src/domain/projects/project.ts';
@@ -39,7 +45,12 @@ import {
 import { normalizePublication, normalizeRanking, normalizeWebsite } from './ods-store.ts';
 import { createStores, storeOptionsFromEnv, type StoreOptions } from './stores.ts';
 import { summarizeCenter, type CenterDetail, type CenterRef } from '../src/domain/centers/center.ts';
-import { hasPublicDetail, summarizeGroup, type GroupDetail } from '../src/domain/groups/group.ts';
+import {
+  hasPublicDetail,
+  summarizeGroup,
+  tallyByConvocation,
+  type GroupDetail,
+} from '../src/domain/groups/group.ts';
 import {
   AUTHOR_CATEGORIES,
   authorStats,
@@ -95,6 +106,32 @@ function cached<T>(load: () => Promise<T>) {
 const sameSecret = (a: string, b: string) =>
   timingSafeEqual(createHash('sha256').update(a).digest(), createHash('sha256').update(b).digest());
 
+// Sesión de administración en cookie HttpOnly (el navegador nunca guarda el token: un XSS no puede leerlo).
+// Valor = vencimiento + HMAC con CRIS_ADMIN_TOKEN: no contiene el secreto y cambiar el token invalida todas.
+const ADMIN_COOKIE = 'cris_admin';
+const ADMIN_SESSION_SECONDS = 8 * 3600;
+const signAdmin = (secret: string, exp: number) =>
+  createHmac('sha256', secret).update(`cris-admin:${exp}`).digest('base64url');
+
+function issueAdminSession(secret: string) {
+  const exp = Math.floor(Date.now() / 1000) + ADMIN_SESSION_SECONDS;
+  return `${exp}.${signAdmin(secret, exp)}`;
+}
+
+function validAdminSession(req: IncomingMessage, secret: string) {
+  const raw = /(?:^|;\s*)cris_admin=([^;]+)/.exec(req.headers.cookie ?? '')?.[1];
+  if (!raw) return false;
+  const [e, sig = ''] = raw.split('.');
+  const exp = Number(e);
+  return exp > Date.now() / 1000 && sameSecret(sig, signAdmin(secret, exp));
+}
+
+function adminCookie(req: IncomingMessage, value: string, maxAge: number) {
+  const https =
+    req.headers['x-forwarded-proto'] === 'https' || !!(req.socket as { encrypted?: boolean }).encrypted;
+  return `${ADMIN_COOKIE}=${value}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${maxAge}${https ? '; Secure' : ''}`;
+}
+
 async function readBody(req: IncomingMessage, max: number): Promise<Buffer | null> {
   const chunks: Buffer[] = [];
   let size = 0;
@@ -109,6 +146,7 @@ async function readBody(req: IncomingMessage, max: number): Promise<Buffer | nul
 export function createPublicApi({
   metrikUrl = DEFAULT_METRIK_URL,
   collabUrl = DEFAULT_COLLAB_URL,
+  orcidUrl = DEFAULT_ORCID_URL,
   adminToken,
   compress = false,
   ...storage
@@ -116,6 +154,8 @@ export function createPublicApi({
   metrikUrl?: string;
   /** API de colaboración (mapa de relacionamiento). */
   collabUrl?: string;
+  /** API pública de ORCID (perfiles de las personas asociadas a noticias). */
+  orcidUrl?: string;
   adminToken?: string;
   onVercel?: boolean;
   /** gzip propio del JSON: solo en el servidor propio (Vercel y Vite ya tienen su capa delante). */
@@ -133,6 +173,29 @@ export function createPublicApi({
     rankingTiers,
     publications: publicationStore,
   } = createStores(storage);
+  // Perfiles ORCID: uno cacheado por persona (10 min, con respaldo si ORCID falla).
+  // ponytail: tope de 500 perfiles en memoria; al pasarlo se descarta el más antiguo.
+  const orcidProfiles = new Map<string, ReturnType<typeof cached<OrcidProfile | null>>>();
+  const orcidProfile = (orcid: string) => {
+    let entry = orcidProfiles.get(orcid);
+    if (!entry) {
+      entry = cached(() => fetchOrcidProfile(orcid, orcidUrl));
+      orcidProfiles.set(orcid, entry);
+      if (orcidProfiles.size > 500) orcidProfiles.delete(orcidProfiles.keys().next().value!);
+    }
+    return entry();
+  };
+  // Búsquedas por nombre en ORCID: cacheadas por término (tope de 200).
+  const orcidSearches = new Map<string, ReturnType<typeof cached<OrcidSearchHit[]>>>();
+  const orcidSearch = (term: string) => {
+    let entry = orcidSearches.get(term);
+    if (!entry) {
+      entry = cached(() => searchOrcid(term, orcidUrl));
+      orcidSearches.set(term, entry);
+      if (orcidSearches.size > 200) orcidSearches.delete(orcidSearches.keys().next().value!);
+    }
+    return entry();
+  };
   const metrikGroups = cached<GroupDetail[]>(() => fetchPublicGroups(`${base}/group`));
   const metrikCenters = cached<CenterDetail[]>(() => fetchPublicCenters(base));
   const metrikProjects = cached(() => fetchPublicProjects(base));
@@ -149,6 +212,7 @@ export function createPublicApi({
       );
     return collabByYear.get(key)!();
   };
+  const institutionByYear = cached(() => fetchInstitutionByYear(collabBase));
   const countryPubs = new Map<string, () => ReturnType<typeof fetchCountryPublications>>();
   /** Publicaciones con un país (ISO3 → nombre Scopus del mapa del mismo año); null si no está. */
   const publicationsWith = async (iso3: string, year: number | null) => {
@@ -180,6 +244,14 @@ export function createPublicApi({
   // Grupos con sus ODS, ambos de Metri-K (caché). Fotos y logos no pasan por la caché: un cambio del
   // admin se ve al instante.
   const groups = metrikGroups;
+  // Filas crudas por grupo (con datos personales): nunca salen; /api/groups/staffing solo da conteos.
+  const staffRows = cached(async () =>
+    mapLimit(
+      (await groups()).filter((g) => g.active),
+      6,
+      async (g) => [g.id, await getData(`${base}/investigator/group/${g.id}`)] as const,
+    ),
+  );
   const directory = cached(() => fetchInvestigators(base));
   const photoUrls = async () => {
     const v = await photos.versions();
@@ -301,6 +373,32 @@ export function createPublicApi({
     try {
       const p = url.pathname;
       const sp = url.searchParams;
+
+      // ── Sesión de administración: POST valida el token una vez y deja la cookie; GET la comprueba ──
+      if (p === '/api/admin/session') {
+        if (!adminToken)
+          return send(503, { detail: 'Administración deshabilitada (falta CRIS_ADMIN_TOKEN)' });
+        if (req.method === 'GET') {
+          const ok = validAdminSession(req, adminToken);
+          return send(ok ? 200 : 401, ok ? { ok } : { detail: 'Sin sesión de administración' });
+        }
+        if (req.method === 'DELETE') {
+          res.setHeader('Set-Cookie', adminCookie(req, '', 0));
+          return send(200, { ok: true });
+        }
+        if (req.method !== 'POST') return send(405, { detail: 'Método no permitido' });
+        const body = await readBody(req, MAX_JSON_BYTES);
+        let token = '';
+        try {
+          token = String((JSON.parse(body?.toString() ?? '{}') as { token?: unknown }).token ?? '');
+        } catch {
+          /* cuerpo inválido: cuenta como vacío */
+        }
+        if (!token || !sameSecret(token, adminToken))
+          return send(401, { detail: 'Token de administración inválido' });
+        res.setHeader('Set-Cookie', adminCookie(req, issueAdminSession(adminToken), ADMIN_SESSION_SECONDS));
+        return send(200, { ok: true });
+      }
       const photo = /^\/api\/investigators\/(\d{1,12})\/photo$/.exec(p);
       const logo = /^\/api\/centers\/(\d{1,12})\/logo$/.exec(p);
       const site = /^\/api\/centers\/(\d{1,12})\/website$/.exec(p);
@@ -364,8 +462,10 @@ export function createPublicApi({
           return send(405, { detail: 'Método no permitido' });
         if (!adminToken)
           return send(503, { detail: 'Administración deshabilitada (falta CRIS_ADMIN_TOKEN)' });
+        // Cookie de sesión (navegador) o cabecera X-Admin-Token (scripts y herramientas de servidor).
         const token = req.headers['x-admin-token'];
-        if (typeof token !== 'string' || !sameSecret(token, adminToken))
+        const byHeader = typeof token === 'string' && token !== '' && sameSecret(token, adminToken);
+        if (!byHeader && !validAdminSession(req, adminToken))
           return send(401, { detail: 'Token de administración inválido' });
         // Fotos de proyectos: además del token, la contraseña del centro (X-Center-Id y
         // X-Center-Password); el proyecto debe ser de ese centro. Solo los directores la tienen.
@@ -670,6 +770,22 @@ export function createPublicApi({
         return res.end(data);
       }
 
+      // Búsqueda por nombre en ORCID (mínimo 3 letras). Va antes que /api/orcid/{orcid}.
+      if (p === '/api/orcid/search') {
+        const term = (sp.get('q') ?? '').trim().toLowerCase().slice(0, 80);
+        return send(200, term.replace(/\s/g, '').length >= 3 ? await orcidSearch(term) : []);
+      }
+      // Perfil público ORCID de una persona (nombre, empleos, educación). 400 si el ORCID no es válido.
+      const orcidRoute = /^\/api\/orcid\/([^/]{1,60})$/.exec(p);
+      if (orcidRoute) {
+        const orcid = normalizeOrcid(decodeURIComponent(orcidRoute[1]!));
+        if (!orcid) return send(400, { detail: 'ORCID no válido' });
+        const profile = await orcidProfile(orcid);
+        return profile
+          ? send(200, profile)
+          : send(404, { detail: 'No existe un registro ORCID público con ese iD' });
+      }
+
       if (p === '/api/investigators') {
         const cat = sp.get('cat');
         const page = Number(sp.get('page')) || 1;
@@ -733,6 +849,8 @@ export function createPublicApi({
         return send(200, publicationStats(Object.values(await publicationStore.all())));
 
       if (p === '/api/groups') return send(200, (await groups()).map(summarizeGroup));
+      if (p === '/api/groups/staffing') return send(200, toGroupStaffing(await staffRows()));
+      if (p === '/api/groups/trajectory') return send(200, tallyByConvocation(await groups()));
       const members = /^\/api\/groups\/(\d{1,12})\/members$/.exec(p);
       if (members) {
         const id = Number(members[1]);
@@ -747,6 +865,7 @@ export function createPublicApi({
         return g ? send(200, g) : send(404, { detail: 'No encontrado' });
       }
 
+      if (p === '/api/relations/by-year') return send(200, await institutionByYear());
       const countryPubsRoute = /^\/api\/relations\/countries\/([A-Z]{3})\/publications$/.exec(p);
       if (p === '/api/relations/countries' || countryPubsRoute) {
         const raw = sp.get('year');

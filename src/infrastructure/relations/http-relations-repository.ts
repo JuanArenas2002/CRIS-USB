@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { PublicationYear } from '@/domain/publications/publication';
 import type { CollaborationMap, CountryPublication, RelationsRepository } from '@/domain/relations/relations';
 import type { ApiGet } from '@/infrastructure/http/api-client';
 
@@ -31,11 +32,22 @@ const publicationsSchema = z.array(
   }),
 ) as unknown as z.ZodType<CountryPublication[]>;
 
+const byYearSchema = z.array(
+  z.object({
+    year: z.number().int(),
+    nc: z.number().int(),
+    dc: z.number().int(),
+    intlNc: z.number().int(),
+    intlDc: z.number().int(),
+  }),
+) as unknown as z.ZodType<PublicationYear[]>;
+
 const yearQs = (year: number | null) => (year ? `?year=${year}` : '');
 
 export function httpRelationsRepository(get: ApiGet): RelationsRepository {
   return {
     countries: (year, signal) => get(`/api/relations/countries${yearQs(year)}`, mapSchema, signal),
+    byYear: (signal) => get('/api/relations/by-year', byYearSchema, signal),
     publications: (iso3, year, signal) =>
       get(`/api/relations/countries/${iso3}/publications${yearQs(year)}`, publicationsSchema, signal),
   };

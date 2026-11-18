@@ -45,7 +45,11 @@ if (prerendered && matches) {
   hydrate(queryClient, prerendered.queries);
   // El HTML se generó en el build: se pinta tal cual y luego se refresca en segundo plano, para que
   // lo cambiado después (fotos, ODS, datos de Metri-K) aparezca sin volver a desplegar.
-  void queryClient.invalidateQueries();
+  // Cuando el navegador queda libre (no durante la carga): refrescar en plena hidratación repetía el render
+  // de toda la página y era la mayor parte del bloqueo del hilo principal (TBT) en celulares.
+  const refresh = () => void queryClient.invalidateQueries();
+  if ('requestIdleCallback' in window) window.requestIdleCallback(refresh, { timeout: 4000 });
+  else setTimeout(refresh, 2000);
 }
 
 const app = (

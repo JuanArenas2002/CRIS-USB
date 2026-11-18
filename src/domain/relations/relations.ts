@@ -1,3 +1,5 @@
+import type { PublicationYear } from '@/domain/publications/publication';
+
 /** Publicaciones en coautoría con un país (fuente: API de colaboración, afiliaciones Scopus). */
 export interface CountryCollaboration {
   /** ISO 3166 alfa-2 ("CO"): bandera y nombre traducido del país. */
@@ -33,8 +35,36 @@ export interface CountryPublication {
   partners: string[];
 }
 
+/** Publicación institucional mínima para contar por año (API de colaboración). */
+export interface InstitutionPublication {
+  year: number | null;
+  /** Tipo documental de Scopus en mayúsculas ("ARTICLE", "REVIEW", "CONFERENCE PAPER"…). */
+  type: string | null;
+  /** Países de los coautores externos (sin el país local). */
+  countries: string[];
+}
+
+/**
+ * Por año (ascendente): nuevo conocimiento (artículos y reviews) y divulgación (el resto), y de
+ * cada uno las que tienen coautores de otro país. Sin año no cuenta.
+ */
+export function countByYear(pubs: InstitutionPublication[]): PublicationYear[] {
+  const m = new Map<number, PublicationYear>();
+  for (const p of pubs) {
+    if (!p.year) continue;
+    const r = m.get(p.year) ?? { year: p.year, nc: 0, dc: 0, intlNc: 0, intlDc: 0 };
+    const nc = p.type?.toUpperCase() === 'ARTICLE' || p.type?.toUpperCase() === 'REVIEW';
+    r[nc ? 'nc' : 'dc']++;
+    if (p.countries.length) r[nc ? 'intlNc' : 'intlDc']++;
+    m.set(p.year, r);
+  }
+  return [...m.values()].sort((a, b) => a.year - b.year);
+}
+
 export interface RelationsRepository {
   countries(year: number | null, signal?: AbortSignal): Promise<CollaborationMap>;
+  /** Producción institucional por año (gráfico de /productos). */
+  byYear(signal?: AbortSignal): Promise<PublicationYear[]>;
   /** Publicaciones con un país (por ISO3); [] si el país no tiene. */
   publications(iso3: string, year: number | null, signal?: AbortSignal): Promise<CountryPublication[]>;
 }

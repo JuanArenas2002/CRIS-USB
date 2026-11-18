@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { ProjectSpotlight } from '@/presentation/components/home/ProjectSpotlight';
+import { NewsSpotlight } from '@/presentation/components/home/NewsSpotlight';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { withBase } from '@/shared/base';
 import { IRAKA_URL } from '@/shared/contact';
@@ -66,7 +66,7 @@ export function HomeHero() {
           </div>
         </div>
         <div className="flex justify-end lg:col-span-5 min-[1360px]:self-end min-[1360px]:pt-40">
-          <ProjectSpotlight />
+          <NewsSpotlight />
         </div>
       </div>
     </section>

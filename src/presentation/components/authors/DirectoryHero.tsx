@@ -1,5 +1,4 @@
 import { Trans, useTranslation } from 'react-i18next';
-import { HeroWaves } from '@/presentation/components/layout/HeroWaves';
 import { useLabels } from '@/presentation/hooks/use-labels';
 import type { AuthorStats } from '@/domain/authors/author';
 
@@ -27,7 +26,6 @@ export function DirectoryHero({ stats }: Props) {
       aria-labelledby="hero-title"
       className="relative w-full overflow-hidden bg-surface-dark-forest pt-10 pb-16 text-on-primary"
     >
-      <HeroWaves />
       <div className="relative container-page flex flex-col gap-6">
         <div className="flex items-center gap-2">
           <p className="inline-flex items-center gap-1.5 rounded-full bg-primary-container px-3 py-1 text-label-sm tracking-wide text-primary-fixed">

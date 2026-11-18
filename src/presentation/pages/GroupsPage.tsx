@@ -1,7 +1,7 @@
-import { HeroWaves } from '@/presentation/components/layout/HeroWaves';
 import { useSearchParams } from 'react-router';
 import { Trans, useTranslation } from 'react-i18next';
 import { CATEGORY_ORDER, GROUP_TYPES, filterGroups, type GroupType } from '@/domain/groups/group';
+import { GroupsOverview } from '@/presentation/components/groups/GroupsOverview';
 import { GroupCard } from '@/presentation/components/groups/GroupCard';
 import { GroupRow, GroupRowHeader } from '@/presentation/components/groups/GroupRow';
 import { ContactCta } from '@/presentation/components/layout/ContactCta';
@@ -23,7 +23,8 @@ export function GroupsPage() {
   const [params, setParams] = useSearchParams();
   const search = params.get('q') ?? '';
   const catParam = params.get('cat');
-  const view: 'lista' | 'tarjetas' = params.get('vista') === 'tarjetas' ? 'tarjetas' : 'lista';
+  const vista = params.get('vista');
+  const view = vista === 'tarjetas' || vista === 'trayectoria' ? vista : 'lista';
   const category = (CATEGORY_ORDER as readonly string[]).includes(catParam ?? '') ? catParam : null;
   const typeParam = params.get('tipo') as GroupType | null;
   const type = typeParam && GROUP_TYPES.includes(typeParam) ? typeParam : null;
@@ -40,7 +41,7 @@ export function GroupsPage() {
     );
 
   // Conserva la vista elegida (lista/tarjetas): no es un filtro.
-  const clearFilters = () => setParams(view === 'tarjetas' ? { vista: 'tarjetas' } : {}, { replace: true });
+  const clearFilters = () => setParams(view === 'lista' ? {} : { vista: view }, { replace: true });
 
   useDocumentMetadata({
     title: t('metaTitle'),
@@ -85,7 +86,6 @@ export function GroupsPage() {
         aria-labelledby="groups-title"
         className="relative w-full overflow-hidden bg-surface-dark-forest pt-10 pb-16 text-on-primary"
       >
-        <HeroWaves />
         <div className="relative container-page flex flex-col gap-6">
           <div className="flex items-center gap-2">
             <p className="inline-flex items-center gap-1.5 rounded-full bg-primary-container px-3 py-1 text-label-sm tracking-wide text-primary-fixed">
@@ -213,9 +213,21 @@ export function GroupsPage() {
               >
                 {t('listTitle')}
               </h2>
-              <p className="mt-1 max-w-2xl text-body-md text-neutral-muted">{t('listLead')}</p>
             </div>
             <div className="flex shrink-0 items-center gap-3">
+              <button
+                type="button"
+                aria-pressed={view === 'trayectoria'}
+                onClick={() => setParam('vista', view === 'trayectoria' ? '' : 'trayectoria')}
+                className={`inline-flex h-10 items-center gap-2 rounded-lg px-3 text-label-md font-semibold ring-1 transition-colors ${
+                  view === 'trayectoria'
+                    ? 'bg-primary text-on-primary ring-primary'
+                    : 'bg-surface-container-lowest text-primary ring-border-subtle hover:bg-canvas-cream'
+                }`}
+              >
+                <Icon name="analytics" className="text-[20px]" />
+                {t('viewTrajectory')}
+              </button>
               <div
                 role="group"
                 aria-label={t('viewLabel')}
@@ -247,7 +259,9 @@ export function GroupsPage() {
             </div>
           </div>
 
-          {data ? (
+          {view === 'trayectoria' && data ? (
+            <GroupsOverview groups={groups} />
+          ) : data ? (
             visible.length ? (
               view === 'lista' ? (
                 <div className="overflow-hidden rounded-2xl bg-surface-container-lowest shadow-sm ring-1 ring-border-subtle">

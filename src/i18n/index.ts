@@ -2,8 +2,6 @@ import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 import es from './locales/es';
-import en from './locales/en';
-import pt from './locales/pt';
 
 /** Para sumar un idioma: su catálogo (tipado como `typeof es`) y una entrada aquí. */
 export const LANGUAGES = [
@@ -37,7 +35,9 @@ void i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources: { es, en, pt },
+    // Solo español en el bundle (prerender y casi todas las visitas); inglés y portugués se descargan al
+    // elegirlos o si el navegador los pide (ver loadLanguage): ≈19 KB menos para cada visitante.
+    resources: { es },
     // El prerender (Node) siempre es español: el HTML indexado y la URL canónica no cambian por idioma.
     // Los rastreadores, también: es el contenido que ya está indexado.
     lng: isBrowser && !isCrawler ? undefined : DEFAULT_LANGUAGE,
@@ -53,9 +53,36 @@ void i18n
     detection: {
       order: ['localStorage', 'navigator'],
       lookupLocalStorage: LANGUAGE_STORAGE_KEY,
-      caches: ['localStorage'],
+      // Guardar el idioma es «funcional»: se activa solo con permiso (infrastructure/privacy/consent.ts).
+      caches: [],
     },
   });
+
+const LOADERS: Record<string, () => Promise<{ default: typeof es }>> = {
+  en: () => import('./locales/en'),
+  pt: () => import('./locales/pt'),
+};
+
+/** Descarga y registra el catálogo de un idioma (una sola vez). El español ya viene en el bundle. */
+export async function loadLanguage(lng?: string) {
+  const code = (lng ?? '').split('-')[0]!;
+  const load = LOADERS[code];
+  if (!load || i18n.hasResourceBundle(code, 'common')) return;
+  const { default: bundle } = await load();
+  for (const [ns, resources] of Object.entries(bundle))
+    i18n.addResourceBundle(code, ns, resources, true, true);
+}
+
+// changeLanguage siempre espera su catálogo: el selector y quien lo llame ven el idioma completo, sin claves.
+const changeLanguage = i18n.changeLanguage.bind(i18n);
+i18n.changeLanguage = (async (lng?: string, callback?: Parameters<typeof changeLanguage>[1]) => {
+  await loadLanguage(lng);
+  return changeLanguage(lng, callback);
+}) as typeof i18n.changeLanguage;
+
+// Idioma detectado distinto del español (navegador o preferencia guardada): se pinta en español y cambia
+// apenas llega su catálogo (el HTML prerenderizado ya es español, así que no hay salto extra).
+if (isBrowser && LOADERS[(i18n.language ?? '').split('-')[0]!]) void i18n.changeLanguage(i18n.language);
 
 const syncHtmlLang = () => {
   if (isBrowser) document.documentElement.lang = activeLocale();

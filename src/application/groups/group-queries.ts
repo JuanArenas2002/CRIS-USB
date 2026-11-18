@@ -15,6 +15,16 @@ export function groupQueries(repo: GroupRepository) {
         queryKey: ['groups', 'list'],
         queryFn: async ({ signal }) => sortGroups((await repo.list(signal)).filter((g) => g.active)),
       }),
+    staffing: () =>
+      queryOptions({
+        queryKey: ['groups', 'staffing'],
+        queryFn: ({ signal }) => repo.staffing(signal),
+      }),
+    trajectory: () =>
+      queryOptions({
+        queryKey: ['groups', 'trajectory'],
+        queryFn: ({ signal }) => repo.trajectory(signal),
+      }),
     members: (id: number) =>
       queryOptions({
         queryKey: ['groups', 'members', id],

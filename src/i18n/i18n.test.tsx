@@ -6,7 +6,15 @@ import en from '@/i18n/locales/en';
 import pt from '@/i18n/locales/pt';
 import { ApiError } from '@/infrastructure/http/api-client';
 import { TRANSLATE_TIMEOUT_MS } from '@/presentation/hooks/use-auto-translate';
-import { fakeGroupRepo, fakeRepo, makeAuthor, makeGroupDetail, renderApp } from '@/test-utils';
+import { __setConsentForTests } from '@/infrastructure/privacy/consent';
+import {
+  consentDecided,
+  fakeGroupRepo,
+  fakeRepo,
+  makeAuthor,
+  makeGroupDetail,
+  renderApp,
+} from '@/test-utils';
 
 /** Rutas `ns.a.b` de todas las hojas; las hojas deben ser texto no vacío. */
 function leaves(obj: object, prefix = ''): string[] {
@@ -39,6 +47,7 @@ test('pluralización, interpolación segura y respaldo al español', async () =>
 });
 
 test('selector: español por defecto; cambia todo al momento, conserva el formulario y recuerda la elección', async () => {
+  __setConsentForTests(consentDecided(false, true)); // recordar el idioma es «funcional»: autorizado
   renderApp('/investigadores');
   expect(document.documentElement.lang).toBe('es-CO');
   const search = await screen.findByLabelText('Buscar investigadores');
@@ -149,4 +158,15 @@ test('centro: líneas y descripciones de resoluciones traducidas en el navegador
     screen.getByRole('heading', { level: 1, name: 'Centro de Crecimiento Empresarial MACONDOLAB' }),
   ).toBeInTheDocument();
   vi.unstubAllGlobals();
+});
+
+test('sin permiso funcional el idioma elegido no se guarda; al revocarlo se borra', async () => {
+  __setConsentForTests(consentDecided(false, false));
+  await i18n.changeLanguage('pt');
+  expect(localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBeNull();
+  __setConsentForTests(consentDecided(false, true));
+  expect(localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBe('pt'); // al autorizar se recuerda el actual
+  __setConsentForTests(consentDecided(false, false));
+  expect(localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBeNull();
+  await i18n.changeLanguage('es');
 });

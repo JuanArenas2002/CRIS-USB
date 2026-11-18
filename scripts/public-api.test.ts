@@ -271,6 +271,38 @@ test('fotos: escritura solo con token, solo WebP y solo para investigadores publ
   expect(fs.readdirSync(photosDir)).toEqual([]);
 });
 
+test('sesión de administración: cookie HttpOnly firmada en vez de guardar el token en el navegador', async () => {
+  const session = (init: RequestInit = {}) => fetch(`${base}/api/admin/session`, init);
+  expect((await session()).status).toBe(401);
+  const login = (token: string) =>
+    session({
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    });
+  expect((await login('otro')).status).toBe(401);
+  const ok = await login(TOKEN);
+  expect(ok.status).toBe(200);
+  const setCookie = ok.headers.get('set-cookie') ?? '';
+  expect(setCookie).toMatch(/^cris_admin=\d+\.[\w-]+; Path=\/; HttpOnly; SameSite=Strict; Max-Age=28800/);
+  expect(setCookie).not.toContain(TOKEN); // la cookie no lleva el secreto
+  const cookie = setCookie.split(';')[0]!;
+  expect((await session({ headers: { cookie } })).status).toBe(200);
+  // Con la cookie se escribe sin cabecera de token; una cookie alterada o vencida no sirve.
+  const withCookie = (c: string) =>
+    fetch(`${base}/api/investigators/1/photo`, {
+      method: 'PUT',
+      body: new Uint8Array(WEBP),
+      headers: { cookie: c },
+    });
+  expect((await withCookie(cookie)).status).toBe(200);
+  expect((await withCookie(cookie.replace(/.$/, (ch) => (ch === 'A' ? 'B' : 'A')))).status).toBe(401);
+  expect((await withCookie('cris_admin=1.' + cookie.split('.')[1])).status).toBe(401); // vencida (exp=1)
+  const out = await session({ method: 'DELETE', headers: { cookie } });
+  expect(out.headers.get('set-cookie')).toContain('Max-Age=0');
+  await fetch(`${base}/api/investigators/1/photo`, { method: 'DELETE', headers: { 'X-Admin-Token': TOKEN } });
+});
+
 test('fotos: guardar, aparecer en el listado, servir y quitar', async () => {
   const res = await put(1, WEBP, TOKEN);
   expect(res.status).toBe(200);

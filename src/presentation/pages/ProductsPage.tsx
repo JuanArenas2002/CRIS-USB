@@ -1,13 +1,14 @@
+import { lazy, Suspense, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { publicationUrl, type ListedPublication } from '@/domain/publications/publication';
 import { scopusProductType, type Product } from '@/domain/authors/author';
 import { ProductRows } from '@/presentation/components/authors/ProductsTable';
-import { HeroWaves } from '@/presentation/components/layout/HeroWaves';
 import { ContactCta } from '@/presentation/components/layout/ContactCta';
 import { EmptyState, ErrorState, feedbackButtonClass } from '@/presentation/components/feedback/Feedback';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { ClearFilters, FilterSelect } from '@/presentation/components/ui/FilterSelect';
 import { Pagination } from '@/presentation/components/ui/Pagination';
+import { useInstitutionByYear } from '@/presentation/hooks/use-relations';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
 import { useLabels } from '@/presentation/hooks/use-labels';
 import {
@@ -16,6 +17,8 @@ import {
   usePublications,
 } from '@/presentation/hooks/use-publications';
 import { ORGANIZATION, absoluteUrl, safeJson } from '@/shared/seo';
+
+const PublicationsByYear = lazy(() => import('@/presentation/components/publications/PublicationsByYear'));
 
 const fieldClass =
   'h-11 rounded-xl bg-canvas-cream text-on-surface transition-all focus:bg-surface-container-lowest focus:ring-2 focus:ring-secondary focus:outline-none';
@@ -35,7 +38,7 @@ function useAsProduct() {
     authors: null,
     year: p.year,
     venue: p.journal,
-    index: ['Scopus', p.openAccess ? t('item.openAccess') : null].filter(Boolean).join(' · '),
+    index: p.openAccess ? t('item.openAccess') : null,
     citations: p.citations,
     doi: p.doi,
     url: publicationUrl(p),
@@ -51,6 +54,11 @@ export function ProductsPage() {
   const stats = usePublicationStats();
   const list = usePublications(filters);
   const s = stats.data;
+  const [showChart, setShowChart] = useState(false);
+  // El gráfico sigue el rango de años del filtro (invertido, se toma al derecho, como la lista).
+  const [yFrom, yTo] = [filters.yearFrom ?? 0, filters.yearTo ?? Infinity].sort((a, b) => a - b);
+  const byYear = useInstitutionByYear(showChart);
+  const chartRows = (byYear.data ?? []).filter((r) => r.year >= yFrom! && r.year <= yTo!);
 
   useDocumentMetadata({
     title: t('metaTitle'),
@@ -102,7 +110,6 @@ export function ProductsPage() {
         aria-labelledby="products-title"
         className="relative w-full overflow-hidden bg-surface-dark-forest pt-10 pb-16 text-on-primary"
       >
-        <HeroWaves />
         <div className="relative container-page flex flex-col gap-6">
           <div className="flex items-center gap-2">
             <p className="inline-flex items-center gap-1.5 rounded-full bg-primary-container px-3 py-1 text-label-sm tracking-wide text-primary-fixed">
@@ -241,6 +248,37 @@ export function ProductsPage() {
         </form>
       </div>
 
+      {/* El gráfico por año no se descarga hasta que se pide. */}
+      {s?.total ? (
+        <div className="container-page mt-gutter flex flex-col gap-gutter">
+          <button
+            type="button"
+            aria-expanded={showChart}
+            aria-controls="pubs-chart"
+            onClick={() => setShowChart((v) => !v)}
+            className="inline-flex h-11 items-center gap-2 self-end rounded-xl bg-primary px-4 text-label-md font-semibold text-on-primary shadow-sm transition-colors hover:bg-secondary"
+          >
+            <Icon name={showChart ? 'close' : 'show_chart'} className="text-[20px]" />
+            {t(showChart ? 'byYear.hide' : 'byYear.show')}
+          </button>
+          {showChart ? (
+            <div id="pubs-chart">
+              {byYear.isError ? (
+                <ErrorState error={byYear.error} onRetry={() => void byYear.refetch()} />
+              ) : !byYear.data ? (
+                <ChartSkeleton label={t('loading')} years={8} />
+              ) : chartRows.length ? (
+                <Suspense fallback={<ChartSkeleton label={t('loading')} years={chartRows.length} />}>
+                  <PublicationsByYear rows={chartRows} />
+                </Suspense>
+              ) : (
+                <EmptyState title={t('emptyTitle')}>{t('emptyBody')}</EmptyState>
+              )}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
       <section aria-labelledby="products-list-title" className="w-full py-16">
         <div className="container-page">
           <div className="mb-8 flex flex-col">
@@ -339,5 +377,51 @@ export function ProductsPage() {
       </section>
       <ContactCta />
     </>
+  );
+}
+
+/** Esqueleto con la forma del gráfico (encabezado, 4 tarjetas, líneas y tabla) mientras se descarga. */
+function ChartSkeleton({ label, years }: { label: string; years: number }) {
+  const bone = 'shimmer rounded-md';
+  return (
+    <div
+      aria-busy="true"
+      aria-label={label}
+      className="overflow-hidden rounded-[24px] bg-surface-container-lowest shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)]"
+    >
+      <div className="flex flex-col gap-5 border-b border-surface-cream-alt p-5 md:p-7">
+        <div className="flex flex-col gap-2">
+          <span className={`${bone} h-3.5 w-36`} />
+          <span className={`${bone} h-7 w-72 max-w-full`} />
+        </div>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="flex flex-col gap-2 rounded-2xl border border-border-subtle p-3.5">
+              <span className={`${bone} h-3 w-3/4`} />
+              <span className={`${bone} h-7 w-16`} />
+              <span className={`${bone} h-2.5 w-1/2`} />
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="flex flex-col gap-4 p-5 md:p-7">
+        {/* Líneas del gráfico: barras horizontales finas a distintas alturas sobre la cuadrícula. */}
+        <div className="relative h-72 rounded-xl border border-dashed border-border-subtle">
+          {['top-[22%]', 'top-[40%]', 'top-[58%]', 'top-[74%]'].map((top) => (
+            <span key={top} className={`${bone} absolute right-4 left-4 h-1.5 ${top}`} />
+          ))}
+        </div>
+        <div className="flex flex-col gap-2">
+          {[0, 1, 2, 3, 4].map((r) => (
+            <div key={r} className="flex gap-2">
+              <span className={`${bone} h-6 w-40 shrink-0`} />
+              {Array.from({ length: Math.min(Math.max(years, 1), 10) }, (_, c) => (
+                <span key={c} className={`${bone} h-6 flex-1`} />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

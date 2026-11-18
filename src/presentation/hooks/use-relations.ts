@@ -17,3 +17,8 @@ export function useCountryPublications(iso3: string | null, year: number | null)
   const q = useRelationQueries();
   return useQuery({ ...q.publications(iso3 ?? '', year), enabled: !!iso3 });
 }
+
+/** Producción institucional por año; no se pide hasta que se abre el gráfico. */
+export function useInstitutionByYear(enabled: boolean) {
+  return useQuery({ ...useRelationQueries().byYear(), enabled });
+}

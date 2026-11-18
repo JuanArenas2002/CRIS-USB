@@ -1,4 +1,3 @@
-import { HeroWaves } from '@/presentation/components/layout/HeroWaves';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { feedbackButtonClass } from '@/presentation/components/feedback/Feedback';
@@ -15,7 +14,6 @@ export function ComingSoonPage({ item }: { item: NavItem }) {
   return (
     <>
       <section className="relative overflow-hidden bg-surface-dark-forest pt-10 pb-14 text-on-primary">
-        <HeroWaves />
         <div className="relative container-page flex flex-col gap-3">
           <p className="inline-flex items-center gap-1.5 self-start rounded-full bg-primary-container px-3 py-1 text-label-sm tracking-wide text-primary-fixed">
             <span className="h-2 w-2 rounded-full bg-tertiary-fixed" /> {t('comingSoon.badge')}

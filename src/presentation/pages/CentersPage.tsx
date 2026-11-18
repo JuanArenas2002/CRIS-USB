@@ -11,7 +11,6 @@ import {
 } from '@/presentation/components/centers/CenterCard';
 import { EmptyState, ErrorState, feedbackButtonClass } from '@/presentation/components/feedback/Feedback';
 import { ContactCta } from '@/presentation/components/layout/ContactCta';
-import { HeroWaves } from '@/presentation/components/layout/HeroWaves';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { ClearFilters, FilterSelect } from '@/presentation/components/ui/FilterSelect';
 import { useCenters } from '@/presentation/hooks/use-centers';
@@ -23,7 +22,7 @@ import { ORGANIZATION, absoluteUrl, safeJson } from '@/shared/seo';
 const fieldClass =
   'h-11 rounded-xl bg-canvas-cream text-on-surface transition-all focus:bg-surface-container-lowest focus:ring-2 focus:ring-secondary focus:outline-none';
 
-/** Sedes presentes en el catálogo (por código DANE). */
+/** campus presentes en el catálogo (por código DANE). */
 const campusesOf = (centers: Center[]) => [
   ...new Map(
     centers.filter((c) => c.daneCode && c.city).map((c) => [c.daneCode!, displayName(c.city!)]),
@@ -136,7 +135,6 @@ export function CentersPage() {
         aria-labelledby="centers-title"
         className="relative w-full overflow-hidden bg-surface-dark-forest pt-10 pb-16 text-on-primary"
       >
-        <HeroWaves />
         <div className="relative container-page flex flex-col gap-6">
           <div className="flex items-center gap-2">
             <p className="inline-flex items-center gap-1.5 rounded-full bg-primary-container px-3 py-1 text-label-sm tracking-wide text-primary-fixed">
@@ -266,7 +264,6 @@ export function CentersPage() {
               >
                 {t('listTitle')}
               </h2>
-              <p className="mt-1 max-w-2xl text-body-md text-neutral-muted">{t('listLead')}</p>
             </div>
             <div className="flex shrink-0 items-center gap-3">
               <button

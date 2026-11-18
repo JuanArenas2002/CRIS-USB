@@ -102,11 +102,12 @@ function GroupProfile({ group }: { group: GroupDetail }) {
   const productionReady = members.isSuccess && profiles.isSuccess;
   const products = useMemo(
     () =>
+      // Sin la línea "Scopus · Artículo" bajo el subtipo: en el grupo no aporta.
       mergeProducts(
         profiles.data.map((d) =>
           d?.kind === 'found' && d.author.production ? toProducts(d.author.production) : [],
         ),
-      ),
+      ).map((p) => ({ ...p, index: null })),
     [profiles.data],
   );
   // Mismos filtros que la tabla de productos del investigador; una tarjeta de tipología la preselecciona.
@@ -203,13 +204,6 @@ function GroupProfile({ group }: { group: GroupDetail }) {
               <h1 className="text-headline-lg-mobile font-bold tracking-tight text-primary md:text-headline-lg">
                 {group.name}
               </h1>
-              {/* Encabezado limpio: solo identidad. Líder y avalista van en Información institucional. */}
-              {city ? (
-                <p className="flex items-center gap-1.5 text-body-sm text-on-surface-variant">
-                  <Icon name="location_on" className="text-[16px] text-secondary" /> {city}
-                </p>
-              ) : null}
-              <GroupCenters ids={group.centerIds} className="mt-1" />
             </div>
           </div>
           <div className="z-10 flex w-full shrink-0 flex-col items-center gap-2.5 sm:w-auto sm:flex-row lg:flex-col xl:flex-row print:hidden">
@@ -295,6 +289,11 @@ function GroupProfile({ group }: { group: GroupDetail }) {
                       '—'}
                   </Field>
                   <Field label={t('detail.groupLeader')}>{leader ? displayName(leader.name) : '—'}</Field>
+                  {group.centerIds?.length ? (
+                    <Field label={t('centers')}>
+                      <GroupCenters ids={group.centerIds} />
+                    </Field>
+                  ) : null}
                 </InfoColumn>
               </div>
             </section>

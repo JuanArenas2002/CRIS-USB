@@ -2,6 +2,7 @@ import { withBase } from '@/shared/base';
 // Administración de fotos y logos (vistas ocultas /admin/fotos y /admin/centros). El navegador
 // recorta y convierte la imagen con canvas (sin dependencias); el BFF valida y la guarda.
 import { ApiError } from '@/infrastructure/http/api-client';
+import { adminHeaders } from '@/infrastructure/http/admin-session';
 
 const SIDE = 512;
 
@@ -63,7 +64,7 @@ async function call(
   const res = await fetch(path, {
     method,
     headers: {
-      'X-Admin-Token': token,
+      ...adminHeaders(token),
       ...(body ? { 'Content-Type': 'image/webp' } : {}),
       ...(center ? centerHeaders(center) : {}),
     },
@@ -98,7 +99,7 @@ export const deleteProjectPhoto = (id: number, slot: number, token: string, cent
 /** true si la contraseña es la del centro (401 = token inválido, se propaga). */
 export async function checkCenterAccess(center: CenterKey, token: string) {
   const res = await fetch(withBase(`/api/centers/${center.id}/access`), {
-    headers: { 'X-Admin-Token': token, ...centerHeaders(center) },
+    headers: { ...adminHeaders(token), ...centerHeaders(center) },
   });
   if (res.status === 401) throw new ApiError(401, 'Token de administración inválido');
   return res.ok;
@@ -108,7 +109,7 @@ export async function checkCenterAccess(center: CenterKey, token: string) {
 export async function saveCenterPassword(id: number, password: string | null, token: string) {
   const res = await fetch(withBase(`/api/centers/${id}/password`), {
     method: 'PUT',
-    headers: { 'X-Admin-Token': token, 'Content-Type': 'application/json' },
+    headers: { ...adminHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ password }),
   });
   const data = (await res.json().catch(() => ({}))) as { detail?: string };
@@ -119,7 +120,7 @@ export async function saveCenterPassword(id: number, password: string | null, to
 export async function saveCenterWebsite(id: number, website: string | null, token: string) {
   const res = await fetch(withBase(`/api/centers/${id}/website`), {
     method: 'PUT',
-    headers: { 'X-Admin-Token': token, 'Content-Type': 'application/json' },
+    headers: { ...adminHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ website }),
   });
   const data = (await res.json().catch(() => ({}))) as { website?: string | null; detail?: string };
@@ -138,7 +139,7 @@ async function staffCall(path: string, token: string, center: CenterKey, init: R
   const res = await fetch(withBase(path), {
     ...init,
     headers: {
-      'X-Admin-Token': token,
+      ...adminHeaders(token),
       ...centerHeaders(center),
       ...(init.body ? { 'Content-Type': 'application/json' } : {}),
     },

@@ -11,7 +11,6 @@ import {
 import { ProductRows } from '@/presentation/components/authors/ProductsTable';
 import { ErrorState } from '@/presentation/components/feedback/Feedback';
 import { ContactCta } from '@/presentation/components/layout/ContactCta';
-import { HeroWaves } from '@/presentation/components/layout/HeroWaves';
 import { Flag, countryName } from '@/presentation/components/relations/Flag';
 import { HEAT_COLORS, NO_DATA } from '@/presentation/components/relations/heat-colors';
 import { FilterSelect } from '@/presentation/components/ui/FilterSelect';
@@ -74,7 +73,6 @@ export function RelationsPage() {
         aria-labelledby="relations-title"
         className="relative w-full overflow-hidden bg-surface-dark-forest pt-10 pb-16 text-on-primary"
       >
-        <HeroWaves />
         <div className="relative container-page flex flex-col gap-3">
           <div className="flex items-center gap-2">
             <p className="inline-flex items-center gap-1.5 rounded-full bg-primary-container px-3 py-1 text-label-sm tracking-wide text-primary-fixed">
