@@ -96,7 +96,7 @@ export function AuthorCard({ author }: { author: Author }) {
       </div>
       <div className="mt-4 flex items-start gap-4">
         <div className="min-w-0 flex-1">
-          <h3 className="text-[18px] leading-snug font-bold tracking-tight text-[#0F241A] transition-colors group-hover:text-primary">
+          <h3 className="text-[18px] leading-snug font-bold tracking-tight text-on-surface transition-colors group-hover:text-primary">
             {/* El enlace del nombre cubre toda la tarjeta sin anidar controles. */}
             <Link
               to={href}

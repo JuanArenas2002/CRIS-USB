@@ -97,7 +97,7 @@ function GroupedBars({
         {ticks.map((v) => (
           <g key={v} aria-hidden="true">
             <line x1={left - 6} x2={right} y1={y(v)} y2={y(v)} stroke={GRID} />
-            <text x={left - 10} y={y(v) + 4} textAnchor="end" fontSize="11" fill="#6B7280">
+            <text x={left - 10} y={y(v) + 4} textAnchor="end" fontSize="11" fill="#6A6A62">
               {v}
             </text>
           </g>
@@ -113,7 +113,7 @@ function GroupedBars({
                 y={TOP}
                 width={slot}
                 height={BOTTOM - TOP}
-                className="fill-transparent group-hover:fill-[#0E382B]/[0.04] group-focus-visible:fill-[#0E382B]/[0.06]"
+                className="fill-transparent group-hover:fill-[#164130]/[0.04] group-focus-visible:fill-[#164130]/[0.06]"
               />
               {series.map((s, j) =>
                 row.by[s] ? (

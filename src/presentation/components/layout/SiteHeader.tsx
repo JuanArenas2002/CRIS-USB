@@ -7,11 +7,18 @@ import { NAV_ITEMS, isNavActive } from '@/shared/navigation';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { LanguageSelector } from './LanguageSelector';
 
+// Barra forest (guía web): sección activa con línea jasmine. El panel móvil es claro y usa panelItemClass.
 const itemClass = (active: boolean) =>
-  `rounded-lg px-2.5 py-1.5 text-label-md transition-colors 2xl:px-3 ${
+  `relative rounded-lg px-2.5 py-1.5 text-label-md font-semibold transition-colors 2xl:px-3 ${
     active
-      ? 'bg-primary-container font-bold text-on-primary'
-      : 'font-semibold text-on-surface-variant hover:text-primary'
+      ? 'text-on-primary after:absolute after:inset-x-2.5 after:-bottom-1 after:h-0.5 after:rounded-full after:bg-secondary-fixed 2xl:after:inset-x-3'
+      : 'text-on-primary/75 hover:text-on-primary'
+  }`;
+const panelItemClass = (active: boolean) =>
+  `rounded-lg px-2.5 py-2.5 text-label-md transition-colors ${
+    active
+      ? 'bg-primary font-bold text-on-primary'
+      : 'font-semibold text-on-surface-variant hover:bg-surface-cream-alt hover:text-primary'
   }`;
 
 export function SiteHeader() {
@@ -27,21 +34,29 @@ export function SiteHeader() {
   }, [pathname]);
 
   return (
-    <header className="fixed top-0 z-50 w-full bg-canvas-cream/90 shadow-[0_1px_8px_rgba(0,0,0,0.04)] backdrop-blur-md">
+    <header className="fixed top-0 z-50 w-full bg-primary [&_:focus-visible]:outline-secondary-fixed">
       <div className="container-page flex h-20 items-center justify-between gap-4">
-        <Link to="/" className="flex shrink-0 items-center gap-3" aria-label={t('homeLink')}>
+        {/* Brandbook: el logosímbolo de la Universidad va a la izquierda del de Unisimón Research, y este nunca
+            por debajo de 255 px de ancho en pantalla.
+            ponytail: se muestra a 160 px por decisión del equipo (a 255 px dominaba la barra). */}
+        <Link to="/" className="flex shrink-0 items-center gap-5" aria-label={t('homeLink')}>
           <img
             src={withBase('/assets/unisimon-logo.png')}
             alt=""
-            width={197}
-            height={32}
-            className="h-8 w-auto"
+            width={172}
+            height={28}
+            className="hidden h-7 w-auto brightness-0 invert 2xl:block"
           />
-          <span className="hidden flex-col sm:flex">
-            <span className="text-headline-sm leading-none font-semibold tracking-tight text-primary">
-              UNISIMÓN RESEARCH
-            </span>
-          </span>
+          <span aria-hidden="true" className="hidden h-10 w-px bg-on-primary/25 2xl:block" />
+          {/* ponytail: por debajo de ~350 px de pantalla el logo se encoge para no desbordar; mínimo del
+              brandbook en todo lo demás. */}
+          <img
+            src={withBase('/assets/logo-research-light.svg')}
+            alt=""
+            width={160}
+            height={46}
+            className="h-auto w-40"
+          />
         </Link>
 
         <nav aria-label={t('nav.main')} className="hidden items-center gap-0.5 xl:flex 2xl:gap-2">
@@ -81,7 +96,7 @@ export function SiteHeader() {
           <LanguageSelector className="hidden sm:block" />
           <a
             href={`mailto:${CONTACT_EMAIL}`}
-            className="hidden h-10 items-center justify-center rounded-lg bg-primary-container px-4 text-label-md font-semibold text-on-primary transition-colors hover:bg-secondary md:inline-flex"
+            className="hidden h-10 items-center justify-center rounded-full bg-secondary px-5 text-label-md font-semibold text-on-primary transition-colors hover:bg-secondary-fixed hover:text-primary md:inline-flex"
           >
             {t('nav.contact')}
           </a>
@@ -90,13 +105,13 @@ export function SiteHeader() {
           <details ref={mobileMenu} className="relative xl:hidden">
             <summary
               aria-label={t('nav.openMenu')}
-              className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-lg text-primary hover:bg-surface-cream-alt [&::-webkit-details-marker]:hidden"
+              className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-lg text-on-primary hover:bg-on-primary/10 [&::-webkit-details-marker]:hidden"
             >
               <Icon name="menu" className="text-[24px]" />
             </summary>
             <nav
               aria-label={t('nav.mainMobile')}
-              className="absolute top-12 right-0 flex w-60 flex-col gap-1 rounded-2xl bg-surface-container-lowest p-2 shadow-xl"
+              className="absolute top-12 right-0 flex w-60 flex-col gap-1 rounded-2xl bg-surface-container-lowest p-2 shadow-xl [&_:focus-visible]:outline-secondary"
             >
               {NAV_ITEMS.map((item) => {
                 const active = isNavActive(item, pathname);
@@ -105,7 +120,7 @@ export function SiteHeader() {
                     key={item.to}
                     to={item.to}
                     aria-current={active ? 'page' : undefined}
-                    className={`${itemClass(active)} py-2.5`}
+                    className={panelItemClass(active)}
                   >
                     {t(`nav.items.${item.key}.label`)}
                   </Link>
@@ -114,7 +129,7 @@ export function SiteHeader() {
               <Link
                 to="/noticias"
                 aria-current={newsActive ? 'page' : undefined}
-                className={`${itemClass(newsActive)} py-2.5`}
+                className={panelItemClass(newsActive)}
               >
                 {t('nav.news')}
               </Link>
@@ -123,7 +138,7 @@ export function SiteHeader() {
                 target="_blank"
                 rel="noopener"
                 aria-label={iraka}
-                className={`${itemClass(false)} inline-flex items-center gap-1.5 py-2.5`}
+                className={`${panelItemClass(false)} inline-flex items-center gap-1.5`}
               >
                 {t('home:hero.iraka')} <Icon name="open_in_new" className="text-[14px]" />
               </a>

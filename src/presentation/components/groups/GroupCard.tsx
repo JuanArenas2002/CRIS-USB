@@ -46,7 +46,7 @@ export function GroupCard({ group }: { group: Group }) {
         </div>
 
         <div className="pt-4 pb-2">
-          <h3 className="text-headline-sm font-bold tracking-tight text-[#0F241A] transition-colors group-hover:text-primary">
+          <h3 className="text-headline-sm font-bold tracking-tight text-on-surface transition-colors group-hover:text-primary">
             {/* El enlace del título cubre toda la tarjeta. */}
             {linked ? (
               <Link

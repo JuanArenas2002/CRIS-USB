@@ -4,8 +4,16 @@ import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { newsApi, responsiveImage, type News } from '@/infrastructure/news/news-api';
 import { Icon } from '@/presentation/components/ui/Icon';
+import { Marker } from '@/presentation/components/ui/Trajectory';
 
 /** Piezas comunes de la portada de noticias y de cada noticia (estructura de portal informativo). */
+
+/** Tarjeta de datos de la guía de marca: blanca sobre linen, radio 16, borde de 1 px, sombra que sube al pasar. */
+export const NEWS_CARD =
+  'rounded-2xl border border-border-subtle bg-surface-container-lowest shadow-sm transition-shadow duration-200 hover:shadow-md';
+/** Panel (lista o columna) con la misma piel que las tarjetas, sin la sombra de hover. */
+export const NEWS_PANEL =
+  'rounded-2xl border border-border-subtle bg-surface-container-lowest p-5 shadow-sm sm:p-6';
 
 export const newsPath = (slug: string) => `/noticias/${slug}`;
 export const sectionPath = (categoryId: number) => `/noticias?seccion=${categoryId}`;
@@ -69,32 +77,57 @@ export function NewsMeta({ news, section }: { news: News; section?: string }) {
 }
 
 /**
- * Tarjeta blanca de portada: imagen arriba, título y (en la principal) resumen; el pie con sección y
- * tiempo de lectura queda siempre abajo, alineado entre tarjetas de la misma fila.
+ * Tarjeta de portada. La principal (`lead`) sigue la tarjeta mosaico de la marca: foto bajo un degradado forest
+ * con el texto en blanco. Las demás son tarjetas de datos con la imagen arriba, recortada por la tarjeta. El
+ * pie (sección y tiempo de lectura) queda siempre abajo, alineado entre tarjetas de la misma fila.
  */
 export function NewsTile({ news, section, lead = false }: { news: News; section?: string; lead?: boolean }) {
-  return (
-    <Link
-      to={newsPath(news.slug)}
-      className="group flex h-full flex-col overflow-hidden bg-surface-container-lowest shadow-sm transition-shadow hover:shadow-md"
-    >
-      <NewsImage
-        news={news}
-        eager={lead}
-        sizes={lead ? '(min-width: 1024px) 66vw, 100vw' : undefined}
-        className="aspect-[16/9] w-full"
-      />
-      <span className={`flex flex-1 flex-col ${lead ? 'gap-5 p-6 sm:p-8' : 'gap-3 p-4'}`}>
+  const { t } = useTranslation('home');
+  if (lead)
+    return (
+      <Link
+        to={newsPath(news.slug)}
+        className="group relative flex h-full min-h-[26rem] flex-col justify-end overflow-hidden rounded-2xl bg-primary shadow-sm transition-shadow duration-200 hover:shadow-md lg:min-h-[32rem]"
+      >
+        <NewsImage
+          news={news}
+          eager
+          sizes="(min-width: 1024px) 50vw, 100vw"
+          className="absolute inset-0 h-full w-full"
+        />
         <span
-          className={`font-extrabold text-on-surface group-hover:underline ${
-            lead
-              ? 'line-clamp-3 text-2xl leading-tight sm:text-4xl sm:leading-tight'
-              : 'line-clamp-3 text-body-md leading-snug'
-          }`}
-        >
+          aria-hidden="true"
+          className="absolute inset-0 bg-linear-to-b from-primary/0 via-primary/75 via-55% to-primary"
+        />
+        <span className="relative flex flex-col gap-4 p-6 sm:p-8">
+          {section && (
+            <span className="self-start rounded-full bg-badge-sage-bg px-3 py-1 text-label-sm font-semibold text-badge-sage-text">
+              {section}
+            </span>
+          )}
+          <span className="line-clamp-3 text-2xl leading-tight font-bold text-on-primary sm:text-4xl sm:leading-tight">
+            {news.title}
+          </span>
+          <span className="line-clamp-2 text-body-lg text-primary-fixed">{news.summary}</span>
+          <span className="flex flex-wrap items-center justify-between gap-3 border-t border-on-primary/15 pt-4 text-label-sm text-primary-fixed">
+            <span className="inline-flex items-center gap-1">
+              <Icon name="schedule" className="text-[15px]" />
+              {t('newsPage.readingTime', { count: readingMinutes(news.content) })}
+            </span>
+            <span className="inline-flex items-center gap-1 text-label-md font-semibold text-secondary-fixed group-hover:underline">
+              {t('newsSpotlight.read')} <span aria-hidden="true">→</span>
+            </span>
+          </span>
+        </span>
+      </Link>
+    );
+  return (
+    <Link to={newsPath(news.slug)} className={`group flex h-full flex-col overflow-hidden ${NEWS_CARD}`}>
+      <NewsImage news={news} className="aspect-[16/10] w-full" />
+      <span className="flex flex-1 flex-col gap-3 p-5">
+        <span className="line-clamp-3 text-body-md leading-snug font-bold text-primary group-hover:underline">
           {news.title}
         </span>
-        {lead && <span className="line-clamp-2 text-body-lg text-on-surface-variant">{news.summary}</span>}
         <span className="mt-auto pt-2">
           <NewsMeta news={news} section={section} />
         </span>
@@ -103,7 +136,7 @@ export function NewsTile({ news, section, lead = false }: { news: News; section?
   );
 }
 
-/** Encabezado de sección: barra de color + título en mayúsculas. */
+/** Encabezado de sección: punto marcador de la marca y título en tipo oración, sobre una línea de 1 px. */
 export function SectionTitle({
   id,
   children,
@@ -114,12 +147,9 @@ export function SectionTitle({
   action?: ReactNode;
 }) {
   return (
-    <div className="mb-5 flex items-end justify-between gap-4 border-b-2 border-on-surface pb-2">
-      <h2
-        id={id}
-        className="flex items-center gap-3 text-headline-sm font-extrabold tracking-wide text-on-surface uppercase"
-      >
-        <span aria-hidden="true" className="h-6 w-1.5 rounded-full bg-secondary" />
+    <div className="mb-5 flex items-end justify-between gap-4 border-b border-border-subtle pb-3">
+      <h2 id={id} className="flex items-center gap-2.5 text-headline-sm font-bold text-primary">
+        <span aria-hidden="true" className="h-2 w-2 rounded-full bg-secondary" />
         {children}
       </h2>
       {action}
@@ -129,7 +159,7 @@ export function SectionTitle({
 
 /** Antetítulo: la sección de la noticia. */
 export const Kicker = ({ children }: { children: ReactNode }) => (
-  <span className="text-label-sm font-extrabold tracking-wider text-secondary uppercase">{children}</span>
+  <span className="text-label-sm font-bold tracking-[0.16em] text-secondary uppercase">{children}</span>
 );
 
 /** `sizes`: ancho real en pantalla (el navegador elige la versión WebP más pequeña que lo cubra). */
@@ -146,7 +176,7 @@ export function NewsImage({
 }) {
   const img = responsiveImage(news.image_url, 640);
   return (
-    <span className={`block overflow-hidden bg-badge-sage-bg ${className}`}>
+    <span className={`block overflow-hidden bg-primary ${className}`}>
       {img ? (
         <img
           src={img.src}
@@ -161,9 +191,7 @@ export function NewsImage({
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
         />
       ) : (
-        <span className="flex h-full items-center justify-center text-primary-container">
-          <Icon name="newspaper" className="text-[40px]" />
-        </span>
+        <Marker />
       )}
     </span>
   );
@@ -188,22 +216,22 @@ export function NewsCard({
   return (
     <Link
       to={newsPath(news.slug)}
-      className={`group flex h-full gap-4 ${row ? 'flex-row items-start' : 'flex-col'}`}
+      className={`group flex h-full ${row ? 'flex-row items-start gap-4' : `flex-col overflow-hidden ${NEWS_CARD}`}`}
     >
       <NewsImage
         news={news}
         sizes={row ? '160px' : undefined}
-        className={row ? 'aspect-[4/3] w-32 shrink-0 rounded-xl sm:w-40' : 'aspect-video w-full rounded-xl'}
+        className={row ? 'aspect-[4/3] w-32 shrink-0 rounded-[10px] sm:w-40' : 'aspect-[16/10] w-full'}
       />
-      <span className="flex min-w-0 flex-col gap-1.5">
+      <span className={`flex min-w-0 flex-1 flex-col gap-1.5 ${row ? '' : 'p-5'}`}>
         {section && <Kicker>{section}</Kicker>}
         <span
-          className={`font-bold text-on-surface group-hover:text-primary-container group-hover:underline ${row ? 'line-clamp-3 text-body-md' : 'line-clamp-3 text-headline-sm'}`}
+          className={`font-bold text-primary group-hover:underline ${row ? 'line-clamp-3 text-body-md' : 'line-clamp-3 text-headline-sm'}`}
         >
           {news.title}
         </span>
         {!row && <span className="line-clamp-2 text-body-sm text-on-surface-variant">{news.summary}</span>}
-        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <span className={`flex flex-wrap items-center gap-x-3 gap-y-1 ${row ? '' : 'mt-auto pt-2'}`}>
           <NewsMeta news={news} />
           {when && <span className="text-label-sm text-neutral-muted">{when}</span>}
         </span>

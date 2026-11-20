@@ -51,6 +51,29 @@ const personSchema = z.object({
   relationship_type: z.string(),
 });
 
+/** Galería: imagen subida (/media/news/...), video (enlace a YouTube, Vimeo, redes) o enlace relacionado. */
+const mediaSchema = z.object({
+  kind: z.enum(['image', 'video', 'link']),
+  url: z.string(),
+  title: z.string().nullable().optional(),
+  caption: z.string().nullable().optional(),
+  provider: z.string().nullable().optional(),
+});
+export type NewsMedia = z.infer<typeof mediaSchema>;
+
+/** Plantilla de presentación del encabezado de la noticia (la interpreta NewsHeader). */
+export const templateSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  layout: z.enum(['split', 'hero', 'overlay', 'compact', 'text']),
+  image_size: z.enum(['small', 'medium', 'large', 'full']),
+  image_ratio: z.enum(['16:9', '4:3', '3:2', '1:1', '21:9']),
+  title_size: z.enum(['md', 'lg', 'xl']),
+  is_default: z.boolean(),
+});
+export type NewsTemplate = z.infer<typeof templateSchema>;
+export type TemplateInput = Omit<NewsTemplate, 'id'>;
+
 export const newsSchema = z.object({
   id: z.number(),
   title: z.string(),
@@ -59,7 +82,8 @@ export const newsSchema = z.object({
   content: z.string(),
   image_url: z.string().nullable(),
   image_caption: z.string().nullable(),
-  category_id: z.number(),
+  category_id: z.number(), // principal
+  category_ids: z.array(z.number()).optional(), // todas (la principal primero)
   author_id: z.number(),
   relevance_level: z.string(),
   priority: z.number(),
@@ -74,6 +98,9 @@ export const newsSchema = z.object({
   tags: z.array(z.string()),
   scopes: z.array(scopeSchema),
   people: z.array(personSchema),
+  media: z.array(mediaSchema).optional(),
+  template_id: z.number().nullable().optional(),
+  template: templateSchema.nullable().optional(),
 });
 export type News = z.infer<typeof newsSchema>;
 export type NewsScope = z.infer<typeof scopeSchema>;
@@ -88,6 +115,9 @@ export interface NewsInput {
   image_url?: string | null;
   image_caption?: string | null;
   category_id: number;
+  category_ids: number[];
+  template_id: number | null;
+  media: NewsMedia[];
   relevance_level: string;
   priority: number;
   is_featured: boolean;
@@ -107,6 +137,7 @@ const catalogsSchema = z.object({
   person_types: z.array(item),
   relationship_types: z.array(item),
   categories: z.array(z.object({ id: z.number(), name: z.string() })),
+  templates: z.array(templateSchema).default([]),
 });
 export type Catalogs = z.infer<typeof catalogsSchema>;
 
@@ -190,6 +221,10 @@ export const newsApi = {
       method: 'POST',
       body: { name },
     }),
+  createTemplate: (body: TemplateInput) => call('/news/templates', templateSchema, { method: 'POST', body }),
+  updateTemplate: (id: number, body: Partial<TemplateInput>) =>
+    call(`/news/templates/${id}`, templateSchema, { method: 'PATCH', body }),
+  deleteTemplate: (id: number) => call(`/news/templates/${id}`, z.unknown(), { method: 'DELETE' }),
 
   faculties: (all = false) =>
     call(`/organization/faculties${qs({ include_inactive: all })}`, z.array(facultySchema)),

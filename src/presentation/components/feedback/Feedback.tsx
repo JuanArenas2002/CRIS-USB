@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ApiError } from '@/infrastructure/http/api-client';
 import { Icon } from '@/presentation/components/ui/Icon';
+import { BrandIcon } from '@/presentation/components/ui/BrandIcon';
 
 const buttonClass =
   'mt-4 inline-flex items-center gap-1.5 rounded-xl bg-primary-container px-4 py-2 text-label-md font-semibold text-on-primary hover:bg-secondary';
@@ -46,7 +47,7 @@ export function EmptyState({
 }) {
   return (
     <div role="status" className="flex flex-col items-center px-6 py-16 text-center">
-      <Icon name="person_search" className="mb-2 text-[48px] text-neutral-muted" />
+      <BrandIcon name="radar" className="mb-3 text-[56px] text-secondary" />
       <h2 className="text-headline-sm font-semibold text-primary">{title}</h2>
       <p className="mt-1 max-w-md text-body-md text-neutral-muted">{children}</p>
       {action}

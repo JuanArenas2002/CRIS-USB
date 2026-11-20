@@ -6,11 +6,13 @@ import {
   LatestNews,
   NewsCard,
   NewsTile,
+  NEWS_PANEL,
   SectionTitle,
   useNewsSections,
 } from '@/presentation/components/news/news-ui';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
+import { Trajectory } from '@/presentation/components/ui/Trajectory';
 
 /** Primera página: 1 principal + 4 destacadas + 4 en "Más noticias"; "Ver más" trae 4 más cada vez. */
 const FIRST = 9;
@@ -55,6 +57,7 @@ export function NewsHomePage() {
         aria-labelledby="news-title"
         className="relative w-full overflow-hidden bg-surface-dark-forest pt-10 pb-16 text-on-primary"
       >
+        <Trajectory variant="discovery" />
         <div className="relative container-page flex flex-col gap-6">
           <nav aria-label="breadcrumb" className="flex flex-wrap items-center gap-2">
             <Link
@@ -106,10 +109,10 @@ export function NewsHomePage() {
                     <Link
                       to={c.id ? `/noticias?seccion=${c.id}` : '/noticias'}
                       aria-current={active ? 'page' : undefined}
-                      className={`inline-flex min-h-10 items-center rounded-lg px-4 text-label-md transition-colors ${
+                      className={`inline-flex min-h-10 items-center rounded-full px-4 text-label-md font-semibold transition-colors ${
                         active
-                          ? 'bg-primary-container font-bold text-on-primary'
-                          : 'font-semibold text-on-surface-variant hover:bg-surface-cream-alt hover:text-primary'
+                          ? 'bg-primary text-on-primary'
+                          : 'text-on-surface-variant hover:bg-surface-cream-alt hover:text-primary'
                       }`}
                     >
                       {c.name}
@@ -124,11 +127,23 @@ export function NewsHomePage() {
 
       <div className="container-page py-8 lg:py-10">
         {pages.isPending ? (
-          <p role="status" className="text-body-md text-neutral-muted">{t('newsHome.loading')}</p>
+          <div role="status" className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+            <span className="sr-only">{t('newsHome.loading')}</span>
+            <span aria-hidden="true" className="shimmer block min-h-[26rem] rounded-2xl lg:min-h-[32rem]" />
+            <span aria-hidden="true" className="grid gap-6 sm:grid-cols-2 lg:gap-8">
+              {[0, 1, 2, 3].map((i) => (
+                <span key={i} className="shimmer block min-h-56 rounded-2xl" />
+              ))}
+            </span>
+          </div>
         ) : pages.isError ? (
-          <p role="alert" className="text-body-md text-error">{t('newsHome.error')}</p>
+          <p role="alert" className={`${NEWS_PANEL} flex items-center gap-3 text-body-md text-error`}>
+            <Icon name="error" className="text-[22px]" />
+            {t('newsHome.error')}
+          </p>
         ) : !lead ? (
-          <p className="text-body-md text-on-surface-variant">
+          <p className={`${NEWS_PANEL} flex items-center gap-3 text-body-md text-on-surface-variant`}>
+            <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full bg-secondary" />
             {sectionId ? t('newsHome.emptyCategory') : t('newsHome.empty')}
           </p>
         ) : (
@@ -155,7 +170,7 @@ export function NewsHomePage() {
             {/* Más noticias + Lo último */}
             <div className="mt-12 grid gap-8 lg:grid-cols-12">
               {more.length > 0 && (
-                <section aria-labelledby="news-more" className="bg-surface-container-lowest p-5 shadow-sm sm:p-6 lg:col-span-8">
+                <section aria-labelledby="news-more" className={`${NEWS_PANEL} lg:col-span-8`}>
                   <SectionTitle id="news-more">{t('newsHome.more')}</SectionTitle>
                   <ul className="flex flex-col">
                     {more.map((n) => (
@@ -170,7 +185,7 @@ export function NewsHomePage() {
                         type="button"
                         onClick={() => void pages.fetchNextPage()}
                         disabled={pages.isFetchingNextPage}
-                        className="inline-flex min-h-12 items-center gap-1 rounded-full border-2 border-on-surface px-8 text-label-md font-bold tracking-wide uppercase hover:bg-on-surface hover:text-surface-container-lowest disabled:opacity-60"
+                        className="inline-flex min-h-12 items-center gap-1 rounded-full border border-primary px-8 text-label-md font-semibold text-primary transition-colors hover:bg-primary hover:text-on-primary disabled:opacity-60"
                       >
                         {pages.isFetchingNextPage ? t('newsHome.loading') : t('newsHome.loadMore')}
                         {!pages.isFetchingNextPage && <Icon name="expand_more" className="text-[20px]" />}
@@ -179,7 +194,7 @@ export function NewsHomePage() {
                   )}
                 </section>
               )}
-              <aside className={`bg-surface-container-lowest p-5 shadow-sm sm:p-6 lg:sticky lg:top-24 lg:self-start ${more.length ? 'lg:col-span-4' : 'lg:col-span-12'}`}>
+              <aside className={`${NEWS_PANEL} lg:sticky lg:top-24 lg:self-start ${more.length ? 'lg:col-span-4' : 'lg:col-span-12'}`}>
                 <LatestNews excludeId={lead.id} limit={6} />
               </aside>
             </div>

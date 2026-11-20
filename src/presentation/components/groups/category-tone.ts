@@ -4,11 +4,11 @@
  * ≥ 5:1 en todos los pasos (WCAG AA); los pasos claros llevan borde para no perderse sobre el crema.
  */
 const TONES: Record<string, string> = {
-  A1: 'bg-[#0E382B] text-[#8CFAA1]',
-  A: 'bg-[#1B5E3F] text-white',
+  A1: 'bg-[#164130] text-[#8CFAA1]',
+  A: 'bg-[#1F5A41] text-white',
   B: 'bg-[#2F7D55] text-white',
-  C: 'bg-[#A9DCC0] text-[#0E382B] ring-1 ring-inset ring-[#7FBF9C]',
-  D: 'bg-[#D4EEDF] text-[#1B5E3F] ring-1 ring-inset ring-[#9CCBB1]',
+  C: 'bg-[#A9DCC0] text-[#164130] ring-1 ring-inset ring-[#7FBF9C]',
+  D: 'bg-[#D4EEDF] text-[#1F5A41] ring-1 ring-inset ring-[#9CCBB1]',
   RECONOCIDO: 'bg-[#EEF4EF] text-[#3F5E4D] ring-1 ring-inset ring-[#B9DCC8]',
 };
 const NONE = 'bg-surface-cream-alt text-neutral-muted ring-1 ring-inset ring-border-subtle';

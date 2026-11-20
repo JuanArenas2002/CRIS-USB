@@ -1,13 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/presentation/components/ui/Icon';
+import { BrandIcon, MODULE_MARKER } from '@/presentation/components/ui/BrandIcon';
 import { useLabels } from '@/presentation/hooks/use-labels';
 import type { Indicator, ResearchIndicatorMap } from '@/presentation/hooks/use-research-indicators';
 
 const METRICS = [
-  { key: 'projects', icon: 'science' },
-  { key: 'groups', icon: 'groups' },
-  { key: 'products', icon: 'menu_book' },
-  { key: 'relations', icon: 'public' },
+  { key: 'projects' },
+  { key: 'groups' },
+  { key: 'products' },
+  { key: 'relations' },
 ] as const;
 
 function MetricValue({ indicator, label }: { indicator: Indicator; label: string }) {
@@ -55,13 +56,13 @@ export function ResearchIndicators({ indicators }: { indicators: ResearchIndicat
         {t('indicators.title')}
       </h2>
       <dl className="container-page grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4">
-        {METRICS.map(({ key, icon }) => {
+        {METRICS.map(({ key }) => {
           const indicator = indicators[key];
           const label = t(`indicators.${key}`);
           return (
             <div key={key} className="flex items-start gap-4 rounded-xl p-4">
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-badge-sage-bg text-primary-container">
-                <Icon name={icon} className="text-[24px]" />
+                <BrandIcon name={MODULE_MARKER[key]} className="text-[34px]" />
               </span>
               <div className="flex min-w-0 flex-col-reverse">
                 <dt className="text-body-sm font-bold text-on-surface">

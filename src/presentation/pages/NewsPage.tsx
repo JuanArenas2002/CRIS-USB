@@ -14,6 +14,8 @@ import {
 import { useOrcidProfile } from '@/presentation/hooks/use-orcid';
 import { ARTICLE_PROSE } from '@/presentation/components/news/article-prose';
 import { NewsShare } from '@/presentation/components/news/NewsShare';
+import { NewsBodyImage, NewsHeader } from '@/presentation/components/news/NewsHeader';
+import { NewsMediaSections } from '@/presentation/components/news/NewsMedia';
 import { startReading } from '@/infrastructure/news/news-reading';
 import { useConsent } from '@/infrastructure/privacy/consent';
 import { Icon } from '@/presentation/components/ui/Icon';
@@ -21,6 +23,7 @@ import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata'
 import {
   LatestNews,
   NewsCard,
+  NEWS_PANEL,
   SectionTitle,
   sectionPath,
   useNewsSections,
@@ -115,81 +118,76 @@ export function NewsPage() {
     );
 
   const n = news.data;
+  const headerImage = image ? { ...image, alt: n.image_caption ?? '', caption: n.image_caption } : null;
+  // Categoría principal destacada; las demás, como etiquetas más discretas al lado.
+  const extraCategories = (n.category_ids ?? []).filter((id) => id !== n.category_id);
+  const kicker = (
+    <ul aria-label={t('newsPage.categories')} className="flex flex-wrap items-center gap-2">
+      <li>
+        <Link
+          to={sectionPath(n.category_id)}
+          className="inline-flex rounded-full bg-badge-sage-bg px-3 py-1 text-label-sm font-semibold text-badge-sage-text hover:bg-on-primary"
+        >
+          {category ?? t('newsSpotlight.label')}
+        </Link>
+      </li>
+      {extraCategories.map((id) =>
+        sections.name(id) ? (
+          <li key={id}>
+            <Link
+              to={sectionPath(id)}
+              className="inline-flex rounded-full border border-white/25 px-3 py-1 text-label-sm font-semibold text-primary-fixed hover:bg-white/10"
+            >
+              {sections.name(id)}
+            </Link>
+          </li>
+        ) : null,
+      )}
+    </ul>
+  );
+  const meta = (
+    <>
+      <p className="font-bold text-on-primary">{t('newsPage.publisher')}</p>
+      {n.published_at && (
+        <p>
+          <time dateTime={n.published_at}>
+            {t('newsPage.published', {
+              date: new Date(n.published_at).toLocaleDateString(i18n.language, { dateStyle: 'long' }),
+            })}
+          </time>
+        </p>
+      )}
+      <p className="inline-flex items-center gap-1">
+        <Icon name="schedule" className="text-[18px]" />
+        {t('newsPage.readingTime', { count: Math.max(1, Math.round(words / 200)) })}
+      </p>
+    </>
+  );
   return (
-    <div className="w-full bg-surface-container-lowest">
+    <div className="w-full">
       <article>
-        {/* Encabezado verde del portal en dos columnas: texto a la izquierda y foto a la derecha (en móvil,
-            apilados). Así el contenido empieza arriba y no queda media franja vacía. */}
-        <header className="w-full bg-surface-dark-forest pt-8 pb-12 text-on-primary lg:pt-10 lg:pb-14">
-          <div className="container-page">
-            <div className={`${frame} flex flex-col gap-6`}>
-              {crumbs}
-              <div
-                className={`grid gap-8 lg:items-center lg:gap-12 ${image ? 'lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]' : ''}`}
-              >
-                <div className={`flex min-w-0 flex-col gap-4 ${image ? '' : 'max-w-4xl'}`}>
-                  <Link
-                    to={sectionPath(n.category_id)}
-                    className="self-start text-label-md font-bold tracking-wider text-secondary-fixed uppercase hover:underline"
-                  >
-                    {category ?? t('newsSpotlight.label')}
-                  </Link>
-                  <h1 className="text-3xl leading-tight font-extrabold tracking-tight text-surface-container-lowest sm:text-4xl sm:leading-tight xl:text-[2.75rem] xl:leading-[1.12]">
-                    {n.title}
-                  </h1>
-                  <p className="text-lg leading-8 text-primary-fixed-dim sm:text-xl">{n.summary}</p>
-                  <div className="mt-1 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/15 pt-4 text-label-md text-primary-fixed-dim">
-                    <p className="font-bold text-on-primary">{t('newsPage.publisher')}</p>
-                    {n.published_at && (
-                      <p>
-                        <time dateTime={n.published_at}>
-                          {t('newsPage.published', {
-                            date: new Date(n.published_at).toLocaleDateString(i18n.language, {
-                              dateStyle: 'long',
-                            }),
-                          })}
-                        </time>
-                      </p>
-                    )}
-                    <p className="inline-flex items-center gap-1">
-                      <Icon name="schedule" className="text-[18px]" />
-                      {t('newsPage.readingTime', { count: Math.max(1, Math.round(words / 200)) })}
-                    </p>
-                  </div>
-                </div>
-                {image && (
-                  <figure className="min-w-0">
-                    <img
-                      src={image.src}
-                      srcSet={image.srcSet}
-                      sizes="(min-width: 1280px) 600px, (min-width: 1024px) 46vw, 100vw"
-                      alt={n.image_caption ?? ''}
-                      fetchPriority="high"
-                      decoding="async"
-                      width={1280}
-                      height={800}
-                      className="aspect-[16/10] w-full rounded-2xl bg-primary-container object-contain shadow-2xl ring-1 ring-white/10"
-                    />
-                    {n.image_caption && (
-                      <figcaption className="mt-2 border-l-4 border-secondary-fixed pl-3 text-label-sm leading-5 text-primary-fixed-dim">
-                        {n.image_caption}
-                      </figcaption>
-                    )}
-                  </figure>
-                )}
-              </div>
-            </div>
-          </div>
-        </header>
+        {/* Encabezado según la plantilla de la noticia (Clásica, Imagen destacada, Título sobre la imagen…). */}
+        <NewsHeader
+          template={n.template}
+          frame={frame}
+          crumbs={crumbs}
+          kicker={kicker}
+          title={n.title}
+          summary={n.summary}
+          meta={meta}
+          image={headerImage}
+        />
 
         <div className="container-page">
           <div className={`${frame} grid gap-10 py-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-14`}>
             <div className="min-w-0">
+              <NewsBodyImage template={n.template} image={headerImage} />
               <div
                 className={ARTICLE_PROSE}
                 // Las imágenes del contenido (/media/...) se cargan por el proxy del backend de noticias.
                 dangerouslySetInnerHTML={{ __html: articleHtml(n.content) }}
               />
+              <NewsMediaSections media={n.media ?? []} />
               {n.tags.length > 0 && (
                 <section className="mt-10 border-t border-border-subtle pt-6" aria-label={t('newsPage.tags')}>
                   <h2 className="text-label-md font-bold tracking-wide text-on-surface uppercase">
@@ -210,7 +208,7 @@ export function NewsPage() {
               <NewsPeople news={n} catalogs={sections.catalogs} />
               <NewsShare title={n.title} url={articleUrl} newsId={n.id} />
             </div>
-            <div className="lg:sticky lg:top-24 lg:self-start">
+            <div className={`${NEWS_PANEL} lg:sticky lg:top-24 lg:self-start`}>
               <LatestNews excludeId={n.id} />
             </div>
           </div>
@@ -267,10 +265,8 @@ function NewsPeople({ news, catalogs }: { news: News; catalogs?: Catalogs }) {
   const role = (code: string) => catalogs?.relationship_types.find((r) => r.code === code)?.name ?? null;
   return (
     <section aria-labelledby="news-people" className="mt-12">
-      <h2 id="news-people" className="text-label-md font-bold tracking-wide text-on-surface uppercase">
-        {t('newsPage.people')}
-      </h2>
-      <ul className="mt-4 grid gap-4 sm:grid-cols-2">
+      <SectionTitle id="news-people">{t('newsPage.people')}</SectionTitle>
+      <ul className="grid gap-4 sm:grid-cols-2">
         {news.people.map((p) => (
           <PersonCard key={`${p.orcid}-${p.relationship_type}`} person={p} role={role(p.relationship_type)} />
         ))}
@@ -284,10 +280,10 @@ function PersonCard({ person, role }: { person: NewsPerson; role: string | null 
   const profile = useOrcidProfile(person.orcid);
   const current = profile.data ? currentAffiliation(profile.data) : null;
   return (
-    <li className="flex gap-4 rounded-2xl border border-surface-container bg-surface-container-lowest p-5 shadow-sm">
+    <li className="flex gap-4 rounded-2xl border border-border-subtle bg-surface-container-lowest p-5 shadow-sm">
       <span
         aria-hidden="true"
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#A6CE39] text-label-md font-bold text-white"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary text-label-md font-bold text-white"
       >
         iD
       </span>

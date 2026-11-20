@@ -22,7 +22,7 @@ export function GroupRow({ group }: { group: Group }) {
 
       <div className="min-w-0">
         <h3
-          className={`text-body-md font-semibold text-[#0F241A] ${linked ? 'group-hover:text-primary' : ''}`}
+          className={`text-body-md font-semibold text-on-surface ${linked ? 'group-hover:text-primary' : ''}`}
         >
           {linked ? (
             <Link

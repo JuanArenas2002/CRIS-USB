@@ -89,7 +89,7 @@ const OrcidBadge = ({ orcid }: { orcid: string }) => (
   >
     <span
       aria-hidden="true"
-      className="flex h-4 w-4 items-center justify-center rounded-full bg-[#A6CE39] text-[8px] font-bold text-white"
+      className="flex h-4 w-4 items-center justify-center rounded-full bg-secondary text-[8px] font-bold text-white"
     >
       iD
     </span>

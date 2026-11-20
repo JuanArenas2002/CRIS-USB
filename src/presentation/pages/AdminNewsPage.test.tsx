@@ -407,7 +407,7 @@ test('admin/noticias: crear borrador y enviarlo a revisión', async () => {
   renderApp('/admin/noticias/nueva');
   await login();
   await userEvent.type(await screen.findByLabelText(/^Título/), 'Nueva convocatoria');
-  await userEvent.selectOptions(screen.getByLabelText(/^Categoría/), '1');
+  await pickCategory('Investigación');
   await userEvent.type(screen.getByLabelText(/^Resumen/), 'r');
   await userEvent.type(screen.getByLabelText(/Contenido/), 'c');
   await userEvent.click(screen.getByRole('button', { name: 'Crear borrador' }));
@@ -527,7 +527,7 @@ test('admin/noticias: agregar persona buscando por nombre (universidad + ORCID) 
   await userEvent.selectOptions(screen.getByRole('combobox', { name: /^Papel de / }), 'speaker');
 
   await userEvent.type(screen.getByLabelText(/^Título/), 'Con investigador');
-  await userEvent.selectOptions(screen.getByLabelText(/^Categoría/), '1');
+  await pickCategory('Investigación');
   await userEvent.type(screen.getByLabelText(/^Resumen/), 'r');
   await userEvent.click(screen.getByRole('button', { name: 'HTML' }));
   await userEvent.type(screen.getByRole('textbox', { name: 'Código HTML del contenido' }), '<p>c</p>');
@@ -551,7 +551,7 @@ test('admin/noticias: rol "Centro de investigación" => la noticia nueva ya vien
   await login();
   expect(await screen.findByText(/Centro de Inteligencia Artificial|AudacIA/)).toBeInTheDocument();
   await userEvent.type(screen.getByLabelText(/^Título/), 'Del centro');
-  await userEvent.selectOptions(screen.getByLabelText(/^Categoría/), '1');
+  await pickCategory('Investigación');
   await userEvent.type(screen.getByLabelText(/^Resumen/), 'r');
   await userEvent.click(screen.getByRole('button', { name: 'HTML' }));
   await userEvent.type(screen.getByRole('textbox', { name: 'Código HTML del contenido' }), '<p>c</p>');
@@ -669,4 +669,34 @@ test('admin/noticias/7/estadisticas: vista de una noticia sin comparación invá
     '/noticias/nueva-convocatoria',
   );
   expect(screen.getAllByText('Lectura acumulada').length).toBeGreaterThan(0);
+});
+
+/** Categorías: buscador con sugerencias (escala a cientos de categorías). */
+async function pickCategory(name: string) {
+  await userEvent.type(screen.getByRole('combobox', { name: /^Categorías/ }), name.slice(0, 4));
+  await userEvent.click(await screen.findByRole('option', { name }));
+}
+
+test('admin/noticias: Ctrl+S guarda desde cualquier parte; la barra fija avisa de cambios sin guardar', async () => {
+  const fetchMock = fakeBackend();
+  vi.stubGlobal('fetch', fetchMock);
+  renderApp('/admin/noticias/nueva');
+  await login();
+  await userEvent.type(await screen.findByLabelText(/^Título/), 'Atajo de guardado');
+  const bar = screen.getByRole('region', { name: 'Cambios sin guardar' });
+  expect(bar).toHaveTextContent(/Para guardar falta: la categoría, el resumen, el contenido/);
+  await userEvent.keyboard('{Control>}s{/Control}'); // incompleta: no envía nada
+  expect(fetchMock.mock.calls.some(([u, i]) => String(u).endsWith('/news') && i?.method === 'POST')).toBe(
+    false,
+  );
+
+  await pickCategory('Investigación');
+  await userEvent.type(screen.getByLabelText(/^Resumen/), 'r');
+  await userEvent.type(screen.getByLabelText(/Contenido/), 'c');
+  expect(bar).toHaveTextContent('Tienes cambios sin guardar.');
+  await userEvent.keyboard('{Control>}s{/Control}');
+  const create = await waitFor(() =>
+    fetchMock.mock.calls.find(([u, i]) => String(u).endsWith('/news') && i?.method === 'POST')!,
+  );
+  expect(JSON.parse(String(create[1]!.body))).toMatchObject({ title: 'Atajo de guardado', category_id: 1 });
 });

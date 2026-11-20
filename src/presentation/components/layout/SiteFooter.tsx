@@ -11,16 +11,27 @@ export function SiteFooter() {
   return (
     <footer className="w-full bg-surface-dark-forest py-16 text-on-primary">
       <div className="container-page">
-        <div className="mb-10 grid grid-cols-1 gap-gutter md:grid-cols-3">
-          <div className="flex flex-col gap-2">
-            <img
-              src={withBase('/assets/unisimon-logo.png')}
-              alt="Universidad Simón Bolívar"
-              width={172}
-              height={28}
-              loading="lazy"
-              className="h-7 w-auto self-start brightness-0 invert"
-            />
+        <div className="mb-10 grid grid-cols-1 gap-10 md:grid-cols-[1.6fr_1fr_1fr]">
+          <div className="flex flex-col gap-4">
+            {/* Brandbook: Universidad a la izquierda, luego Unisimón Research. */}
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+              <img
+                src={withBase('/assets/unisimon-logo.png')}
+                alt="Universidad Simón Bolívar"
+                width={172}
+                height={28}
+                loading="lazy"
+                className="h-7 w-auto brightness-0 invert"
+              />
+              <img
+                src={withBase('/assets/logo-research-light.svg')}
+                alt="Unisimón Research"
+                width={190}
+                height={54}
+                loading="lazy"
+                className="h-auto w-[190px]"
+              />
+            </div>
             <p className="text-body-sm text-primary-fixed-dim">{t('footer.tagline')}</p>
           </div>
           <nav aria-label={t('footer.nav')} className="flex flex-col gap-2">

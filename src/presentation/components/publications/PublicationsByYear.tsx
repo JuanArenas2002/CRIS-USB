@@ -54,7 +54,8 @@ export default function PublicationsByYear({ rows }: { rows: PublicationYear[] }
         {/* Encabezado + totales del periodo (cada tarjeta muestra/oculta su serie). */}
         <div className="flex flex-col gap-5 border-b border-surface-cream-alt p-5 md:p-7">
           <div>
-            <p className="text-label-md font-bold tracking-widest text-secondary uppercase">
+            <p className="inline-flex items-center gap-2 text-label-md font-bold tracking-widest text-secondary uppercase">
+              <span aria-hidden="true" className="h-2 w-2 rounded-full bg-secondary" />
               {t('byYear.eyebrow', { from: rows[0]!.year, to: rows[lastCol]!.year })}
             </p>
             <h2 id="pubs-by-year" className="mt-1 text-headline-md font-bold tracking-tight text-primary">
@@ -106,7 +107,7 @@ export default function PublicationsByYear({ rows }: { rows: PublicationYear[] }
         <div className="overflow-x-auto p-5 md:p-7">
           <div ref={ref} className="min-w-[720px]" onMouseLeave={() => setActive(null)}>
             <svg width={width} height={H} className="block" role="img" aria-label={t('byYear.title')}>
-              <text x={4} y={TOP + (BOTTOM - TOP) / 2} fontSize="11" fill="#6B7280" aria-hidden="true">
+              <text x={4} y={TOP + (BOTTOM - TOP) / 2} fontSize="11" fill="#6A6A62" aria-hidden="true">
                 {t('byYear.axis')}
               </text>
               {ticks.map((v) => (
@@ -116,10 +117,10 @@ export default function PublicationsByYear({ rows }: { rows: PublicationYear[] }
                     x2={right}
                     y1={y(v)}
                     y2={y(v)}
-                    stroke="#e7e2d6"
+                    stroke="#E1DBC8"
                     strokeDasharray={v ? '3 4' : undefined}
                   />
-                  <text x={LABEL_COL - 10} y={y(v) + 4} textAnchor="end" fontSize="11" fill="#6B7280">
+                  <text x={LABEL_COL - 10} y={y(v) + 4} textAnchor="end" fontSize="11" fill="#6A6A62">
                     {v}
                   </text>
                 </g>
@@ -131,7 +132,7 @@ export default function PublicationsByYear({ rows }: { rows: PublicationYear[] }
                   width={slot - 8}
                   height={BOTTOM - TOP + 22}
                   rx="10"
-                  fill="#0E382B"
+                  fill="#164130"
                   fillOpacity="0.05"
                   aria-hidden="true"
                 />

@@ -11,6 +11,7 @@ import {
 import { EmptyState, ErrorState, feedbackButtonClass } from '@/presentation/components/feedback/Feedback';
 import { ContactCta } from '@/presentation/components/layout/ContactCta';
 import { Icon } from '@/presentation/components/ui/Icon';
+import { Marker } from '@/presentation/components/ui/Trajectory';
 import { ClearFilters, FilterSelect } from '@/presentation/components/ui/FilterSelect';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
 import { useLabels } from '@/presentation/hooks/use-labels';
@@ -18,6 +19,7 @@ import { useProjects } from '@/presentation/hooks/use-projects';
 import { useCenters } from '@/presentation/hooks/use-centers';
 import { displayName, initials, slugify } from '@/domain/authors/author';
 import { ORGANIZATION, absoluteUrl, safeJson } from '@/shared/seo';
+import { Trajectory } from '@/presentation/components/ui/Trajectory';
 
 // Mismo estándar visual que CentersPage: héroe oscuro, buscador flotante y lista.
 const fieldClass =
@@ -121,6 +123,7 @@ export function ProjectsPage() {
         aria-labelledby="projects-title"
         className="relative w-full overflow-hidden bg-surface-dark-forest pt-10 pb-16 text-on-primary"
       >
+        <Trajectory variant="impact" />
         <div className="relative container-page flex flex-col gap-6">
           <div className="flex items-center gap-2">
             <p className="inline-flex items-center gap-1.5 rounded-full bg-primary-container px-3 py-1 text-label-sm tracking-wide text-primary-fixed">
@@ -351,14 +354,12 @@ function ProjectRow({ project: p }: { project: Project }) {
         {p.photoUrl ? (
           <img src={withBaseUrl(p.photoUrl)} alt="" loading="lazy" className="h-full w-full object-cover" />
         ) : (
-          <span className="flex h-full items-center justify-center text-secondary-fixed">
-            <Icon name="science" className="text-[28px]" />
-          </span>
+          <Marker />
         )}
       </span>
 
       <div className="min-w-0">
-        <h2 className="text-body-md font-semibold text-[#0F241A] group-hover:text-primary">
+        <h2 className="text-body-md font-semibold text-on-surface group-hover:text-primary">
           <Link
             to={projectPath(p)}
             className="line-clamp-2 after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-secondary"

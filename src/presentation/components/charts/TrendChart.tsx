@@ -90,7 +90,7 @@ export function TrendChart({ points, yTicks, ariaLabel, labels = 'all', caption 
           {yTicks.map((t) => (
             <g key={t.value} aria-hidden="true">
               <line x1={left - 6} x2={right + 6} y1={y(t.value)} y2={y(t.value)} stroke={GRID} />
-              <text x={left - 12} y={y(t.value) + 4} textAnchor="end" fontSize="11" fill="#6B7280">
+              <text x={left - 12} y={y(t.value) + 4} textAnchor="end" fontSize="11" fill="#6A6A62">
                 {t.label}
               </text>
             </g>
@@ -131,7 +131,7 @@ export function TrendChart({ points, yTicks, ariaLabel, labels = 'all', caption 
                       width={pw}
                       height={18}
                       rx="4"
-                      fill={last ? '#0E382B' : '#E8F5EC'}
+                      fill={last ? '#164130' : '#E8F5EC'}
                     />
                     <text
                       x={clampPill(cx, pw) + pw / 2}
@@ -166,12 +166,12 @@ export function TrendChart({ points, yTicks, ariaLabel, labels = 'all', caption 
                   textAnchor="middle"
                   fontSize="11"
                   fontWeight={i === n - 1 ? 600 : 400}
-                  fill={i === n - 1 ? '#0E382B' : '#414944'}
+                  fill={i === n - 1 ? '#164130' : '#414944'}
                 >
                   {p.xLabel}
                 </text>
                 {p.xSubLabel ? (
-                  <text x={x(i)} y={BOTTOM + 34} textAnchor="middle" fontSize="10" fill="#6B7280">
+                  <text x={x(i)} y={BOTTOM + 34} textAnchor="middle" fontSize="10" fill="#6A6A62">
                     {p.xSubLabel}
                   </text>
                 ) : null}

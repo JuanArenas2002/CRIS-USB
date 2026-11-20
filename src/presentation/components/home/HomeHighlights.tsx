@@ -40,7 +40,7 @@ function TopResearcher({ author }: { author: Author }) {
       </div>
       <div className="flex w-full min-w-0 flex-1 flex-col gap-3">
         <p className="inline-flex items-center gap-2 text-label-sm font-bold tracking-wider text-primary-container uppercase">
-          <span className="h-0.5 w-4 bg-primary-container" />
+          <span aria-hidden="true" className="h-2 w-2 rounded-full bg-secondary" />
           {t('highlight.eyebrow', { n })}
         </p>
         <h3 className="text-headline-sm font-bold text-on-surface md:text-[22px] md:leading-8">{name}</h3>

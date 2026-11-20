@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { newsApi, responsiveImage } from '@/infrastructure/news/news-api';
 import { Icon } from '@/presentation/components/ui/Icon';
+import { Marker } from '@/presentation/components/ui/Trajectory';
 
 const SHOWN = 5;
 const arrow =
@@ -36,7 +37,7 @@ export function NewsSpotlight() {
   return (
     <aside
       aria-label={t('newsSpotlight.label')}
-      className="w-full max-w-lg rounded-2xl border border-surface-container bg-surface-container-lowest/95 p-4 shadow-2xl backdrop-blur-md sm:p-5"
+      className="w-full max-w-lg rounded-2xl border border-border-subtle bg-surface-container-lowest/95 p-4 shadow-2xl backdrop-blur-md sm:p-5"
     >
       <p className="mb-3 flex items-center gap-2">
         <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-secondary motion-reduce:animate-none" />
@@ -56,7 +57,7 @@ export function NewsSpotlight() {
           to={newsPath(news.slug)}
           tabIndex={-1}
           aria-hidden="true"
-          className="group block aspect-[4/5] overflow-hidden rounded-2xl bg-badge-sage-bg"
+          className="group block aspect-[4/5] overflow-hidden rounded-2xl bg-primary"
         >
           {image ? (
             <img
@@ -70,9 +71,7 @@ export function NewsSpotlight() {
               decoding="async"
             />
           ) : (
-            <span className="flex h-full items-center justify-center text-primary-container">
-              <Icon name="newspaper" className="text-[40px]" />
-            </span>
+            <Marker />
           )}
         </Link>
 
@@ -100,7 +99,7 @@ export function NewsSpotlight() {
       </div>
 
       {items.length > 1 ? (
-        <div className="mt-3 flex items-center justify-end gap-2 border-t border-surface-container pt-3">
+        <div className="mt-3 flex items-center justify-end gap-2 border-t border-border-subtle pt-3">
           <button
             type="button"
             aria-label={t('newsSpotlight.previous')}

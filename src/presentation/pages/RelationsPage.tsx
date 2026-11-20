@@ -19,6 +19,7 @@ import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata'
 import { useLabels } from '@/presentation/hooks/use-labels';
 import { useCollaborationMap, useCountryPublications } from '@/presentation/hooks/use-relations';
 import { activeLocale } from '@/i18n';
+import { Trajectory } from '@/presentation/components/ui/Trajectory';
 
 // El mapa (d3-geo + geometría mundial, ~130 KB) solo se descarga en esta página.
 const WorldHeatmap = lazy(() => import('@/presentation/components/relations/WorldHeatmap'));
@@ -73,6 +74,7 @@ export function RelationsPage() {
         aria-labelledby="relations-title"
         className="relative w-full overflow-hidden bg-surface-dark-forest pt-10 pb-16 text-on-primary"
       >
+        <Trajectory variant="connection" />
         <div className="relative container-page flex flex-col gap-3">
           <div className="flex items-center gap-2">
             <p className="inline-flex items-center gap-1.5 rounded-full bg-primary-container px-3 py-1 text-label-sm tracking-wide text-primary-fixed">

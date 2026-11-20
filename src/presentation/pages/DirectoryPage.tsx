@@ -78,7 +78,8 @@ export function DirectoryPage() {
         <div className="container-page">
           <div className="mb-10 flex flex-col justify-between gap-2 md:flex-row md:items-end">
             <div className="flex flex-col">
-              <p className="text-label-md font-bold tracking-widest text-secondary uppercase">
+              <p className="inline-flex items-center gap-2 text-label-md font-bold tracking-widest text-secondary uppercase">
+                <span aria-hidden="true" className="h-2 w-2 rounded-full bg-secondary" />
                 {t('directory.eyebrow')}
               </p>
               <h2

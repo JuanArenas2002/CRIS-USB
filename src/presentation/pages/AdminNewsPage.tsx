@@ -24,6 +24,7 @@ import { OrganizationView } from './news-admin/OrganizationView';
 import { PermissionsView } from './news-admin/PermissionsView';
 import { RolesView } from './news-admin/RolesView';
 import { UserDetailView } from './news-admin/UserDetailView';
+import { TemplatesView } from './news-admin/TemplatesView';
 import { UsersView } from './news-admin/UsersView';
 import { AdminSessionContext, Button, ROOT, useAdminSession } from './news-admin/ui';
 
@@ -175,6 +176,12 @@ function Shell({ onLogout, loggingOut }: { onLogout: () => void; loggingOut: boo
             show: can('news.analytics'),
           },
           { to: `${ROOT}/dependencias`, label: 'Dependencias', icon: 'apartment', show: true },
+          {
+            to: `${ROOT}/plantillas`,
+            label: 'Plantillas',
+            icon: 'grid_view',
+            show: can('news.manage_templates'),
+          },
         ],
       },
       {
@@ -318,6 +325,7 @@ function Shell({ onLogout, loggingOut }: { onLogout: () => void; loggingOut: boo
               element={can('news.analytics') ? <NewsAnalyticsView /> : <NoAnalyticsAccess />}
             />
             <Route path="dependencias" element={<OrganizationView />} />
+            <Route path="plantillas" element={<TemplatesView />} />
             <Route path="usuarios" element={<UsersView />} />
             <Route path="usuarios/:userId" element={<UserDetailView />} />
             <Route path="roles" element={<RolesView />} />

@@ -17,6 +17,7 @@ import {
   usePublications,
 } from '@/presentation/hooks/use-publications';
 import { ORGANIZATION, absoluteUrl, safeJson } from '@/shared/seo';
+import { Trajectory } from '@/presentation/components/ui/Trajectory';
 
 const PublicationsByYear = lazy(() => import('@/presentation/components/publications/PublicationsByYear'));
 
@@ -110,6 +111,7 @@ export function ProductsPage() {
         aria-labelledby="products-title"
         className="relative w-full overflow-hidden bg-surface-dark-forest pt-10 pb-16 text-on-primary"
       >
+        <Trajectory variant="discovery" />
         <div className="relative container-page flex flex-col gap-6">
           <div className="flex items-center gap-2">
             <p className="inline-flex items-center gap-1.5 rounded-full bg-primary-container px-3 py-1 text-label-sm tracking-wide text-primary-fixed">

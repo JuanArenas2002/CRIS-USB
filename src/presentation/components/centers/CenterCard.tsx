@@ -5,6 +5,7 @@ import { authorSlug, displayName } from '@/domain/authors/author';
 import type { Center } from '@/domain/centers/center';
 import { odsOf, type OdsId } from '@/domain/ods/ods';
 import { Icon } from '@/presentation/components/ui/Icon';
+import { BrandIcon } from '@/presentation/components/ui/BrandIcon';
 
 export const centerPath = (c: Pick<Center, 'id' | 'name'>) => `/centros/${authorSlug(c)}`;
 
@@ -102,7 +103,7 @@ export function CenterCard({ center: c }: { center: Center }) {
                 </span>
               )}
             </div>
-            <Icon name="domain" className="text-[40px] text-tertiary-fixed/80" />
+            <BrandIcon name="foco" className="text-[40px] text-tertiary-fixed/80" />
           </div>
           <div className="relative mt-4 flex items-center justify-between gap-2">
             <p className="inline-flex rounded-full bg-primary-container/90 px-3 py-1 text-label-sm font-semibold tracking-wide">
@@ -113,7 +114,7 @@ export function CenterCard({ center: c }: { center: Center }) {
         </div>
 
         <div className="pt-4 pb-2">
-          <h3 className="text-headline-sm font-bold tracking-tight text-[#0F241A] transition-colors group-hover:text-primary">
+          <h3 className="text-headline-sm font-bold tracking-tight text-on-surface transition-colors group-hover:text-primary">
             {/* El enlace del título cubre toda la tarjeta. */}
             <Link
               to={centerPath(c)}
@@ -195,7 +196,7 @@ export function CenterRow({ center: c }: { center: Center }) {
       )}
 
       <div className="min-w-0">
-        <h3 className="text-body-md font-semibold text-[#0F241A] group-hover:text-primary">
+        <h3 className="text-body-md font-semibold text-on-surface group-hover:text-primary">
           <Link
             to={centerPath(c)}
             className="after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-secondary"

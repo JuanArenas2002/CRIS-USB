@@ -70,7 +70,7 @@ const CHANNEL: Record<string, string> = {
 };
 // Serie principal = token secondary (contraste ≥ 3:1 sobre blanco). Periodo anterior = gris neutro: es una
 // referencia, no una segunda categoría.
-const C = { main: '#006d30', previous: '#9ca3af' };
+const C = { main: '#527616', previous: '#9ca3af' };
 
 // ---------- filtros (en la URL) ----------
 const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/Bogota' });
@@ -469,7 +469,7 @@ function Summary({
         className="pointer-events-none absolute inset-0 opacity-[0.08] print:hidden"
         style={{
           backgroundImage:
-            'radial-gradient(circle at 88% 10%, #8cfaa1 0, transparent 40%), repeating-linear-gradient(135deg, #ffffff 0 1px, transparent 1px 16px)',
+            'radial-gradient(circle at 88% 10%, #2DDE6A 0, transparent 40%), repeating-linear-gradient(135deg, #ffffff 0 1px, transparent 1px 16px)',
         }}
       />
       <div className="relative flex flex-col gap-6 lg:flex-row lg:items-stretch">

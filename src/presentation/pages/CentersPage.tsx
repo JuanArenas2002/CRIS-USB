@@ -17,6 +17,7 @@ import { useCenters } from '@/presentation/hooks/use-centers';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
 import { useLabels } from '@/presentation/hooks/use-labels';
 import { ORGANIZATION, absoluteUrl, safeJson } from '@/shared/seo';
+import { Trajectory } from '@/presentation/components/ui/Trajectory';
 
 // Mismo estándar visual que GroupsPage: héroe oscuro, buscador flotante, lista/tarjetas y contacto.
 const fieldClass =
@@ -135,6 +136,7 @@ export function CentersPage() {
         aria-labelledby="centers-title"
         className="relative w-full overflow-hidden bg-surface-dark-forest pt-10 pb-16 text-on-primary"
       >
+        <Trajectory variant="connection" />
         <div className="relative container-page flex flex-col gap-6">
           <div className="flex items-center gap-2">
             <p className="inline-flex items-center gap-1.5 rounded-full bg-primary-container px-3 py-1 text-label-sm tracking-wide text-primary-fixed">
@@ -247,7 +249,8 @@ export function CentersPage() {
           <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
             <div className="flex flex-col">
               <div className="flex flex-wrap items-center gap-3">
-                <p className="text-label-md font-bold tracking-widest text-secondary uppercase">
+                <p className="inline-flex items-center gap-2 text-label-md font-bold tracking-widest text-secondary uppercase">
+                  <span aria-hidden="true" className="h-2 w-2 rounded-full bg-secondary" />
                   {t('eyebrow')}
                 </p>
                 <p

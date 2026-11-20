@@ -25,7 +25,7 @@ export function TerritoryBanner() {
       <div className="relative z-10 container-page">
         <div className="flex max-w-2xl flex-col gap-5">
           <p className="inline-flex items-center gap-2 text-label-md font-bold tracking-widest text-secondary-fixed uppercase">
-            <span className="h-0.5 w-6 bg-secondary-fixed" />
+            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-secondary-fixed" />
             {t('territory.eyebrow')}
           </p>
           <h2
