@@ -68,7 +68,7 @@ test('selector: español por defecto; cambia todo al momento, conserva el formul
   expect(search).toHaveValue('ana');
   expect(document.documentElement.lang).toBe('en-US');
   expect(localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBe('en');
-  await waitFor(() => expect(document.title).toBe('Researcher directory | Unisimón Research'));
+  await waitFor(() => expect(document.title).toBe('Our researchers | Unisimón Research'));
 
   // "Recargar": el detector lee la preferencia guardada antes que el idioma del navegador.
   expect(i18n.services.languageDetector.detect()).toEqual(expect.arrayContaining(['en']));

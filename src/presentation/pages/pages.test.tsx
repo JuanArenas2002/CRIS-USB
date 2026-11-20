@@ -26,7 +26,7 @@ test('directorio: tabla general con enlace rastreable al perfil y métricas real
   expect(screen.getByRole('rowheader', { name: /Ana María Pérez/ })).toBeInTheDocument();
   expect(screen.getByText('1 Perfil Activo')).toBeInTheDocument();
   expect(screen.getByText('Investigador Sénior')).toBeInTheDocument(); // categoría Minciencias
-  await waitFor(() => expect(document.title).toBe('Directorio de investigadores | Unisimón Research'));
+  await waitFor(() => expect(document.title).toBe('Nuestros investigadores | Unisimón Research'));
   expect(document.querySelector('meta[name="robots"]')).toHaveAttribute('content', 'index, follow');
 });
 

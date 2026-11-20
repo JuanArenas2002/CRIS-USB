@@ -32,7 +32,7 @@ const en: typeof es = {
         },
         authors: {
           label: 'Researchers',
-          description: 'Directory of researchers at Universidad Simón Bolívar.',
+          description: 'Meet the researchers of Universidad Simón Bolívar.',
         },
         projects: {
           label: 'Projects',
@@ -94,12 +94,12 @@ const en: typeof es = {
       description: 'The page you are looking for does not exist or is no longer available.',
       heading: 'We could not find this page',
       body: 'The link may be outdated or the profile may no longer be public.',
-      action: 'Go to the researcher directory',
+      action: 'Meet our researchers',
     },
     comingSoon: {
       badge: 'Under construction',
       title: 'We are preparing this section',
-      body: 'Information about {{section}} will be available here soon. Meanwhile, explore the researcher directory.',
+      body: 'Information about {{section}} will be available here soon. Meanwhile, meet our researchers.',
       action: 'Go to Researchers',
     },
   },
@@ -191,14 +191,14 @@ const en: typeof es = {
       sort: 'Highest USB index',
     },
     directory: {
-      metaTitle: 'Researcher directory',
+      metaTitle: 'Our researchers',
       metaDescription:
-        'Directory of researchers at Universidad Simón Bolívar (Barranquilla and Cúcuta): Minciencias category, research group and ORCID, Scopus and CvLAC identifiers.',
+        'Meet the researchers of Universidad Simón Bolívar (Barranquilla and Cúcuta): Minciencias category, research group and ORCID, Scopus and CvLAC identifiers.',
       featuredEyebrow: 'Featured researchers',
       featuredTitle: 'Careers that shape research',
       featuredLead:
         'Selected by the Vice-Rectorate for Research, with their scientific output and Scopus h-index.',
-      eyebrow: 'Researcher directory',
+      eyebrow: 'Scientific community',
       title: 'Who does research at Unisimón',
       lead: 'Faculty and researchers of Universidad Simón Bolívar, sorted by Minciencias category and with verifiable scientific identifiers.',
       profiles_one: '{{value}} Active Profile',

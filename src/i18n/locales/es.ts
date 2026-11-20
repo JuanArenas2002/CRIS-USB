@@ -35,7 +35,7 @@ const es = {
         },
         authors: {
           label: 'Investigadores',
-          description: 'Directorio de investigadores de la Universidad Simón Bolívar.',
+          description: 'Investigadores de la Universidad Simón Bolívar y su producción científica.',
         },
         projects: {
           label: 'Proyectos',
@@ -97,12 +97,12 @@ const es = {
       description: 'La página que buscas no existe o ya no está disponible.',
       heading: 'No encontramos esta página',
       body: 'Puede que el enlace esté desactualizado o que el perfil ya no sea público.',
-      action: 'Ir al directorio de investigadores',
+      action: 'Conocer a nuestros investigadores',
     },
     comingSoon: {
       badge: 'En construcción',
       title: 'Estamos preparando esta sección',
-      body: 'Muy pronto encontrarás aquí la información de {{section}}. Mientras tanto, explora el directorio de investigadores.',
+      body: 'Muy pronto encontrarás aquí la información de {{section}}. Mientras tanto, conoce a nuestros investigadores.',
       action: 'Ir a Investigadores',
     },
   },
@@ -197,14 +197,14 @@ const es = {
       sort: 'Mayor índice USB',
     },
     directory: {
-      metaTitle: 'Directorio de investigadores',
+      metaTitle: 'Nuestros investigadores',
       metaDescription:
-        'Directorio de investigadores de la Universidad Simón Bolívar (Barranquilla y Cúcuta): categoría Minciencias, grupo de investigación e identificadores ORCID, Scopus y CvLAC.',
+        'Conoce a los investigadores de la Universidad Simón Bolívar (Barranquilla y Cúcuta): categoría Minciencias, grupo de investigación e identificadores ORCID, Scopus y CvLAC.',
       featuredEyebrow: 'Investigadores destacados',
       featuredTitle: 'Trayectorias que marcan la investigación',
       featuredLead:
         'Seleccionados por la Vicerrectoría de Investigación, con su producción científica e índice H en Scopus.',
-      eyebrow: 'Directorio de investigadores',
+      eyebrow: 'Comunidad científica',
       title: 'Quiénes investigan en Unisimón',
       lead: 'Profesores e investigadores de la Universidad Simón Bolívar, ordenados por su categoría Minciencias y con sus identificadores científicos verificables.',
       profiles_one: '{{value}} Perfil Activo',
