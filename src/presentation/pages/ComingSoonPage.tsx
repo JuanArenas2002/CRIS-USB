@@ -1,10 +1,10 @@
-import { HeroWaves } from '@/presentation/components/layout/HeroWaves';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { feedbackButtonClass } from '@/presentation/components/feedback/Feedback';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { useDocumentMetadata } from '@/presentation/hooks/use-document-metadata';
 import type { NavItem } from '@/shared/navigation';
+import { Trajectory } from '@/presentation/components/ui/Trajectory';
 
 /** Sección del menú que aún no tiene datos publicados: enlace real, sin contenido falso, sin indexar. */
 export function ComingSoonPage({ item }: { item: NavItem }) {
@@ -15,7 +15,7 @@ export function ComingSoonPage({ item }: { item: NavItem }) {
   return (
     <>
       <section className="relative overflow-hidden bg-surface-dark-forest pt-10 pb-14 text-on-primary">
-        <HeroWaves />
+        <Trajectory variant="exploration" />
         <div className="relative container-page flex flex-col gap-3">
           <p className="inline-flex items-center gap-1.5 self-start rounded-full bg-primary-container px-3 py-1 text-label-sm tracking-wide text-primary-fixed">
             <span className="h-2 w-2 rounded-full bg-tertiary-fixed" /> {t('comingSoon.badge')}

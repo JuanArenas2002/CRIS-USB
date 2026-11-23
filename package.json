@@ -12,10 +12,16 @@
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "format": "prettier --write .",
+    "icons": "node scripts/fetch-icons.mjs",
     "test": "vitest run"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.104.2",
+    "@tiptap/extension-image": "3.33.1",
+    "@tiptap/extensions": "3.33.1",
+    "@tiptap/pm": "3.33.1",
+    "@tiptap/react": "3.33.1",
+    "@tiptap/starter-kit": "3.33.1",
     "@vercel/blob": "^2.8.2",
     "country-flag-icons": "^1.6.20",
     "d3-geo": "^3.1.1",

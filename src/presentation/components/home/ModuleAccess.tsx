@@ -1,18 +1,9 @@
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { HOME_AREAS_ID } from '@/presentation/components/home/HomeHero';
-import { Icon } from '@/presentation/components/ui/Icon';
+import { BrandIcon, MODULE_MARKER } from '@/presentation/components/ui/BrandIcon';
 import type { ResearchIndicatorMap } from '@/presentation/hooks/use-research-indicators';
-import { NAV_ITEMS, type NavItem } from '@/shared/navigation';
-
-const AREA_ICON: Record<NavItem['key'], string> = {
-  centers: 'apartment',
-  groups: 'groups',
-  authors: 'school',
-  projects: 'science',
-  products: 'menu_book',
-  relations: 'public',
-};
+import { NAV_ITEMS } from '@/shared/navigation';
 
 /** Las seis áreas del portal, con la cifra de cada módulo. Su estado se ve en los indicadores. */
 export function ModuleAccess({ indicators }: { indicators: ResearchIndicatorMap }) {
@@ -39,7 +30,7 @@ export function ModuleAccess({ indicators }: { indicators: ResearchIndicatorMap 
                 className="group flex min-h-14 items-center gap-3.5 rounded-xl p-2.5 transition-colors hover:bg-badge-sage-bg"
               >
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-secondary ring-2 ring-secondary/30 transition-colors group-hover:bg-primary-container group-hover:text-on-primary group-hover:ring-primary-container">
-                  <Icon name={AREA_ICON[item.key]} className="text-[20px]" />
+                  <BrandIcon name={MODULE_MARKER[item.key]} className="text-[28px]" />
                 </span>
                 <span className="min-w-0">
                   <span className="block text-body-sm font-semibold text-on-surface group-hover:text-primary-container">

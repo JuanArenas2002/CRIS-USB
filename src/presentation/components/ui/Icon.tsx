@@ -1,7 +1,6 @@
 /**
- * Ícono decorativo de Material Symbols. Si cambias `name`, agrégalo a `icon_names` en index.html.
- * Las clases (tamaño, color, posición) van en el contenedor: la hoja de Google fija `font-size: 24px`
- * sin capa y le ganaría a las utilidades de Tailwind (que viven en @layer), así que el glifo hereda.
+ * Ícono decorativo de Material Symbols. Si cambias `name`, agrégalo a `icon_names` en index.html
+ * y corre `npm run icons`. Las clases (tamaño, color, posición) van en el contenedor; el glifo hereda.
  */
 export function Icon({ name, className = '' }: { name: string; className?: string }) {
   return (

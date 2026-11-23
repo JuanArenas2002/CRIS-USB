@@ -4,22 +4,34 @@ import { useTranslation } from 'react-i18next';
 import { CONTACT_EMAIL, IRAKA_URL } from '@/shared/contact';
 import { NAV_ITEMS } from '@/shared/navigation';
 import { Icon } from '@/presentation/components/ui/Icon';
+import { openPreferences } from '@/infrastructure/privacy/consent';
 
 export function SiteFooter() {
-  const { t } = useTranslation(['common', 'home']);
+  const { t } = useTranslation(['common', 'home', 'privacy']);
   return (
     <footer className="w-full bg-surface-dark-forest py-16 text-on-primary">
       <div className="container-page">
-        <div className="mb-10 grid grid-cols-1 gap-gutter md:grid-cols-3">
-          <div className="flex flex-col gap-2">
-            <img
-              src={withBase('/assets/unisimon-logo.png')}
-              alt="Universidad Simón Bolívar"
-              width={172}
-              height={28}
-              loading="lazy"
-              className="h-7 w-auto self-start brightness-0 invert"
-            />
+        <div className="mb-10 grid grid-cols-1 gap-10 md:grid-cols-[1.6fr_1fr_1fr]">
+          <div className="flex flex-col gap-4">
+            {/* Brandbook: Universidad a la izquierda, luego Unisimón Research. */}
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+              <img
+                src={withBase('/assets/unisimon-logo.png')}
+                alt="Universidad Simón Bolívar"
+                width={172}
+                height={28}
+                loading="lazy"
+                className="h-7 w-auto brightness-0 invert"
+              />
+              <img
+                src={withBase('/assets/logo-research-light.svg')}
+                alt="Unisimón Research"
+                width={190}
+                height={54}
+                loading="lazy"
+                className="h-auto w-[190px]"
+              />
+            </div>
             <p className="text-body-sm text-primary-fixed-dim">{t('footer.tagline')}</p>
           </div>
           <nav aria-label={t('footer.nav')} className="flex flex-col gap-2">
@@ -59,9 +71,22 @@ export function SiteFooter() {
             </a>
           </div>
         </div>
-        <p className="border-t border-primary-container pt-6 text-label-sm text-primary-fixed-dim">
-          {t('footer.rights')}
-        </p>
+        <div className="flex flex-col gap-3 border-t border-primary-container pt-6 text-label-sm text-primary-fixed-dim sm:flex-row sm:items-center sm:justify-between">
+          <p>{t('footer.rights')}</p>
+          {/* Acceso permanente: cambiar o revocar la decisión es tan fácil como darla. */}
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            <Link to="/privacidad" className="underline-offset-2 hover:text-on-primary hover:underline">
+              {t('privacy:links.page')}
+            </Link>
+            <button
+              type="button"
+              onClick={openPreferences}
+              className="text-left underline underline-offset-2 hover:text-on-primary"
+            >
+              {t('privacy:links.settings')}
+            </button>
+          </div>
+        </div>
       </div>
     </footer>
   );

@@ -4,7 +4,7 @@ import type http from 'node:http';
 import type { AddressInfo } from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
-import { afterAll, beforeAll } from 'vitest';
+import { afterAll, beforeAll, vi } from 'vitest';
 import { createSiteServer } from './server';
 
 let dir = '';
@@ -45,6 +45,8 @@ test('páginas prerenderizadas con o sin "/" final, /api al BFF', async () => {
 
 test('/admin lo resuelve la app; lo demás es 404 con su página', async () => {
   expect((await get('/admin/ranking')).text).toBe('<h1>inicio</h1>');
+  expect((await get('/admin/noticias/usuarios')).text).toBe('<h1>inicio</h1>');
+  expect((await get('/noticias/una-noticia')).text).toBe('<h1>inicio</h1>'); // noticia pública (no prerenderizada)
   const nf = await get('/no-existe');
   expect(nf.status).toBe(404);
   expect(nf.text).toBe('<h1>no encontrado</h1>');
@@ -61,6 +63,12 @@ test('assets con hash inmutables y comprimidos; HTML se revalida', async () => {
   expect(js.headers.get('cache-control')).toContain('immutable');
   expect(js.headers.get('content-encoding')).toBe('gzip');
   expect((await get('/')).headers.get('cache-control')).toBe('no-cache');
+  // Brotli precomprimido en memoria al arrancar (≈20 % menos que gzip); el contenido llega intacto.
+  await vi.waitFor(async () => {
+    const br = await get('/assets/index-AbCdEf12.js', { 'Accept-Encoding': 'gzip, deflate, br' });
+    expect(br.headers.get('content-encoding')).toBe('br');
+    expect(br.text).toBe((await get('/assets/index-AbCdEf12.js')).text);
+  });
 });
 
 test('subruta (CRIS_BASE_PATH): acepta /investigacion/... y también sin el prefijo (si el proxy lo quita)', async () => {

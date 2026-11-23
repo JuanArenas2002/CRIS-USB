@@ -162,11 +162,6 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
               <h1 className="text-headline-lg-mobile font-bold tracking-tight text-primary md:text-headline-lg">
                 {c.name}
               </h1>
-              {city ? (
-                <p className="flex items-center gap-1.5 text-body-sm text-on-surface-variant">
-                  <Icon name="location_on" className="text-[16px] text-secondary" /> {city}
-                </p>
-              ) : null}
             </div>
           </div>
         </section>
@@ -300,14 +295,14 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
           </div>
         </section>
 
-        {/* Resoluciones */}
-        <section className={`${card} p-5 md:p-6`}>
-          <SectionHead icon="gavel">{t('detail.resolutions')}</SectionHead>
-          <p className="-mt-2 mb-4 text-body-sm text-on-surface-variant">{t('detail.resolutionsLead')}</p>
-          {c.resolutions.some((r) => r.description) ? (
-            <AutoTranslateNote status={descTr.status} onRetry={descTr.retry} />
-          ) : null}
-          {c.resolutions.length ? (
+        {/* Resoluciones: sin resoluciones, la sección no se muestra. */}
+        {c.resolutions.length ? (
+          <section className={`${card} p-5 md:p-6`}>
+            <SectionHead icon="gavel">{t('detail.resolutions')}</SectionHead>
+            <p className="-mt-2 mb-4 text-body-sm text-on-surface-variant">{t('detail.resolutionsLead')}</p>
+            {c.resolutions.some((r) => r.description) ? (
+              <AutoTranslateNote status={descTr.status} onRetry={descTr.retry} />
+            ) : null}
             <ul className="flex flex-col gap-3">
               {c.resolutions.map((r, i) => (
                 <li
@@ -358,10 +353,8 @@ function CenterProfile({ center: c }: { center: CenterDetail }) {
                 </li>
               ))}
             </ul>
-          ) : (
-            <p className="text-body-sm text-neutral-muted">{t('detail.noResolutions')}</p>
-          )}
-        </section>
+          </section>
+        ) : null}
 
         <CenterGroups centerId={c.id} />
 
@@ -398,9 +391,6 @@ function CenterGroups({ centerId }: { centerId: number }) {
         />
       ) : groups.length ? (
         <>
-          <p className="-mt-2 mb-4 text-body-sm text-on-surface-variant">
-            {t('detail.groupsLead', { count: groups.length })}
-          </p>
           <div className="overflow-hidden rounded-2xl ring-1 ring-border-subtle">
             <GroupRowHeader />
             <ul className="divide-y divide-border-subtle">
@@ -436,12 +426,7 @@ function CenterProjects({ centerName }: { centerName: string }) {
           className="h-40 animate-pulse rounded-2xl bg-surface-cream-alt motion-reduce:animate-none"
         />
       ) : projects.length ? (
-        <>
-          <p className="-mt-2 mb-4 text-body-sm text-on-surface-variant">
-            {t('detail.projectsLead', { count: projects.length })}
-          </p>
-          <ProjectList projects={projects} />
-        </>
+        <ProjectList projects={projects} />
       ) : (
         <p className="text-body-sm text-neutral-muted">{t('detail.noProjects')}</p>
       )}

@@ -4,6 +4,7 @@ import { withBase } from '@/shared/base';
 // del equipo. El BFF cruza la cédula con Metri-K y guarda el ranking por id de investigador.
 import type { RankingTier } from '@/domain/authors/author';
 import { ApiError } from '@/infrastructure/http/api-client';
+import { adminHeaders } from '@/infrastructure/http/admin-session';
 
 export const RANKING_SHEET = 'Ranking_Completo';
 
@@ -85,7 +86,7 @@ async function call(
 ): Promise<RankingResult> {
   const res = await fetch(withBase(tier ? `/api/ranking/${tier}` : '/api/ranking'), {
     method,
-    headers: { 'X-Admin-Token': token, ...(rows ? { 'Content-Type': 'application/json' } : {}) },
+    headers: { ...adminHeaders(token), ...(rows ? { 'Content-Type': 'application/json' } : {}) },
     body: rows ? JSON.stringify({ rows }) : undefined,
   });
   const data = (await res.json().catch(() => ({}))) as Partial<RankingResult> & { detail?: string };
@@ -119,7 +120,7 @@ export interface RankingAdminRow {
 async function admin<T>(path: string, token: string, init?: RequestInit): Promise<T> {
   const res = await fetch(withBase(path), {
     ...init,
-    headers: { 'X-Admin-Token': token, 'Content-Type': 'application/json' },
+    headers: { ...adminHeaders(token), 'Content-Type': 'application/json' },
     cache: 'no-store',
   });
   const data = (await res.json().catch(() => null)) as (T & { detail?: string }) | null;

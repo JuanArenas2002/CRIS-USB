@@ -2,7 +2,13 @@
 // cédulas, correos, teléfonos, etnia y hashes de contraseña. Aquí se proyecta a una lista blanca
 // de campos públicos; nada más sale de este módulo.
 
-import type { CategoryRecord, GroupDetail, GroupInfo, GroupLine } from '../src/domain/groups/group.ts';
+import type {
+  CategoryRecord,
+  GroupDetail,
+  GroupInfo,
+  GroupLine,
+  GroupStaffing,
+} from '../src/domain/groups/group.ts';
 import { normalizeOds } from '../src/domain/ods/ods.ts';
 
 export type Raw = Record<string, unknown>;
@@ -175,5 +181,25 @@ export async function fetchPublicGroups(groupsUrl: string): Promise<GroupDetail[
         .sort((a, b) => a.date.localeCompare(b.date))
         .map(({ date: _date, ...r }) => r),
     };
+  });
+}
+
+/**
+ * Contratados activos en GrupLAC por grupo y sede. Quien está en varios grupos cuenta en cada uno (así lo pidieron).
+ * Las filas traen datos personales: aquí se reducen a números y nada más sale del BFF.
+ */
+export function toGroupStaffing(entries: readonly (readonly [number, unknown[]])[]): GroupStaffing[] {
+  return entries.map(([groupId, rows]) => {
+    const bySite: Record<string, number> = {};
+    let contracted = 0;
+    for (const r of rows) {
+      const x = obj(r);
+      // Como la página institucional: solo integrantes activos en GrupLAC.
+      if (x?.contracted !== true || x.state_gruplac !== true) continue;
+      contracted++;
+      const site = str(obj(x.site)?.name) ?? 'Sin sede';
+      bySite[site] = (bySite[site] ?? 0) + 1;
+    }
+    return { groupId, contracted, bySite };
   });
 }

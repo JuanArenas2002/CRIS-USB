@@ -136,7 +136,7 @@ export function HomeRecent({ indicators }: { indicators: ResearchIndicatorMap })
           <div className="flex items-end justify-between gap-4 border-b border-surface-container pb-3">
             <div>
               <p className="inline-flex items-center gap-2 text-label-md font-bold tracking-wider text-primary-container uppercase">
-                <span className="h-0.5 w-5 bg-primary-container" />
+                <span aria-hidden="true" className="h-2 w-2 rounded-full bg-secondary" />
                 {t('recent.eyebrow')}
               </p>
               <h2

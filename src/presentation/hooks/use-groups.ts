@@ -9,3 +9,15 @@ export function useGroups() {
   if (!q) throw new Error('GroupQueriesContext no está provisto');
   return useQuery(q.list());
 }
+
+export function useGroupStaffing() {
+  const q = useContext(GroupQueriesContext);
+  if (!q) throw new Error('GroupQueriesContext no está provisto');
+  return useQuery(q.staffing());
+}
+
+export function useGroupTrajectory(enabled: boolean) {
+  const q = useContext(GroupQueriesContext);
+  if (!q) throw new Error('GroupQueriesContext no está provisto');
+  return useQuery({ ...q.trajectory(), enabled });
+}

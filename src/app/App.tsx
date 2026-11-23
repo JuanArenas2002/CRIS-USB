@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react';
+import { Suspense, lazy, useEffect, type ReactNode } from 'react';
 import { Route, Routes, useLocation } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import '@/i18n'; // inicializa i18next una sola vez (cliente, prerender y tests)
@@ -23,11 +23,6 @@ import { CenterPage } from '@/presentation/pages/CenterPage';
 import { CentersPage } from '@/presentation/pages/CentersPage';
 import { GroupsPage } from '@/presentation/pages/GroupsPage';
 import { GroupPage } from '@/presentation/pages/GroupPage';
-import { AdminCentersPage } from '@/presentation/pages/AdminCentersPage';
-import { AdminProjectPhotosPage } from '@/presentation/pages/AdminProjectPhotosPage';
-import { AdminPhotosPage } from '@/presentation/pages/AdminPhotosPage';
-import { AdminRankingPage } from '@/presentation/pages/AdminRankingPage';
-import { AdminPublicationsPage } from '@/presentation/pages/AdminPublicationsPage';
 import { ProductsPage } from '@/presentation/pages/ProductsPage';
 import { HeadCollectorContext } from '@/presentation/hooks/use-document-metadata';
 import { AuthorPage } from '@/presentation/pages/AuthorPage';
@@ -37,6 +32,54 @@ import { NotFoundPage } from '@/presentation/pages/NotFoundPage';
 import { ComingSoonPage } from '@/presentation/pages/ComingSoonPage';
 import { NAV_ITEMS } from '@/shared/navigation';
 import type { PageMeta } from '@/shared/seo';
+
+// Panel de noticias (incluye el editor TipTap): carga diferida, el portal público no descarga el editor.
+const AdminNewsPage = lazy(() =>
+  import('@/presentation/pages/AdminNewsPage').then((m) => ({ default: m.AdminNewsPage })),
+);
+
+// Vistas que no se prerenderizan (admin ocultas, privacidad, noticias): carga diferida, fuera del bundle de todas las
+// páginas públicas. El prerender usa renderToString (no espera Suspense): NO diferir páginas prerenderizadas.
+const AdminCentersPage = lazy(() =>
+  import('@/presentation/pages/AdminCentersPage').then((m) => ({ default: m.AdminCentersPage })),
+);
+const AdminProjectPhotosPage = lazy(() =>
+  import('@/presentation/pages/AdminProjectPhotosPage').then((m) => ({ default: m.AdminProjectPhotosPage })),
+);
+const AdminPhotosPage = lazy(() =>
+  import('@/presentation/pages/AdminPhotosPage').then((m) => ({ default: m.AdminPhotosPage })),
+);
+const AdminRankingPage = lazy(() =>
+  import('@/presentation/pages/AdminRankingPage').then((m) => ({ default: m.AdminRankingPage })),
+);
+const AdminPublicationsPage = lazy(() =>
+  import('@/presentation/pages/AdminPublicationsPage').then((m) => ({ default: m.AdminPublicationsPage })),
+);
+const PrivacyPage = lazy(() =>
+  import('@/presentation/pages/PrivacyPage').then((m) => ({ default: m.PrivacyPage })),
+);
+
+// Noticias (portada y detalle): se piden al backend en el navegador, no se prerenderizan. Fuera del bundle
+// inicial, pero se precargan cuando el navegador queda libre: al hacer clic ya están descargadas.
+const loadNewsHome = () => import('@/presentation/pages/NewsHomePage');
+const loadNews = () => import('@/presentation/pages/NewsPage');
+const NewsHomePage = lazy(() => loadNewsHome().then((m) => ({ default: m.NewsHomePage })));
+const NewsPage = lazy(() => loadNews().then((m) => ({ default: m.NewsPage })));
+
+function usePrefetchNews() {
+  useEffect(() => {
+    const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 1500));
+    const cancel = window.cancelIdleCallback ?? window.clearTimeout;
+    const id = idle(() => void Promise.all([loadNewsHome(), loadNews()]).catch(() => undefined));
+    return () => cancel(id);
+  }, []);
+}
+
+const deferred = (page: ReactNode) => (
+  <Suspense fallback={<p className="container-page py-10 text-body-md text-neutral-muted">Cargando…</p>}>
+    {page}
+  </Suspense>
+);
 
 export function createQueryClient(): QueryClient {
   return new QueryClient({
@@ -108,6 +151,7 @@ function ScrollToTop() {
 }
 
 export function AppRoutes() {
+  usePrefetchNews();
   return (
     <>
       <ScrollToTop />
@@ -124,17 +168,31 @@ export function AppRoutes() {
           <Route path="proyectos/:slug" element={<ProjectPage />} />
           <Route path="productos" element={<ProductsPage />} />
           <Route path="relacionamiento" element={<RelationsPage />} />
+          <Route path="noticias" element={deferred(<NewsHomePage />)} />
+          <Route path="noticias/:slug" element={deferred(<NewsPage />)} />
+          <Route path="privacidad" element={deferred(<PrivacyPage />)} />
           {/* Vista oculta: fuera del menú, noindex y bloqueada en robots.txt. */}
-          <Route path="admin/fotos" element={<AdminPhotosPage />} />
-          <Route path="admin/centros" element={<AdminCentersPage />} />
-          <Route path="admin/proyectos/fotos" element={<AdminProjectPhotosPage />} />
-          <Route path="admin/ranking" element={<AdminRankingPage />} />
-          <Route path="admin/produccion" element={<AdminPublicationsPage />} />
+          <Route path="admin/fotos" element={deferred(<AdminPhotosPage />)} />
+          <Route path="admin/centros" element={deferred(<AdminCentersPage />)} />
+          <Route path="admin/proyectos/fotos" element={deferred(<AdminProjectPhotosPage />)} />
+          <Route path="admin/ranking" element={deferred(<AdminRankingPage />)} />
+          <Route path="admin/produccion" element={deferred(<AdminPublicationsPage />)} />
           {NAV_ITEMS.filter((i) => !i.ready).map((i) => (
             <Route key={i.to} path={i.to} element={<ComingSoonPage item={i} />} />
           ))}
           <Route path="*" element={<NotFoundPage />} />
         </Route>
+        {/* Panel de noticias: aplicación con su propio armazón (barra superior + navegación lateral). */}
+        <Route
+          path="admin/noticias/*"
+          element={
+            <Suspense
+              fallback={<p className="container-page py-10 text-body-md text-neutral-muted">Cargando…</p>}
+            >
+              <AdminNewsPage />
+            </Suspense>
+          }
+        />
       </Routes>
     </>
   );

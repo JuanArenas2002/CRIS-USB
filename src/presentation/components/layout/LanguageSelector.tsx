@@ -97,13 +97,13 @@ export function LanguageSelector({
     <details ref={ref} className={`group/lang relative ${className}`}>
       <summary
         aria-label={`${t('language.label')}: ${current.label}`}
-        className="flex h-10 cursor-pointer list-none items-center gap-1.5 rounded-lg bg-surface-cream-alt px-2.5 text-label-md font-semibold text-primary transition-colors group-open/lang:bg-badge-sage-bg hover:bg-badge-sage-bg focus-visible:ring-2 focus-visible:ring-secondary focus-visible:outline-none [&::-webkit-details-marker]:hidden"
+        className="flex h-10 cursor-pointer list-none items-center gap-1.5 rounded-full border border-on-primary/30 px-3 text-label-md font-semibold text-on-primary transition-colors group-open/lang:border-on-primary/60 hover:border-on-primary/60 focus-visible:ring-2 focus-visible:ring-secondary-fixed focus-visible:outline-none [&::-webkit-details-marker]:hidden"
       >
         <Icon name="language" className="text-[20px]" />
         <span className="uppercase">{current.code}</span>
         <Icon name="expand_more" className="text-[16px] transition-transform group-open/lang:rotate-180" />
       </summary>
-      <div className="absolute top-12 right-0 z-10 w-64 rounded-2xl bg-surface-container-lowest p-2 shadow-xl ring-1 ring-border-subtle">
+      <div className="absolute top-12 right-0 z-10 w-64 [&_:focus-visible]:outline-secondary rounded-2xl bg-surface-container-lowest p-2 shadow-xl ring-1 ring-border-subtle">
         <p className="px-3 pt-1.5 pb-2 text-label-sm tracking-wider text-neutral-muted uppercase">
           {t('language.label')}
         </p>

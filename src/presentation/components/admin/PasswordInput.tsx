@@ -10,7 +10,8 @@ export function PasswordInput({ className = '', ...props }: InputHTMLAttributes<
       <input
         {...props}
         type={show ? 'text' : 'password'}
-        className={`h-10 w-full rounded-lg border border-border-subtle bg-surface-container-lowest pr-10 pl-3 text-body-sm font-normal focus:ring-2 focus:ring-secondary focus:outline-none ${className}`}
+        // Con className se reemplaza el estilo por defecto (sin mezclar clases que chocan); el pr-11 deja sitio al ojo.
+        className={`${className || 'h-10 w-full rounded-lg border border-border-subtle bg-surface-container-lowest pl-3 text-body-sm font-normal focus:ring-2 focus:ring-secondary focus:outline-none'} pr-11!`}
       />
       <button
         type="button"
@@ -21,7 +22,7 @@ export function PasswordInput({ className = '', ...props }: InputHTMLAttributes<
         aria-label={label}
         aria-pressed={show}
         title={label}
-        className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-neutral-muted hover:text-primary"
+        className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-neutral-muted hover:text-primary"
       >
         <Icon name={show ? 'visibility_off' : 'visibility'} className="text-[20px]" />
       </button>

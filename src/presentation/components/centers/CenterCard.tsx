@@ -5,6 +5,7 @@ import { authorSlug, displayName } from '@/domain/authors/author';
 import type { Center } from '@/domain/centers/center';
 import { odsOf, type OdsId } from '@/domain/ods/ods';
 import { Icon } from '@/presentation/components/ui/Icon';
+import { BrandIcon } from '@/presentation/components/ui/BrandIcon';
 
 export const centerPath = (c: Pick<Center, 'id' | 'name'>) => `/centros/${authorSlug(c)}`;
 
@@ -79,27 +80,6 @@ export function CenterCard({ center: c }: { center: Center }) {
     <article className="group relative flex flex-col justify-between rounded-[24px] bg-surface-container-lowest p-4 shadow-[0_4px_20px_-2px_rgba(21,71,52,0.06),0_2px_6px_-1px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_-4px_rgba(21,71,52,0.12)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
       <div className="flex flex-col">
         <div className="relative overflow-hidden rounded-[20px] bg-surface-dark-forest p-5 text-on-primary">
-          <svg
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full text-secondary-fixed/45"
-            fill="none"
-            viewBox="0 0 400 160"
-            preserveAspectRatio="none"
-          >
-            <path
-              d="M-20 120C80 70 170 150 260 100C350 50 380 110 440 80"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              className="wave-drift"
-            />
-            <path
-              d="M-20 40C90 90 200 10 300 60C360 90 400 40 440 30"
-              stroke="currentColor"
-              strokeDasharray="6 6"
-              strokeWidth="2"
-              className="wave-dash"
-            />
-          </svg>
           <div className="relative flex items-start justify-between gap-3">
             <div className="flex min-w-0 flex-col">
               <span className="text-label-sm tracking-wider text-primary-fixed-dim uppercase">
@@ -123,7 +103,7 @@ export function CenterCard({ center: c }: { center: Center }) {
                 </span>
               )}
             </div>
-            <Icon name="domain" className="text-[40px] text-tertiary-fixed/80" />
+            <BrandIcon name="foco" className="text-[40px] text-tertiary-fixed/80" />
           </div>
           <div className="relative mt-4 flex items-center justify-between gap-2">
             <p className="inline-flex rounded-full bg-primary-container/90 px-3 py-1 text-label-sm font-semibold tracking-wide">
@@ -134,7 +114,7 @@ export function CenterCard({ center: c }: { center: Center }) {
         </div>
 
         <div className="pt-4 pb-2">
-          <h3 className="text-headline-sm font-bold tracking-tight text-[#0F241A] transition-colors group-hover:text-primary">
+          <h3 className="text-headline-sm font-bold tracking-tight text-on-surface transition-colors group-hover:text-primary">
             {/* El enlace del título cubre toda la tarjeta. */}
             <Link
               to={centerPath(c)}
@@ -216,7 +196,7 @@ export function CenterRow({ center: c }: { center: Center }) {
       )}
 
       <div className="min-w-0">
-        <h3 className="text-body-md font-semibold text-[#0F241A] group-hover:text-primary">
+        <h3 className="text-body-md font-semibold text-on-surface group-hover:text-primary">
           <Link
             to={centerPath(c)}
             className="after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-secondary"

@@ -10,6 +10,11 @@ export function relationQueries(repo: RelationsRepository) {
         // Al cambiar de año el mapa anterior queda visible (atenuado) hasta que llega el nuevo.
         placeholderData: keepPreviousData,
       }),
+    byYear: () =>
+      queryOptions({
+        queryKey: ['relations', 'by-year'],
+        queryFn: ({ signal }) => repo.byYear(signal),
+      }),
     publications: (iso3: string, year: number | null) =>
       queryOptions({
         queryKey: ['relations', 'publications', iso3, year],

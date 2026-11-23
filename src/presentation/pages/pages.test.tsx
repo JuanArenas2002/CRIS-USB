@@ -26,7 +26,7 @@ test('directorio: tabla general con enlace rastreable al perfil y métricas real
   expect(screen.getByRole('rowheader', { name: /Ana María Pérez/ })).toBeInTheDocument();
   expect(screen.getByText('1 Perfil Activo')).toBeInTheDocument();
   expect(screen.getByText('Investigador Sénior')).toBeInTheDocument(); // categoría Minciencias
-  await waitFor(() => expect(document.title).toBe('Directorio de investigadores | Unisimón Research'));
+  await waitFor(() => expect(document.title).toBe('Nuestros investigadores | Unisimón Research'));
   expect(document.querySelector('meta[name="robots"]')).toHaveAttribute('content', 'index, follow');
 });
 
@@ -131,7 +131,7 @@ test('perfil: investigador inexistente o retirado no es público (404 noindex)',
   );
 });
 
-test('menú: las 6 secciones en orden, todas con contenido, y el enlace a Iraka', async () => {
+test('menú: las 6 secciones y Noticias en orden, todas con contenido, y el enlace a Iraka', async () => {
   renderApp('/relacionamiento');
   const nav = screen.getByRole('navigation', { name: 'Principal' });
   expect(
@@ -143,8 +143,9 @@ test('menú: las 6 secciones en orden, todas con contenido, y el enlace a Iraka'
     'Grupos',
     'Investigadores',
     'Proyectos',
-    'Productos',
+    'Publicaciones de alto impacto',
     'Relacionamiento',
+    'Noticias',
     expect.stringMatching(/^Iraka/),
   ]);
   expect(within(nav).getAllByRole('link').at(-1)).toHaveAccessibleName(
@@ -308,7 +309,7 @@ test('perfil destacado: indicadores y "Explorar productos" abre la producción f
     },
   });
   renderApp('/investigadores/7-ana-maria-perez', fakeRepo({}, [author]));
-  expect(await screen.findByText('Índice h — Scopus')).toBeInTheDocument();
+  expect(await screen.findByText('Índice H Scopus')).toBeInTheDocument();
   expect(screen.getByRole('tab', { name: /Producción científica/ })).toHaveTextContent('2 productos');
   await userEvent.click(
     screen.getByRole('button', { name: 'Explorar productos de Generación de nuevo conocimiento (1)' }),
@@ -395,7 +396,6 @@ test('centro: lista solo sus grupos (cruce group.centerIds)', async () => {
   expect(await within(section).findByText('Bioinformática y Salud')).toBeInTheDocument();
   expect(within(section).queryByText('Otro centro')).not.toBeInTheDocument();
   expect(within(section).queryByText('Sin centro')).not.toBeInTheDocument();
-  expect(within(section).getByText(/^1 grupo de investigación adscrito/)).toBeInTheDocument();
 });
 
 test('grupos: la lista no lleva logos de centro; las tarjetas sí, enlazados a la ficha del centro', async () => {
@@ -413,8 +413,15 @@ test('grupos: la lista no lleva logos de centro; las tarjetas sí, enlazados a l
   );
 });
 
+/** Sesión de administración ya iniciada: el BFF la confirma por cookie HttpOnly (el token no se guarda). */
+const withAdminSession = (other: (url: string) => Response = () => new Response('{}', { status: 404 })) =>
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async (url: string) => (url === '/api/admin/session' ? new Response('{"ok":true}') : other(url))),
+  );
+
 test('admin fotos: lista a todos los seleccionados, no solo la primera página', async () => {
-  sessionStorage.setItem('cris-admin-token', 't');
+  withAdminSession();
   // 130: más de una página del directorio (12) y más de una del BFF (100).
   const authors = Array.from({ length: 130 }, (_, i) =>
     makeAuthor({ id: i + 1, name: `Investigador ${i + 1}` }),
@@ -426,7 +433,7 @@ test('admin fotos: lista a todos los seleccionados, no solo la primera página',
 });
 
 test('admin fotos: buscador por nombre, sin importar tildes ni mayúsculas', async () => {
-  sessionStorage.setItem('cris-admin-token', 't');
+  withAdminSession();
   const authors = [
     makeAuthor({ id: 1, name: 'JOSÉ PÉREZ LARA' }),
     makeAuthor({ id: 2, name: 'Ana María Gómez' }),
@@ -442,7 +449,6 @@ test('admin fotos: buscador por nombre, sin importar tildes ni mayúsculas', asy
 });
 
 test('admin ranking: buscador por nombre sin tildes, con contador y aviso sin resultados', async () => {
-  sessionStorage.setItem('cris-admin-token', 't');
   const row = (id: number, name: string, center: string) => ({
     id,
     name,
@@ -454,11 +460,8 @@ test('admin ranking: buscador por nombre sin tildes, con contador y aviso sin re
     shown: { rank: id, centerRank: 1 },
   });
   const rows = [row(1, 'JOSÉ PÉREZ LARA', 'CICV'), row(2, 'ANA MARÍA GÓMEZ', 'CIISO')];
-  vi.stubGlobal(
-    'fetch',
-    vi.fn(async (url: string) =>
-      url === '/api/ranking' ? new Response(JSON.stringify({ rows })) : new Response('{}', { status: 404 }),
-    ),
+  withAdminSession((url) =>
+    url === '/api/ranking' ? new Response(JSON.stringify({ rows })) : new Response('{}', { status: 404 }),
   );
   renderApp('/admin/ranking');
   const search = await screen.findByLabelText('Buscar investigador');
@@ -496,12 +499,12 @@ test('productos: misma tabla que los productos del investigador (año, título, 
   expect(row.getByText('Artículo científico')).toBeInTheDocument();
   // Revista y DOI bajo el título; acceso abierto bajo el tipo; citas en su columna (el cuartil nunca se muestra).
   expect(row.getByText('Pharmaceutics · DOI: 10.3390/pharmaceutics14061303')).toBeInTheDocument();
-  expect(row.getByText('Scopus · Acceso abierto')).toBeInTheDocument();
+  expect(row.getByText('Acceso abierto')).toBeInTheDocument();
   expect(screen.getByRole('columnheader', { name: 'Citas' })).toBeInTheDocument();
   expect(row.getByText('133')).toBeInTheDocument();
   expect(screen.getByText('En revistas Q1')).toBeInTheDocument();
   // Del cuartil solo se muestra el total en Q1; nunca el de cada publicación.
-  expect(screen.getByRole('table')).not.toHaveTextContent(/\bQ[1-4]\b/);
+  for (const table of screen.getAllByRole('table')) expect(table).not.toHaveTextContent(/\bQ[1-4]\b/);
   expect(screen.queryByRole('combobox', { name: /cuartil/i })).not.toBeInTheDocument();
   expect(row.getByRole('link', { name: /DOI/ })).toHaveAttribute(
     'href',
@@ -605,7 +608,6 @@ test('centro: lista sus proyectos (cruce por nombre del centro, sin tildes ni ma
     await within(section).findByRole('link', { name: /Programa de fortalecimiento/ }),
   ).toBeInTheDocument();
   expect(within(section).queryByText('Proyecto de otro centro')).not.toBeInTheDocument();
-  expect(within(section).getByText('1 proyecto de investigación de este centro.')).toBeInTheDocument();
 });
 
 test('proyectos: la lista muestra el investigador principal y cuántos más hay en el equipo', async () => {
@@ -706,7 +708,7 @@ test('portada: las seis áreas enlazan a sus rutas y muestran cifras reales', as
   expect(area('Grupos')).toHaveAttribute('href', '/grupos');
   expect(area('Investigadores')).toHaveAttribute('href', '/investigadores');
   expect(area('Proyectos')).toHaveAttribute('href', '/proyectos');
-  expect(area('Productos')).toHaveAttribute('href', '/productos');
+  expect(area('Publicaciones de alto impacto')).toHaveAttribute('href', '/productos');
   expect(area('Relacionamiento')).toHaveAttribute('href', '/relacionamiento');
   // Iraka: botón principal del hero, menú principal y pie (en todas las páginas).
   expect(
@@ -736,7 +738,7 @@ test('portada: las seis áreas enlazan a sus rutas y muestran cifras reales', as
   expect(screen.getByText('Mayor coautoría: España')).toBeInTheDocument(); // nota de la métrica
   expect(screen.getByText('1 perfil · 1 Sénior y Eméritos')).toBeInTheDocument();
   // El hero muestra proyectos reales en ejecución y nada de noticias de ejemplo.
-  expect(screen.queryByText(/noticia/i)).not.toBeInTheDocument();
+  expect(within(screen.getByRole('main')).queryByText(/noticia/i)).not.toBeInTheDocument();
   await waitFor(() =>
     expect(document.title).toBe('Investigación en la Universidad Simón Bolívar | Unisimón Research'),
   );

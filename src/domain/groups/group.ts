@@ -84,6 +84,53 @@ export interface GroupRepository {
   members(id: number, signal?: AbortSignal): Promise<GroupMember[]>;
   /** null si no existe. */
   getById(id: number, signal?: AbortSignal): Promise<GroupDetail | null>;
+  trajectory(signal?: AbortSignal): Promise<ConvocationTally[]>;
+  staffing(signal?: AbortSignal): Promise<GroupStaffing[]>;
+}
+
+/** Resultado de los grupos de la U en una convocatoria. */
+export interface ConvocationTally {
+  convocation: string;
+  year: number | null;
+  /** Clave en mayúsculas: A1, A, B, C, D, RECONOCIDO. */
+  counts: Record<string, number>;
+  /** Para el detalle al hacer clic, de mejor a peor categoría. */
+  groups: { id: number; name: string; category: string }[];
+}
+
+/** Talento de un grupo, solo conteos (de `/investigator/group/{id}` de Metri-K). */
+export interface GroupStaffing {
+  groupId: number;
+  /** Contratados del grupo (quien está en varios grupos cuenta en cada uno). */
+  contracted: number;
+  /** Contratados por sede. */
+  bySite: Record<string, number>;
+}
+
+export const TRAJECTORY_CATEGORIES = ['A1', 'A', 'B', 'C', 'D', 'RECONOCIDO'] as const;
+
+/** Agrega el historial de todos los grupos (activos o no: es historia) por convocatoria, de la más antigua a la más reciente. */
+export function tallyByConvocation(
+  groups: Pick<GroupDetail, 'id' | 'name' | 'categoryHistory'>[],
+): ConvocationTally[] {
+  const by = new Map<string, ConvocationTally>();
+  for (const g of groups)
+    for (const { convocation, year, category } of g.categoryHistory) {
+      const row = by.get(convocation) ?? { convocation, year, counts: {}, groups: [] };
+      const c = category.trim().toUpperCase();
+      row.counts[c] = (row.counts[c] ?? 0) + 1;
+      row.groups.push({ id: g.id, name: g.name, category: c });
+      by.set(convocation, row);
+    }
+  const order = (c: string) => (CATEGORY_LEVEL[c] ?? -1) * -1;
+  return [...by.values()]
+    .map((r) => ({
+      ...r,
+      groups: r.groups.sort(
+        (a, b) => order(a.category) - order(b.category) || a.name.localeCompare(b.name, 'es'),
+      ),
+    }))
+    .sort((a, b) => (a.year ?? 0) - (b.year ?? 0));
 }
 
 export const CATEGORY_ORDER = ['A1', 'A', 'B', 'C'] as const;

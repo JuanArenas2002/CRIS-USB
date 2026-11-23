@@ -47,16 +47,19 @@ await fs.writeFile(
 await fs.writeFile(path.join(fn, 'package.json'), JSON.stringify({ type: 'module' }));
 
 // 3. Rutas: primero archivos reales (páginas prerenderizadas, assets); /api → función;
-//    /admin/* → la app (no se prerenderiza); lo demás → 404 con la página de "no encontrado".
+//    /news-api/* → backend de noticias (CRIS_NEWS_API_URL al compilar);
+//    /admin/* y /noticias/* → la app (no se prerenderizan); lo demás → 404 con la página de "no encontrado".
+const newsApi = (process.env.CRIS_NEWS_API_URL ?? '').replace(/\/+$/, '');
 await fs.writeFile(
   path.join(out, 'config.json'),
   JSON.stringify(
     {
       version: 3,
       routes: [
+        ...(newsApi ? [{ src: '^/news-api/(.*)$', dest: `${newsApi}/api/$1` }] : []),
         { src: '^/api/(.*)$', dest: '/api' },
         { handle: 'filesystem' },
-        { src: '^/admin(?:/.*)?$', dest: '/index.html' },
+        { src: '^/(?:admin|noticias)(?:/.*)?$', dest: '/index.html' },
         { src: '^/(.*)$', dest: '/404.html', status: 404 },
       ],
     },

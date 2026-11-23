@@ -1,11 +1,13 @@
 // Fuente de relacionamiento: API de colaboración (afiliaciones Scopus de la institución).
 //   GET {base}/api/collaboration/institution/affiliations/publications?include_publications=false
 // Sin publicaciones la respuesta pesa ~40 KB (con ellas, ~6,6 MB): el mapa solo necesita conteos.
-import type {
-  CollaborationMap,
-  CountryCollaboration,
-  CountryPublication,
+import {
+  countByYear,
+  type CollaborationMap,
+  type CountryCollaboration,
+  type CountryPublication,
 } from '../src/domain/relations/relations.ts';
+import type { PublicationYear } from '../src/domain/publications/publication.ts';
 import { obj, str } from './groups-source.ts';
 
 const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
@@ -98,4 +100,25 @@ export async function fetchCollaborationMap(base: string, year: number | null): 
     .flatMap((c) => toCountry(c) ?? [])
     .sort((a, b) => b.publications - a.publications);
   return { year, countries };
+}
+
+/**
+ * Producción institucional por año (~1,8 MB de la API, se resume a unas filas). Solo se usan año,
+ * tipo y países externos de cada publicación.
+ */
+export async function fetchInstitutionByYear(base: string): Promise<PublicationYear[]> {
+  const url = `${base}/api/collaboration/institution/publications`;
+  const pubs = (await getJson(url))?.publicaciones;
+  if (!Array.isArray(pubs))
+    throw new Error(`API de colaboración ${url}: formato inesperado (falta \`publicaciones\`)`);
+  return countByYear(
+    pubs.map((raw) => {
+      const r = obj(raw);
+      return {
+        year: Number.isInteger(r?.anio) ? (r!.anio as number) : null,
+        type: str(r?.tipo),
+        countries: Array.isArray(r?.paises_externos) ? r!.paises_externos.flatMap((x) => str(x) ?? []) : [],
+      };
+    }),
+  );
 }

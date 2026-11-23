@@ -4,6 +4,7 @@ import { withBase } from '@/shared/base';
 // salen del equipo. El BFF valida cada fila y guarda el ranking por puesto.
 import { ApiError } from '@/infrastructure/http/api-client';
 import type { StoredPublication } from '@/domain/publications/publication';
+import { adminHeaders } from '@/infrastructure/http/admin-session';
 
 export const PUBLICATIONS_SHEET = 'Ranking';
 
@@ -107,7 +108,7 @@ async function call(
 ): Promise<PublicationsResult> {
   const res = await fetch(withBase('/api/publications'), {
     method,
-    headers: { 'X-Admin-Token': token, ...(rows ? { 'Content-Type': 'application/json' } : {}) },
+    headers: { ...adminHeaders(token), ...(rows ? { 'Content-Type': 'application/json' } : {}) },
     body: rows ? JSON.stringify({ rows }) : undefined,
   });
   const data = (await res.json().catch(() => ({}))) as Partial<PublicationsResult> & { detail?: string };

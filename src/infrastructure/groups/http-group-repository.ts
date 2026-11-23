@@ -61,6 +61,31 @@ export function httpGroupRepository(get: ApiGet): GroupRepository {
   return {
     members: (id, signal) => get(`/api/groups/${id}/members`, z.array(memberSchema), signal),
     list: (signal) => get('/api/groups', z.array(groupSchema), signal),
+    staffing: (signal) =>
+      get(
+        '/api/groups/staffing',
+        z.array(
+          z.object({
+            groupId: z.number().int(),
+            contracted: z.number().int(),
+            bySite: z.record(z.string(), z.number().int()),
+          }),
+        ),
+        signal,
+      ),
+    trajectory: (signal) =>
+      get(
+        '/api/groups/trajectory',
+        z.array(
+          z.object({
+            convocation: z.string(),
+            year: z.number().int().nullable(),
+            counts: z.record(z.string(), z.number().int()),
+            groups: z.array(z.object({ id: z.number().int(), name: z.string(), category: z.string() })),
+          }),
+        ),
+        signal,
+      ),
     async getById(id, signal) {
       try {
         return await get(`/api/groups/${id}`, detailSchema, signal);

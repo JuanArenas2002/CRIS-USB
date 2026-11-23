@@ -94,6 +94,15 @@ export interface PublicationStats {
   areas: string[];
 }
 
+/** Nuevo conocimiento = artículos y reviews; divulgación = el resto de tipos documentales. */
+export interface PublicationYear {
+  year: number;
+  nc: number;
+  dc: number;
+  intlNc: number;
+  intlDc: number;
+}
+
 export interface PublicationRepository {
   list(q: PublicationQuery, signal?: AbortSignal): Promise<PublicationPage>;
   stats(signal?: AbortSignal): Promise<PublicationStats>;
