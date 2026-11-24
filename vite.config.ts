@@ -40,6 +40,7 @@ export default defineConfig(({ mode }) => {
     [`${basePath}/news-api`]: {
       target: env.CRIS_NEWS_API_URL || 'http://localhost:8005',
       rewrite: (p: string) => p.replace(new RegExp(`^${basePath}/news-api`), '/api'),
+      changeOrigin: true, // Host/SNI = el del backend (con un destino HTTPS, el certificado debe coincidir)
       xfwd: true, // X-Forwarded-For: IP real del lector (ver scripts/server.ts)
     },
   };
