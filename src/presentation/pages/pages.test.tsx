@@ -131,7 +131,7 @@ test('perfil: investigador inexistente o retirado no es público (404 noindex)',
   );
 });
 
-test('menú: las 6 secciones y Noticias en orden, todas con contenido, y el enlace a Iraka', async () => {
+test('menú: las 6 secciones y Noticias en orden, todas con contenido, y los enlaces a Iraka y Unisimon Global', async () => {
   renderApp('/relacionamiento');
   const nav = screen.getByRole('navigation', { name: 'Principal' });
   expect(
@@ -147,8 +147,9 @@ test('menú: las 6 secciones y Noticias en orden, todas con contenido, y el enla
     'Relacionamiento',
     'Noticias',
     expect.stringMatching(/^Iraka/),
+    expect.stringMatching(/^Unisimon Global/),
   ]);
-  expect(within(nav).getAllByRole('link').at(-1)).toHaveAccessibleName(
+  expect(within(nav).getAllByRole('link').at(-2)).toHaveAccessibleName(
     'Iraka · Periodismo científico (abre en una pestaña nueva)',
   );
   expect(within(nav).getByRole('link', { name: 'Relacionamiento' })).toHaveAttribute('aria-current', 'page');

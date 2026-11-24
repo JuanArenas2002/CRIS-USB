@@ -10,7 +10,7 @@ import {
 } from '@/domain/authors/author';
 import type { AuthorRepository } from '@/domain/authors/author-repository';
 
-/** Máximo por página del BFF (MAX_PAGE_SIZE en scripts/public-api.ts). */
+/** Máximo por página del BFF (MAX_PAGE_SIZE en scripts/api/http.ts). */
 const ALL_PAGE_SIZE = 100;
 
 export interface DirectoryFilters {
