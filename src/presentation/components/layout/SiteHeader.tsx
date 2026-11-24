@@ -2,7 +2,7 @@ import { withBase } from '@/shared/base';
 import { useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { CONTACT_EMAIL, IRAKA_URL } from '@/shared/contact';
+import { CONTACT_EMAIL, GLOBAL_URL, IRAKA_URL } from '@/shared/contact';
 import { NAV_ITEMS, isNavActive } from '@/shared/navigation';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { LanguageSelector } from './LanguageSelector';
@@ -90,6 +90,15 @@ export function SiteHeader() {
           >
             Iraka <Icon name="open_in_new" className="text-[14px]" />
           </a>
+          <a
+            href={GLOBAL_URL}
+            target="_blank"
+            rel="noopener"
+            aria-label={`Unisimon Global ${t('newTab')}`}
+            className={`${itemClass(false)} inline-flex items-center gap-1`}
+          >
+            Unisimon Global <Icon name="open_in_new" className="text-[14px]" />
+          </a>
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
@@ -141,6 +150,15 @@ export function SiteHeader() {
                 className={`${panelItemClass(false)} inline-flex items-center gap-1.5`}
               >
                 {t('home:hero.iraka')} <Icon name="open_in_new" className="text-[14px]" />
+              </a>
+              <a
+                href={GLOBAL_URL}
+                target="_blank"
+                rel="noopener"
+                aria-label={`Unisimon Global ${t('newTab')}`}
+                className={`${panelItemClass(false)} inline-flex items-center gap-1.5`}
+              >
+                Unisimon Global <Icon name="open_in_new" className="text-[14px]" />
               </a>
               <a
                 href={`mailto:${CONTACT_EMAIL}`}

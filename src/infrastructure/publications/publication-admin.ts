@@ -55,10 +55,16 @@ export function publicationRows(table: string[][]): StoredPublication[] {
   const headerAt = table.findIndex((r) => r.some((c) => key(c) === REQUIRED.eid));
   if (headerAt < 0) throw new Error('No se encontró la columna «EID» en la hoja');
   const raw = table[headerAt]!;
-  const header = raw.map(key);
-  const missing = Object.values(REQUIRED).filter((c) => !header.includes(c));
+  // Columna → posición, una sola vez: antes cada celda de cada fila recorría la cabecera con `indexOf`.
+  // Si una cabecera se repite, vale la primera (como `indexOf`).
+  const columns = new Map<string, number>();
+  raw.forEach((c, i) => {
+    const k = key(c);
+    if (!columns.has(k)) columns.set(k, i);
+  });
+  const missing = Object.values(REQUIRED).filter((c) => !columns.has(c));
   if (missing.length) throw new Error(`Faltan columnas en la hoja: ${missing.join(', ')}`);
-  const at = (col: string) => header.indexOf(col);
+  const at = (col: string) => columns.get(col) ?? -1;
   const rankAt = raw.findIndex((c) => c.trim() === '#');
   const areasAt = AREAS.map(at).filter((i) => i >= 0);
 

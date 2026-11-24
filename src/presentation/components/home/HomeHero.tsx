@@ -1,10 +1,9 @@
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { NewsSpotlight } from '@/presentation/components/home/NewsSpotlight';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { Trajectory } from '@/presentation/components/ui/Trajectory';
 import { withBase } from '@/shared/base';
-import { IRAKA_URL } from '@/shared/contact';
+import { GLOBAL_URL, IRAKA_URL } from '@/shared/contact';
 
 export const HOME_AREAS_ID = 'areas';
 
@@ -68,10 +67,11 @@ export function HomeHero() {
             <Link to="/investigadores" className={`${action} ${ghost}`}>
               {t('hero.researchers')}
             </Link>
+            <a href={GLOBAL_URL} target="_blank" rel="noopener" className={`${action} ${ghost}`}>
+              Unisimon Global <Icon name="open_in_new" className="text-[18px]" />
+              <span className="sr-only">{t('common:newTab')}</span>
+            </a>
           </div>
-        </div>
-        <div className="flex justify-end lg:col-span-5">
-          <NewsSpotlight />
         </div>
       </div>
     </section>

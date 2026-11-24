@@ -97,30 +97,11 @@ function stubNews(list: unknown[]) {
 
 afterEach(() => vi.unstubAllGlobals());
 
-test('portada: las noticias reemplazan a los proyectos en el hero, con imagen y carrusel', async () => {
-  const fetchMock = stubNews([item(1), item(2)]);
+test('portada: sin tarjeta de noticias en el hero y con el botón a Unisimon Global', async () => {
+  stubNews([item(1), item(2)]);
   renderApp('/');
-  const card = await screen.findByRole('complementary', { name: 'Noticias' });
-  expect(card).toHaveTextContent('Noticia 1');
-  expect(card.querySelector('img')).toHaveAttribute(
-    'src',
-    '/news-api/media/news/1-0123456789abcdef.webp?w=640',
-  );
-  expect(screen.getByRole('link', { name: 'Leer noticia: Noticia 1' })).toHaveAttribute(
-    'href',
-    '/noticias/noticia-1',
-  );
-  await userEvent.click(screen.getByRole('button', { name: 'Noticia siguiente' }));
-  expect(card).toHaveTextContent('Noticia 2');
-  // Siempre la vista pública: aunque haya sesión de editor, la portada no muestra borradores.
-  expect(String(fetchMock.mock.calls[0]![0])).toContain('public=true');
-  expect(screen.queryByText(/Proyecto en ejecución/)).not.toBeInTheDocument();
-});
-
-test('portada: sin noticias publicadas el hero no muestra la tarjeta', async () => {
-  const fetchMock = stubNews([]);
-  renderApp('/');
-  await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled());
+  const global = (await screen.findAllByRole('link', { name: /Unisimon Global/ }))[0]!;
+  expect(global).toHaveAttribute('href', 'https://unisimon.edu.co/global/unisimon-global-home.html');
   expect(screen.queryByRole('complementary', { name: 'Noticias' })).not.toBeInTheDocument();
 });
 

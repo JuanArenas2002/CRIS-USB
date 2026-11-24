@@ -1,0 +1,2605 @@
+{
+  "main": {
+    "000 GET /api/investigators": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"id\":1,\"name\":\"ANA PEREZ\",\"category\":\"senior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":\"57000000012\",\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":{\"hIndex\":12,\"scopusPublications\":1,\"products\":2},\"photoUrl\":null,\"ranking\":null,\"tiers\":{},\"centers\":[{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"logoUrl\":null}]}],\"total\":1,\"page\":1,\"pages\":1}"
+    },
+    "001 GET /api/investigators?q=perez": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"id\":1,\"name\":\"ANA PEREZ\",\"category\":\"senior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":\"57000000012\",\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":{\"hIndex\":12,\"scopusPublications\":1,\"products\":2},\"photoUrl\":null,\"ranking\":null,\"tiers\":{},\"centers\":[{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"logoUrl\":null}]}],\"total\":1,\"page\":1,\"pages\":1}"
+    },
+    "002 GET /api/investigators?cat=senior": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"id\":1,\"name\":\"ANA PEREZ\",\"category\":\"senior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":\"57000000012\",\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":{\"hIndex\":12,\"scopusPublications\":1,\"products\":2},\"photoUrl\":null,\"ranking\":null,\"tiers\":{},\"centers\":[{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"logoUrl\":null}]}],\"total\":1,\"page\":1,\"pages\":1}"
+    },
+    "003 GET /api/investigators?cat=nada": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"id\":1,\"name\":\"ANA PEREZ\",\"category\":\"senior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":\"57000000012\",\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":{\"hIndex\":12,\"scopusPublications\":1,\"products\":2},\"photoUrl\":null,\"ranking\":null,\"tiers\":{},\"centers\":[{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"logoUrl\":null}]}],\"total\":1,\"page\":1,\"pages\":1}"
+    },
+    "004 GET /api/investigators?page=0&size=100000": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"id\":1,\"name\":\"ANA PEREZ\",\"category\":\"senior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":\"57000000012\",\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":{\"hIndex\":12,\"scopusPublications\":1,\"products\":2},\"photoUrl\":null,\"ranking\":null,\"tiers\":{},\"centers\":[{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"logoUrl\":null}]}],\"total\":1,\"page\":1,\"pages\":1}"
+    },
+    "005 GET /api/investigators?page=abc&size=-4": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"id\":1,\"name\":\"ANA PEREZ\",\"category\":\"senior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":\"57000000012\",\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":{\"hIndex\":12,\"scopusPublications\":1,\"products\":2},\"photoUrl\":null,\"ranking\":null,\"tiers\":{},\"centers\":[{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"logoUrl\":null}]}],\"total\":1,\"page\":1,\"pages\":1}"
+    },
+    "006 GET /api/investigators?group=14": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"id\":1,\"name\":\"ANA PEREZ\",\"category\":\"senior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":\"57000000012\",\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":{\"hIndex\":12,\"scopusPublications\":1,\"products\":2},\"photoUrl\":null,\"ranking\":null,\"tiers\":{},\"centers\":[{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"logoUrl\":null}]}],\"total\":1,\"page\":1,\"pages\":1}"
+    },
+    "007 GET /api/investigators?center=1": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"id\":1,\"name\":\"ANA PEREZ\",\"category\":\"senior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":\"57000000012\",\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":{\"hIndex\":12,\"scopusPublications\":1,\"products\":2},\"photoUrl\":null,\"ranking\":null,\"tiers\":{},\"centers\":[{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"logoUrl\":null}]}],\"total\":1,\"page\":1,\"pages\":1}"
+    },
+    "008 GET /api/investigators?tier=top12": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[],\"total\":0,\"page\":1,\"pages\":0}"
+    },
+    "009 GET /api/investigators?tier=otro": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"id\":1,\"name\":\"ANA PEREZ\",\"category\":\"senior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":\"57000000012\",\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":{\"hIndex\":12,\"scopusPublications\":1,\"products\":2},\"photoUrl\":null,\"ranking\":null,\"tiers\":{},\"centers\":[{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"logoUrl\":null}]}],\"total\":1,\"page\":1,\"pages\":1}"
+    },
+    "010 GET /api/investigators/stats": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"total\":1,\"byCategory\":{\"emerito\":0,\"senior\":1,\"asociado\":0,\"junior\":0}}"
+    },
+    "011 GET /api/investigators/featured": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "[{\"id\":1,\"name\":\"ANA PEREZ\",\"category\":\"senior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":\"57000000012\",\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":{\"hIndex\":12,\"scopusPublications\":1,\"products\":2},\"photoUrl\":null,\"ranking\":null,\"tiers\":{},\"centers\":[{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"logoUrl\":null}]}]"
+    },
+    "012 GET /api/investigators/1": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"id\":1,\"name\":\"ANA PEREZ\",\"category\":\"senior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":\"57000000012\",\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":{\"hIndex\":12,\"scopusPublications\":1,\"products\":2},\"photoUrl\":null,\"ranking\":null,\"tiers\":{},\"centers\":[{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"logoUrl\":null}],\"groups\":[{\"id\":14,\"code\":\"COL1\",\"name\":\"Grupo Uno\",\"category\":\"A1\",\"ods\":[3,17],\"type\":null}],\"production\":{\"publications\":[{\"id\":5,\"title\":\"Paper\",\"year\":2024,\"journal\":null,\"type\":null,\"citedBy\":3,\"doi\":\"10.1000/xyz\",\"url\":\"https://www.scopus.com/x\",\"authors\":null}],\"theses\":[],\"developments\":[]}}"
+    },
+    "013 GET /api/investigators/2": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "014 GET /api/investigators/3": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "015 GET /api/investigators/999": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "016 GET /api/investigators/abc": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "017 GET /api/publications": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[],\"total\":0,\"page\":1,\"pages\":0}"
+    },
+    "018 GET /api/publications?sort=cited&oa=1&type=Article&area=x&from=2020&to=2025&q=a&page=2&size=1": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[],\"total\":0,\"page\":2,\"pages\":0}"
+    },
+    "019 GET /api/publications?sort=raro": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[],\"total\":0,\"page\":1,\"pages\":0}"
+    },
+    "020 GET /api/publications/stats": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"total\":0,\"q1\":0,\"openAccess\":0,\"international\":0,\"citations\":0,\"years\":[],\"types\":[],\"areas\":[]}"
+    },
+    "021 GET /api/groups": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "[{\"id\":14,\"code\":\"COL1\",\"name\":\"Grupo Uno\",\"active\":true,\"type\":null,\"category\":\"A1\",\"gruplacUrl\":null,\"city\":null,\"department\":null,\"foundedYear\":null,\"leader\":null,\"ods\":[3,17],\"centerIds\":[],\"lines\":[]},{\"id\":15,\"code\":\"COL2\",\"name\":\"Grupo Inter\",\"active\":true,\"type\":\"Interinstitucional\",\"category\":\"B\",\"gruplacUrl\":null,\"city\":null,\"department\":null,\"foundedYear\":null,\"leader\":null,\"ods\":[],\"centerIds\":[],\"lines\":[]}]"
+    },
+    "022 GET /api/groups/staffing": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "023 GET /api/groups/trajectory": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "[]"
+    },
+    "024 GET /api/groups/14": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"id\":14,\"code\":\"COL1\",\"name\":\"Grupo Uno\",\"active\":true,\"type\":null,\"category\":\"A1\",\"gruplacUrl\":null,\"city\":null,\"department\":null,\"foundedYear\":null,\"leader\":null,\"ods\":[3,17],\"centerIds\":[],\"lines\":[],\"categoryHistory\":[]}"
+    },
+    "025 GET /api/groups/15": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "026 GET /api/groups/14/members": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "[{\"id\":1,\"name\":\"ANA PEREZ\",\"category\":\"junior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":null,\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":{\"hIndex\":12,\"scopusPublications\":1,\"products\":2},\"photoUrl\":null,\"profilePublished\":true}]"
+    },
+    "027 GET /api/groups/15/members": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "028 GET /api/groups/999": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "029 GET /api/groups/14/otra": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "030 GET /api/relations/by-year": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "[{\"year\":2022,\"nc\":1,\"dc\":0,\"intlNc\":1,\"intlDc\":0},{\"year\":2023,\"nc\":1,\"dc\":0,\"intlNc\":0,\"intlDc\":0}]"
+    },
+    "031 GET /api/relations/countries": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"year\":null,\"countries\":[{\"iso2\":\"CO\",\"iso3\":\"COL\",\"isoNumeric\":\"170\",\"country\":\"Colombia\",\"local\":true,\"publications\":30,\"citations\":90},{\"iso2\":\"ES\",\"iso3\":\"ESP\",\"isoNumeric\":\"724\",\"country\":\"Spain\",\"local\":false,\"publications\":9,\"citations\":40}]}"
+    },
+    "032 GET /api/relations/countries?year=2024": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"year\":2024,\"countries\":[{\"iso2\":\"CO\",\"iso3\":\"COL\",\"isoNumeric\":\"170\",\"country\":\"Colombia\",\"local\":true,\"publications\":30,\"citations\":90},{\"iso2\":\"ES\",\"iso3\":\"ESP\",\"isoNumeric\":\"724\",\"country\":\"Spain\",\"local\":false,\"publications\":9,\"citations\":40}]}"
+    },
+    "033 GET /api/relations/countries?year=1900": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Año inválido\"}"
+    },
+    "034 GET /api/relations/countries?year=abc": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Año inválido\"}"
+    },
+    "035 GET /api/relations/countries?year=3000": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Año inválido\"}"
+    },
+    "036 GET /api/relations/countries/ESP/publications": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "[{\"eid\":\"e1\",\"title\":\"Colaboración\",\"year\":2023,\"doi\":null,\"journal\":null,\"docType\":null,\"citations\":2,\"partners\":[\"U1\"]}]"
+    },
+    "037 GET /api/relations/countries/ESP/publications?year=2024": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "[{\"eid\":\"e1\",\"title\":\"Colaboración\",\"year\":2023,\"doi\":null,\"journal\":null,\"docType\":null,\"citations\":2,\"partners\":[\"U1\"]}]"
+    },
+    "038 GET /api/relations/countries/ZZZ/publications": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"País sin publicaciones\"}"
+    },
+    "039 GET /api/relations/countries/ESP/publications?year=1900": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Año inválido\"}"
+    },
+    "040 GET /api/relations/countries/es/publications": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "041 GET /api/projects": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "[{\"id\":1,\"code\":\"P-1\",\"title\":\"Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno\",\"centers\":[\"CENTRO UNO\"],\"groups\":[],\"area\":null,\"year\":null,\"startYear\":null,\"endYear\":null,\"status\":null,\"funder\":null,\"allies\":null,\"resources\":null,\"territory\":null,\"problem\":null,\"solution\":null,\"objective\":null,\"results\":null,\"beneficiaries\":null,\"evidence\":null,\"ods\":[],\"team\":[{\"name\":\"Ana\",\"role\":null}],\"photoUrl\":null,\"gallery\":[],\"products\":[]},{\"id\":2,\"code\":\"P-2\",\"title\":\"Proyecto de otro centro\",\"centers\":[\"Otro\"],\"groups\":[],\"area\":null,\"year\":null,\"startYear\":null,\"endYear\":null,\"status\":null,\"funder\":null,\"allies\":null,\"resources\":null,\"territory\":null,\"problem\":null,\"solution\":null,\"objective\":null,\"results\":null,\"beneficiaries\":null,\"evidence\":null,\"ods\":[],\"team\":[],\"photoUrl\":null,\"gallery\":[],\"products\":[]}]"
+    },
+    "042 GET /api/projects/1": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"id\":1,\"code\":\"P-1\",\"title\":\"Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno\",\"centers\":[\"CENTRO UNO\"],\"groups\":[],\"area\":null,\"year\":null,\"startYear\":null,\"endYear\":null,\"status\":null,\"funder\":null,\"allies\":null,\"resources\":null,\"territory\":null,\"problem\":null,\"solution\":null,\"objective\":null,\"results\":null,\"beneficiaries\":null,\"evidence\":null,\"ods\":[],\"team\":[{\"name\":\"Ana\",\"role\":null}],\"photoUrl\":null,\"gallery\":[],\"products\":[]}"
+    },
+    "043 GET /api/projects/2": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"id\":2,\"code\":\"P-2\",\"title\":\"Proyecto de otro centro\",\"centers\":[\"Otro\"],\"groups\":[],\"area\":null,\"year\":null,\"startYear\":null,\"endYear\":null,\"status\":null,\"funder\":null,\"allies\":null,\"resources\":null,\"territory\":null,\"problem\":null,\"solution\":null,\"objective\":null,\"results\":null,\"beneficiaries\":null,\"evidence\":null,\"ods\":[],\"team\":[],\"photoUrl\":null,\"gallery\":[],\"products\":[]}"
+    },
+    "044 GET /api/projects/999": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "045 GET /api/centers": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "[{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"active\":true,\"createdAt\":\"2004-08-20\",\"foundedYear\":2004,\"city\":\"BARRANQUILLA\",\"department\":\"ATLÁNTICO\",\"daneCode\":\"08001\",\"director\":{\"name\":\"ANA PEREZ\",\"orcid\":\"0000-0002-1825-0097\",\"cvlacUrl\":null,\"scholarUrl\":null,\"scopusId\":null},\"ods\":[8,17],\"linesCount\":1,\"logoUrl\":null,\"website\":null}]"
+    },
+    "046 GET /api/centers/1": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"active\":true,\"createdAt\":\"2004-08-20\",\"foundedYear\":2004,\"city\":\"BARRANQUILLA\",\"department\":\"ATLÁNTICO\",\"daneCode\":\"08001\",\"director\":{\"name\":\"ANA PEREZ\",\"orcid\":\"0000-0002-1825-0097\",\"cvlacUrl\":null,\"scholarUrl\":null,\"scopusId\":null},\"ods\":[8,17],\"linesCount\":1,\"logoUrl\":null,\"website\":null,\"lines\":[{\"id\":3,\"code\":\"LC001\",\"name\":\"Emprendimiento\"}],\"resolutions\":[{\"id\":9,\"number\":\"Resolucion 1\",\"type\":\"Reconocimiento\",\"date\":\"2022-12-14\",\"description\":null,\"hasFile\":true}]}"
+    },
+    "047 GET /api/centers/0": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "048 GET /api/centers/999": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "049 GET /api/centers/1/resolutions/9": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/pdf",
+        "cache-control": "public, max-age=3600, s-maxage=86400",
+        "content-disposition": "inline; filename=\"Resolucion_1.pdf\"",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "30B c1620558c9e36cafe28e8b677ed079a8482637bd"
+    },
+    "050 HEAD /api/centers/1/resolutions/9": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/pdf",
+        "cache-control": "public, max-age=3600, s-maxage=86400",
+        "content-disposition": "inline; filename=\"Resolucion_1.pdf\"",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "0B da39a3ee5e6b4b0d3255bfef95601890afd80709"
+    },
+    "051 GET /api/centers/1/resolutions/99": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "052 GET /api/centers/999/resolutions/9": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "053 GET /api/orcid/search?q=ab": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "[]"
+    },
+    "054 GET /api/orcid/search?q=ana%20perez": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "[{\"orcid\":\"0000-0002-1825-0097\",\"name\":\"Ana Pérez\",\"institutions\":[\"Unisimón\"]}]"
+    },
+    "055 GET /api/orcid/search": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "[]"
+    },
+    "056 GET /api/orcid/0000-0002-1825-0097": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No existe un registro ORCID público con ese iD\"}"
+    },
+    "057 GET /api/orcid/0000-0001-5109-3700": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No existe un registro ORCID público con ese iD\"}"
+    },
+    "058 GET /api/orcid/no-valido": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"ORCID no válido\"}"
+    },
+    "059 GET /api/orcid/0000%2D0002%2D1825%2D0097": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No existe un registro ORCID público con ese iD\"}"
+    },
+    "060 GET /api/orcid/%E0%A4%A": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "061 GET /api/authors": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "062 GET /api/group": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "063 GET /api/": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "064 GET /api": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "065 POST /api/investigators": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "066 POST /api/groups": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "067 OPTIONS /api/groups": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "068 HEAD /api/groups/14": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": ""
+    },
+    "069 PUT /api/investigators": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "070 DELETE /api/groups": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "071 PUT /api/groups {X-Admin-Token}": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "072 PATCH /api/centers/1/website {X-Admin-Token}": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "073 POST /api/ranking {X-Admin-Token}": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "074 DELETE /api/ranking/1 {X-Admin-Token}": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "075 POST /api/publications {X-Admin-Token}": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "076 DELETE /api/centers/1/website {X-Admin-Token}": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "077 DELETE /api/centers/1/password {X-Admin-Token}": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "078 PUT /api/projects/1/personal {X-Admin-Token}": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "079 PATCH /api/projects/1/personal/7434389 {X-Admin-Token}": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "080 GET /api/admin/session": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Sin sesión de administración\"}"
+    },
+    "081 POST /api/admin/session": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "082 POST /api/admin/session": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "083 POST /api/admin/session": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "084 POST /api/admin/session": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "085 POST /api/admin/session": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "086 PUT /api/admin/session": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "087 PATCH /api/admin/session": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "088 POST /api/admin/session": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60",
+        "set-cookie": "cris_admin=<exp>.<sig>; Path=/; HttpOnly; SameSite=Strict; Max-Age=28800"
+      },
+      "body": "{\"ok\":true}"
+    },
+    "089 GET /api/admin/session {cookie}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"ok\":true}"
+    },
+    "090 GET /api/admin/session {cookie}": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Sin sesión de administración\"}"
+    },
+    "091 GET /api/admin/session {cookie}": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Sin sesión de administración\"}"
+    },
+    "092 POST /api/admin/session {x-forwarded-proto}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60",
+        "set-cookie": "cris_admin=<exp>.<sig>; Path=/; HttpOnly; SameSite=Strict; Max-Age=28800; Secure"
+      },
+      "body": "{\"ok\":true}"
+    },
+    "093 DELETE /api/admin/session {cookie}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60",
+        "set-cookie": "cris_admin=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0"
+      },
+      "body": "{\"ok\":true}"
+    },
+    "094 PUT /api/investigators/1/photo [24B]": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "095 PUT /api/investigators/1/photo [24B] {X-Admin-Token}": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "096 PUT /api/investigators/1/photo [24B] {cookie}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"photoUrl\":\"/api/investigators/1/photo?v=N\"}"
+    },
+    "097 PUT /api/investigators/1/photo [24B] {cookie}": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "098 PUT /api/investigators/1/photo {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"La foto debe ser WebP\"}"
+    },
+    "099 PUT /api/investigators/2/photo [24B] {X-Admin-Token}": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "100 PUT /api/investigators/1/photo [1048577B] {X-Admin-Token}": {
+      "status": 413,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"La imagen supera 1 MB\"}"
+    },
+    "101 PUT /api/investigators/1/photo [24B] {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"photoUrl\":\"/api/investigators/1/photo?v=N\"}"
+    },
+    "102 GET /api/investigators/1/photo": {
+      "status": 200,
+      "headers": {
+        "content-type": "image/webp",
+        "cache-control": "no-cache"
+      },
+      "body": "24B 9deb6a9229f86a13021438182b29a69db5f67662"
+    },
+    "103 GET /api/investigators/1/photo?v=1": {
+      "status": 200,
+      "headers": {
+        "content-type": "image/webp",
+        "cache-control": "public, max-age=31536000, s-maxage=31536000, immutable"
+      },
+      "body": "24B 9deb6a9229f86a13021438182b29a69db5f67662"
+    },
+    "104 GET /api/investigators": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"id\":1,\"name\":\"ANA PEREZ\",\"category\":\"senior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":\"57000000012\",\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":{\"hIndex\":12,\"scopusPublications\":1,\"products\":2},\"photoUrl\":\"/api/investigators/1/photo?v=N\",\"ranking\":null,\"tiers\":{},\"centers\":[{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"logoUrl\":null}]}],\"total\":1,\"page\":1,\"pages\":1}"
+    },
+    "105 DELETE /api/investigators/1/photo {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"photoUrl\":null}"
+    },
+    "106 DELETE /api/investigators/2/photo {X-Admin-Token}": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "107 GET /api/investigators/1/photo": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Sin imagen\"}"
+    },
+    "108 PUT /api/centers/1/logo [24B] {X-Admin-Token}": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "109 PUT /api/centers/1/logo {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"La foto debe ser WebP\"}"
+    },
+    "110 PUT /api/centers/0/logo [24B] {X-Admin-Token}": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "111 PUT /api/centers/1/logo [24B] {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"logoUrl\":\"/api/centers/1/logo?v=N\"}"
+    },
+    "112 GET /api/centers/1/logo?v=1": {
+      "status": 200,
+      "headers": {
+        "content-type": "image/webp",
+        "cache-control": "public, max-age=31536000, s-maxage=31536000, immutable"
+      },
+      "body": "24B 9deb6a9229f86a13021438182b29a69db5f67662"
+    },
+    "113 GET /api/centers/1": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"active\":true,\"createdAt\":\"2004-08-20\",\"foundedYear\":2004,\"city\":\"BARRANQUILLA\",\"department\":\"ATLÁNTICO\",\"daneCode\":\"08001\",\"director\":{\"name\":\"ANA PEREZ\",\"orcid\":\"0000-0002-1825-0097\",\"cvlacUrl\":null,\"scholarUrl\":null,\"scopusId\":null},\"ods\":[8,17],\"linesCount\":1,\"logoUrl\":\"/api/centers/1/logo?v=N\",\"website\":null,\"lines\":[{\"id\":3,\"code\":\"LC001\",\"name\":\"Emprendimiento\"}],\"resolutions\":[{\"id\":9,\"number\":\"Resolucion 1\",\"type\":\"Reconocimiento\",\"date\":\"2022-12-14\",\"description\":null,\"hasFile\":true}]}"
+    },
+    "114 DELETE /api/centers/1/logo {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"logoUrl\":null}"
+    },
+    "115 DELETE /api/centers/0/logo {X-Admin-Token}": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "116 PUT /api/centers/1/website {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"website\\\": \\\"https://…\\\" } o { \\\"website\\\": null }\"}"
+    },
+    "117 PUT /api/centers/1/website {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"website\\\": \\\"https://…\\\" } o { \\\"website\\\": null }\"}"
+    },
+    "118 PUT /api/centers/1/website {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"website\\\": \\\"https://…\\\" } o { \\\"website\\\": null }\"}"
+    },
+    "119 PUT /api/centers/1/website {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"website\\\": \\\"https://…\\\" } o { \\\"website\\\": null }\"}"
+    },
+    "120 PUT /api/centers/1/website {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"website\\\": \\\"https://…\\\" } o { \\\"website\\\": null }\"}"
+    },
+    "121 PUT /api/centers/1/website {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"website\":\"https://www.cu.co/\"}"
+    },
+    "122 GET /api/centers/1": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"active\":true,\"createdAt\":\"2004-08-20\",\"foundedYear\":2004,\"city\":\"BARRANQUILLA\",\"department\":\"ATLÁNTICO\",\"daneCode\":\"08001\",\"director\":{\"name\":\"ANA PEREZ\",\"orcid\":\"0000-0002-1825-0097\",\"cvlacUrl\":null,\"scholarUrl\":null,\"scopusId\":null},\"ods\":[8,17],\"linesCount\":1,\"logoUrl\":null,\"website\":\"https://www.cu.co/\",\"lines\":[{\"id\":3,\"code\":\"LC001\",\"name\":\"Emprendimiento\"}],\"resolutions\":[{\"id\":9,\"number\":\"Resolucion 1\",\"type\":\"Reconocimiento\",\"date\":\"2022-12-14\",\"description\":null,\"hasFile\":true}]}"
+    },
+    "123 PUT /api/centers/1/website {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"website\":null}"
+    },
+    "124 PUT /api/centers/1/website {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"website\":null}"
+    },
+    "125 PUT /api/centers/999/website {X-Admin-Token}": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "126 PUT /api/centers/1/password": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "127 PUT /api/centers/1/password {X-Admin-Token}": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "128 PUT /api/centers/999/password {X-Admin-Token}": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "129 PUT /api/centers/1/password {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"password\\\": \\\"…\\\" } (mínimo 8 caracteres) o { \\\"password\\\": null }\"}"
+    },
+    "130 PUT /api/centers/1/password {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"password\\\": \\\"…\\\" } (mínimo 8 caracteres) o { \\\"password\\\": null }\"}"
+    },
+    "131 PUT /api/centers/1/password {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"password\\\": \\\"…\\\" } (mínimo 8 caracteres) o { \\\"password\\\": null }\"}"
+    },
+    "132 PUT /api/centers/1/password {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"password\\\": \\\"…\\\" } (mínimo 8 caracteres) o { \\\"password\\\": null }\"}"
+    },
+    "133 GET /api/centers/1/access {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 403,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Contraseña del centro incorrecta\"}"
+    },
+    "134 PUT /api/projects/1/photos/0 [24B] {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 403,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Contraseña del centro incorrecta\"}"
+    },
+    "135 PUT /api/centers/1/password {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"hasPassword\":true}"
+    },
+    "136 GET /api/centers/1/access {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 403,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Contraseña del centro incorrecta\"}"
+    },
+    "137 GET /api/centers/1/access {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"ok\":true}"
+    },
+    "138 GET /api/centers/1/access {X-Admin-Token}": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "139 GET /api/centers/1/access {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 403,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Contraseña del centro incorrecta\"}"
+    },
+    "140 GET /api/centers/1/access {X-Admin-Token}": {
+      "status": 403,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Contraseña del centro incorrecta\"}"
+    },
+    "141 GET /api/centers/1/access": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "142 GET /api/centers/999/access {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 403,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Contraseña del centro incorrecta\"}"
+    },
+    "143 PUT /api/projects/1/photos/0 {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"La foto debe ser WebP\"}"
+    },
+    "144 PUT /api/projects/1/photos/0 [24B] {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 403,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Contraseña del centro incorrecta\"}"
+    },
+    "145 PUT /api/projects/2/photos/0 [24B] {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 403,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"El proyecto no es de este centro\"}"
+    },
+    "146 PUT /api/projects/1/photos/13 [24B] {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "147 PUT /api/projects/999/photos/0 [24B] {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 403,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"El proyecto no es de este centro\"}"
+    },
+    "148 PUT /api/projects/1/photos/0 [24B] {X-Admin-Token}": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "149 PUT /api/projects/1/photos/0 [24B] {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"photoUrl\":\"/api/projects/1/photos/0?v=N\"}"
+    },
+    "150 PUT /api/projects/1/photos/2 [24B] {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"photoUrl\":\"/api/projects/1/photos/2?v=N\"}"
+    },
+    "151 GET /api/projects/1/photos/0?v=1": {
+      "status": 200,
+      "headers": {
+        "content-type": "image/webp",
+        "cache-control": "public, max-age=31536000, s-maxage=31536000, immutable"
+      },
+      "body": "24B 9deb6a9229f86a13021438182b29a69db5f67662"
+    },
+    "152 GET /api/projects/1/photos/9": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Sin imagen\"}"
+    },
+    "153 GET /api/projects/1": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"id\":1,\"code\":\"P-1\",\"title\":\"Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno\",\"centers\":[\"CENTRO UNO\"],\"groups\":[],\"area\":null,\"year\":null,\"startYear\":null,\"endYear\":null,\"status\":null,\"funder\":null,\"allies\":null,\"resources\":null,\"territory\":null,\"problem\":null,\"solution\":null,\"objective\":null,\"results\":null,\"beneficiaries\":null,\"evidence\":null,\"ods\":[],\"team\":[{\"name\":\"Ana\",\"role\":null}],\"photoUrl\":\"/api/projects/1/photos/0?v=N\",\"gallery\":[{\"slot\":2,\"url\":\"/api/projects/1/photos/2?v=N\"}],\"products\":[]}"
+    },
+    "154 DELETE /api/projects/1/photos/0 {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"photoUrl\":null}"
+    },
+    "155 DELETE /api/projects/1/photos/2 {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"photoUrl\":null}"
+    },
+    "156 DELETE /api/projects/1/photos/2 {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"photoUrl\":null}"
+    },
+    "157 GET /api/projects/1/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "[]"
+    },
+    "158 GET /api/projects/1/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 403,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Contraseña del centro incorrecta\"}"
+    },
+    "159 GET /api/projects/1/personal": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "160 GET /api/projects/2/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 403,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"El proyecto no es de este centro\"}"
+    },
+    "161 GET /api/projects/999/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 403,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"El proyecto no es de este centro\"}"
+    },
+    "162 PATCH /api/projects/1/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"nombreCompleto\\\": \\\"…\\\", \\\"rol\\\": \\\"…\\\", \\\"cedula\\\": \\\"123…\\\" (opcional) }\"}"
+    },
+    "163 PATCH /api/projects/1/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"nombreCompleto\\\": \\\"…\\\", \\\"rol\\\": \\\"…\\\", \\\"cedula\\\": \\\"123…\\\" (opcional) }\"}"
+    },
+    "164 PATCH /api/projects/1/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"nombreCompleto\\\": \\\"…\\\", \\\"rol\\\": \\\"…\\\", \\\"cedula\\\": \\\"123…\\\" (opcional) }\"}"
+    },
+    "165 PATCH /api/projects/1/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"nombreCompleto\\\": \\\"…\\\", \\\"rol\\\": \\\"…\\\", \\\"cedula\\\": \\\"123…\\\" (opcional) }\"}"
+    },
+    "166 PATCH /api/projects/1/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"nombreCompleto\\\": \\\"…\\\", \\\"rol\\\": \\\"…\\\", \\\"cedula\\\": \\\"123…\\\" (opcional) }\"}"
+    },
+    "167 PATCH /api/projects/1/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"nombreCompleto\\\": \\\"…\\\", \\\"rol\\\": \\\"…\\\", \\\"cedula\\\": \\\"123…\\\" (opcional) }\"}"
+    },
+    "168 PATCH /api/projects/2/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 403,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"El proyecto no es de este centro\"}"
+    },
+    "169 PATCH /api/projects/1/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "[{\"cedula\":\"7434389\",\"nombreCompleto\":\"ROBERTO\",\"rol\":\"Investigador\"}]"
+    },
+    "170 PATCH /api/projects/1/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "[{\"cedula\":\"7434389\",\"nombreCompleto\":\"ROBERTO\",\"rol\":\"Investigador\"},{\"cedula\":null,\"nombreCompleto\":\"Luisa\",\"rol\":\"Semillerista\"}]"
+    },
+    "171 PATCH /api/projects/1/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Metri-K respondió 500: rechazado\"}"
+    },
+    "172 GET /api/projects/1": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"id\":1,\"code\":\"P-1\",\"title\":\"Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno\",\"centers\":[\"CENTRO UNO\"],\"groups\":[],\"area\":null,\"year\":null,\"startYear\":null,\"endYear\":null,\"status\":null,\"funder\":null,\"allies\":null,\"resources\":null,\"territory\":null,\"problem\":null,\"solution\":null,\"objective\":null,\"results\":null,\"beneficiaries\":null,\"evidence\":null,\"ods\":[],\"team\":[{\"name\":\"ROBERTO\",\"role\":\"Investigador\"},{\"name\":\"Luisa\",\"role\":\"Semillerista\"},{\"name\":\"Ana\",\"role\":null}],\"photoUrl\":null,\"gallery\":[],\"products\":[]}"
+    },
+    "173 GET /api/projects/1/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "[{\"cedula\":\"7434389\",\"nombreCompleto\":\"ROBERTO\",\"rol\":\"Investigador\"},{\"cedula\":null,\"nombreCompleto\":\"Luisa\",\"rol\":\"Semillerista\"}]"
+    },
+    "174 DELETE /api/projects/1/personal/abc {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Cédula inválida\"}"
+    },
+    "175 DELETE /api/projects/1/personal/7434389 {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "[{\"cedula\":null,\"nombreCompleto\":\"Luisa\",\"rol\":\"Semillerista\"}]"
+    },
+    "176 DELETE /api/projects/1/personal/9999999 {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Metri-K respondió 500: rechazado\"}"
+    },
+    "177 DELETE /api/projects/1/personal/%E0%A4%A {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"URI malformed\"}"
+    },
+    "178 DELETE /api/projects/1/personal/7434389 {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 403,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Contraseña del centro incorrecta\"}"
+    },
+    "179 GET /api/ranking": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "180 GET /api/ranking {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"rows\":[]}"
+    },
+    "181 GET /api/ranking {X-Admin-Token}": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "182 GET /api/ranking {cookie}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"rows\":[]}"
+    },
+    "183 PUT /api/ranking {X-Admin-Token}": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "184 PUT /api/ranking {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"rows\\\": [{ cc, name, rank, centerRank, center, index }] }\"}"
+    },
+    "185 PUT /api/ranking {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"rows\\\": [{ cc, name, rank, centerRank, center, index }] }\"}"
+    },
+    "186 PUT /api/ranking {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"rows\\\": [{ cc, name, rank, centerRank, center, index }] }\"}"
+    },
+    "187 PUT /api/ranking {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"rows\\\": [{ cc, name, rank, centerRank, center, index }] }\"}"
+    },
+    "188 PUT /api/ranking [1048577B] {X-Admin-Token}": {
+      "status": 413,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"El ranking supera 1 MB\"}"
+    },
+    "189 PUT /api/ranking {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"published\":2,\"notFound\":[\"Nadie\"],\"inactive\":[\"Juan\"],\"invalid\":[\"Mal\",\"—\"]}"
+    },
+    "190 GET /api/ranking {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"rows\":[{\"id\":2,\"name\":\"LUIS GOMEZ\",\"index\":90,\"rank\":1,\"centerRank\":null,\"center\":null,\"hidden\":false,\"shown\":{\"index\":90,\"rank\":1,\"centerRank\":null,\"center\":null}},{\"id\":1,\"name\":\"ANA PEREZ\",\"index\":88.3,\"rank\":3,\"centerRank\":1,\"center\":\"CU\",\"hidden\":false,\"shown\":{\"index\":88.3,\"rank\":2,\"centerRank\":1,\"center\":\"CU\"}}]}"
+    },
+    "191 GET /api/investigators?size=50": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"id\":2,\"name\":\"LUIS GOMEZ\",\"category\":\"junior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":null,\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":null,\"photoUrl\":null,\"ranking\":{\"index\":90,\"rank\":1,\"centerRank\":null,\"center\":null},\"tiers\":{},\"centers\":[]},{\"id\":1,\"name\":\"ANA PEREZ\",\"category\":\"senior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":\"57000000012\",\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":{\"hIndex\":12,\"scopusPublications\":1,\"products\":2},\"photoUrl\":null,\"ranking\":{\"index\":88.3,\"rank\":2,\"centerRank\":1,\"center\":\"CU\"},\"tiers\":{},\"centers\":[{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"logoUrl\":null}]}],\"total\":2,\"page\":1,\"pages\":1}"
+    },
+    "192 GET /api/investigators?tier=top12": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[],\"total\":0,\"page\":1,\"pages\":0}"
+    },
+    "193 PUT /api/ranking/top12 {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"published\":1,\"notFound\":[],\"inactive\":[],\"invalid\":[]}"
+    },
+    "194 PUT /api/ranking/top60 {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"published\":1,\"notFound\":[],\"inactive\":[],\"invalid\":[]}"
+    },
+    "195 GET /api/investigators?tier=top12": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"id\":1,\"name\":\"ANA PEREZ\",\"category\":\"senior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":\"57000000012\",\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":{\"hIndex\":12,\"scopusPublications\":1,\"products\":2},\"photoUrl\":null,\"ranking\":{\"index\":90,\"rank\":1,\"centerRank\":null,\"center\":null},\"tiers\":{\"top12\":{\"index\":90,\"rank\":1,\"centerRank\":null,\"center\":null}},\"centers\":[{\"id\":1,\"code\":\"CI-1\",\"acronym\":\"CU\",\"name\":\"Centro Uno\",\"logoUrl\":null}]}],\"total\":1,\"page\":1,\"pages\":1}"
+    },
+    "196 GET /api/investigators?tier=top60": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"id\":2,\"name\":\"LUIS GOMEZ\",\"category\":\"junior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":null,\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":null,\"photoUrl\":null,\"ranking\":{\"index\":90,\"rank\":1,\"centerRank\":null,\"center\":null},\"tiers\":{\"top60\":{\"index\":90,\"rank\":1,\"centerRank\":null,\"center\":null}},\"centers\":[]}],\"total\":1,\"page\":1,\"pages\":1}"
+    },
+    "197 DELETE /api/ranking/top12 {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"published\":0,\"notFound\":[],\"inactive\":[],\"invalid\":[]}"
+    },
+    "198 DELETE /api/ranking/top12": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "199 GET /api/ranking/top12 {X-Admin-Token}": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "200 PUT /api/ranking/top99 {X-Admin-Token}": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "201 PUT /api/ranking/visibility {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"ids\\\": [números], \\\"visible\\\": true | false }\"}"
+    },
+    "202 PUT /api/ranking/visibility {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"ids\\\": [números], \\\"visible\\\": true | false }\"}"
+    },
+    "203 PUT /api/ranking/visibility {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"ids\\\": [números], \\\"visible\\\": true | false }\"}"
+    },
+    "204 PUT /api/ranking/visibility {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"ids\\\": [números], \\\"visible\\\": true | false }\"}"
+    },
+    "205 PUT /api/ranking/visibility {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"ids\\\": [números], \\\"visible\\\": true | false }\"}"
+    },
+    "206 PUT /api/ranking/visibility {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"ids\\\": [números], \\\"visible\\\": true | false }\"}"
+    },
+    "207 PUT /api/ranking/visibility {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"ids\\\": [números], \\\"visible\\\": true | false }\"}"
+    },
+    "208 PUT /api/ranking/visibility {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"visible\":false,\"hidden\":1}"
+    },
+    "209 GET /api/ranking {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"rows\":[{\"id\":2,\"name\":\"LUIS GOMEZ\",\"index\":90,\"rank\":1,\"centerRank\":null,\"center\":null,\"hidden\":false,\"shown\":{\"index\":90,\"rank\":1,\"centerRank\":null,\"center\":null}},{\"id\":1,\"name\":\"ANA PEREZ\",\"index\":88.3,\"rank\":3,\"centerRank\":1,\"center\":\"CU\",\"hidden\":true,\"shown\":null}]}"
+    },
+    "210 GET /api/investigators": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"id\":2,\"name\":\"LUIS GOMEZ\",\"category\":\"junior\",\"degree\":\"Doctorado\",\"orcid\":null,\"scopusId\":null,\"cvlacUrl\":null,\"scholarUrl\":null,\"mainGroup\":{\"id\":14,\"name\":\"Grupo Uno\",\"code\":\"COL1\"},\"metrics\":null,\"photoUrl\":null,\"ranking\":{\"index\":90,\"rank\":1,\"centerRank\":null,\"center\":null},\"tiers\":{\"top60\":{\"index\":90,\"rank\":1,\"centerRank\":null,\"center\":null}},\"centers\":[]}],\"total\":1,\"page\":1,\"pages\":1}"
+    },
+    "211 PUT /api/ranking/visibility {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"visible\":true,\"hidden\":0}"
+    },
+    "212 PUT /api/ranking/777 {X-Admin-Token}": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No está en el ranking\"}"
+    },
+    "213 PUT /api/ranking/1 {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"visible\\\": true | false }\"}"
+    },
+    "214 PUT /api/ranking/1 {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"visible\\\": true | false }\"}"
+    },
+    "215 PUT /api/ranking/1 {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"visible\\\": true | false }\"}"
+    },
+    "216 PUT /api/ranking/1 {X-Admin-Token}": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "217 PUT /api/ranking/1 {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"visible\":false}"
+    },
+    "218 GET /api/ranking {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"rows\":[{\"id\":2,\"name\":\"LUIS GOMEZ\",\"index\":90,\"rank\":1,\"centerRank\":null,\"center\":null,\"hidden\":false,\"shown\":{\"index\":90,\"rank\":1,\"centerRank\":null,\"center\":null}},{\"id\":1,\"name\":\"ANA PEREZ\",\"index\":88.3,\"rank\":3,\"centerRank\":1,\"center\":\"CU\",\"hidden\":true,\"shown\":null}]}"
+    },
+    "219 PUT /api/ranking/1 {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"visible\":true}"
+    },
+    "220 PUT /api/publications": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "221 PUT /api/publications {X-Admin-Token}": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "222 PUT /api/publications {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"rows\\\": [{ rank, eid, title, … }] }\"}"
+    },
+    "223 PUT /api/publications {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"rows\\\": [{ rank, eid, title, … }] }\"}"
+    },
+    "224 PUT /api/publications {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"rows\\\": [{ rank, eid, title, … }] }\"}"
+    },
+    "225 PUT /api/publications [4194305B] {X-Admin-Token}": {
+      "status": 413,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Las publicaciones superan 4 MB\"}"
+    },
+    "226 PUT /api/publications {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"published\":2,\"invalid\":[\"#9 no-es-eid\",\"#7\"],\"unlinked\":1}"
+    },
+    "227 GET /api/publications": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"rank\":1,\"score\":89,\"eid\":\"2-s2.0-1000001\",\"doi\":null,\"title\":\"Paper 1\",\"abstract\":null,\"year\":2024,\"type\":\"Article\",\"journal\":\"Journal\",\"issn\":[],\"language\":null,\"areas\":[\"Natural Sciences\"],\"citations\":3,\"openAccess\":true,\"international\":false,\"countries\":[\"Colombia\"],\"correspondence\":false,\"authorsCount\":2,\"authors\":[],\"position\":1},{\"rank\":2,\"score\":88,\"eid\":\"2-s2.0-85000000005\",\"doi\":\"10.1000/xyz\",\"title\":\"Paper 2\",\"abstract\":null,\"year\":2024,\"type\":\"Article\",\"journal\":\"Journal\",\"issn\":[],\"language\":null,\"areas\":[\"Natural Sciences\"],\"citations\":3,\"openAccess\":false,\"international\":false,\"countries\":[\"Colombia\"],\"correspondence\":false,\"authorsCount\":2,\"authors\":[{\"id\":1,\"name\":\"ANA PEREZ\",\"published\":true}],\"position\":2}],\"total\":2,\"page\":1,\"pages\":1}"
+    },
+    "228 GET /api/publications?q=paper%202&type=Article&from=2020&to=2024": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"rank\":2,\"score\":88,\"eid\":\"2-s2.0-85000000005\",\"doi\":\"10.1000/xyz\",\"title\":\"Paper 2\",\"abstract\":null,\"year\":2024,\"type\":\"Article\",\"journal\":\"Journal\",\"issn\":[],\"language\":null,\"areas\":[\"Natural Sciences\"],\"citations\":3,\"openAccess\":false,\"international\":false,\"countries\":[\"Colombia\"],\"correspondence\":false,\"authorsCount\":2,\"authors\":[{\"id\":1,\"name\":\"ANA PEREZ\",\"published\":true}],\"position\":1}],\"total\":1,\"page\":1,\"pages\":1}"
+    },
+    "229 GET /api/publications?quartile=Q1": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[{\"rank\":1,\"score\":89,\"eid\":\"2-s2.0-1000001\",\"doi\":null,\"title\":\"Paper 1\",\"abstract\":null,\"year\":2024,\"type\":\"Article\",\"journal\":\"Journal\",\"issn\":[],\"language\":null,\"areas\":[\"Natural Sciences\"],\"citations\":3,\"openAccess\":true,\"international\":false,\"countries\":[\"Colombia\"],\"correspondence\":false,\"authorsCount\":2,\"authors\":[],\"position\":1},{\"rank\":2,\"score\":88,\"eid\":\"2-s2.0-85000000005\",\"doi\":\"10.1000/xyz\",\"title\":\"Paper 2\",\"abstract\":null,\"year\":2024,\"type\":\"Article\",\"journal\":\"Journal\",\"issn\":[],\"language\":null,\"areas\":[\"Natural Sciences\"],\"citations\":3,\"openAccess\":false,\"international\":false,\"countries\":[\"Colombia\"],\"correspondence\":false,\"authorsCount\":2,\"authors\":[{\"id\":1,\"name\":\"ANA PEREZ\",\"published\":true}],\"position\":2}],\"total\":2,\"page\":1,\"pages\":1}"
+    },
+    "230 GET /api/publications/stats": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"total\":2,\"q1\":1,\"openAccess\":1,\"international\":0,\"citations\":6,\"years\":[2024],\"types\":[\"Article\"],\"areas\":[\"Natural Sciences\"]}"
+    },
+    "231 DELETE /api/publications": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "232 DELETE /api/publications {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"published\":0,\"invalid\":[],\"unlinked\":0}"
+    },
+    "233 GET /api/publications": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"items\":[],\"total\":0,\"page\":1,\"pages\":0}"
+    },
+    "234 DELETE /api/investigators/abc/photo {X-Admin-Token}": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "235 DELETE /api/centers/1/resolutions/9 {X-Admin-Token}": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "236 DELETE /api/orcid/search {X-Admin-Token}": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "237 PUT /api/relations/countries {X-Admin-Token}": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "238 PATCH /api/investigators/1/photo [24B] {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"photoUrl\":\"/api/investigators/1/photo?v=N\"}"
+    },
+    "239 DELETE /api/investigators/1/photo {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"photoUrl\":null}"
+    },
+    "240 PATCH /api/ranking {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"published\":1,\"notFound\":[],\"inactive\":[],\"invalid\":[]}"
+    },
+    "241 PATCH /api/publications {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"published\":0,\"invalid\":[\"#1 2-s2.0-1\"],\"unlinked\":0}"
+    },
+    "242 PATCH /api/projects/1/photos/0 [24B] {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"photoUrl\":\"/api/projects/1/photos/0?v=N\"}"
+    },
+    "243 DELETE /api/projects/1/photos/0 {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"photoUrl\":null}"
+    },
+    "244 HEAD /api/ranking {X-Admin-Token}": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": ""
+    },
+    "245 HEAD /api/centers/1/access {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": ""
+    },
+    "246 HEAD /api/projects/1/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": ""
+    },
+    "247 PUT /api/centers/1/website {X-Admin-Token}": {
+      "status": 413,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"La solicitud supera 1 KB\"}"
+    },
+    "248 PUT /api/centers/1/website {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"website\\\": \\\"https://…\\\" } o { \\\"website\\\": null }\"}"
+    },
+    "249 PUT /api/centers/1/password {X-Admin-Token}": {
+      "status": 413,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"La solicitud supera 1 KB\"}"
+    },
+    "250 PUT /api/centers/1/password {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"password\\\": \\\"…\\\" } (mínimo 8 caracteres) o { \\\"password\\\": null }\"}"
+    },
+    "251 PUT /api/ranking/1 {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"visible\\\": true | false }\"}"
+    },
+    "252 PUT /api/ranking/visibility [1048577B] {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"ids\\\": [números], \\\"visible\\\": true | false }\"}"
+    },
+    "253 PUT /api/ranking/visibility {X-Admin-Token}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"ids\\\": [números], \\\"visible\\\": true | false }\"}"
+    },
+    "254 PATCH /api/projects/1/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Se espera { \\\"nombreCompleto\\\": \\\"…\\\", \\\"rol\\\": \\\"…\\\", \\\"cedula\\\": \\\"123…\\\" (opcional) }\"}"
+    },
+    "255 POST /api/admin/session": {
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Token de administración inválido\"}"
+    },
+    "256 DELETE /api/ranking {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"published\":0,\"notFound\":[],\"inactive\":[],\"invalid\":[]}"
+    },
+    "257 DELETE /api/publications {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"published\":0,\"invalid\":[],\"unlinked\":0}"
+    }
+  },
+  "gzip": {
+    "000 GET /api/projects/1 {Accept-Encoding}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60",
+        "content-encoding": "gzip",
+        "vary": "Accept-Encoding"
+      },
+      "body": "{\"id\":1,\"code\":\"P-1\",\"title\":\"Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno\",\"centers\":[\"CENTRO UNO\"],\"groups\":[],\"area\":null,\"year\":null,\"startYear\":null,\"endYear\":null,\"status\":null,\"funder\":null,\"allies\":null,\"resources\":null,\"territory\":null,\"problem\":null,\"solution\":null,\"objective\":null,\"results\":null,\"beneficiaries\":null,\"evidence\":null,\"ods\":[],\"team\":[{\"name\":\"Luisa\",\"role\":\"Semillerista\"},{\"name\":\"Ana\",\"role\":null}],\"photoUrl\":null,\"gallery\":[],\"products\":[]}"
+    },
+    "001 GET /api/projects/1 {Accept-Encoding}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"id\":1,\"code\":\"P-1\",\"title\":\"Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno\",\"centers\":[\"CENTRO UNO\"],\"groups\":[],\"area\":null,\"year\":null,\"startYear\":null,\"endYear\":null,\"status\":null,\"funder\":null,\"allies\":null,\"resources\":null,\"territory\":null,\"problem\":null,\"solution\":null,\"objective\":null,\"results\":null,\"beneficiaries\":null,\"evidence\":null,\"ods\":[],\"team\":[{\"name\":\"Luisa\",\"role\":\"Semillerista\"},{\"name\":\"Ana\",\"role\":null}],\"photoUrl\":null,\"gallery\":[],\"products\":[]}"
+    },
+    "002 GET /api/projects/1": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60",
+        "content-encoding": "gzip",
+        "vary": "Accept-Encoding"
+      },
+      "body": "{\"id\":1,\"code\":\"P-1\",\"title\":\"Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno\",\"centers\":[\"CENTRO UNO\"],\"groups\":[],\"area\":null,\"year\":null,\"startYear\":null,\"endYear\":null,\"status\":null,\"funder\":null,\"allies\":null,\"resources\":null,\"territory\":null,\"problem\":null,\"solution\":null,\"objective\":null,\"results\":null,\"beneficiaries\":null,\"evidence\":null,\"ods\":[],\"team\":[{\"name\":\"Luisa\",\"role\":\"Semillerista\"},{\"name\":\"Ana\",\"role\":null}],\"photoUrl\":null,\"gallery\":[],\"products\":[]}"
+    },
+    "003 GET /api/groups/14 {Accept-Encoding}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"id\":14,\"code\":\"COL1\",\"name\":\"Grupo Uno\",\"active\":true,\"type\":null,\"category\":\"A1\",\"gruplacUrl\":null,\"city\":null,\"department\":null,\"foundedYear\":null,\"leader\":null,\"ods\":[3,17],\"centerIds\":[],\"lines\":[],\"categoryHistory\":[]}"
+    },
+    "004 GET /api/projects {Accept-Encoding}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60",
+        "content-encoding": "gzip",
+        "vary": "Accept-Encoding"
+      },
+      "body": "[{\"id\":1,\"code\":\"P-1\",\"title\":\"Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno Proyecto uno\",\"centers\":[\"CENTRO UNO\"],\"groups\":[],\"area\":null,\"year\":null,\"startYear\":null,\"endYear\":null,\"status\":null,\"funder\":null,\"allies\":null,\"resources\":null,\"territory\":null,\"problem\":null,\"solution\":null,\"objective\":null,\"results\":null,\"beneficiaries\":null,\"evidence\":null,\"ods\":[],\"team\":[{\"name\":\"Luisa\",\"role\":\"Semillerista\"},{\"name\":\"Ana\",\"role\":null}],\"photoUrl\":null,\"gallery\":[],\"products\":[]},{\"id\":2,\"code\":\"P-2\",\"title\":\"Proyecto de otro centro\",\"centers\":[\"Otro\"],\"groups\":[],\"area\":null,\"year\":null,\"startYear\":null,\"endYear\":null,\"status\":null,\"funder\":null,\"allies\":null,\"resources\":null,\"territory\":null,\"problem\":null,\"solution\":null,\"objective\":null,\"results\":null,\"beneficiaries\":null,\"evidence\":null,\"ods\":[],\"team\":[],\"photoUrl\":null,\"gallery\":[],\"products\":[]}]"
+    },
+    "005 GET /api/centers/1/access {X-Admin-Token,X-Center-Id,X-Center-Password,Accept-Encoding}": {
+      "status": 403,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Contraseña del centro incorrecta\"}"
+    },
+    "006 HEAD /api/projects/1 {Accept-Encoding}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60",
+        "content-encoding": "gzip",
+        "vary": "Accept-Encoding"
+      },
+      "body": ""
+    }
+  },
+  "noToken": {
+    "000 GET /api/admin/session": {
+      "status": 503,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Administración deshabilitada (falta CRIS_ADMIN_TOKEN)\"}"
+    },
+    "001 POST /api/admin/session": {
+      "status": 503,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Administración deshabilitada (falta CRIS_ADMIN_TOKEN)\"}"
+    },
+    "002 DELETE /api/admin/session": {
+      "status": 503,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Administración deshabilitada (falta CRIS_ADMIN_TOKEN)\"}"
+    },
+    "003 PUT /api/investigators/1/photo [24B] {X-Admin-Token}": {
+      "status": 503,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Administración deshabilitada (falta CRIS_ADMIN_TOKEN)\"}"
+    },
+    "004 PUT /api/centers/1/website {X-Admin-Token}": {
+      "status": 503,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Administración deshabilitada (falta CRIS_ADMIN_TOKEN)\"}"
+    },
+    "005 GET /api/ranking {X-Admin-Token}": {
+      "status": 503,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Administración deshabilitada (falta CRIS_ADMIN_TOKEN)\"}"
+    },
+    "006 GET /api/centers/1/access {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 503,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Administración deshabilitada (falta CRIS_ADMIN_TOKEN)\"}"
+    },
+    "007 PUT /api/groups {X-Admin-Token}": {
+      "status": 405,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Método no permitido\"}"
+    },
+    "008 GET /api/groups/14": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"id\":14,\"code\":\"COL1\",\"name\":\"Grupo Uno\",\"active\":true,\"type\":null,\"category\":\"A1\",\"gruplacUrl\":null,\"city\":null,\"department\":null,\"foundedYear\":null,\"leader\":null,\"ods\":[3,17],\"centerIds\":[],\"lines\":[],\"categoryHistory\":[]}"
+    }
+  },
+  "down": {
+    "000 GET /api/groups": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "001 GET /api/groups/14": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "002 GET /api/groups/staffing": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "003 GET /api/investigators": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "004 GET /api/investigators/1": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "005 GET /api/investigators/stats": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "006 GET /api/centers": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "007 GET /api/centers/1": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "008 GET /api/projects": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "009 GET /api/projects/1": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "010 GET /api/publications": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "011 GET /api/relations/countries": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "012 GET /api/relations/by-year": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "013 GET /api/relations/countries/ESP/publications": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "014 GET /api/orcid/0000-0002-1825-0097": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "015 GET /api/orcid/search?q=ana%20perez": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "016 GET /api/centers/1/resolutions/9": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "017 PUT /api/centers/1/website {X-Admin-Token}": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "018 PUT /api/centers/1/password {X-Admin-Token}": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "019 GET /api/centers/1/access {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "020 PUT /api/investigators/1/photo [24B] {X-Admin-Token}": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "021 PUT /api/projects/1/photos/0 [24B] {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "022 GET /api/projects/1/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "023 PATCH /api/projects/1/personal {X-Admin-Token,X-Center-Id,X-Center-Password}": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "024 GET /api/ranking {X-Admin-Token}": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "025 PUT /api/ranking {X-Admin-Token}": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "026 PUT /api/publications {X-Admin-Token}": {
+      "status": 502,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"Servicio de datos no disponible\"}"
+    },
+    "027 GET /api/health": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    }
+  },
+  "badStore": {
+    "000 PUT /api/centers/1/password {X-Admin-Token}": {
+      "status": 500,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No se pudo guardar la contraseña: <error>\"}"
+    },
+    "001 PUT /api/centers/1/website {X-Admin-Token}": {
+      "status": 500,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No se pudo guardar la página: <error>\"}"
+    },
+    "002 PUT /api/ranking {X-Admin-Token}": {
+      "status": 500,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No se pudo guardar el ranking: <error>\"}"
+    },
+    "003 PUT /api/ranking/top12 {X-Admin-Token}": {
+      "status": 500,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No se pudo guardar el ranking: <error>\"}"
+    },
+    "004 PUT /api/ranking/visibility {X-Admin-Token}": {
+      "status": 500,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No se pudo guardar: <error>\"}"
+    },
+    "005 PUT /api/ranking/1 {X-Admin-Token}": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No está en el ranking\"}"
+    },
+    "006 PUT /api/publications {X-Admin-Token}": {
+      "status": 500,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No se pudieron guardar las publicaciones: <fs-error>\"}"
+    },
+    "007 PUT /api/investigators/1/photo [24B] {X-Admin-Token}": {
+      "status": 500,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"<fs-error>\"}"
+    },
+    "008 PUT /api/centers/1/logo [24B] {X-Admin-Token}": {
+      "status": 500,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"<fs-error>\"}"
+    }
+  },
+  "badHidden": {
+    "000 PUT /api/ranking {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"published\":1,\"notFound\":[],\"inactive\":[],\"invalid\":[]}"
+    },
+    "001 PUT /api/ranking/1 {X-Admin-Token}": {
+      "status": 500,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No se pudo guardar: <error>\"}"
+    },
+    "002 PUT /api/ranking/visibility {X-Admin-Token}": {
+      "status": 500,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No se pudo guardar: <error>\"}"
+    },
+    "003 GET /api/ranking {X-Admin-Token}": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"rows\":[{\"id\":1,\"name\":\"ANA PEREZ\",\"index\":90,\"rank\":1,\"centerRank\":null,\"center\":null,\"hidden\":false,\"shown\":{\"index\":90,\"rank\":1,\"centerRank\":null,\"center\":null}}]}"
+    }
+  },
+  "next": {
+    "000 GET /": {
+      "status": 299,
+      "headers": {},
+      "body": "4B 1992d5e8d57e780981c364d844480c004ead1bc2"
+    },
+    "001 GET /investigadores": {
+      "status": 299,
+      "headers": {},
+      "body": "4B 1992d5e8d57e780981c364d844480c004ead1bc2"
+    },
+    "002 GET /assets/x.js": {
+      "status": 299,
+      "headers": {},
+      "body": "4B 1992d5e8d57e780981c364d844480c004ead1bc2"
+    },
+    "003 GET /api/groups/14": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60"
+      },
+      "body": "{\"id\":14,\"code\":\"COL1\",\"name\":\"Grupo Uno\",\"active\":true,\"type\":null,\"category\":\"A1\",\"gruplacUrl\":null,\"city\":null,\"department\":null,\"foundedYear\":null,\"leader\":null,\"ods\":[3,17],\"centerIds\":[],\"lines\":[],\"categoryHistory\":[]}"
+    },
+    "004 POST /otra": {
+      "status": 299,
+      "headers": {},
+      "body": "4B 1992d5e8d57e780981c364d844480c004ead1bc2"
+    }
+  },
+  "noNext": {
+    "000 GET /": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "001 GET /investigadores": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    },
+    "002 POST /otra": {
+      "status": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": "{\"detail\":\"No encontrado\"}"
+    }
+  }
+}

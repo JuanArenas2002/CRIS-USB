@@ -1,7 +1,7 @@
 import { withBase } from '@/shared/base';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { CONTACT_EMAIL, IRAKA_URL } from '@/shared/contact';
+import { CONTACT_EMAIL, GLOBAL_URL, IRAKA_URL } from '@/shared/contact';
 import { NAV_ITEMS } from '@/shared/navigation';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { openPreferences } from '@/infrastructure/privacy/consent';
@@ -47,6 +47,9 @@ export function SiteFooter() {
                 {t(`nav.items.${item.key}.label`)}
               </Link>
             ))}
+            <Link to="/noticias" className="text-body-sm text-primary-fixed-dim hover:text-on-primary">
+              {t('nav.news')}
+            </Link>
             <a
               href={IRAKA_URL}
               target="_blank"
@@ -54,6 +57,15 @@ export function SiteFooter() {
               className="inline-flex items-center gap-1.5 self-start text-body-sm text-primary-fixed-dim hover:text-on-primary"
             >
               {t('home:hero.iraka')} <Icon name="open_in_new" className="text-[14px]" />
+              <span className="sr-only">{t('newTab')}</span>
+            </a>
+            <a
+              href={GLOBAL_URL}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-1.5 self-start text-body-sm text-primary-fixed-dim hover:text-on-primary"
+            >
+              Unisimon Global <Icon name="open_in_new" className="text-[14px]" />
               <span className="sr-only">{t('newTab')}</span>
             </a>
           </nav>

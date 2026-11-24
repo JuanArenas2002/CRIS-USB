@@ -150,3 +150,46 @@ test('publicationRows: columnas por nombre (tildes y signos indiferentes); sin E
   expect(() => publicationRows([['EID', 'Título']])).toThrow(/Faltan columnas en la hoja: puntaje/);
   expect(() => publicationRows([['Título']])).toThrow(/EID/);
 });
+
+test('publicationRows: el orden de las columnas no importa y, si una cabecera se repite, vale la primera', () => {
+  const a = [
+    ['#', 'EID', 'Título', 'Puntaje', 'Citas', 'Revista'],
+    ['7', '2-s2.0-1', 'Uno', '10', '5', 'J1'],
+  ];
+  const b = [
+    ['Revista', 'Citas', 'Puntaje', 'Título', 'EID', '#'],
+    ['J1', '5', '10', 'Uno', '2-s2.0-1', '7'],
+  ];
+  expect(publicationRows(b)).toEqual(publicationRows(a));
+  expect(publicationRows(a)[0]).toMatchObject({
+    rank: 7,
+    eid: '2-s2.0-1',
+    title: 'Uno',
+    citations: 5,
+    journal: 'J1',
+  });
+
+  // «Citas» y «EID» repetidos más a la derecha no pisan a los primeros.
+  const dup = [
+    ['EID', 'Título', 'Puntaje', 'Citas', 'EID', 'Citas'],
+    ['2-s2.0-1', 'Uno', '10', '5', '2-s2.0-OTRO', '99'],
+  ];
+  expect(publicationRows(dup)[0]).toMatchObject({ eid: '2-s2.0-1', citations: 5 });
+});
+
+test('publicationRows: una columna opcional ausente deja su valor vacío; sin «#», el orden de las filas es el puesto', () => {
+  const [first, second] = publicationRows([
+    ['EID', 'Título', 'Puntaje'],
+    ['2-s2.0-1', 'Uno', '10'],
+    ['2-s2.0-2', 'Dos', ''],
+  ]);
+  expect(first).toMatchObject({
+    rank: 1,
+    doi: null,
+    year: null,
+    areas: [],
+    countries: [],
+    authorsCount: null,
+  });
+  expect(second).toMatchObject({ rank: 2, score: 0, quartile: null, openAccess: false });
+});
