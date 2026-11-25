@@ -1,4 +1,4 @@
-/** Variables del índice de productividad USB por tema, con su peso (suman 100). Las de peso 0 no cuentan y no se listan. */
+/** Variables del índice de productividad Unisimón por tema, con su peso (suman 100). Las de peso 0 no cuentan y no se listan. */
 export const USB_INDEX_GROUPS = [
   {
     key: 'hIndex',

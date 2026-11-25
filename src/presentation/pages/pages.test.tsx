@@ -106,7 +106,7 @@ test('perfil: canonicaliza el slug y muestra identificadores', async () => {
     'href',
     '/centros/1-centro-de-crecimiento-empresarial-macondolab',
   );
-  expect(screen.getByText('Índice de productividad USB')).toBeInTheDocument();
+  expect(screen.getByText('Índice de productividad Unisimón')).toBeInTheDocument();
   expect(screen.getByText('#1 en MACONDOLAB')).toBeInTheDocument();
   await waitFor(() =>
     expect(document.querySelector('link[rel="canonical"]')?.getAttribute('href')).toMatch(

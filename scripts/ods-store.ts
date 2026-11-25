@@ -1,6 +1,6 @@
 // Datos que el portal guarda por id en un solo JSON (Metri-K aún no los tiene):
 // - Página oficial de cada centro (vista oculta /admin/centros).
-// - Ranking de productividad USB de cada investigador y quiénes se ocultan (vista oculta /admin/ranking).
+// - Ranking de productividad Unisimón de cada investigador y quiénes se ocultan (vista oculta /admin/ranking).
 // - Ranking de publicaciones Scopus, por puesto (vista oculta /admin/produccion).
 // Dos almacenamientos con la misma interfaz (ver stores.ts): un JSON en disco en local / servidor
 // propio y Vercel Blob en Vercel. Migrar a Metri-K cuando el backend los soporte.
@@ -37,7 +37,7 @@ export const normalizeFlag: Normalize<true> = (v) => (v === true ? true : null);
 
 const rank = (v: unknown) => (Number.isInteger(v) && (v as number) > 0 ? (v as number) : null);
 
-/** Ranking USB: índice 0–100 (un decimal) y puestos enteros positivos. */
+/** Ranking Unisimón: índice 0–100 (un decimal) y puestos enteros positivos. */
 export const normalizeRanking: Normalize<AuthorRanking> = (v) => {
   const r = v as Partial<Record<keyof AuthorRanking, unknown>> | null;
   if (!r || typeof r !== 'object') return null;

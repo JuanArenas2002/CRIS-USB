@@ -1,5 +1,5 @@
 import { withBase } from '@/shared/base';
-// Ranking de productividad USB (vista oculta /admin/ranking). El navegador lee el Excel y envía solo
+// Ranking de productividad Unisimón (vista oculta /admin/ranking). El navegador lee el Excel y envía solo
 // lo que el portal usa (cédula, nombre, puestos, centro e índice); horas y demás columnas no salen
 // del equipo. El BFF cruza la cédula con Metri-K y guarda el ranking por id de investigador.
 import type { RankingTier } from '@/domain/authors/author';

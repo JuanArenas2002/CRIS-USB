@@ -59,7 +59,7 @@ export interface Author {
   photoUrl: string | null;
   /** Centros de investigación activos a los que aporta (Metri-K `/center/investigator/{id}`). */
   centers?: CenterRef[];
-  /** Ranking de productividad USB (Excel cargado en /admin/ranking); null si no figura. */
+  /** Ranking de productividad Unisimón (Excel cargado en /admin/ranking); null si no figura. */
   ranking?: AuthorRanking | null;
   /** Su fila en el ranking de cada apartado (Top 12, Top 60) en el que figura. */
   tiers?: Partial<Record<RankingTier, AuthorRanking>>;
@@ -67,9 +67,9 @@ export interface Author {
   tierOnly?: boolean;
 }
 
-/** Fila del ranking de productividad USB de un investigador. */
+/** Fila del ranking de productividad Unisimón de un investigador. */
 export interface AuthorRanking {
-  /** Índice de productividad USB, 0–100. */
+  /** Índice de productividad Unisimón, 0–100. */
   index: number;
   /** Puesto general en la universidad. */
   rank: number;
@@ -240,7 +240,7 @@ const rank = (c: AuthorCategoryId | null) => {
 };
 
 /** Filtra, ordena (mayor categoría primero, luego alfabético) y pagina. */
-/** Puesto del investigador dentro de un centro según el ranking USB (∞ si no figura en ese centro). */
+/** Puesto del investigador dentro de un centro según el ranking Unisimón (∞ si no figura en ese centro). */
 export function centerRankIn(a: Author, centerId: number): number {
   const center = a.centers?.find((c) => c.id === centerId);
   return a.ranking?.centerRank && center && sameCenter(a.ranking.center, center.acronym ?? center.code)
@@ -260,7 +260,7 @@ export const sameCenter = (a: string | null | undefined, b: string | null | unde
   !!a && !!b && centerKey(a) === centerKey(b);
 
 /**
- * Suma a los centros de Metri-K el del ranking USB cuando Metri-K no vincula al investigador con
+ * Suma a los centros de Metri-K el del ranking Unisimón cuando Metri-K no vincula al investigador con
  * él: así el filtro por centro, el puesto en el centro y el logo cuentan a las mismas personas.
  */
 export function withRankingCenter<T extends Author>(a: T, known: CenterRef[]): T {
@@ -277,7 +277,7 @@ export interface CenterSection {
 
 /**
  * Secciones del directorio, una por centro. Cada investigador sale una sola vez: en el centro con el
- * que figura en el ranking USB o, si no, en el primero de Metri-K. Dentro, por puesto en el centro
+ * que figura en el ranking Unisimón o, si no, en el primero de Metri-K. Dentro, por puesto en el centro
  * (luego el orden recibido); centros por sigla y "sin centro" al final. Con `centerId` (filtro por
  * centro), todos van a la sección de ese centro.
  */
@@ -311,7 +311,7 @@ export function queryAuthors(all: Author[], q: AuthorListQuery): AuthorListPage 
         (!q.centerId || !!a.centers?.some((c) => c.id === q.centerId)) &&
         (!term || norm(a.name).includes(term) || (a.orcid ?? '').includes(term)),
     )
-    // Siempre de mayor a menor índice USB (puesto visible, ya renumerado entre los publicados);
+    // Siempre de mayor a menor índice Unisimón (puesto visible, ya renumerado entre los publicados);
     // con centro, por puesto en ese centro. Sin ranking: mayor categoría y nombre.
     .sort(
       (a, b) =>
@@ -326,7 +326,7 @@ export function queryAuthors(all: Author[], q: AuthorListQuery): AuthorListPage 
 }
 
 /**
- * Destacados (con métricas de Metri-K): como el directorio, de mayor a menor índice USB; sin
+ * Destacados (con métricas de Metri-K): como el directorio, de mayor a menor índice Unisimón; sin
  * ranking, mayor índice H y luego más publicaciones.
  */
 export function featuredAuthors(all: Author[]): Author[] {

@@ -13,7 +13,7 @@ import { Icon } from '@/presentation/components/ui/Icon';
 import { IdLogo } from '@/presentation/components/ui/IdLogo';
 import { useLabels } from '@/presentation/hooks/use-labels';
 
-/** Top 3 de cada centro en el ranking USB: mismo estilo sobrio; el puesto lo dice el número. */
+/** Top 3 de cada centro en el ranking Unisimón: mismo estilo sobrio; el puesto lo dice el número. */
 const MEDAL = [
   'bg-white text-primary-container ring-primary-container/50',
   'bg-white text-primary-container ring-primary-container/50',
@@ -32,7 +32,7 @@ const card =
 /**
  * Tarjeta en tres niveles de lectura:
  * 1. Quién es: foto grande arriba; nombre, categoría y grupo principal.
- * 2. Cuánto produce: índice USB destacado, con su puesto en el centro y el general.
+ * 2. Cuánto produce: índice Unisimón destacado, con su puesto en el centro y el general.
  * 3. Detalle: cifras clave y, al pie, centros e identificadores (logos enlazados).
  * Toda la tarjeta enlaza al perfil (pseudo-elemento del nombre); los identificadores van por encima.
  */
@@ -118,7 +118,7 @@ export function AuthorCard({ author }: { author: Author }) {
         </div>
       </div>
 
-      {/* Nivel 2: indicador principal (ranking USB) */}
+      {/* Nivel 2: indicador principal (ranking Unisimón) */}
       {r ? (
         <div className="mt-5 rounded-2xl bg-metric-bg p-4">
           <div className="flex items-end justify-between gap-3">
