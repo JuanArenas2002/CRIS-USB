@@ -142,7 +142,7 @@ test('menú: las 6 secciones y Noticias en orden, todas con contenido, y los enl
     'Centros',
     'Grupos',
     'Investigadores',
-    'Proyectos',
+    'Proyectos Top Seleccionados',
     'Publicaciones de alto impacto',
     'Relacionamiento',
     'Noticias',
@@ -604,7 +604,7 @@ test('centro: lista sus proyectos (cruce por nombre del centro, sin tildes ni ma
     makeProject({ id: 4, title: 'Proyecto de otro centro', centers: ['Otro centro'] }),
   ]);
   renderApp('/centros/1-nombre-viejo', fakeRepo(), fakeGroupRepo(), fakeCenterRepo(), undefined, repo);
-  const section = await screen.findByRole('region', { name: 'Proyectos de investigación' });
+  const section = await screen.findByRole('region', { name: 'Proyectos Top Seleccionados' });
   expect(
     await within(section).findByRole('link', { name: /Programa de fortalecimiento/ }),
   ).toBeInTheDocument();
@@ -708,7 +708,7 @@ test('portada: las seis áreas enlazan a sus rutas y muestran cifras reales', as
   expect(area('Centros')).toHaveAttribute('href', '/centros');
   expect(area('Grupos')).toHaveAttribute('href', '/grupos');
   expect(area('Investigadores')).toHaveAttribute('href', '/investigadores');
-  expect(area('Proyectos')).toHaveAttribute('href', '/proyectos');
+  expect(area('Proyectos Top Seleccionados')).toHaveAttribute('href', '/proyectos');
   expect(area('Publicaciones de alto impacto')).toHaveAttribute('href', '/productos');
   expect(area('Relacionamiento')).toHaveAttribute('href', '/relacionamiento');
   // Iraka: botón principal del hero, menú principal y pie (en todas las páginas).
@@ -729,7 +729,7 @@ test('portada: las seis áreas enlazan a sus rutas y muestran cifras reales', as
       .getAllByRole('term')
       .map((d) => d.firstChild?.textContent),
   ).toEqual([
-    'Proyectos publicados',
+    'Proyectos Top Seleccionados',
     'Grupos de investigación',
     'Publicaciones científicas',
     'Países con coautoría',

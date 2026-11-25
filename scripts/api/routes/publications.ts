@@ -66,7 +66,7 @@ const publicationsUpload: Route = {
       return send(200, { published: 0, invalid: [], unlinked: 0 });
     }
     const body = await readBody(req, MAX_PUBLICATIONS_BYTES);
-    if (!body) return send(413, { detail: 'Las publicaciones superan 4 MB' });
+    if (!body) return send(413, { detail: 'Las publicaciones superan 16 MB' });
     const rows = readField(body, (j) => j.rows, null);
     if (!Array.isArray(rows) || !rows.length || rows.length > MAX_ROWS)
       return send(400, { detail: 'Se espera { "rows": [{ rank, eid, title, … }] }' });

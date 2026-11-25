@@ -35,7 +35,7 @@ const pt: typeof es = {
           description: 'Pesquisadores da Universidad Simón Bolívar e sua produção científica.',
         },
         projects: {
-          label: 'Projetos',
+          label: 'Projetos Top Selecionados',
           description: 'Projetos de pesquisa da Universidad Simón Bolívar.',
         },
         products: {
@@ -171,7 +171,7 @@ const pt: typeof es = {
       portal: '/ Portal Institucional',
       title: 'As pessoas e os projetos por trás do <hl>conhecimento</hl> que produzimos',
       lead: 'Conheça quem pesquisa na Universidad Simón Bolívar e os projetos científicos que estão transformando a região do Caribe colombiano e o mundo.',
-      active: 'Pesquisadores ativos',
+      active: 'Pesquisadores no ranking',
       seniorEmeritus: 'Sênior e Eméritos (Minciencias)',
       associate: 'Pesquisadores Associados',
       junior: 'Pesquisadores Júnior',
@@ -629,7 +629,7 @@ const pt: typeof es = {
       file: 'centros-de-pesquisa-unisimon.csv',
     },
     detail: {
-      projects: 'Projetos de pesquisa',
+      projects: 'Projetos Top Selecionados',
       projectsLoading: 'Carregando os projetos do centro',
       noProjects: 'Este centro ainda não tem projetos publicados.',
       loading: 'Carregando centro',
@@ -730,11 +730,11 @@ const pt: typeof es = {
     },
   },
   projects: {
-    metaTitle: 'Projetos de pesquisa',
+    metaTitle: 'Projetos Top Selecionados',
     metaDescription:
       'Projetos de pesquisa da Universidad Simón Bolívar: objetivo, centros e grupos, financiamento, resultados, produtos e ODS.',
-    crumb: '/ Projetos',
-    title: 'Projetos de <hl>pesquisa</hl>',
+    crumb: '/ Projetos Top Selecionados',
+    title: 'Projetos <hl>Top Selecionados</hl>',
     lead: 'Projetos que transformam conhecimento em soluções para a região: quem os executa, quem os financia e que resultados deixam.',
     statTotal: 'Projetos',
     statRunning: 'Em execução',
@@ -885,7 +885,7 @@ const pt: typeof es = {
       empty: 'Sem dados publicados',
       retry: 'Tentar novamente: {{area}}',
       groups: 'Grupos de pesquisa',
-      projects: 'Projetos publicados',
+      projects: 'Projetos Top Selecionados',
       products: 'Publicações científicas',
       relations: 'Países com coautoria',
       groupsNote_one: 'Formados em {{value}} centro',
