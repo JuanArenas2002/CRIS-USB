@@ -1,20 +1,22 @@
 import { useTranslation } from 'react-i18next';
 import type { PublicationPage, PublicationStats } from '@/domain/publications/publication';
-import { ProductRows } from '@/presentation/components/authors/ProductsTable';
 import { EmptyState, ErrorState, feedbackButtonClass } from '@/presentation/components/feedback/Feedback';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { Pagination } from '@/presentation/components/ui/Pagination';
-import type { usePublications } from '@/presentation/hooks/use-publications';
-import { publicationToProduct } from './products-model';
+import type { usePublicationSearch, usePublications } from '@/presentation/hooks/use-publications';
+import { ActiveFilters } from './ActiveFilters';
+import { PublicationsTable } from './PublicationsTable';
+import { RankingCriteria } from './RankingCriteria';
 
 interface Props {
   list: ReturnType<typeof usePublications>;
+  filters: ReturnType<typeof usePublicationSearch>['filters'];
   stats: PublicationStats | undefined;
   onReset: () => void;
 }
 
 /** Lista paginada del ranking con sus estados: cargando, error, sin datos, sin resultados y con resultados. */
-export function ProductsList({ list, stats, onReset }: Props) {
+export function ProductsList({ list, filters, stats, onReset }: Props) {
   const { t } = useTranslation(['publications', 'common']);
   return (
     <section aria-labelledby="products-list-title" className="w-full py-16">
@@ -42,6 +44,11 @@ export function ProductsList({ list, stats, onReset }: Props) {
           >
             {t('listTitle')}
           </h2>
+        </div>
+
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <ActiveFilters filters={filters} />
+          <RankingCriteria />
         </div>
 
         {/* Al cambiar filtro o página: barra de progreso y la lista anterior atenuada. */}
@@ -88,39 +95,15 @@ function ListBody({ list, noData, onReset }: { list: Props['list']; noData: bool
 }
 
 function Results({ page, placeholder }: { page: PublicationPage; placeholder: boolean }) {
-  const { t } = useTranslation(['publications', 'common']);
-  const openAccess = t('item.openAccess');
   return (
     <>
       <div
         aria-busy={placeholder}
-        className={`overflow-hidden rounded-xl bg-surface-container-lowest shadow-sm transition-opacity duration-200 ${
+        className={`transition-opacity duration-200 xl:overflow-hidden xl:rounded-xl xl:bg-surface-container-lowest xl:shadow-sm ${
           placeholder ? 'pointer-events-none opacity-50' : ''
         }`}
       >
-        <ProductRows
-          products={page.items.map((p) => publicationToProduct(p, openAccess))}
-          rank={{
-            label: t('item.colRank'),
-            of: (row) => {
-              const p = page.items.find((x) => x.eid === row.key)!;
-              return (
-                <span className="inline-flex flex-col items-center leading-tight">
-                  <span className="text-body-md font-bold text-primary">
-                    <span className="sr-only">{t('item.rank', { rank: p.position })}</span>
-                    <span aria-hidden="true">#{p.position}</span>
-                  </span>
-                  {/* Con filtros, el puesto es dentro del resultado: se muestra el general. */}
-                  {p.position !== p.rank ? (
-                    <span className="text-label-sm text-neutral-muted">
-                      {t('item.general', { rank: p.rank })}
-                    </span>
-                  ) : null}
-                </span>
-              );
-            },
-          }}
-        />
+        <PublicationsTable items={page.items} />
       </div>
       <Pagination page={page.page} pages={page.pages} />
     </>

@@ -574,6 +574,7 @@ test('ranking de publicaciones: carga con token, autores por EID y consulta púb
     international: false,
     countries: ['Colombia'],
     correspondence: false,
+    correspondenceAuthors: [],
     authorsCount: 2,
     ...over,
   });
@@ -605,6 +606,14 @@ test('ranking de publicaciones: carga con token, autores por EID y consulta púb
     (await get('/api/publications?type=Article&from=2020&to=2024&q=paper%202')).body.items,
   ).toMatchObject([{ rank: 2, position: 1 }]);
   expect((await get('/api/publications?from=2025')).body.total).toBe(0);
+  // Gráfico por año: mismos filtros que la lista.
+  expect((await get('/api/publications/by-year')).body).toEqual([
+    { year: 2024, nc: 2, dc: 0, intlNc: 0, intlDc: 0 },
+  ]);
+  expect((await get('/api/publications/by-year?oa=1')).body).toEqual([
+    { year: 2024, nc: 1, dc: 0, intlNc: 0, intlDc: 0 },
+  ]);
+  expect((await get('/api/publications/by-year?from=2025')).body).toEqual([]);
   expect((await get('/api/publications?oa=1&q=paper%202')).body.total).toBe(0);
   expect((await get('/api/publications?sort=cited&size=1&page=2')).body.items[0].rank).toBe(2);
   expect((await get('/api/publications/stats')).body).toMatchObject({

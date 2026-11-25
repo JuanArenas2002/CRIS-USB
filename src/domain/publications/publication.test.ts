@@ -1,5 +1,11 @@
 import { makePublication } from '@/test-utils';
-import { publicationStats, publicationUrl, queryPublications, withAuthors } from './publication';
+import {
+  publicationStats,
+  publicationUrl,
+  publicationsByYear,
+  queryPublications,
+  withAuthors,
+} from './publication';
 
 const all = [
   makePublication(),
@@ -97,4 +103,29 @@ test('publicationUrl: DOI o, sin DOI, el registro de Scopus', () => {
   expect(publicationUrl({ doi: null, eid: '2-s2.0-1' })).toBe(
     'https://www.scopus.com/inward/record.uri?eid=2-s2.0-1',
   );
+});
+
+test('publicationsByYear: conteo por año con los mismos filtros que la lista', () => {
+  const conference = makePublication({
+    rank: 4,
+    eid: '2-s2.0-4',
+    year: 2022,
+    type: 'Conference Paper',
+    international: false,
+    openAccess: false,
+  });
+  const pubs = [...all, conference];
+  // Artículos y reviews son nuevo conocimiento; el resto, divulgación. La coautoría es parte de cada uno.
+  expect(publicationsByYear(pubs, {})).toEqual([
+    { year: 2022, nc: 2, dc: 1, intlNc: 2, intlDc: 0 },
+    { year: 2025, nc: 1, dc: 0, intlNc: 1, intlDc: 0 },
+  ]);
+  expect(publicationsByYear(pubs, { openAccess: true })).toEqual([
+    { year: 2022, nc: 2, dc: 0, intlNc: 2, intlDc: 0 },
+  ]);
+  expect(publicationsByYear(pubs, { type: 'Conference Paper' })).toEqual([
+    { year: 2022, nc: 0, dc: 1, intlNc: 0, intlDc: 0 },
+  ]);
+  expect(publicationsByYear(pubs, { yearFrom: 2023 }).map((r) => r.year)).toEqual([2025]);
+  expect(publicationsByYear(pubs, { search: 'no existe' })).toEqual([]);
 });

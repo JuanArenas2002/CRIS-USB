@@ -283,6 +283,7 @@ const pub = (rank: number, eid: string, over = {}) => ({
   international: false,
   countries: ['Colombia'],
   correspondence: false,
+  correspondenceAuthors: [],
   authorsCount: 2,
   ...over,
 });

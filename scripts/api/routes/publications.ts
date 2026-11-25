@@ -2,7 +2,9 @@
 import {
   PUBLICATION_SORTS,
   publicationStats,
+  publicationsByYear,
   queryPublications,
+  type PublicationFilter,
   type PublicationSort,
 } from '../../../src/domain/publications/publication.ts';
 import { normalizePublication } from '../../ods-store.ts';
@@ -30,6 +32,16 @@ export function dedupePublicationRows(rows: Record<string, unknown>[]) {
   return { byEid, invalid };
 }
 
+/** Filtros de la lista y del gráfico por año: los mismos parámetros en las dos rutas. */
+const filterParams = (sp: URLSearchParams): PublicationFilter => ({
+  search: sp.get('q') ?? undefined,
+  yearFrom: Number(sp.get('from')) || undefined,
+  yearTo: Number(sp.get('to')) || undefined,
+  type: sp.get('type') || undefined,
+  area: sp.get('area') || undefined,
+  openAccess: sp.get('oa') === '1' || undefined,
+});
+
 const listPublications: Route = {
   match: /^\/api\/publications$/,
   async handler({ ctx, sp, send }) {
@@ -37,16 +49,18 @@ const listPublications: Route = {
     return send(
       200,
       queryPublications(await ctx.publications(), {
-        search: sp.get('q') ?? undefined,
-        yearFrom: Number(sp.get('from')) || undefined,
-        yearTo: Number(sp.get('to')) || undefined,
-        type: sp.get('type') || undefined,
-        area: sp.get('area') || undefined,
-        openAccess: sp.get('oa') === '1' || undefined,
+        ...filterParams(sp),
         sort: PUBLICATION_SORTS.includes(sort as PublicationSort) ? (sort as PublicationSort) : undefined,
         ...pageParams(sp, 20),
       }),
     );
+  },
+};
+
+const publicationsByYearRoute: Route = {
+  match: /^\/api\/publications\/by-year$/,
+  async handler({ ctx, sp, send }) {
+    return send(200, publicationsByYear(await ctx.publications(), filterParams(sp)));
   },
 };
 
@@ -86,5 +100,5 @@ const publicationsUpload: Route = {
   },
 };
 
-export const publicationPublicRoutes = [listPublications, publicationsStats];
+export const publicationPublicRoutes = [listPublications, publicationsStats, publicationsByYearRoute];
 export const publicationAdminRoutes = [publicationsUpload];

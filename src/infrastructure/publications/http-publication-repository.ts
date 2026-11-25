@@ -1,8 +1,10 @@
 import { z } from 'zod';
 import type {
+  PublicationFilter,
   PublicationPage,
   PublicationRepository,
   PublicationStats,
+  PublicationYear,
 } from '@/domain/publications/publication';
 import type { ApiGet } from '@/infrastructure/http/api-client';
 
@@ -25,6 +27,7 @@ const publication = z.object({
   international: z.boolean(),
   countries: z.array(z.string()),
   correspondence: z.boolean(),
+  correspondenceAuthors: z.array(z.string()),
   authorsCount: z.number().int().nullable(),
   authors: z.array(z.object({ id: z.number().int(), name: z.string(), published: z.boolean() })),
 });
@@ -47,19 +50,35 @@ const statsSchema = z.object({
   areas: z.array(z.string()),
 }) as unknown as z.ZodType<PublicationStats>;
 
+const yearsSchema = z.array(
+  z.object({
+    year: z.number().int(),
+    nc: z.number().int(),
+    dc: z.number().int(),
+    intlNc: z.number().int(),
+    intlDc: z.number().int(),
+  }),
+) as unknown as z.ZodType<PublicationYear[]>;
+
+/** Filtros de la lista y del gráfico por año: los mismos parámetros. */
+function filterParams(q: PublicationFilter, params = new URLSearchParams()) {
+  if (q.search) params.set('q', q.search);
+  if (q.yearFrom) params.set('from', String(q.yearFrom));
+  if (q.yearTo) params.set('to', String(q.yearTo));
+  if (q.type) params.set('type', q.type);
+  if (q.area) params.set('area', q.area);
+  if (q.openAccess) params.set('oa', '1');
+  return params;
+}
+
 export function httpPublicationRepository(get: ApiGet): PublicationRepository {
   return {
     list(q, signal) {
-      const params = new URLSearchParams({ page: String(q.page), size: String(q.pageSize) });
-      if (q.search) params.set('q', q.search);
-      if (q.yearFrom) params.set('from', String(q.yearFrom));
-      if (q.yearTo) params.set('to', String(q.yearTo));
-      if (q.type) params.set('type', q.type);
-      if (q.area) params.set('area', q.area);
-      if (q.openAccess) params.set('oa', '1');
+      const params = filterParams(q, new URLSearchParams({ page: String(q.page), size: String(q.pageSize) }));
       if (q.sort && q.sort !== 'rank') params.set('sort', q.sort);
       return get(`/api/publications?${params}`, pageSchema, signal);
     },
     stats: (signal) => get('/api/publications/stats', statsSchema, signal),
+    byYear: (q, signal) => get(`/api/publications/by-year?${filterParams(q)}`, yearsSchema, signal),
   };
 }

@@ -16,6 +16,10 @@ function usePublicationQueries() {
 export const usePublications = (f: PublicationFilters) => useQuery(usePublicationQueries().list(f));
 export const usePublicationStats = () => useQuery(usePublicationQueries().stats());
 
+/** Evolución anual con los filtros de la lista; no se pide hasta que se abre el gráfico. */
+export const usePublicationsByYear = (f: PublicationFilters, enabled: boolean) =>
+  useQuery({ ...usePublicationQueries().byYear(f), enabled });
+
 /** Filtros de /productos en la URL (?q=&desde=&hasta=&tipo=&area=&oa=&orden=&page=). */
 export function usePublicationSearch() {
   const [params, setParams] = useSearchParams();

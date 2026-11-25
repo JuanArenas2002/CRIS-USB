@@ -89,6 +89,7 @@ export const normalizePublication: Normalize<StoredPublication> = (v) => {
     international: r.international === true,
     countries: texts(r.countries, 60),
     correspondence: r.correspondence === true,
+    correspondenceAuthors: texts(r.correspondenceAuthors, 20),
     authorsCount: count(r.authorsCount) || null,
   };
 };

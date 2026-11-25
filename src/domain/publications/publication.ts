@@ -48,6 +48,8 @@ export interface StoredPublication {
   countries: string[];
   /** Un autor institucional firma como autor de correspondencia. */
   correspondence: boolean;
+  /** Autores de correspondencia de la institución, como los trae Scopus ("Apellido, Nombre"). */
+  correspondenceAuthors: string[];
   authorsCount: number | null;
 }
 
@@ -106,6 +108,8 @@ export interface PublicationYear {
 export interface PublicationRepository {
   list(q: PublicationQuery, signal?: AbortSignal): Promise<PublicationPage>;
   stats(signal?: AbortSignal): Promise<PublicationStats>;
+  /** Conteo por año de lo que cumple los filtros (gráfico de evolución anual). */
+  byYear(q: PublicationFilter, signal?: AbortSignal): Promise<PublicationYear[]>;
 }
 
 const fold = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
@@ -116,35 +120,63 @@ const SORTS: Record<PublicationSort, (a: RankedPublication, b: RankedPublication
   cited: (a, b) => b.citations - a.citations || a.rank - b.rank,
 };
 
-/**
- * Búsqueda (título, revista, DOI, autores), filtros, orden y página; la usa el BFF.
- * El puesto se recalcula entre las que cumplen el filtro (1, 2, 3… por puntaje), sea cual sea el
- * orden elegido; `rank` conserva el puesto general del Excel.
- */
-export function queryPublications(all: RankedPublication[], q: PublicationQuery): PublicationPage {
+/** Filtros de la lista (todo menos orden y página): los comparten la tabla y el gráfico por año. */
+export type PublicationFilter = Pick<
+  PublicationQuery,
+  'search' | 'yearFrom' | 'yearTo' | 'type' | 'area' | 'openAccess'
+>;
+
+/** Publicaciones que cumplen los filtros, en el orden recibido: búsqueda (título, revista, DOI, autores), años, tipo, área y acceso abierto. */
+export function filterPublications<T extends RankedPublication>(all: T[], q: PublicationFilter): T[] {
   const term = fold(q.search?.trim() ?? '');
   // Un rango invertido (desde 2024 hasta 2020) se toma al derecho.
   const [from, to] =
     q.yearFrom && q.yearTo && q.yearFrom > q.yearTo ? [q.yearTo, q.yearFrom] : [q.yearFrom, q.yearTo];
-  const items = all
-    .filter(
-      (p) =>
-        (!from || (p.year !== null && p.year >= from)) &&
-        (!to || (p.year !== null && p.year <= to)) &&
-        (!q.type || p.type === q.type) &&
-        (!q.area || p.areas.includes(q.area)) &&
-        (!q.openAccess || p.openAccess) &&
-        (!term ||
-          fold(
-            `${p.title} ${p.journal ?? ''} ${p.issn.join(' ')} ${p.doi ?? ''} ${p.authors.map((a) => a.name).join(' ')}`,
-          ).includes(term)),
-    )
+  return all.filter(
+    (p) =>
+      (!from || (p.year !== null && p.year >= from)) &&
+      (!to || (p.year !== null && p.year <= to)) &&
+      (!q.type || p.type === q.type) &&
+      (!q.area || p.areas.includes(q.area)) &&
+      (!q.openAccess || p.openAccess) &&
+      (!term ||
+        fold(
+          `${p.title} ${p.journal ?? ''} ${p.issn.join(' ')} ${p.doi ?? ''} ${p.authors.map((a) => a.name).join(' ')}`,
+        ).includes(term)),
+  );
+}
+
+/**
+ * Filtros, orden y página; la usa el BFF.
+ * El puesto se recalcula entre las que cumplen el filtro (1, 2, 3… por puntaje), sea cual sea el
+ * orden elegido; `rank` conserva el puesto general del Excel.
+ */
+export function queryPublications(all: RankedPublication[], q: PublicationQuery): PublicationPage {
+  const items = filterPublications(all, q)
     .sort(SORTS.rank)
     .map((p, i) => ({ ...p, position: i + 1 }))
     .sort(SORTS[q.sort ?? 'rank']);
   const pages = Math.ceil(items.length / q.pageSize);
   const start = (q.page - 1) * q.pageSize;
   return { items: items.slice(start, start + q.pageSize), total: items.length, page: q.page, pages };
+}
+
+/**
+ * Publicaciones que cumplen los filtros, por año (ascendente): nuevo conocimiento (artículos y reviews) y
+ * divulgación (el resto), y de cada uno las que tienen coautoría internacional. Sin año no cuenta.
+ */
+export function publicationsByYear(all: RankedPublication[], q: PublicationFilter): PublicationYear[] {
+  const years = new Map<number, PublicationYear>();
+  for (const p of filterPublications(all, q)) {
+    if (!p.year) continue;
+    const row = years.get(p.year) ?? { year: p.year, nc: 0, dc: 0, intlNc: 0, intlDc: 0 };
+    const type = p.type?.toUpperCase();
+    const nc = type === 'ARTICLE' || type === 'REVIEW';
+    row[nc ? 'nc' : 'dc']++;
+    if (p.international) row[nc ? 'intlNc' : 'intlDc']++;
+    years.set(p.year, row);
+  }
+  return [...years.values()].sort((a, b) => a.year - b.year);
 }
 
 const byCount = (values: string[]) => {

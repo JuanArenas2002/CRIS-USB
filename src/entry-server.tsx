@@ -26,11 +26,18 @@ import { relationQueries } from '@/application/relations/relation-queries';
 import { projectSlug, type Project } from '@/domain/projects/project';
 import {
   publicationStats,
+  publicationsByYear,
   queryPublications,
   type RankedPublication,
 } from '@/domain/publications/publication';
 import { summarizeCenter, type CenterDetail } from '@/domain/centers/center';
-import { hasPublicDetail, summarizeGroup, tallyByConvocation, type GroupDetail, type GroupMember } from '@/domain/groups/group';
+import {
+  hasPublicDetail,
+  summarizeGroup,
+  tallyByConvocation,
+  type GroupDetail,
+  type GroupMember,
+} from '@/domain/groups/group';
 import { HOME_TOP_FILTERS } from '@/presentation/components/home/HomeHighlights';
 import { HOME_RECENT_FILTERS } from '@/presentation/components/home/HomeRecent';
 import { NAV_ITEMS } from '@/shared/navigation';
@@ -76,6 +83,7 @@ export function createServerPublicationQueries(all: RankedPublication[]): Public
   return publicationQueries({
     list: async (q) => queryPublications(all, q),
     stats: async () => publicationStats(all),
+    byYear: async (q) => publicationsByYear(all, q),
   });
 }
 
