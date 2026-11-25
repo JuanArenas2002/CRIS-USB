@@ -1,21 +1,18 @@
 import { lazy, Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { PublicationQuery } from '@/domain/publications/publication';
+import type { PublicationFilters } from '@/application/publications/publication-queries';
 import { EmptyState, ErrorState } from '@/presentation/components/feedback/Feedback';
 import { Icon } from '@/presentation/components/ui/Icon';
-import { useInstitutionByYear } from '@/presentation/hooks/use-relations';
-import { yearRange } from './products-model';
+import { usePublicationsByYear } from '@/presentation/hooks/use-publications';
 
 const PublicationsByYear = lazy(() => import('@/presentation/components/publications/PublicationsByYear'));
 
-/** Botón y gráfico de publicaciones por año; no se descarga nada hasta que se pide. */
-export function ProductsChart({ filters }: { filters: Pick<PublicationQuery, 'yearFrom' | 'yearTo'> }) {
+/** Botón y gráfico de publicaciones por año con los mismos filtros que la tabla; no se descarga nada hasta que se pide. */
+export function ProductsChart({ filters }: { filters: PublicationFilters }) {
   const { t } = useTranslation(['publications', 'common']);
   const [showChart, setShowChart] = useState(false);
-  const byYear = useInstitutionByYear(showChart);
-  // El gráfico sigue el rango de años del filtro.
-  const [yFrom, yTo] = yearRange(filters);
-  const chartRows = (byYear.data ?? []).filter((r) => r.year >= yFrom && r.year <= yTo);
+  const byYear = usePublicationsByYear(filters, showChart);
+  const chartRows = byYear.data ?? [];
   return (
     <div className="container-page mt-gutter flex flex-col gap-gutter">
       <button

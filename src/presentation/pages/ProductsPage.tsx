@@ -39,7 +39,7 @@ export function ProductsPage() {
       <ProductsHero stats={s} />
       <ProductsFilters search={search} stats={s} />
       {s?.total ? <ProductsChart filters={search.filters} /> : null}
-      <ProductsList list={list} stats={s} onReset={search.reset} />
+      <ProductsList list={list} filters={search.filters} stats={s} onReset={search.reset} />
       <ContactCta />
     </>
   );

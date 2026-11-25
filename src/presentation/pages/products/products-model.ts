@@ -1,9 +1,7 @@
 // Producción científica destacada: cálculos puros de la página (sin React).
 import type { TFunction } from 'i18next';
-import { scopusProductType, type Product } from '@/domain/authors/author';
 import {
   publicationUrl,
-  type ListedPublication,
   type PublicationPage,
   type PublicationQuery,
   type PublicationStats,
@@ -12,26 +10,6 @@ import { ORGANIZATION, absoluteUrl } from '@/shared/seo';
 
 type PublicationsT = TFunction<readonly ['publications', 'common']>;
 type Option = [value: string, label: string];
-
-/**
- * Publicación del ranking → fila de la tabla de productos del investigador. El acceso abierto va en el
- * detalle bajo el tipo y las citas en su columna (el cuartil no se publica); el orden sigue siendo el del ranking.
- */
-export function publicationToProduct(p: ListedPublication, openAccessLabel: string): Product {
-  return {
-    key: p.eid,
-    typology: 'GNC',
-    type: scopusProductType(p.type),
-    title: p.title,
-    authors: null,
-    year: p.year,
-    venue: p.journal,
-    index: p.openAccess ? openAccessLabel : null,
-    citations: p.citations,
-    doi: p.doi,
-    url: publicationUrl(p),
-  };
-}
 
 /** Datos estructurados de la lista; solo la página sin filtros es una colección indexable. */
 export function collectionJsonLd(name: string, list: PublicationPage | undefined, isFiltered: boolean) {
@@ -59,15 +37,6 @@ export function collectionJsonLd(name: string, list: PublicationPage | undefined
       })),
     },
   };
-}
-
-/**
- * Rango de años del filtro como [desde, hasta], aunque venga invertido (se toma al derecho, como la lista);
- * sin extremo, el que falte es abierto.
- */
-export function yearRange(filters: Pick<PublicationQuery, 'yearFrom' | 'yearTo'>): [number, number] {
-  const [from, to] = [filters.yearFrom ?? 0, filters.yearTo ?? Infinity].sort((a, b) => a - b);
-  return [from!, to!];
 }
 
 /** Años con publicaciones, más los del rango elegido (un enlace puede traer uno sin publicaciones); recientes primero. */
@@ -116,4 +85,36 @@ export function statCards(t: PublicationsT, s: PublicationStats | undefined): St
     { key: 'oa', label: t('statOpenAccess'), value: s?.openAccess, accent: 'text-surface-container-lowest' },
     { key: 'cites', label: t('statCitations'), value: s?.citations, accent: 'text-tertiary-fixed' },
   ];
+}
+
+const SORT_LABELS = { rank: 'sortRank', recent: 'sortRecent', cited: 'sortCited' } as const;
+
+/** Filtros activos como frases cortas, en el orden de la barra de filtros; el orden por puntaje no cuenta. */
+export function activeFilterParts(
+  t: PublicationsT,
+  f: Pick<PublicationQuery, 'search' | 'yearFrom' | 'yearTo' | 'type' | 'area' | 'openAccess' | 'sort'>,
+  domain: (s: string) => string,
+): string[] {
+  const search = f.search?.trim();
+  return [
+    search ? t('activeFilters.search', { value: search }) : '',
+    f.yearFrom ? t('fromYear', { year: f.yearFrom }) : '',
+    f.yearTo ? t('toYear', { year: f.yearTo }) : '',
+    f.type ? `${t('type')}: ${domain(f.type)}` : '',
+    f.area ? `${t('area')}: ${domain(f.area)}` : '',
+    f.openAccess ? t('openAccessOnly') : '',
+    f.sort && f.sort !== 'rank' ? t('activeFilters.order', { value: t(SORT_LABELS[f.sort]) }) : '',
+  ].filter(Boolean);
+}
+
+/** Código ISO 639 de Scopus ("eng", "spa") → nombre del idioma en el idioma activo; desconocido, el código. */
+export function languageName(code: string, locale: string): string {
+  try {
+    const name = new Intl.DisplayNames([locale], { type: 'language' }).of(code);
+    return name && name !== code
+      ? name.charAt(0).toLocaleUpperCase(locale) + name.slice(1)
+      : code.toUpperCase();
+  } catch {
+    return code.toUpperCase();
+  }
 }

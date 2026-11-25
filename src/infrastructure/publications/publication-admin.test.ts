@@ -26,6 +26,7 @@ test('publicationRows: columnas por nombre (tildes y signos indiferentes); sin E
       'Correspondencia institucional',
       '# Autores',
       'Aporte cuartil',
+      'Autores de correspondencia',
     ],
     [
       '1',
@@ -51,6 +52,7 @@ test('publicationRows: columnas por nombre (tildes y signos indiferentes); sin E
       'SI',
       '9',
       '30',
+      'Bermúdez, Valmore | Rojas, Ana',
     ],
     [
       '2',
@@ -123,6 +125,7 @@ test('publicationRows: columnas por nombre (tildes y signos indiferentes); sin E
       international: true,
       countries: ['Colombia', 'Czech Republic', 'Venezuela'],
       correspondence: true,
+      correspondenceAuthors: ['Bermúdez, Valmore', 'Rojas, Ana'],
       authorsCount: 9,
     },
     {
@@ -144,6 +147,7 @@ test('publicationRows: columnas por nombre (tildes y signos indiferentes); sin E
       international: false,
       countries: ['Colombia'],
       correspondence: false,
+      correspondenceAuthors: [],
       authorsCount: null,
     },
   ]);

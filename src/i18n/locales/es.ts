@@ -38,11 +38,11 @@ const es = {
           description: 'Investigadores de la Universidad Simón Bolívar y su producción científica.',
         },
         projects: {
-          label: 'Proyectos Top Seleccionados',
+          label: 'Proyectos',
           description: 'Proyectos de investigación de la Universidad Simón Bolívar.',
         },
         products: {
-          label: 'Publicaciones de alto impacto',
+          label: 'Publicaciones',
           description: 'Publicaciones de alto impacto de la Universidad Simón Bolívar.',
         },
         relations: {
@@ -689,8 +689,7 @@ const es = {
       intlDc: 'Coautoría internacional DC',
       totalPeriod: 'Total del periodo',
       axis: 'Cantidad',
-      source:
-        'Fuente: Scopus (Elsevier). Producción institucional de la universidad (módulo de relacionamiento).',
+      source: 'Fuente: Scopus (Elsevier). Publicaciones del ranking según los filtros activos.',
     },
     metaTitle: 'Publicaciones de alto impacto',
     metaDescription:
@@ -698,7 +697,7 @@ const es = {
     crumb: '/ Publicaciones de alto impacto',
     title: 'Publicaciones de <hl>alto impacto</hl>',
     lead: 'Publicaciones en Scopus de nuestros investigadores destacados, ordenadas por un puntaje que combina el cuartil de la revista, las citas, el acceso abierto y la autoría de correspondencia institucional.',
-    statTotal: 'Publicaciones Scopus',
+    statTotal: 'Publicaciones indexadas en Scopus',
     statQ1: 'En revistas Q1',
     statOpenAccess: 'En acceso abierto',
     statCitations: 'Citas recibidas',
@@ -736,6 +735,56 @@ const es = {
       citations_other: '{{count}} citas',
       openAccess: 'Acceso abierto',
     },
+    table: {
+      caption: 'Ranking de publicaciones',
+      rank: '#',
+      score: 'Puntaje',
+      doi: 'DOI',
+      title: 'Título',
+      year: 'Año',
+      journal: 'Revista',
+      citations: 'Citas',
+      language: 'Idioma',
+      openAccess: 'Open Access',
+      international: 'Coautoría internacional',
+      correspondence: 'Correspondencia institucional',
+      correspondenceAuthors: 'Autores de correspondencia',
+      yes: 'Sí',
+      no: 'No',
+    },
+    activeFilters: {
+      label: 'Filtros activos',
+      none: 'Sin filtros: se muestra todo el ranking.',
+      search: 'Búsqueda «{{value}}»',
+      order: 'Orden: {{value}}',
+    },
+    criteria: {
+      button: 'Criterios de ranking',
+      title: 'Criterios del ranking',
+      lead: 'El puntaje (0–100) combina estos criterios; cada uno aporta según su peso.',
+      total: 'Total',
+      close: 'Cerrar',
+      items: {
+        quartile: {
+          name: 'Cuartil de la revista',
+          desc: 'Cuartil SCImago: Q1 = 1,00 · Q2 = 0,75 · Q3 = 0,50 · Q4 = 0,25 · sin cuartil = 0.',
+        },
+        citations: {
+          name: 'Citas',
+          desc: 'Citas por año desde la publicación, en escala logarítmica frente al máximo del conjunto.',
+        },
+        correspondence: {
+          name: 'Correspondencia institucional',
+          desc: 'Un autor de la institución firma como autor de correspondencia.',
+        },
+        openAccess: { name: 'Acceso abierto', desc: 'La publicación es de acceso abierto.' },
+        nonMultidisciplinary: {
+          name: 'Revista no multidisciplinar',
+          desc: 'La revista no es multidisciplinar.',
+        },
+        language: { name: 'Idioma', desc: 'El idioma está entre los preferidos.' },
+      },
+    },
   },
   projects: {
     metaTitle: 'Proyectos Top Seleccionados',
@@ -744,7 +793,7 @@ const es = {
     crumb: '/ Proyectos Top Seleccionados',
     title: 'Proyectos <hl>Top Seleccionados</hl>',
     lead: 'Proyectos que transforman el conocimiento en soluciones para la región: quién los ejecuta, quién los financia y qué resultados dejan.',
-    statTotal: 'Proyectos',
+    statTotal: 'Proyectos destacados',
     statRunning: 'En ejecución',
     statCenters: 'Centros participantes',
     statProducts: 'Productos generados',

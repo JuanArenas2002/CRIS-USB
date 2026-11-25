@@ -8,11 +8,11 @@ import {
   makePublication,
   renderApp,
 } from '@/test-utils';
-import { collectionJsonLd, publicationToProduct, selectableYears, yearRange } from './products-model';
+import { collectionJsonLd, languageName, selectableYears } from './products-model';
 
-test('productos: el gráfico por año se pide con el botón, sigue el rango de años y se oculta', async () => {
+test('productos: el gráfico por año se pide con el botón, sigue los filtros y se oculta', async () => {
   const user = userEvent.setup();
-  renderApp('/productos?desde=2026&hasta=2026');
+  renderApp('/productos?desde=2022&hasta=2022');
   const button = await screen.findByRole('button', { name: 'Ver evolución anual' });
   expect(button).toHaveAttribute('aria-expanded', 'false');
   expect(document.getElementById('pubs-chart')).toBeNull();
@@ -21,11 +21,19 @@ test('productos: el gráfico por año se pide con el botón, sigue el rango de a
   expect(screen.getByRole('button', { name: 'Ocultar gráfico' })).toHaveAttribute('aria-expanded', 'true');
   const panel = document.getElementById('pubs-chart')!;
   expect(panel).not.toBeNull();
-  // Los datos simulados (2025 y 2026) caen dentro del rango pedido: no es el aviso de «sin resultados».
+  // La publicación simulada (2022) cumple el filtro: hay gráfico y no el aviso de «sin resultados».
   await within(panel).findByText(/Publicaciones indexadas en Scopus/);
 
   await user.click(screen.getByRole('button', { name: 'Ocultar gráfico' }));
   expect(document.getElementById('pubs-chart')).toBeNull();
+});
+
+test('productos: el gráfico por año aplica los mismos filtros que la tabla', async () => {
+  const user = userEvent.setup();
+  renderApp('/productos?tipo=Book'); // ninguna publicación es de ese tipo
+  await user.click(await screen.findByRole('button', { name: 'Ver evolución anual' }));
+  const panel = document.getElementById('pubs-chart')!;
+  expect(await within(panel).findByText('No se encontraron publicaciones')).toBeInTheDocument();
 });
 
 test('productos: sin publicaciones cargadas no se ofrece el gráfico', async () => {
@@ -35,31 +43,55 @@ test('productos: sin publicaciones cargadas no se ofrece el gráfico', async () 
 });
 
 test('modelo: rango de años (invertido o abierto) y años elegibles con los del enlace', () => {
-  expect(yearRange({ yearFrom: 2020, yearTo: 2023 })).toEqual([2020, 2023]);
-  expect(yearRange({ yearFrom: 2023, yearTo: 2020 })).toEqual([2020, 2023]); // invertido: se toma al derecho
-  expect(yearRange({})).toEqual([0, Infinity]);
-  expect(yearRange({ yearFrom: 2021 })).toEqual([2021, Infinity]);
   expect(selectableYears([2024, 2022], {})).toEqual([2024, 2022]);
   // El año de un enlace sin publicaciones también se puede elegir, sin repetidos y recientes primero.
   expect(selectableYears([2024, 2022], { yearFrom: 2019, yearTo: 2022 })).toEqual([2024, 2022, 2019]);
   expect(selectableYears(undefined, {})).toEqual([]);
 });
 
-test('modelo: publicación → producto (acceso abierto en el detalle) y JSON-LD solo sin filtros', () => {
-  const p = { ...makePublication({ openAccess: true, doi: null }), position: 1 };
-  expect(publicationToProduct(p, 'Acceso abierto')).toMatchObject({
-    key: p.eid,
-    typology: 'GNC',
-    index: 'Acceso abierto',
-    citations: p.citations,
-    doi: null,
-    url: expect.stringContaining('scopus.com'),
-  });
-  expect(publicationToProduct({ ...p, openAccess: false }, 'Acceso abierto').index).toBeNull();
-
+test('modelo: JSON-LD solo sin filtros', () => {
+  const p = { ...makePublication({ doi: null }), position: 1 };
   const page = { items: [p], total: 1, page: 1, pages: 1 };
   expect(collectionJsonLd('Título', undefined, false)).toBeNull();
   expect(collectionJsonLd('Título', page, true)).toBeNull(); // una lista filtrada no es la colección
   const ld = collectionJsonLd('Título', page, false) as { mainEntity: { numberOfItems: number } };
   expect(ld.mainEntity.numberOfItems).toBe(1);
+});
+
+test('modelo: nombre del idioma desde el código de Scopus; desconocido, el código', () => {
+  expect(languageName('eng', 'es')).toBe('Inglés');
+  expect(languageName('spa', 'en')).toBe('Spanish');
+  expect(languageName('zzzz-invalid-code', 'es')).toBe('ZZZZ-INVALID-CODE');
+});
+
+test('productos: tabla con las columnas pedidas, filtros activos en texto y modal de criterios', async () => {
+  renderApp('/productos?desde=2020&oa=1');
+  const table = await screen.findByRole('table', { name: 'Ranking de publicaciones' });
+  const headers = within(table)
+    .getAllByRole('columnheader')
+    .map((h) => h.textContent);
+  expect(headers).toEqual([
+    '#',
+    'Puntaje',
+    'DOI',
+    'Título',
+    'Año',
+    'Tipo documental',
+    'Revista',
+    'Citas',
+    'Idioma',
+    'Open Access',
+    'Coautoría internacional',
+    'Correspondencia institucional',
+    'Autores de correspondencia',
+  ]);
+  expect(screen.getByText(/Filtros activos:/).closest('p')).toHaveTextContent(
+    'Filtros activos: Desde 2020 · Solo acceso abierto',
+  );
+  expect(screen.getByRole('button', { name: 'Criterios de ranking' })).toHaveAttribute(
+    'aria-haspopup',
+    'dialog',
+  );
+  expect(screen.getByText('Cuartil de la revista')).toBeInTheDocument();
+  expect(screen.getByText('Pérez, Ana María')).toBeInTheDocument();
 });

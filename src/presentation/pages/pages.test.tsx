@@ -142,8 +142,8 @@ test('menú: las 6 secciones y Noticias en orden, todas con contenido, y los enl
     'Centros',
     'Grupos',
     'Investigadores',
-    'Proyectos Top Seleccionados',
-    'Publicaciones de alto impacto',
+    'Proyectos',
+    'Publicaciones',
     'Relacionamiento',
     'Noticias',
     expect.stringMatching(/^Iraka/),
@@ -492,26 +492,25 @@ test('admin ranking: respuesta ilegible → mensaje claro, sin mostrar el token'
   vi.unstubAllGlobals();
 });
 
-test('productos: misma tabla que los productos del investigador (año, título, tipología, tipo, enlace)', async () => {
+test('productos: la tabla del ranking muestra los datos de cada publicación, sin etiqueta de nuevo conocimiento', async () => {
   renderApp('/productos');
   const row = within((await screen.findByText('Metabolic Reprogramming in Cancer Cells')).closest('tr')!);
+  expect(row.getByText('89,9')).toBeInTheDocument(); // puntaje
   expect(row.getByText('2022')).toBeInTheDocument();
-  expect(row.getByText('Nuevo Conocimiento')).toBeInTheDocument();
-  expect(row.getByText('Artículo científico')).toBeInTheDocument();
-  // Revista y DOI bajo el título; acceso abierto bajo el tipo; citas en su columna (el cuartil nunca se muestra).
-  expect(row.getByText('Pharmaceutics · DOI: 10.3390/pharmaceutics14061303')).toBeInTheDocument();
-  expect(row.getByText('Acceso abierto')).toBeInTheDocument();
-  expect(screen.getByRole('columnheader', { name: 'Citas' })).toBeInTheDocument();
+  expect(row.getByText('Pharmaceutics')).toBeInTheDocument();
   expect(row.getByText('133')).toBeInTheDocument();
-  expect(screen.getByText('En revistas Q1')).toBeInTheDocument();
-  // Del cuartil solo se muestra el total en Q1; nunca el de cada publicación.
-  for (const table of screen.getAllByRole('table')) expect(table).not.toHaveTextContent(/\bQ[1-4]\b/);
-  expect(screen.queryByRole('combobox', { name: /cuartil/i })).not.toBeInTheDocument();
-  expect(row.getByRole('link', { name: /DOI/ })).toHaveAttribute(
+  expect(row.getByText('Inglés')).toBeInTheDocument();
+  expect(row.getByText('Pérez, Ana María')).toBeInTheDocument(); // autores de correspondencia
+  expect(row.getByRole('link', { name: /10\.3390/ })).toHaveAttribute(
     'href',
     'https://doi.org/10.3390/pharmaceutics14061303',
   );
   expect(row.getAllByText('Puesto 1').length).toBeGreaterThan(0);
+  expect(row.queryByText('Nuevo Conocimiento')).not.toBeInTheDocument();
+  expect(screen.getByText('En revistas Q1')).toBeInTheDocument();
+  // Del cuartil solo se muestra el total en Q1; nunca el de cada publicación.
+  for (const table of screen.getAllByRole('table')) expect(table).not.toHaveTextContent(/\bQ[1-4]\b/);
+  expect(screen.queryByRole('combobox', { name: /cuartil/i })).not.toBeInTheDocument();
   expect(screen.getByText('1 publicación')).toBeInTheDocument();
 });
 
@@ -708,8 +707,8 @@ test('portada: las seis áreas enlazan a sus rutas y muestran cifras reales', as
   expect(area('Centros')).toHaveAttribute('href', '/centros');
   expect(area('Grupos')).toHaveAttribute('href', '/grupos');
   expect(area('Investigadores')).toHaveAttribute('href', '/investigadores');
-  expect(area('Proyectos Top Seleccionados')).toHaveAttribute('href', '/proyectos');
-  expect(area('Publicaciones de alto impacto')).toHaveAttribute('href', '/productos');
+  expect(area('Proyectos')).toHaveAttribute('href', '/proyectos');
+  expect(area('Publicaciones')).toHaveAttribute('href', '/productos');
   expect(area('Relacionamiento')).toHaveAttribute('href', '/relacionamiento');
   // Iraka: botón principal del hero, menú principal y pie (en todas las páginas).
   expect(

@@ -13,6 +13,7 @@ import type { CollaborationMap, RelationsRepository } from '@/domain/relations/r
 import type { Project, ProjectRepository } from '@/domain/projects/project';
 import {
   publicationStats,
+  publicationsByYear,
   queryPublications,
   type PublicationRepository,
   type RankedPublication,
@@ -178,6 +179,7 @@ export function makePublication(over: Partial<RankedPublication> = {}): RankedPu
     international: true,
     countries: ['Colombia', 'Venezuela'],
     correspondence: true,
+    correspondenceAuthors: ['Pérez, Ana María'],
     authorsCount: 9,
     authors: [{ id: 7, name: 'Ana María Pérez', published: true }],
     ...over,
@@ -189,6 +191,7 @@ export const fakePublicationRepo = (
 ): PublicationRepository => ({
   list: async (q) => queryPublications(all, q),
   stats: async () => publicationStats(all),
+  byYear: async (q) => publicationsByYear(all, q),
 });
 
 export function makeProject(over: Partial<Project> = {}): Project {

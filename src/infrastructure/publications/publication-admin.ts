@@ -39,6 +39,7 @@ const OPTIONAL = {
   international: 'coautoriainternacional',
   countries: 'paisesdeafiliacion',
   correspondence: 'correspondenciainstitucional',
+  correspondenceAuthors: 'autoresdecorrespondencia',
   authorsCount: 'autores', // «# Autores»
 } as const;
 const AREAS = ['granarea1', 'granarea2', 'granarea3', 'granarea4', 'granarea5'];
@@ -101,6 +102,7 @@ export function publicationRows(table: string[][]): StoredPublication[] {
         international: yes(cell(OPTIONAL.international)),
         countries: list(cell(OPTIONAL.countries)),
         correspondence: yes(cell(OPTIONAL.correspondence)),
+        correspondenceAuthors: list(cell(OPTIONAL.correspondenceAuthors)),
         authorsCount: num(cell(OPTIONAL.authorsCount)),
       },
     ];
