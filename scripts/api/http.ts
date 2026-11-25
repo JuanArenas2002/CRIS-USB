@@ -5,8 +5,8 @@ export const MAX_JSON_BYTES = 1024;
 // ~300 filas × ~100 bytes; holgura para miles.
 export const MAX_RANKING_BYTES = 1024 * 1024;
 export const MAX_PAGE_SIZE = 100;
-// ~1200 publicaciones con resumen ≈ 2,5 MB. Vercel no acepta cuerpos de más de 4,5 MB.
-export const MAX_PUBLICATIONS_BYTES = 4 * 1024 * 1024;
+// ~1200 publicaciones con resumen ≈ 2,5 MB (2.300 ≈ 5 MB): holgura para crecer. Vercel solo admite 4,5 MB; el servidor propio no.
+export const MAX_PUBLICATIONS_BYTES = 16 * 1024 * 1024;
 
 /** `privateBody`: respuesta del admin (con token) que ningún CDN ni navegador debe guardar. */
 export type Send = (status: number, body: unknown, privateBody?: boolean) => void;

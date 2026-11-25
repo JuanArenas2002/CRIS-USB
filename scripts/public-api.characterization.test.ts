@@ -556,7 +556,7 @@ const mainCases: Case[] = [
   { m: 'PUT', p: '/api/publications', h: T, b: { rows: [] } },
   { m: 'PUT', p: '/api/publications', h: T, b: 'no json' },
   { m: 'PUT', p: '/api/publications', h: T },
-  { m: 'PUT', p: '/api/publications', h: T, b: Buffer.alloc(4 * 1024 * 1024 + 1) },
+  { m: 'PUT', p: '/api/publications', h: T, b: Buffer.alloc(16 * 1024 * 1024 + 1) },
   {
     m: 'PUT',
     p: '/api/publications',

@@ -112,7 +112,7 @@ scripts/api/
 
 Una excepción que ningún handler atrapa responde **502** «Servicio de datos no disponible». Los handlers sí atrapan los errores propios de su operación y responden con su código y mensaje (p. ej. 500 «No se pudo guardar el ranking: …», 502 privado con el motivo de Metri-K en el equipo de proyectos): centralizar el mecanismo (`saveOr500`) no unifica su semántica.
 
-**Cuerpos de petición.** Cada escritura lee el cuerpo con un tope (1 KB, 1 MB o 4 MB según la ruta). Un cuerpo que lo excede llega como `null`; las rutas donde `null` significaría «quitar» (contraseña y página oficial de un centro) responden **413** sin escribir nada y distinguen con `jsonField` entre cuerpo inválido, campo ausente y `null` explícito.
+**Cuerpos de petición.** Cada escritura lee el cuerpo con un tope (1 KB, 1 MB o 16 MB según la ruta). Un cuerpo que lo excede llega como `null`; las rutas donde `null` significaría «quitar» (contraseña y página oficial de un centro) responden **413** sin escribir nada y distinguen con `jsonField` entre cuerpo inválido, campo ausente y `null` explícito.
 
 **Cómo agregar un endpoint.** Crear el handler en el módulo del recurso (o uno nuevo en `routes/`), exportarlo en la lista del recurso y añadirlo a `PUBLIC_ROUTES` o `ADMIN_ROUTES` en `routes/index.ts`. Un endpoint de admin hereda las compuertas 405/503/401 sin repetirlas.
 
@@ -172,7 +172,7 @@ Aceptan cookie de sesión (`/api/admin/session`) o la cabecera `X-Admin-Token`. 
 - **Cachés** (`api/cache.ts`). `cached(load)`: 10 minutos y, si la fuente falla, se sirve la última copia buena; `reset()` tras escribir en Metri-K. `cachedByKey`: una caché por clave (perfiles y búsquedas de ORCID con tope de 500 y 200 entradas; integrantes, grupos y centros por investigador). **No** pasan por caché las fotos, logos, ranking, ocultos y publicaciones del admin: un cambio se ve al instante.
 - **Encabezados** (`http.ts › createSend`). Respuestas 200 públicas: `Cache-Control: public, max-age=0, s-maxage=30, stale-while-revalidate=60`; todo lo demás y lo privado del admin: `no-store`. Con `compress`, gzip propio para JSON de más de 1 KB si el cliente lo acepta.
 - **Errores.** Un handler atrapa los fallos de su operación y responde con su código y mensaje: 400 por forma del cuerpo, 413 por tamaño, 500 «No se pudo guardar…: motivo» si el almacén falla (`saveOr500`), 502 con el motivo de Metri-K en el equipo de proyectos. Lo que nadie atrapa llega al router: 502 «Servicio de datos no disponible».
-- **Tamaños.** 1 KB para JSON pequeño, 1 MB para imágenes y el ranking, 4 MB para publicaciones. Un cuerpo mayor: 413 en las rutas de contraseña y página oficial de un centro (donde antes borraba el valor), y la respuesta de «forma inválida» (400) en el resto.
+- **Tamaños.** 1 KB para JSON pequeño, 1 MB para imágenes y el ranking, 16 MB para publicaciones. Un cuerpo mayor: 413 en las rutas de contraseña y página oficial de un centro (donde antes borraba el valor), y la respuesta de «forma inválida» (400) en el resto.
 
 ## Limitaciones
 

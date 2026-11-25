@@ -35,7 +35,7 @@ const en: typeof es = {
           description: 'Meet the researchers of Universidad Simón Bolívar.',
         },
         projects: {
-          label: 'Projects',
+          label: 'Top Selected Projects',
           description: 'Research projects of Universidad Simón Bolívar.',
         },
         products: {
@@ -171,7 +171,7 @@ const en: typeof es = {
       portal: '/ Institutional Portal',
       title: 'The people and projects behind the <hl>knowledge</hl> we produce',
       lead: 'Meet the researchers of Universidad Simón Bolívar and the scientific projects transforming the Colombian Caribbean region and the world.',
-      active: 'Active researchers',
+      active: 'Ranked researchers',
       seniorEmeritus: 'Senior and Emeritus (Minciencias)',
       associate: 'Associate Researchers',
       junior: 'Junior Researchers',
@@ -629,7 +629,7 @@ const en: typeof es = {
       file: 'unisimon-research-centers.csv',
     },
     detail: {
-      projects: 'Research projects',
+      projects: 'Top Selected Projects',
       projectsLoading: 'Loading the center’s projects',
       noProjects: 'This center has no published projects yet.',
       loading: 'Loading center',
@@ -730,11 +730,11 @@ const en: typeof es = {
     },
   },
   projects: {
-    metaTitle: 'Research projects',
+    metaTitle: 'Top Selected Projects',
     metaDescription:
       'Research projects at Universidad Simón Bolívar: objective, centers and groups, funding, results, products and SDGs.',
-    crumb: '/ Projects',
-    title: 'Research <hl>projects</hl>',
+    crumb: '/ Top Selected Projects',
+    title: 'Top Selected <hl>Projects</hl>',
     lead: 'Projects that turn knowledge into solutions for the region: who carries them out, who funds them and what results they leave behind.',
     statTotal: 'Projects',
     statRunning: 'In progress',
@@ -885,7 +885,7 @@ const en: typeof es = {
       empty: 'No published data',
       retry: 'Retry: {{area}}',
       groups: 'Research groups',
-      projects: 'Published projects',
+      projects: 'Top Selected Projects',
       products: 'Scientific publications',
       relations: 'Co-authoring countries',
       groupsNote_one: 'Across {{value}} center',

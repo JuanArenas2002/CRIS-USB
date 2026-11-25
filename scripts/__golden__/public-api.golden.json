@@ -1807,13 +1807,13 @@
       },
       "body": "{\"detail\":\"Se espera { \\\"rows\\\": [{ rank, eid, title, … }] }\"}"
     },
-    "225 PUT /api/publications [4194305B] {X-Admin-Token}": {
+    "225 PUT /api/publications [16777217B] {X-Admin-Token}": {
       "status": 413,
       "headers": {
         "content-type": "application/json; charset=utf-8",
         "cache-control": "no-store"
       },
-      "body": "{\"detail\":\"Las publicaciones superan 4 MB\"}"
+      "body": "{\"detail\":\"Las publicaciones superan 16 MB\"}"
     },
     "226 PUT /api/publications {X-Admin-Token}": {
       "status": 200,
