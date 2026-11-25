@@ -6,14 +6,20 @@ import { createPublicApi } from './scripts/public-api.ts';
 import { storeOptionsFromEnv } from './scripts/stores.ts';
 
 /** /api público (BFF) en dev y preview; en preview además sirve las páginas prerenderizadas sin "/" final. */
-function publicApi(env: Record<string, string>): Plugin {
-  const handler = createPublicApi({
+function publicApi(env: Record<string, string>, basePath: string): Plugin {
+  const api = createPublicApi({
     metrikUrl: env.CRIS_METRIK_URL || undefined,
     collabUrl: env.CRIS_COLLAB_URL || undefined,
     orcidUrl: env.CRIS_ORCID_URL || undefined,
     adminToken: env.CRIS_ADMIN_TOKEN || undefined,
     ...storeOptionsFromEnv(env),
   });
+  // Con subruta (CRIS_BASE_PATH) la página pide /<base>/api/...; el BFF atiende /api/..., como server.ts en producción.
+  const handler: typeof api = (req, res, next) => {
+    // Solo /<base>/api/...: el resto (páginas, módulos, fuentes) lo resuelve Vite con su propia base.
+    if (basePath && req.url?.startsWith(`${basePath}/api/`)) req.url = req.url.slice(basePath.length);
+    return api(req, res, next);
+  };
   return {
     name: 'cris-public-api',
     configureServer: (server) => void server.middlewares.use(handler),
@@ -48,7 +54,7 @@ export default defineConfig(({ mode }) => {
     base: `${basePath}/`,
     server: { proxy: newsApi },
     preview: { proxy: newsApi },
-    plugins: [react(), tailwindcss(), publicApi(env)],
+    plugins: [react(), tailwindcss(), publicApi(env, basePath)],
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
     test: {
       globals: true,

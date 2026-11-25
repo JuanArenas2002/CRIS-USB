@@ -5,6 +5,7 @@ import { DirectoryFilters } from '@/presentation/components/authors/DirectoryFil
 import { DirectoryHero } from '@/presentation/components/authors/DirectoryHero';
 import { ContactCta } from '@/presentation/components/layout/ContactCta';
 import { EmptyState, ErrorState, feedbackButtonClass } from '@/presentation/components/feedback/Feedback';
+import { UsbIndexInfo } from '@/presentation/components/authors/UsbIndexInfo';
 import { Icon } from '@/presentation/components/ui/Icon';
 import { RANKING_TIERS, groupByCenter, type Author, type RankingTier } from '@/domain/authors/author';
 import { withBaseUrl } from '@/shared/base';
@@ -113,6 +114,7 @@ export function DirectoryPage() {
                   </button>
                 ))}
               </div>
+              <UsbIndexInfo />
               <p
                 aria-live="polite"
                 className="inline-flex items-center gap-2 rounded-full bg-badge-sage-bg px-3.5 py-1.5 text-label-md font-semibold text-badge-sage-text"
