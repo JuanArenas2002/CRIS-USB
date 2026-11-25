@@ -1,4 +1,4 @@
-// Ranking USB de investigadores (admin): lista, carga de Excel (general o Top 12 / Top 60) y visibilidad.
+// Ranking Unisimón de investigadores (admin): lista, carga de Excel (general o Top 12 / Top 60) y visibilidad.
 import type { RankingTier } from '../../../src/domain/authors/author.ts';
 import { normalizeDocument, publishAuthors } from '../../investigators-source.ts';
 import { normalizeRanking } from '../../ods-store.ts';

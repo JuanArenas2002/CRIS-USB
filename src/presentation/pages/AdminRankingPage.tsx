@@ -28,14 +28,14 @@ const tierName = (t?: RankingTier) => (t ? `Top ${RANKING_TIERS[t]}` : 'Investig
 
 /**
  * Vista oculta (fuera del menú, noindex, bloqueada en robots.txt) para cargar los rankings de
- * productividad USB, todos con el mismo Excel: el general (decide quién sale en el directorio,
+ * productividad Unisimón, todos con el mismo Excel: el general (decide quién sale en el directorio,
  * "Investigadores Unisimón") y los del Top 12 y Top 60 (apartados del directorio).
  */
 export function AdminRankingPage() {
   const [confirm, confirmDialog] = useConfirm();
   useDocumentMetadata({
     title: 'Ranking de productividad',
-    description: 'Administración interna del ranking de productividad USB.',
+    description: 'Administración interna del ranking de productividad Unisimón.',
     path: '/admin/ranking',
     noindex: true,
   });
@@ -89,7 +89,7 @@ export function AdminRankingPage() {
       {confirmDialog}
       <p className="text-label-md font-bold tracking-widest text-secondary uppercase">Administración</p>
       <h1 className="mt-1 text-headline-lg-mobile font-bold tracking-tight text-primary md:text-headline-lg">
-        Ranking de productividad USB
+        Ranking de productividad Unisimón
       </h1>
       <p className="mt-1 max-w-3xl text-body-md text-neutral-muted">
         Sube el Excel del modelo (hoja <strong>{RANKING_SHEET}</strong>). Al publicarlo, el directorio muestra

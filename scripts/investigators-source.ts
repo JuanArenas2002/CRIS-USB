@@ -157,7 +157,7 @@ export interface InvestigatorDirectory {
   selected: Set<number>;
   production: Map<number, AuthorProduction>;
   /**
-   * Cédula → id del investigador, para cruzar el ranking USB. SOLO servidor: nunca se envía al
+   * Cédula → id del investigador, para cruzar el ranking Unisimón. SOLO servidor: nunca se envía al
    * navegador ni se guarda (el ranking se guarda por id).
    */
   byDocument: Map<string, number>;
@@ -231,7 +231,7 @@ export function renumber<T extends { ranking: AuthorRanking }>(items: T[]): T[] 
 }
 
 /**
- * Política de publicación: con ranking USB cargado, se publican los que figuran en él, siguen
+ * Política de publicación: con ranking Unisimón cargado, se publican los que figuran en él, siguen
  * activos en GrupLAC y no están ocultos en /admin/ranking, con los puestos renumerados entre ellos;
  * sin ranking, los seleccionados en Metri-K.
  */

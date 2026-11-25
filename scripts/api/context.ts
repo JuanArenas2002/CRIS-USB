@@ -134,7 +134,7 @@ export function createApiContext({
   const centersOf = cachedByKey<number, CenterRef[]>((id) => fetchInvestigatorCenters(base, id));
   const groupMembers = cachedByKey<number, Author[]>((groupId) => fetchGroupMembers(base, groupId));
 
-  // Publicados según el ranking USB (o los seleccionados, sin ranking); cada uno con sus centros
+  // Publicados según el ranking Unisimón (o los seleccionados, sin ranking); cada uno con sus centros
   // (tarjeta y perfil) y el logo del portal. El ranking no pasa por la caché: un Excel nuevo se ve
   // al instante.
   // ponytail: una consulta a Metri-K por investigador (cacheada 10 min, 8 a la vez); con cientos de
@@ -167,7 +167,7 @@ export function createApiContext({
       ),
     );
   };
-  // Ranking de publicaciones con sus autores de Metri-K; como el ranking USB, sin caché propia.
+  // Ranking de publicaciones con sus autores de Metri-K; como el ranking Unisimón, sin caché propia.
   const publications = async () => {
     const [stored, dir, ranking, hidden] = await Promise.all([
       publicationStore.all(),

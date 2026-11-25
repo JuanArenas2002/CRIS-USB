@@ -3,7 +3,7 @@
 //   proyectan a campos públicos (groups-source.ts / investigators-source.ts) y nada más sale.
 // - Búsqueda, filtros y paginación se resuelven en memoria: Metri-K no los ofrece.
 // - Solo lectura, salvo las fotos de investigadores y los logos de centros (PUT/DELETE), la página
-//   oficial de los centros (PUT), el ranking USB y el de publicaciones (PUT/DELETE), todo con token
+//   oficial de los centros (PUT), el ranking Unisimón y el de publicaciones (PUT/DELETE), todo con token
 //   de administración.
 //   Los ODS de grupos y centros vienen de Metri-K.
 // Dev/preview: montado como middleware en vite.config.ts.

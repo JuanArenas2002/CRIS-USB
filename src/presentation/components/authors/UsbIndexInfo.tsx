@@ -4,7 +4,7 @@ import { Icon } from '@/presentation/components/ui/Icon';
 import { USB_INDEX_GROUPS, USB_INDEX_MAX_WEIGHT, groupWeight } from './usb-index';
 
 /**
- * Botón + modal que explica cómo se calcula el índice USB. Usa <dialog> nativo: foco atrapado, Esc cierra y
+ * Botón + modal que explica cómo se calcula el índice Unisimón. Usa <dialog> nativo: foco atrapado, Esc cierra y
  * el resto de la página queda inerte. Un clic en el fondo también cierra.
  */
 export function UsbIndexInfo() {

@@ -92,7 +92,7 @@ scripts/api/
     center-access.ts  Contraseña de centro: `centerOk` y `projectAccess`
     centers.ts      Centros: listado, ficha, PDF de resoluciones, acceso, contraseña y página oficial
     projects.ts     Proyectos: listado, ficha y equipo (`personal`) en Metri-K
-    ranking.ts      Ranking USB (general, Top 12 / Top 60) y visibilidad
+    ranking.ts      Ranking Unisimón (general, Top 12 / Top 60) y visibilidad
     publications.ts Ranking de publicaciones: consulta pública y carga del Excel
     investigators.ts, groups.ts, relations.ts, orcid.ts   Lecturas públicas
   http.ts           `createSend` (JSON, caché, gzip), `readBody`, `readField`, `jsonField`, `saveOr500`, `pageParams`

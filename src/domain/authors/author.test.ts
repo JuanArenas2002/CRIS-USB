@@ -220,7 +220,7 @@ test('consulta: con ranking, siempre de mayor a menor índice (puesto 1 primero)
   expect(queryAuthors(all, { page: 1, pageSize: 10 }).items.map((a) => a.id)).toEqual([2, 4, 1, 3]);
 });
 
-test('destacados: mismo orden que el directorio (ranking USB); sin ranking, mayor índice H', () => {
+test('destacados: mismo orden que el directorio (ranking Unisimón); sin ranking, mayor índice H', () => {
   const metrics = (hIndex: number) => ({ hIndex, scopusPublications: 10, products: 10 });
   const ranking = (rank: number) => ({ index: 100 - rank, rank, centerRank: null, center: null });
   const all = [

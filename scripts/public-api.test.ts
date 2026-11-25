@@ -417,7 +417,7 @@ test('grupos interinstitucionales: en el listado, pero sin detalle ni integrante
   expect((await get('/api/groups/14')).status).toBe(200);
 });
 
-test('ranking USB: decide quién se publica, por cédula; la cédula no sale ni se guarda', async () => {
+test('ranking Unisimón: decide quién se publica, por cédula; la cédula no sale ni se guarda', async () => {
   const send = (method: string, body?: unknown, token = TOKEN) =>
     fetch(`${base}/api/ranking`, {
       method,

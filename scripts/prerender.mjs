@@ -39,11 +39,11 @@ const groups = await fetchPublicGroups(`${metrik}/group`);
 const logoVersions = await stores.logos.versions();
 const logoOf = (id) => (logoVersions.has(id) ? logoUrl(id, logoVersions.get(id)) : null);
 const metrikCenters = await fetchPublicCenters(metrik);
-// Centros activos con logo: el del ranking USB se suma al investigador si Metri-K no lo vincula.
+// Centros activos con logo: el del ranking Unisimón se suma al investigador si Metri-K no lo vincula.
 const centerRefs = metrikCenters
   .filter((c) => c.active)
   .map(({ id, code, acronym, name }) => ({ id, code, acronym, name, logoUrl: logoOf(id) }));
-// Publicados: los del ranking USB (/admin/ranking) o, sin ranking, los seleccionados en Metri-K;
+// Publicados: los del ranking Unisimón (/admin/ranking) o, sin ranking, los seleccionados en Metri-K;
 // más los del Top 12 / Top 60 (su propio Excel), que también tienen perfil.
 const directory = await fetchInvestigators(metrik);
 const ranked = publishWithTiers(directory, await stores.ranking.all(), await stores.rankingHidden.all(), {

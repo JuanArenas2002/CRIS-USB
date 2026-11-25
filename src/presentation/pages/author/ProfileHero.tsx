@@ -1,4 +1,4 @@
-// Tarjeta principal del perfil: foto, nombre, datos clave, índice USB, grupos y centros.
+// Tarjeta principal del perfil: foto, nombre, datos clave, índice Unisimón, grupos y centros.
 import { withBaseUrl } from '@/shared/base';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -98,7 +98,7 @@ function Photo({ author, name }: { author: AuthorProfile; name: string }) {
   );
 }
 
-/** Top 3 de su centro en el ranking USB. */
+/** Top 3 de su centro en el ranking Unisimón. */
 function CenterMedal({ ranking }: { ranking: AuthorProfile['ranking'] }) {
   const { t } = useTranslation(['authors', 'common']);
   const medal = medalFor(ranking?.center ? ranking.centerRank : null);
@@ -113,7 +113,7 @@ function CenterMedal({ ranking }: { ranking: AuthorProfile['ranking'] }) {
   );
 }
 
-/** Índice de productividad USB: valor y barra en una línea; los puestos, como texto. */
+/** Índice de productividad Unisimón: valor y barra en una línea; los puestos, como texto. */
 function UsbIndex({ ranking }: { ranking: NonNullable<AuthorProfile['ranking']> }) {
   const { t } = useTranslation(['authors', 'common']);
   const labels = useLabels();
