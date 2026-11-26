@@ -201,12 +201,12 @@ test('consulta por centro: solo sus investigadores, ordenados por puesto en ese 
   const all = [
     makeAuthor({ id: 1, category: 'emerito', centers: [cicv], ranking: ranking(3, 'CICV') }),
     makeAuthor({ id: 2, category: 'junior', centers: [cicv], ranking: ranking(1, 'CICV') }),
-    // Aporta a CICV, pero su puesto es en CIEF: va después de los rankeados en CICV.
+    // Aporta a CICV, pero su centro (el del ranking) es CIEF: no sale al filtrar por CICV.
     makeAuthor({ id: 3, category: 'senior', centers: [cicv, cief], ranking: ranking(1, 'CIEF') }),
     makeAuthor({ id: 4, centers: [cief], ranking: ranking(2, 'CIEF') }),
   ];
   const ids = queryAuthors(all, { centerId: 5, page: 1, pageSize: 10 }).items.map((a) => a.id);
-  expect(ids).toEqual([2, 1, 3]);
+  expect(ids).toEqual([2, 1]);
 });
 
 test('consulta: con ranking, siempre de mayor a menor índice (puesto 1 primero); sin ranking, al final', () => {
@@ -259,18 +259,4 @@ test('secciones por centro: una vez cada uno, en su centro del ranking, por pues
     [2, [12, 10, 13]],
     [null, [11]],
   ]);
-});
-
-test('secciones con filtro por centro: todos en la sección del centro elegido, por puesto en él', () => {
-  const a = { id: 1, code: 'CI-1', acronym: 'AUDACIA', name: 'A', logoUrl: null };
-  const m = { id: 2, code: 'CI-2', acronym: 'MACONDOLAB', name: 'M', logoUrl: null };
-  const rk = (centerRank: number, center: string) => ({ index: 50, rank: 1, centerRank, center });
-  const sections = groupByCenter(
-    [
-      makeAuthor({ id: 10, centers: [a, m], ranking: rk(1, 'AUDACIA') }), // rankeado en otro centro
-      makeAuthor({ id: 11, centers: [m], ranking: rk(1, 'MACONDOLAB') }),
-    ],
-    2,
-  );
-  expect(sections.map((s) => [s.center?.id, s.authors.map((x) => x.id)])).toEqual([[2, [11, 10]]]);
 });

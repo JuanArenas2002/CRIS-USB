@@ -46,7 +46,7 @@ export function DirectoryPage() {
             authors: data.items,
           },
         ]
-      : groupByCenter(data.items, search.centerId).map(({ center, authors }) => ({
+      : groupByCenter(data.items).map(({ center, authors }) => ({
           id: `centro-${center?.id ?? 'ninguno'}`,
           title: center
             ? center.acronym
