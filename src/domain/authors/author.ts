@@ -269,6 +269,11 @@ export function withRankingCenter<T extends Author>(a: T, known: CenterRef[]): T
   return c && !a.centers?.some((x) => x.id === c.id) ? { ...a, centers: [c, ...(a.centers ?? [])] } : a;
 }
 
+/** Único centro al que pertenece en el directorio: el del ranking Unisimón o, si no, el primero de Metri-K. */
+export function primaryCenter(a: Author): CenterRef | null {
+  return a.centers?.find((x) => sameCenter(a.ranking?.center, x.acronym ?? x.code)) ?? a.centers?.[0] ?? null;
+}
+
 export interface CenterSection {
   /** null: investigadores sin centro. */
   center: CenterRef | null;
@@ -278,17 +283,12 @@ export interface CenterSection {
 /**
  * Secciones del directorio, una por centro. Cada investigador sale una sola vez: en el centro con el
  * que figura en el ranking Unisimón o, si no, en el primero de Metri-K. Dentro, por puesto en el centro
- * (luego el orden recibido); centros por sigla y "sin centro" al final. Con `centerId` (filtro por
- * centro), todos van a la sección de ese centro.
+ * (luego el orden recibido); centros por sigla y "sin centro" al final.
  */
-export function groupByCenter(all: Author[], centerId?: number): CenterSection[] {
+export function groupByCenter(all: Author[]): CenterSection[] {
   const sections = new Map<number | null, CenterSection>();
   for (const a of all) {
-    const c =
-      (centerId ? a.centers?.find((x) => x.id === centerId) : undefined) ??
-      a.centers?.find((x) => sameCenter(a.ranking?.center, x.acronym ?? x.code)) ??
-      a.centers?.[0] ??
-      null;
+    const c = primaryCenter(a);
     const s = sections.get(c?.id ?? null) ?? { center: c, authors: [] };
     s.authors.push(a);
     sections.set(c?.id ?? null, s);
@@ -308,7 +308,7 @@ export function queryAuthors(all: Author[], q: AuthorListQuery): AuthorListPage 
       (a) =>
         (!q.category || a.category === q.category) &&
         (!q.groupId || a.mainGroup?.id === q.groupId) &&
-        (!q.centerId || !!a.centers?.some((c) => c.id === q.centerId)) &&
+        (!q.centerId || primaryCenter(a)?.id === q.centerId) &&
         (!term || norm(a.name).includes(term) || (a.orcid ?? '').includes(term)),
     )
     // Siempre de mayor a menor índice Unisimón (puesto visible, ya renumerado entre los publicados);
