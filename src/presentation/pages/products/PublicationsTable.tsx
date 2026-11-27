@@ -2,12 +2,10 @@ import { useTranslation } from 'react-i18next';
 import { publicationUrl, type ListedPublication } from '@/domain/publications/publication';
 import { useLabels } from '@/presentation/hooks/use-labels';
 import { activeLocale } from '@/i18n';
+import { Icon } from '@/presentation/components/ui/Icon';
 import { languageName } from './products-model';
 
 type Col =
-  | 'rank'
-  | 'score'
-  | 'doi'
   | 'title'
   | 'year'
   | 'type'
@@ -17,7 +15,7 @@ type Col =
   | 'openAccess'
   | 'international'
   | 'correspondence'
-  | 'correspondenceAuthors';
+  | 'link';
 
 type Align = 'left' | 'center' | 'right';
 
@@ -29,19 +27,16 @@ const ALIGN: Record<Align, string> = { left: '', center: 'xl:text-center', right
  * varias líneas, así nunca hay desplazamiento lateral. Por debajo de `xl` cada fila es una tarjeta.
  */
 const COLUMNS: readonly { key: Col; width: string; align: Align }[] = [
-  { key: 'rank', width: 'xl:w-[3.5%]', align: 'center' },
-  { key: 'score', width: 'xl:w-[5%]', align: 'right' },
-  { key: 'doi', width: 'xl:w-[10%]', align: 'left' },
-  { key: 'title', width: 'xl:w-[17%]', align: 'left' },
-  { key: 'year', width: 'xl:w-[4%]', align: 'center' },
-  { key: 'type', width: 'xl:w-[7%]', align: 'left' },
-  { key: 'journal', width: 'xl:w-[10%]', align: 'left' },
-  { key: 'citations', width: 'xl:w-[4.5%]', align: 'right' },
-  { key: 'language', width: 'xl:w-[5.5%]', align: 'left' },
-  { key: 'openAccess', width: 'xl:w-[5.5%]', align: 'center' },
-  { key: 'international', width: 'xl:w-[7.5%]', align: 'center' },
+  { key: 'title', width: 'xl:w-[26%]', align: 'left' },
+  { key: 'year', width: 'xl:w-[5%]', align: 'center' },
+  { key: 'type', width: 'xl:w-[10%]', align: 'left' },
+  { key: 'journal', width: 'xl:w-[15%]', align: 'left' },
+  { key: 'citations', width: 'xl:w-[6%]', align: 'right' },
+  { key: 'language', width: 'xl:w-[7%]', align: 'left' },
+  { key: 'openAccess', width: 'xl:w-[6%]', align: 'center' },
+  { key: 'international', width: 'xl:w-[8%]', align: 'center' },
   { key: 'correspondence', width: 'xl:w-[9%]', align: 'center' },
-  { key: 'correspondenceAuthors', width: 'xl:w-[11.5%]', align: 'left' },
+  { key: 'link', width: 'xl:w-[8%]', align: 'center' },
 ];
 const ALIGN_OF = Object.fromEntries(COLUMNS.map((c) => [c.key, c.align])) as Record<Col, Align>;
 
@@ -54,7 +49,6 @@ export function PublicationsTable({ items }: { items: ListedPublication[] }) {
   const { t } = useTranslation(['publications', 'common']);
   const labels = useLabels();
   const yesNo = (v: boolean) => (v ? t('table.yes') : t('table.no'));
-  const score = new Intl.NumberFormat(activeLocale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const label = (c: Col) => (c === 'type' ? t('type') : t(`table.${c}`));
   const td = (c: Col, extra = '') => ({
     role: 'cell' as const,
@@ -96,36 +90,6 @@ export function PublicationsTable({ items }: { items: ListedPublication[] }) {
             role="row"
             className="transition-colors hover:bg-surface-cream-alt/40 max-xl:block max-xl:rounded-xl max-xl:bg-surface-container-lowest max-xl:p-4 max-xl:shadow-sm max-xl:ring-1 max-xl:ring-border-subtle"
           >
-            <td {...td('rank')}>
-              <span className="inline-flex flex-col items-center leading-tight max-xl:items-end">
-                <span className="text-body-md font-bold text-primary">
-                  <span className="sr-only">{t('item.rank', { rank: p.position })}</span>
-                  <span aria-hidden="true">#{p.position}</span>
-                </span>
-                {/* Con filtros, el puesto es dentro del resultado: se muestra también el general. */}
-                {p.position !== p.rank ? (
-                  <span className="text-label-sm text-neutral-muted">
-                    {t('item.general', { rank: p.rank })}
-                  </span>
-                ) : null}
-              </span>
-            </td>
-            <td {...td('score', 'font-bold text-primary tabular-nums')}>{score.format(p.score)}</td>
-            <td {...td('doi')}>
-              {p.doi ? (
-                <a
-                  href={`https://doi.org/${p.doi}`}
-                  target="_blank"
-                  rel="noopener"
-                  className="text-primary-container underline-offset-2 hover:text-primary hover:underline"
-                >
-                  {p.doi}
-                  <span className="sr-only"> {t('common:newTab')}</span>
-                </a>
-              ) : (
-                '—'
-              )}
-            </td>
             <td {...td('title')}>
               <a
                 href={publicationUrl(p)}
@@ -145,13 +109,18 @@ export function PublicationsTable({ items }: { items: ListedPublication[] }) {
             <td {...td('openAccess')}>{yesNo(p.openAccess)}</td>
             <td {...td('international')}>{yesNo(p.international)}</td>
             <td {...td('correspondence')}>{yesNo(p.correspondence)}</td>
-            <td {...td('correspondenceAuthors')}>
-              {p.correspondenceAuthors.length ? (
-                <ul className="flex flex-col gap-0.5">
-                  {p.correspondenceAuthors.map((a) => (
-                    <li key={a}>{a}</li>
-                  ))}
-                </ul>
+            <td {...td('link')}>
+              {p.doi ? (
+                <a
+                  href={`https://doi.org/${p.doi}`}
+                  target="_blank"
+                  rel="noopener"
+                  className="inline-flex items-center gap-1 text-primary-container hover:text-primary hover:underline"
+                >
+                  {t('table.view')}
+                  <Icon name="open_in_new" className="text-[14px]" />
+                  <span className="sr-only"> {t('common:newTab')}</span>
+                </a>
               ) : (
                 '—'
               )}

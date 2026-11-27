@@ -302,7 +302,7 @@ function CountryPublications({
         />
       ) : (
         <div className="overflow-hidden rounded-xl ring-1 ring-border-subtle">
-          <ProductRows products={data.slice(0, limit).map(asProduct)} />
+          <ProductRows hideType products={data.slice(0, limit).map(asProduct)} />
           {data.length > limit ? (
             <div className="border-t border-surface-cream-alt p-3 text-center">
               <button

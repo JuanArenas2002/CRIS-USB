@@ -495,17 +495,14 @@ test('admin ranking: respuesta ilegible → mensaje claro, sin mostrar el token'
 test('productos: la tabla del ranking muestra los datos de cada publicación, sin etiqueta de nuevo conocimiento', async () => {
   renderApp('/productos');
   const row = within((await screen.findByText('Metabolic Reprogramming in Cancer Cells')).closest('tr')!);
-  expect(row.getByText('89,9')).toBeInTheDocument(); // puntaje
   expect(row.getByText('2022')).toBeInTheDocument();
   expect(row.getByText('Pharmaceutics')).toBeInTheDocument();
   expect(row.getByText('133')).toBeInTheDocument();
   expect(row.getByText('Inglés')).toBeInTheDocument();
-  expect(row.getByText('Pérez, Ana María')).toBeInTheDocument(); // autores de correspondencia
-  expect(row.getByRole('link', { name: /10\.3390/ })).toHaveAttribute(
+  expect(row.getByRole('link', { name: /^Ver/ })).toHaveAttribute(
     'href',
     'https://doi.org/10.3390/pharmaceutics14061303',
   );
-  expect(row.getAllByText('Puesto 1').length).toBeGreaterThan(0);
   expect(row.queryByText('Nuevo Conocimiento')).not.toBeInTheDocument();
   expect(screen.getByText('En revistas Q1')).toBeInTheDocument();
   // Del cuartil solo se muestra el total en Q1; nunca el de cada publicación.
@@ -523,7 +520,7 @@ test('productos: sin resultados para el filtro ofrece restablecerlo', async () =
   expect(await screen.findByText('1 publicación')).toBeInTheDocument();
 });
 
-test('productos: con rango de años el puesto se recalcula y se muestra el general', async () => {
+test('productos: con rango de años solo se listan las publicaciones del rango', async () => {
   renderApp(
     '/productos?desde=2020&hasta=2023',
     undefined,
@@ -536,9 +533,6 @@ test('productos: con rango de años el puesto se recalcula y se muestra el gener
   );
   expect(await screen.findByText('En rango')).toBeInTheDocument();
   expect(screen.queryByText('Reciente')).not.toBeInTheDocument();
-  // Con filtro, el puesto se recalcula (1) y se muestra el general (#2).
-  expect(screen.getAllByText('Puesto 1').length).toBeGreaterThan(0);
-  expect(screen.getAllByText('#2 general').length).toBeGreaterThan(0);
   expect(screen.getByRole('combobox', { name: 'Año desde' })).toHaveTextContent('Desde 2020');
   expect(screen.getByRole('combobox', { name: 'Año hasta' })).toHaveTextContent('Hasta 2023');
 });

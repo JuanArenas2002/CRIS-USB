@@ -227,7 +227,7 @@ const en: typeof es = {
     usbInfo: {
       button: 'How is it calculated?',
       title: 'Unisimón productivity index',
-      lead: "Scores each researcher's output from 0 to 100. Each variable contributes according to its weight. Output from the last 5 years is evaluated.",
+      lead: "Scores each researcher's output from 0 to 100. Each variable contributes according to its weight. Output from the last 5 years is evaluated. Rank is calculated within each center: every center has its own ranking.",
       total: 'Total',
       close: 'Close',
       groups: {
@@ -730,7 +730,6 @@ const en: typeof es = {
     },
     table: {
       caption: 'Publications ranking',
-      rank: '#',
       score: 'Score',
       doi: 'DOI',
       title: 'Title',
@@ -741,7 +740,8 @@ const en: typeof es = {
       openAccess: 'Open Access',
       international: 'International co-authorship',
       correspondence: 'Institutional correspondence',
-      correspondenceAuthors: 'Corresponding authors',
+      link: 'Link',
+      view: 'View',
       yes: 'Yes',
       no: 'No',
     },

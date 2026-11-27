@@ -45,7 +45,6 @@ export function AuthorCard({ author }: { author: Author }) {
   const labels = useLabels();
   const r = author.ranking;
   const centerRank = r?.center && r.centerRank ? r.centerRank : null;
-  const medal = medalFor(centerRank);
   const degree = shortDegree(author.degree && labels.domain(author.degree));
   const stats = author.metrics
     ? [
@@ -86,13 +85,6 @@ export function AuthorCard({ author }: { author: Author }) {
             </span>
           )}
         </div>
-        {medal ? (
-          <span
-            className={`absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full shadow-md ring-1 ${medal}`}
-          >
-            <Icon name="emoji_events" className="text-[18px]" />
-          </span>
-        ) : null}
       </div>
       <div className="mt-4 flex items-start gap-4">
         <div className="min-w-0 flex-1">
@@ -135,12 +127,7 @@ export function AuthorCard({ author }: { author: Author }) {
             </div>
             <div className="flex flex-col items-end gap-1.5 text-right">
               {centerRank ? (
-                <span
-                  className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-label-sm font-bold ${
-                    medal ? `shadow-sm ring-1 ${medal}` : 'bg-badge-sage-bg text-badge-sage-text'
-                  }`}
-                >
-                  <Icon name={medal ? 'emoji_events' : 'military_tech'} className="text-[15px]" />
+                <span className="text-label-md font-bold text-primary">
                   {t('card.centerRank', { rank: centerRank, center: r.center })}
                 </span>
               ) : null}
