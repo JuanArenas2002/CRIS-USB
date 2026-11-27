@@ -71,9 +71,6 @@ test('productos: tabla con las columnas pedidas, filtros activos en texto y moda
     .getAllByRole('columnheader')
     .map((h) => h.textContent);
   expect(headers).toEqual([
-    '#',
-    'Puntaje',
-    'DOI',
     'Título',
     'Año',
     'Tipo documental',
@@ -83,7 +80,7 @@ test('productos: tabla con las columnas pedidas, filtros activos en texto y moda
     'Open Access',
     'Coautoría internacional',
     'Correspondencia institucional',
-    'Autores de correspondencia',
+    'Enlace',
   ]);
   expect(screen.getByText(/Filtros activos:/).closest('p')).toHaveTextContent(
     'Filtros activos: Desde 2020 · Solo acceso abierto',
@@ -93,5 +90,4 @@ test('productos: tabla con las columnas pedidas, filtros activos en texto y moda
     'dialog',
   );
   expect(screen.getByText('Cuartil de la revista')).toBeInTheDocument();
-  expect(screen.getByText('Pérez, Ana María')).toBeInTheDocument();
 });

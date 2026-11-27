@@ -233,7 +233,7 @@ const es = {
     usbInfo: {
       button: '¿Cómo se calcula?',
       title: 'Índice de productividad Unisimón',
-      lead: 'Puntúa de 0 a 100 la producción de cada investigador. Cada variable aporta según su peso. Se evalúa la producción de los últimos 5 años.',
+      lead: 'Puntúa de 0 a 100 la producción de cada investigador. Cada variable aporta según su peso. Se evalúa la producción de los últimos 5 años. El puesto se calcula dentro de cada centro: cada centro tiene su propio ranking.',
       total: 'Total',
       close: 'Cerrar',
       groups: {
@@ -737,7 +737,6 @@ const es = {
     },
     table: {
       caption: 'Ranking de publicaciones',
-      rank: '#',
       score: 'Puntaje',
       doi: 'DOI',
       title: 'Título',
@@ -748,7 +747,8 @@ const es = {
       openAccess: 'Open Access',
       international: 'Coautoría internacional',
       correspondence: 'Correspondencia institucional',
-      correspondenceAuthors: 'Autores de correspondencia',
+      link: 'Enlace',
+      view: 'Ver',
       yes: 'Sí',
       no: 'No',
     },

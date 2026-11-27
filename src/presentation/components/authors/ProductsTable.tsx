@@ -179,8 +179,11 @@ function Select({
 export function ProductRows({
   products,
   rank,
+  hideType,
 }: {
   products: Product[];
+  /** Oculta la columna «Tipo» (tipología). */
+  hideType?: boolean;
   /** Columna opcional de puesto (ranking de /productos): título y contenido por fila. */
   rank?: { label: string; of: (p: Product) => ReactNode };
 }) {
@@ -202,9 +205,11 @@ export function ProductRows({
           <th scope="col" className="px-4 py-3">
             {t('products.colTitle')}
           </th>
-          <th scope="col" className="px-4 py-3">
-            {t('products.colType')}
-          </th>
+          {hideType ? null : (
+            <th scope="col" className="px-4 py-3">
+              {t('products.colType')}
+            </th>
+          )}
           <th scope="col" className="px-4 py-3">
             {t('products.colSubtype')}
           </th>
@@ -240,13 +245,15 @@ export function ProductRows({
                 </p>
               ) : null}
             </td>
-            <td className="order-2 justify-self-end md:table-cell md:px-4 md:py-3.5 md:align-top">
-              <span
-                className={`rounded-full px-2 py-0.5 text-label-sm font-semibold whitespace-nowrap ${TYPOLOGY_STYLE[p.typology].chip}`}
-              >
-                {labels.typologyShort(p.typology)}
-              </span>
-            </td>
+            {hideType ? null : (
+              <td className="order-2 justify-self-end md:table-cell md:px-4 md:py-3.5 md:align-top">
+                <span
+                  className={`rounded-full px-2 py-0.5 text-label-sm font-semibold whitespace-nowrap ${TYPOLOGY_STYLE[p.typology].chip}`}
+                >
+                  {labels.typologyShort(p.typology)}
+                </span>
+              </td>
+            )}
             <td className="order-4 col-span-2 min-w-0 text-label-md text-on-surface-variant md:table-cell md:px-4 md:py-3.5 md:align-top">
               {labels.domain(p.type)}
               {p.index ? (
