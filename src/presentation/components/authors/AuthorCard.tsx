@@ -44,7 +44,6 @@ export function AuthorCard({ author }: { author: Author }) {
   const { t } = useTranslation('authors');
   const labels = useLabels();
   const r = author.ranking;
-  const centerRank = r?.center && r.centerRank ? r.centerRank : null;
   const degree = shortDegree(author.degree && labels.domain(author.degree));
   const stats = author.metrics
     ? [
@@ -124,16 +123,6 @@ export function AuthorCard({ author }: { author: Author }) {
                 </span>
                 <span className="text-label-md font-semibold text-neutral-muted"> / 100</span>
               </p>
-            </div>
-            <div className="flex flex-col items-end gap-1.5 text-right">
-              {centerRank ? (
-                <span className="text-label-md font-bold text-primary">
-                  {t('card.centerRank', { rank: centerRank, center: r.center })}
-                </span>
-              ) : null}
-              <span className="text-label-sm font-semibold text-neutral-muted">
-                {t('card.generalRank', { rank: r.rank })}
-              </span>
             </div>
           </div>
           <div
